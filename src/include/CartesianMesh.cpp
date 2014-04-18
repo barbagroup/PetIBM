@@ -2,8 +2,7 @@
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 
-template <PetscInt dim>
-CartesianMesh<dim>::CartesianMesh(std::string fileName)
+CartesianMesh::CartesianMesh(std::string fileName)
 {
 	PetscInt rank;
 	
@@ -152,6 +151,3 @@ CartesianMesh<dim>::CartesianMesh(std::string fileName)
 	MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, MPI_COMM_WORLD);	
 	MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, MPI_COMM_WORLD);
 }
-
-template class CartesianMesh<2>;
-template class CartesianMesh<3>;

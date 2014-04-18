@@ -1,9 +1,10 @@
 #include "NavierStokesSolver.h"
+#include <petscsys.h>
 #include <iostream>
 #include <string>
 
-template <int dim>
-NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(SimulationParameters &SP, CartesianMesh<dim> &CM)
+template <PetscInt dim>
+NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM)
 {
 	NavierStokesSolver<dim> *solver = NULL;
 	switch(SP.solverType)
@@ -14,10 +15,11 @@ NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(SimulationParamet
 		default:
 			std::cout << "Unrecognised solver!\n";
 	}
+	solver->flowDesc  = &FD;
 	solver->simParams = &SP;
 	solver->mesh      = &CM;
 	
-	std::cout << "\nSolver type selected: " << solver->name() << "\n" << std::endl;
+	PetscPrintf(PETSC_COMM_WORLD, "Solver type selected: %s\n", solver->name().c_str());
 	
 	return solver;
 }

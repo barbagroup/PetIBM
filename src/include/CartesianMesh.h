@@ -1,12 +1,10 @@
 #if !defined(CARTESIAN_MESH_H)
 #define CARTESIAN_MESH_H
 
+#include <petscsys.h>
 #include <string>
 #include <vector>
 
-#include <petscsys.h>
-
-template <PetscInt dim>
 class CartesianMesh
 {
 public:

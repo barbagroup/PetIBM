@@ -1,20 +1,22 @@
 #if !defined(NAVIER_STOKES_SOLVER_H)
 #define NAVIER_STOKES_SOLVER_H
 
+#include "FlowDescription.h"
 #include "CartesianMesh.h"
 #include "SimulationParameters.h"
 
-template <int dim>
+template <PetscInt dim>
 class NavierStokesSolver
 {
 protected:
 	// classes
+	FlowDescription      *flowDesc;
 	SimulationParameters *simParams;
-	CartesianMesh<dim>   *mesh;
+	CartesianMesh        *mesh;
 	
 public:	
 	// Factory methods are static (not entirely sure why)
-	static NavierStokesSolver<dim>* createSolver(SimulationParameters &SP, CartesianMesh<dim> &CM);
+	static NavierStokesSolver<dim>* createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM);
 	
 	/**
 	* @brief Give the name of the current solver 

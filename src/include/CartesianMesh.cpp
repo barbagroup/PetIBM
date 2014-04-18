@@ -1,11 +1,11 @@
-#include <fstream>
 #include "CartesianMesh.h"
 #include "yaml-cpp/yaml.h"
+#include <fstream>
 
 template <PetscInt dim>
 CartesianMesh<dim>::CartesianMesh(std::string fileName)
 {
-	PetscInt       rank;
+	PetscInt rank;
 	
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	
@@ -151,15 +151,6 @@ CartesianMesh<dim>::CartesianMesh(std::string fileName)
 	
 	MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, MPI_COMM_WORLD);	
 	MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, MPI_COMM_WORLD);
-	
-	MPI_Barrier(PETSC_COMM_WORLD);
-	
-	std::cout << "nx: " << nx << ", ny: " << ny << std::endl;
-	for(std::vector<PetscReal>::iterator it=x.begin(); it!=x.end(); ++it)
-	{
-		std::cout << *it << ", ";
-	}
-	std::cout << std::endl;
 }
 
 template class CartesianMesh<2>;

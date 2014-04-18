@@ -1,6 +1,6 @@
 ALL: bin/PetIBM
-DIRS       = src src/classes external/yaml-cpp/src external/yaml-cpp/src/contrib
-LIBS       = lib/libclasses.a lib/libyaml.a
+DIRS       = src src/include src/solvers external/yaml-cpp/src external/yaml-cpp/src/contrib
+LIBS       = lib/libclasses.a lib/libyaml.a lib/libsolvers.a
 SRC        = ${wildcard src/*.cpp}
 OBJ        = ${SRC:.cpp=.o}
 CLEANFILES = ${LIBS} ${addsuffix /*.o, ${DIRS}} ${wildcard bin/*}
@@ -8,17 +8,22 @@ CLEANFILES = ${LIBS} ${addsuffix /*.o, ${DIRS}} ${wildcard bin/*}
 include ${PETSC_DIR}/conf/variables
 include ${PETSC_DIR}/conf/rules
 
+PETSC_CC_INCLUDES += -I./src/include -I./src/solvers
+
 bin/PetIBM: ${OBJ} ${LIBS}
 	${CLINKER} $^ -o $@ ${PETSC_SYS_LIB}
 
 lib/libclasses.a:
-	cd src/classes; ${MAKE}
+	cd src/include; ${MAKE}
 
 lib/libyaml.a:
 	cd external/yaml-cpp; ${MAKE}
 
+lib/libsolvers.a:
+	cd src/solvers; ${MAKE}
+
 check4:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cavityRe100
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
 
 vars:
 	@echo CLINKER: ${CLINKER}

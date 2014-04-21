@@ -24,5 +24,18 @@ NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription &
 	return solver;
 }
 
+template <PetscInt dim>
+void NavierStokesSolver<dim>::initialise()
+{
+	// Initialise fluxes
+	fluxVecsCreate();
+	fluxVecsInitialise();
+	updateBoundaryGhosts();
+}
+
+#include "NavierStokes/fluxVecsCreate.inl"
+#include "NavierStokes/fluxVecsInitialise.inl"
+#include "NavierStokes/updateBoundaryGhosts.inl"
+
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

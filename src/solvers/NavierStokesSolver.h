@@ -4,6 +4,8 @@
 #include "FlowDescription.h"
 #include "CartesianMesh.h"
 #include "SimulationParameters.h"
+#include "FractionalStepMethod.h"
+#include <petscdmda.h>
 
 template <PetscInt dim>
 class NavierStokesSolver
@@ -13,8 +15,21 @@ protected:
 	FlowDescription      *flowDesc;
 	SimulationParameters *simParams;
 	CartesianMesh        *mesh;
+	FractionalStepMethod FSM;
 	
-public:	
+	size_t timeStep, iteratonCount1, iterationCount2;
+	
+	DM  uda, vda, wda, pack;
+	Vec qxLocal, qyLocal, qzLocal;
+	Mat Rinv, M;
+
+	void fluxVecsCreate();
+	void fluxVecsInitialise();
+	void updateBoundaryGhosts();
+	
+public:
+	void initialise();
+	
 	// Factory methods are static (not entirely sure why)
 	static NavierStokesSolver<dim>* createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM);
 	

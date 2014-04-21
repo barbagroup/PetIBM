@@ -25,6 +25,9 @@ lib/libsolvers.a:
 check4:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
 
+memcheck:
+	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/test
+
 vars:
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}

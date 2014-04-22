@@ -19,8 +19,14 @@ int main(int argc,char **argv)
 	FlowDescription         FD(folder+"/flowDescription.yaml");
 	CartesianMesh           CM(folder+"/cartesianMesh.yaml");
 	SimulationParameters    SP(folder+"/simulationParameters.yaml");
-	NavierStokesSolver<dim> *solver = NavierStokesSolver<dim>::createSolver(FD, SP, CM);
+	NavierStokesSolver<dim> *solver = NULL;
 	
+	solver = NavierStokesSolver<dim>::createSolver(FD, SP, CM);
+	
+	//solver->initialise();
+	
+	if(!solver)
+		delete solver;
 	ierr = PetscFinalize(); CHKERRQ(ierr);
 	return 0;
 }

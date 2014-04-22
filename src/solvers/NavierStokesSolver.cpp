@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 
+// this factory pattern causes a memory leak. Try to fix it later
 template <PetscInt dim>
 NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM)
 {
@@ -10,7 +11,7 @@ NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription &
 	switch(SP.solverType)
 	{
 		case NAVIER_STOKES:
-			solver = new NavierStokesSolver<dim>; 
+			solver = new NavierStokesSolver<dim>;
 			break;
 		default:
 			std::cout << "Unrecognised solver!\n";

@@ -11,7 +11,6 @@ public:
 	PetscReal  dt;
 	PetscInt   nt, nsave;
 	SolverType solverType;
-	
 	SimulationParameters(std::string fileName);
 };
 

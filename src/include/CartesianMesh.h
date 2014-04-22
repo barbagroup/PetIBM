@@ -12,6 +12,7 @@ public:
 	std::vector<PetscReal> x, y, z;
 	std::vector<PetscReal> dx, dy, dz;
     
+    CartesianMesh();
 	CartesianMesh(std::string fileName);
 };
 

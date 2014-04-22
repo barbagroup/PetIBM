@@ -18,7 +18,7 @@ void NavierStokesSolver<2>::fluxVecsCreate()
 	// x-velocity
 	numX = (flowDesc->bc[0][XPLUS].type == PERIODIC)? mesh->nx : mesh->nx-1;
 	numY = mesh->ny;
-	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_BOX, numX, numY, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, &(uda)); CHKERRV(ierr);
+	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_BOX, numX, numY, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, &uda); CHKERRV(ierr);
 	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &(pack)); CHKERRV(ierr);
 	ierr = DMCompositeAddDM(pack, uda); CHKERRV(ierr);
 	ierr = DMDAGetOwnershipRanges(uda, &lxu, &lyu, NULL); CHKERRV(ierr);
@@ -47,8 +47,8 @@ void NavierStokesSolver<2>::fluxVecsCreate()
 	ierr = DMCreateLocalVector(vda, &qyLocal); CHKERRV(ierr);
 	
 	// convection terms
-	//ierr = DMCreateGlobalVector(pack, &rn); CHKERRV(ierr);
-	//ierr = DMCreateGlobalVector(pack, &H); CHKERRV(ierr);
+	ierr = DMCreateGlobalVector(pack, &rn); CHKERRV(ierr);
+	ierr = DMCreateGlobalVector(pack, &H); CHKERRV(ierr);
 }
 
 template <>

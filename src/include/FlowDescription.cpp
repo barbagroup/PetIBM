@@ -119,4 +119,5 @@ FlowDescription::FlowDescription(std::string fileName)
 	MPI_Bcast(bc[0], 6, bcInfoType, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(bc[1], 6, bcInfoType, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(bc[2], 6, bcInfoType, 0, PETSC_COMM_WORLD);
+	MPI_Type_free(&bcInfoType);
 }

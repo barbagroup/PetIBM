@@ -21,6 +21,7 @@ protected:
 	
 	DM  uda, vda, wda, pack;
 	Vec qxLocal, qyLocal, qzLocal;
+	Vec H, rn;
 	Mat Rinv, M;
 
 	void fluxVecsCreate();
@@ -40,6 +41,87 @@ public:
 	virtual std::string name()
 	{
 		return "Navier-Stokes";
+	}
+	
+	NavierStokesSolver()
+	{
+		flowDesc  = NULL;
+		simParams = NULL;
+		mesh      = NULL;
+		uda  = PETSC_NULL;
+		vda  = PETSC_NULL;
+		wda  = PETSC_NULL;
+		pack = PETSC_NULL;
+		qxLocal = PETSC_NULL;
+		qyLocal = PETSC_NULL;
+		qzLocal = PETSC_NULL;
+		H  = PETSC_NULL;
+		rn = PETSC_NULL;
+		Rinv = PETSC_NULL;
+		M    = PETSC_NULL;
+	}
+	NavierStokesSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM)
+	{
+		flowDesc  = &FD;
+		simParams = &SP;
+		mesh      = &CM;
+		uda  = PETSC_NULL;
+		vda  = PETSC_NULL;
+		wda  = PETSC_NULL;
+		pack = PETSC_NULL;
+		qxLocal = PETSC_NULL;
+		qyLocal = PETSC_NULL;
+		qzLocal = PETSC_NULL;
+		H  = PETSC_NULL;
+		rn = PETSC_NULL;
+		Rinv = PETSC_NULL;
+		M    = PETSC_NULL;
+	}
+	~NavierStokesSolver()
+	{
+		PetscErrorCode ierr;
+		if(!H)
+		{
+			ierr = VecDestroy(&H); CHKERRV(ierr);
+		}
+		if(!rn)
+		{
+			ierr = VecDestroy(&rn); CHKERRV(ierr);
+		}
+		if(!qxLocal)
+		{
+			ierr = VecDestroy(&qxLocal); CHKERRV(ierr);
+		}
+		if(!qyLocal)
+		{
+			ierr = VecDestroy(&qyLocal); CHKERRV(ierr);
+		}
+		if(!qzLocal)
+		{
+			ierr = VecDestroy(&qzLocal); CHKERRV(ierr);
+		}
+		if(!uda)
+		{
+			ierr = DMDestroy(&uda); CHKERRV(ierr);
+		}
+		if(!vda)
+		{
+			ierr = DMDestroy(&vda); CHKERRV(ierr);
+		}
+		if(!wda)
+		{
+			ierr = DMDestroy(&wda); CHKERRV(ierr);
+		}
+		if(!pack)
+		{
+			ierr = DMDestroy(&pack); CHKERRV(ierr);
+		}
+		if(flowDesc!=NULL)
+			delete flowDesc;
+		if(simParams!=NULL)
+			delete simParams;
+		if(mesh!=NULL)
+			delete mesh;
 	}
 };
 

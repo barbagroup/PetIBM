@@ -2,11 +2,22 @@
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 
+CartesianMesh::CartesianMesh()
+{
+	nx = 0;
+	ny = 0;
+	nz = 0;
+}
+
 CartesianMesh::CartesianMesh(std::string fileName)
 {
 	PetscInt rank;
 	
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	
+	nx = 0;
+	ny = 0;
+	nz = 0;
 	
 	// first pass
 	if(rank==0)

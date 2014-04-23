@@ -8,9 +8,12 @@
 class SimulationParameters
 {
 public:
-	PetscReal  dt;
-	PetscInt   nt, nsave;
-	SolverType solverType;
+	PetscReal          dt;
+	PetscInt           nt, nsave;
+	SolverType         solverType;
+	TimeSteppingScheme convectionScheme, diffusionScheme;
+	PetscReal          gamma, zeta, alphaExplicit, alphaImplicit;
+	
 	SimulationParameters(std::string fileName);
 };
 

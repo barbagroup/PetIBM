@@ -21,6 +21,7 @@ NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription &
 	solver->mesh      = &CM;
 	
 	PetscPrintf(PETSC_COMM_WORLD, "Solver type selected: %s\n", solver->name().c_str());
+	PetscPrintf(PETSC_COMM_WORLD, "gamma: %f, zeta: %f, alphaExplicit: %f, alphaImplicit: %f\n", solver->simParams->gamma, solver->simParams->zeta, solver->simParams->alphaExplicit, solver->simParams->alphaImplicit);
 	
 	return solver;
 }

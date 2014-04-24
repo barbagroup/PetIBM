@@ -19,8 +19,8 @@ void NavierStokesSolver<2>::updateBoundaryGhosts()
 			{
 				switch(flowDesc->bc[0][XMINUS].type)
 				{
-					case DIRICHLET : qx[j][mstart-1] = flowDesc->bc[0][XMINUS].value; break;
-					case NEUMANN   : qx[j][mstart-1] = qx[j][mstart]/mesh->dy[j]; break;
+					case DIRICHLET : qx[j][mstart-1] = flowDesc->bc[0][XMINUS].value*mesh->dy[j]; break;
+					case NEUMANN   : qx[j][mstart-1] = qx[j][mstart]; break;
 					default        : break;
 				}
 			}
@@ -29,8 +29,8 @@ void NavierStokesSolver<2>::updateBoundaryGhosts()
 			{			
 				switch(flowDesc->bc[0][XPLUS].type)
 				{
-					case DIRICHLET : qx[j][mstart+m] = flowDesc->bc[0][XPLUS].value; break;
-					case NEUMANN   : qx[j][mstart+m] = qx[j][mstart+m-1]/mesh->dy[j]; break;
+					case DIRICHLET : qx[j][mstart+m] = flowDesc->bc[0][XPLUS].value*mesh->dy[j]; break;
+					case NEUMANN   : qx[j][mstart+m] = qx[j][mstart+m-1]; break;
 					default        : break;
 				}
 			}
@@ -111,8 +111,8 @@ void NavierStokesSolver<2>::updateBoundaryGhosts()
 			{
 				switch(flowDesc->bc[1][YMINUS].type)
 				{
-					case DIRICHLET : qy[nstart-1][i] = flowDesc->bc[1][YMINUS].value; break;
-					case NEUMANN   : qy[nstart-1][i] = qy[nstart][i]/mesh->dx[i]; break;
+					case DIRICHLET : qy[nstart-1][i] = flowDesc->bc[1][YMINUS].value*mesh->dx[i]; break;
+					case NEUMANN   : qy[nstart-1][i] = qy[nstart][i]; break;
 					default        : break;
 				}
 			}
@@ -121,8 +121,8 @@ void NavierStokesSolver<2>::updateBoundaryGhosts()
 			{
 				switch(flowDesc->bc[1][YPLUS].type)
 				{
-					case DIRICHLET : qy[nstart+n][i] = flowDesc->bc[1][YPLUS].value; break;
-					case NEUMANN   : qy[nstart+n][i] = qy[nstart+n-1][i]/mesh->dx[i]; break;
+					case DIRICHLET : qy[nstart+n][i] = flowDesc->bc[1][YPLUS].value*mesh->dx[i]; break;
+					case NEUMANN   : qy[nstart+n][i] = qy[nstart+n-1][i]; break;
 					default        : break;
 				}
 			}

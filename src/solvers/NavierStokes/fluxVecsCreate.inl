@@ -126,7 +126,6 @@ void NavierStokesSolver<3>::fluxVecsCreate()
 	ierr = DMCreateLocalVector(wda, &qzLocal); CHKERRV(ierr);
 
 	// convection terms
-	//ierr = DMCreateGlobalVector(uda, &(rxGlobal)); CHKERRV(ierr);	
-	//ierr = DMCreateGlobalVector(vda, &(ryGlobal)); CHKERRV(ierr);
-	//ierr = DMCreateGlobalVector(wda, &(rzGlobal)); CHKERRV(ierr);
+	ierr = DMCreateGlobalVector(pack, &rn); CHKERRV(ierr);
+	ierr = DMCreateGlobalVector(pack, &H); CHKERRV(ierr);
 }

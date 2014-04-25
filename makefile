@@ -1,5 +1,6 @@
 ALL: bin/PetIBM
-DIRS       = src src/include src/solvers external/yaml-cpp/src external/yaml-cpp/src/contrib
+DIRS       = src src/include src/solvers
+YAMLOBJ    = external/yaml-cpp/src/*.o external/yaml-cpp/src/contrib/*.o
 LIBS       = lib/libclasses.a lib/libyaml.a lib/libsolvers.a
 SRC        = ${wildcard src/*.cpp}
 OBJ        = ${SRC:.cpp=.o}
@@ -48,4 +49,7 @@ vars:
 	@echo OBJ: ${OBJ}
 	@echo CLEANFILES: ${CLEANFILES}
 
-.PHONY: ${LIBS} check4 vars
+cleanall: clean
+	${RM} ${YAMLOBJ}
+
+.PHONY: ${LIBS} check4 memcheck vars cleanall

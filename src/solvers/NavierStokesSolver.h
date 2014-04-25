@@ -27,9 +27,13 @@ protected:
 	void fluxVecsCreate();
 	void fluxVecsInitialise();
 	void updateBoundaryGhosts();
+	void calculateExplicitTerms();
 	
 public:
 	void initialise();
+	void stepTime();
+	void writeData();
+	bool finished();
 	
 	// Factory methods are static (not entirely sure why)
 	static NavierStokesSolver<dim>* createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM);
@@ -45,6 +49,7 @@ public:
 	
 	NavierStokesSolver()
 	{
+		timeStep = 0;
 		flowDesc  = NULL;
 		simParams = NULL;
 		mesh      = NULL;
@@ -62,6 +67,7 @@ public:
 	}
 	NavierStokesSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM)
 	{
+		timeStep = 0;
 		flowDesc  = &FD;
 		simParams = &SP;
 		mesh      = &CM;
@@ -77,7 +83,7 @@ public:
 		Rinv = PETSC_NULL;
 		M    = PETSC_NULL;
 	}
-	~NavierStokesSolver()
+	virtual ~NavierStokesSolver()
 	{
 		PetscErrorCode ierr;
 		if(!H)

@@ -35,9 +35,27 @@ void NavierStokesSolver<dim>::initialise()
 	updateBoundaryGhosts();
 }
 
+template <PetscInt dim>
+void NavierStokesSolver<dim>::stepTime()
+{
+	timeStep++;
+}
+
+template <PetscInt dim>
+void NavierStokesSolver<dim>::writeData()
+{
+}
+
+template <PetscInt dim>
+bool NavierStokesSolver<dim>::finished()
+{
+	return (timeStep < simParams->nt)? false : true;
+}
+
 #include "NavierStokes/fluxVecsCreate.inl"
 #include "NavierStokes/fluxVecsInitialise.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
+#include "NavierStokes/calculateExplicitTerms.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

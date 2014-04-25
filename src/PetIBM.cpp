@@ -23,7 +23,13 @@ int main(int argc,char **argv)
 	
 	solver = NavierStokesSolver<dim>::createSolver(FD, SP, CM);
 	
-	//solver->initialise();
+	solver->initialise();
+	
+	while(!solver->finished())
+	{
+		solver->stepTime();
+		solver->writeData();
+	}
 	
 	if(!solver)
 		delete solver;

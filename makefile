@@ -32,7 +32,10 @@ memcheck:
 vars:
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}
+	@echo PCC_LINKER: ${PCC_LINKER}
+	@echo PCC_LINKER_FLAGS: ${PCC_LINKER_FLAGS}
 	@echo CFLAGS: ${CFLAGS}
+	@echo CC_FLAGS: ${CC_FLAGS}
 	@echo CPPFLAGS: ${CPPFLAGS}
 	@echo CPP_FLAGS: ${CPP_FLAGS}
 	@echo CCPPFLAGS: ${CCPPFLAGS}

@@ -105,7 +105,7 @@ void NavierStokesSolver<3>::generateMAndRInv()
 			for(i=mstart; i<mstart+m; i++)
 			{
 				Mz[k][j][i] = (k < mesh->nz-1)? 0.5*(mesh->dz[k] + mesh->dz[k+1]) : 0.5*(mesh->dz[k] + mesh->dz[0]);
-				RInvz[k][j][i] = 1.0/(mesh->dy[j]*mesh->dz[k]);
+				RInvz[k][j][i] = 1.0/(mesh->dx[i]*mesh->dy[j]);
 			}
 		}
 	}

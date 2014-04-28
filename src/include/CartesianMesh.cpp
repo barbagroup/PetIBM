@@ -77,7 +77,7 @@ CartesianMesh::CartesianMesh(std::string fileName)
 	// second pass
 	if(rank == 0)
 	{
-		PetscInt      numCells, first;
+		size_t        numCells, first;
 		std::string   direction;
 		std::ifstream file(fileName.c_str());
 		YAML::Parser  parser(file);
@@ -90,7 +90,7 @@ CartesianMesh::CartesianMesh(std::string fileName)
 		parser.GetNextDocument(doc);
 				
 		// cycle through each direction
-		for (PetscInt i=0; i<doc.size(); i++)
+		for (size_t i=0; i<doc.size(); i++)
 		{
 			doc[i]["direction"] >> direction;
 			doc[i]["start"] >> start;
@@ -105,7 +105,7 @@ CartesianMesh::CartesianMesh(std::string fileName)
 			else if(direction=="z")
 				z[first] = start;
 			
-			for (PetscInt i=0; i<subDomains.size(); i++)
+			for (size_t i=0; i<subDomains.size(); i++)
 			{
 				subDomains[i]["end"] >> end;
 				subDomains[i]["cells"] >> numCells;

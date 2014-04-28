@@ -37,9 +37,11 @@ protected:
 	void createVecs();
 	void initialiseFluxes();
 	void updateBoundaryGhosts();
-	void calculateExplicitTerms();
 	void generateMAndRInv();
 	void generateA();
+	void calculateExplicitTerms();
+	void generateBC1();
+	void generateRHS1();
 	
 public:
 	void initialise();

@@ -9,7 +9,7 @@ class SimulationParameters
 {
 public:
 	PetscReal          dt;
-	size_t             nt, nsave;
+	PetscInt           nt, nsave;
 	SolverType         solverType;
 	TimeSteppingScheme convectionScheme, diffusionScheme;
 	PetscReal          gamma, zeta, alphaExplicit, alphaImplicit;

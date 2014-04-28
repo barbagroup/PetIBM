@@ -5,20 +5,17 @@
 
 // this factory pattern causes a memory leak. Try to fix it later
 template <PetscInt dim>
-NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM)
+NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
 {
 	NavierStokesSolver<dim> *solver = NULL;
-	switch(SP.solverType)
+	switch(SP->solverType)
 	{
 		case NAVIER_STOKES:
-			solver = new NavierStokesSolver<dim>;
+			solver = new NavierStokesSolver<dim>(FD, SP, CM);
 			break;
 		default:
 			std::cout << "Unrecognised solver!\n";
 	}
-	solver->flowDesc  = &FD;
-	solver->simParams = &SP;
-	solver->mesh      = &CM;
 	
 	PetscPrintf(PETSC_COMM_WORLD, "Solver type selected: %s\n", solver->name().c_str());
 	PetscPrintf(PETSC_COMM_WORLD, "gamma: %f, zeta: %f, alphaExplicit: %f, alphaImplicit: %f\n", solver->simParams->gamma, solver->simParams->zeta, solver->simParams->alphaExplicit, solver->simParams->alphaImplicit);
@@ -55,6 +52,7 @@ bool NavierStokesSolver<dim>::finished()
 #include "NavierStokes/fluxVecsCreate.inl"
 #include "NavierStokes/fluxVecsInitialise.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
+#include "NavierStokes/generateM.inl"
 #include "NavierStokes/calculateExplicitTerms.inl"
 
 template class NavierStokesSolver<2>;

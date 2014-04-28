@@ -19,7 +19,7 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 	PetscReal      vNorth, vEast, vWest, vSouth;
 	PetscReal      dxMinus, dxPlus, dyMinus, dyPlus;
 	PetscReal      convectionTerm, diffusionTerm;
-	PetscReal      alpha = simParams->alphaExplicit,
+	PetscReal      alphaExplicit = simParams->alphaExplicit,
 	               gamma = simParams->gamma,
 	               zeta  = simParams->zeta;
 	PetscReal      dt = simParams->dt;
@@ -102,7 +102,7 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 				dyPlus = (flowDesc->bc[0][YPLUS].type!=PERIODIC)? 0.5*mesh->dy[j] : 0.5*(mesh->dy[j] + mesh->dy[0]);
 			}
 			
-			diffusionTerm = alpha*(  du2dx2(uWest, u, uEast, mesh->dx[i], dxPlus)
+			diffusionTerm = alphaExplicit*(  du2dx2(uWest, u, uEast, mesh->dx[i], dxPlus)
 			                       + du2dx2(uSouth, u, uNorth, dyMinus, dyPlus)
 			                      );
 			
@@ -183,7 +183,7 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 				dxPlus = (flowDesc->bc[1][XPLUS].type!=PERIODIC)? 0.5*mesh->dx[i] : 0.5*(mesh->dx[i] + mesh->dx[0]);
 			}
 			
-			diffusionTerm = alpha*(  du2dx2(vWest, v, vEast, dxMinus, dxPlus)
+			diffusionTerm = alphaExplicit*(  du2dx2(vWest, v, vEast, dxMinus, dxPlus)
 			                       + du2dx2(vSouth, u, vNorth, mesh->dy[j], dyPlus)
 			                      );
 			
@@ -203,43 +203,4 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 template<>
 void NavierStokesSolver<3>::calculateExplicitTerms()
 {
-/*
-	PetscErrorCode ierr;
-	PetscInt       mstart, nstart, pstart, m, n, p, i, j, k, M, N, P;
-	Vec            HxGlobal, HyGlobal, HzGlobal;
-	Vec            rxGlobal, ryGlobal, rzGlobal;
-	PetscReal      **qx, **qy, **qz;
-	PetscReal      **Hx, **Hy, **Hz, **rx, **ry, **rz;
-	PetscReal      HnMinus1, u, v, w;
-	PetscReal      uNorth, uEast, uWest, uSouth, uZenith, uNadir;
-	PetscReal      vNorth, vEast, vWest, vSouth, vZenith, vNadir;
-	PetscReal      wNorth, wEast, wWest, wSouth, wZenith, wNadir;
-	PetscReal      dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus;
-	PetscReal      convectionTerm, diffusionTerm;
-	PetscReal      alpha = simParams->alphaExplicit,
-	               gamma = simParams->gamma,
-	               zeta  = simParams->zeta;
-	PetscReal      dt = simParams->dt;
-	
-	ierr = DMCompositeGetAccess(pack, H, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(pack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
-	
-	// access local vectors through multi-dimensional pointers
-	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(wda, qzLocal, &qz); CHKERRV(ierr);
-	
-	// x-component
-
-	// y-component
-	
-	// z-component
-	
-	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRV(ierr);
-	
-	ierr = DMCompositeRestoreAccess(pack, H, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
-	ierr = DMCompositeRestoreAccess(pack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
-*/
 }

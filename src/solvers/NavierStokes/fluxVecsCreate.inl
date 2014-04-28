@@ -42,13 +42,18 @@ void NavierStokesSolver<2>::fluxVecsCreate()
 	PetscFree(lyv);
 	
 	// create vectors
-	// velocity fluxes
+	// local velocity fluxes
 	ierr = DMCreateLocalVector(uda, &qxLocal); CHKERRV(ierr);
 	ierr = DMCreateLocalVector(vda, &qyLocal); CHKERRV(ierr);
 	
-	// convection terms
-	ierr = DMCreateGlobalVector(pack, &rn); CHKERRV(ierr);
-	ierr = DMCreateGlobalVector(pack, &H); CHKERRV(ierr);
+	// global vectors
+	ierr = DMCreateGlobalVector(pack, &q); CHKERRV(ierr); // velocity fluxes
+	ierr = VecDuplicate(q, &qStar);        CHKERRV(ierr); // intermediate velocity flux
+	ierr = VecDuplicate(q, &H);            CHKERRV(ierr); // convective term
+	ierr = VecDuplicate(q, &rn);           CHKERRV(ierr); // explicit terms
+	ierr = VecDuplicate(q, &bc1);          CHKERRV(ierr); // boundary conditions from implicit terms
+	ierr = VecDuplicate(q, &rhs1);         CHKERRV(ierr); // right-hand side for the intermediate-velocity solve
+	ierr = VecDuplicate(q, &M);            CHKERRV(ierr); // right-hand side for the intermediate-velocity solve
 }
 
 template <>

@@ -4,8 +4,9 @@
 #include "FlowDescription.h"
 #include "CartesianMesh.h"
 #include "SimulationParameters.h"
-#include "FractionalStepMethod.h"
+//#include "FractionalStepMethod.h"
 #include <petscdmda.h>
+#include <petscksp.h>
 
 template <PetscInt dim>
 class NavierStokesSolver
@@ -15,19 +16,30 @@ protected:
 	FlowDescription      *flowDesc;
 	SimulationParameters *simParams;
 	CartesianMesh        *mesh;
-	FractionalStepMethod FSM;
+	//FractionalStepMethod FSM;
 	
 	size_t timeStep, iteratonCount1, iterationCount2;
 	
 	DM  uda, vda, wda, pack;
 	Vec qxLocal, qyLocal, qzLocal;
 	Vec H, rn;
-	Mat Rinv, M;
+	Vec Rinv, M;
+
+	Mat A;
+	Mat QT, BNQ;
+	Mat QTBNQ;
+	Vec BN;
+	Vec bc1, rhs1, rhs2;
+	Vec q, qStar, phi;
+	KSP ksp1, ksp2;
 
 	void fluxVecsCreate();
 	void fluxVecsInitialise();
 	void updateBoundaryGhosts();
 	void calculateExplicitTerms();
+	void generateM();
+	void generateRinv();
+	void generateA();
 	
 public:
 	void initialise();
@@ -36,7 +48,7 @@ public:
 	bool finished();
 	
 	// Factory methods are static (not entirely sure why)
-	static NavierStokesSolver<dim>* createSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM);
+	static NavierStokesSolver<dim>* createSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM);
 	
 	/**
 	* @brief Give the name of the current solver 
@@ -47,30 +59,12 @@ public:
 		return "Navier-Stokes";
 	}
 	
-	NavierStokesSolver()
+	NavierStokesSolver(FlowDescription *FD=NULL, SimulationParameters *SP=NULL, CartesianMesh *CM=NULL)
 	{
 		timeStep = 0;
-		flowDesc  = NULL;
-		simParams = NULL;
-		mesh      = NULL;
-		uda  = PETSC_NULL;
-		vda  = PETSC_NULL;
-		wda  = PETSC_NULL;
-		pack = PETSC_NULL;
-		qxLocal = PETSC_NULL;
-		qyLocal = PETSC_NULL;
-		qzLocal = PETSC_NULL;
-		H  = PETSC_NULL;
-		rn = PETSC_NULL;
-		Rinv = PETSC_NULL;
-		M    = PETSC_NULL;
-	}
-	NavierStokesSolver(FlowDescription &FD, SimulationParameters &SP, CartesianMesh &CM)
-	{
-		timeStep = 0;
-		flowDesc  = &FD;
-		simParams = &SP;
-		mesh      = &CM;
+		flowDesc  = FD;
+		simParams = SP;
+		mesh      = CM;
 		uda  = PETSC_NULL;
 		vda  = PETSC_NULL;
 		wda  = PETSC_NULL;

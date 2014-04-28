@@ -21,7 +21,7 @@ int main(int argc,char **argv)
 	SimulationParameters    SP(folder+"/simulationParameters.yaml");
 	NavierStokesSolver<dim> *solver = NULL;
 	
-	solver = NavierStokesSolver<dim>::createSolver(FD, SP, CM);
+	solver = NavierStokesSolver<dim>::createSolver(&FD, &SP, &CM);
 	
 	solver->initialise();
 	

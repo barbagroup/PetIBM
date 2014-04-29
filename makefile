@@ -23,6 +23,9 @@ lib/libyaml.a:
 lib/libsolvers.a:
 	cd src/solvers; ${MAKE}
 
+check:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/test
+
 check4:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
 

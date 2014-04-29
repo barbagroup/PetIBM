@@ -31,6 +31,9 @@ void NavierStokesSolver<dim>::initialise()
 	createVecs();
 	initialiseFluxes();
 	updateBoundaryGhosts();
+
+	generateMAndRInv();
+	generateA();
 }
 
 template <PetscInt dim>
@@ -54,8 +57,9 @@ bool NavierStokesSolver<dim>::finished()
 #include "NavierStokes/createVecs.inl"
 #include "NavierStokes/initialiseFluxes.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
-#include "NavierStokes/generateMAndRInv.inl"
 #include "NavierStokes/calculateExplicitTerms.inl"
+#include "NavierStokes/generateMAndRInv.inl"
+#include "NavierStokes/generateA.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

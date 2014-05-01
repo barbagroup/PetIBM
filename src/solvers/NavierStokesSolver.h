@@ -24,6 +24,8 @@ protected:
 	Vec qxLocal, qyLocal, qzLocal;
 	Vec H, rn;
 	Vec RInv, M;
+	Vec globalIndices;
+	Vec uMapping, vMapping, wMapping;
 
 	Mat A;
 	Mat QT, BNQ;
@@ -36,6 +38,7 @@ protected:
 	void createDMs();
 	void createVecs();
 	void initialiseFluxes();
+	void createLocalToGlobalMappings();
 	void updateBoundaryGhosts();
 	void generateMAndRInv();
 	void generateA();
@@ -85,6 +88,9 @@ public:
 		rhs1    = PETSC_NULL;
 		RInv    = PETSC_NULL;
 		M       = PETSC_NULL;
+		uMapping = PETSC_NULL;
+		vMapping = PETSC_NULL;
+		wMapping = PETSC_NULL;
 		// Mats
 		A       = PETSC_NULL;
 		BN      = PETSC_NULL;
@@ -148,6 +154,18 @@ public:
 		if(!RInv)
 		{
 			ierr = VecDestroy(&RInv); CHKERRV(ierr);
+		}
+		if(!uMapping)
+		{
+			ierr = VecDestroy(&uMapping); CHKERRV(ierr);
+		}
+		if(!vMapping)
+		{
+			ierr = VecDestroy(&vMapping); CHKERRV(ierr);
+		}
+		if(!wMapping)
+		{
+			ierr = VecDestroy(&wMapping); CHKERRV(ierr);
 		}
 		if(!flowDesc)
 			delete flowDesc;

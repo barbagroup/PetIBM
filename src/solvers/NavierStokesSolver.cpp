@@ -29,6 +29,7 @@ void NavierStokesSolver<dim>::initialise()
 	// Initialise fluxes
 	createDMs();
 	createVecs();
+	createLocalToGlobalMappings();
 	initialiseFluxes();
 	updateBoundaryGhosts();
 
@@ -55,6 +56,7 @@ bool NavierStokesSolver<dim>::finished()
 
 #include "NavierStokes/createDMs.inl"
 #include "NavierStokes/createVecs.inl"
+#include "NavierStokes/createLocalToGlobalMappings.inl"
 #include "NavierStokes/initialiseFluxes.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
 #include "NavierStokes/calculateExplicitTerms.inl"

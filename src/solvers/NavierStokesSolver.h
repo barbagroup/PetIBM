@@ -18,14 +18,30 @@ protected:
 	CartesianMesh        *mesh;
 	//FractionalStepMethod FSM;
 	
-	PetscInt timeStep, iteratonCount1, iterationCount2;
+	PetscInt timeStep,
+	         iteratonCount1,
+	         iterationCount2;
+
+	std::vector<PetscReal> dxU, dyU, dzU,
+	                       dxV, dyV, dzV,
+	                       dxW, dyW, dzW;
 	
-	DM  uda, vda, wda, pack;
-	Vec qxLocal, qyLocal, qzLocal;
+	DM  uda,
+	    vda,
+	    wda,
+	    pack;
+	
+	Vec qxLocal,
+	    qyLocal,
+	    qzLocal;
+
+	Vec globalIndices,
+	    uMapping,
+	    vMapping,
+	    wMapping;
+
 	Vec H, rn;
 	Vec RInv, M;
-	Vec globalIndices;
-	Vec uMapping, vMapping, wMapping;
 
 	Mat A;
 	Mat QT, BNQ;
@@ -37,6 +53,7 @@ protected:
 
 	void createDMs();
 	void createVecs();
+	void initialiseMeshSpacings();
 	void initialiseFluxes();
 	void createLocalToGlobalMappings();
 	void updateBoundaryGhosts();

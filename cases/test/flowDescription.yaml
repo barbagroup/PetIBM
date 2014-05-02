@@ -5,8 +5,8 @@
   initialPerturbation: [0.0, 0.0]
   boundaryConditions:
     - location: xMinus
-      u: [DIRICHLET, 0.0]
-      v: [DIRICHLET, 0.0]
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]
     - location: xPlus
       u: [PERIODIC, 0.0]
       v: [PERIODIC, 0.0]

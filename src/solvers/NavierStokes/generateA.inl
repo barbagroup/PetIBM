@@ -48,7 +48,6 @@ void getCoefficients(PetscReal dxMinus, PetscReal dxPlus, PetscReal dyMinus, Pet
 template <>
 void NavierStokesSolver<2>::generateA()
 {
-
 	PetscErrorCode ierr;
 	PetscInt       mstart, nstart, m, n, i, j;
 	PetscInt       cols[5];
@@ -132,6 +131,8 @@ void NavierStokesSolver<2>::generateA()
 			ierr = MatSetValues(A, 1, &cols[0], 5, cols, values, INSERT_VALUES); CHKERRV(ierr);
 		}
 	}
+	ierr = DMDAVecRestoreArray(vda, vMapping, &vGlobalIdx); CHKERRV(ierr);
+
 	ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 	ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 
@@ -141,5 +142,137 @@ void NavierStokesSolver<2>::generateA()
 template <>
 void NavierStokesSolver<3>::generateA()
 {
-	
+	PetscErrorCode ierr;
+	PetscInt       mstart, nstart, pstart, m, n, p, i, j, k;
+	PetscInt       cols[7];
+	PetscReal      values[7];
+	PetscReal      ***uGlobalIdx, ***vGlobalIdx, ***wGlobalIdx;
+	PetscInt       qStart, qEnd, qLocalSize;
+	PetscInt       *d_nnz, *o_nnz;
+	PetscInt       localIdx;
+
+	// ownership range of q
+	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
+	qLocalSize = qEnd-qStart;
+
+	// create arrays to store nnz values
+	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRV(ierr);
+	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRV(ierr);
+
+	// determine the number of non-zeros in each row
+	// in the diagonal and off-diagonal portions of the matrix
+	localIdx = 0;
+	// U
+	ierr = DMDAVecGetArray(uda, uMapping, &uGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	for(k=pstart; k<pstart+p; k++)
+	{
+		for(j=nstart; j<nstart+n; j++)
+		{
+			for(i=mstart; i<mstart+m; i++)
+			{
+				getColumns(uGlobalIdx, i, j, k, cols);
+				countNumNonZeros(cols, 7, qStart, qEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				localIdx++;
+			}
+		}
+	}
+	ierr = DMDAVecRestoreArray(uda, uMapping, &uGlobalIdx); CHKERRV(ierr);
+	// V
+	ierr = DMDAVecGetArray(vda, vMapping, &vGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	for(k=pstart; k<pstart+p; k++)
+	{
+		for(j=nstart; j<nstart+n; j++)
+		{
+			for(i=mstart; i<mstart+m; i++)
+			{
+				getColumns(vGlobalIdx, i, j, k, cols);
+				countNumNonZeros(cols, 7, qStart, qEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				localIdx++;
+			}
+		}
+	}
+	ierr = DMDAVecRestoreArray(vda, vMapping, &vGlobalIdx); CHKERRV(ierr);
+	// W
+	ierr = DMDAVecGetArray(wda, wMapping, &wGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	for(k=pstart; k<pstart+p; k++)
+	{
+		for(j=nstart; j<nstart+n; j++)
+		{
+			for(i=mstart; i<mstart+m; i++)
+			{
+				getColumns(wGlobalIdx, i, j, k, cols);
+				countNumNonZeros(cols, 7, qStart, qEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				localIdx++;
+			}
+		}
+	}
+	ierr = DMDAVecRestoreArray(wda, wMapping, &wGlobalIdx); CHKERRV(ierr);
+
+	// create and allocate memory for matrix A
+	ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRV(ierr);
+	ierr = MatSetType(A, MATMPIAIJ); CHKERRV(ierr);
+	ierr = MatSetSizes(A, qLocalSize, qLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
+	ierr = MatMPIAIJSetPreallocation(A, 0, d_nnz, 0, o_nnz); CHKERRV(ierr);
+
+	// deallocate d_nnz and o_nnz
+	ierr = PetscFree(d_nnz); CHKERRV(ierr);
+	ierr = PetscFree(o_nnz); CHKERRV(ierr);
+
+	// assemble matrix A
+	// U
+	ierr = DMDAVecGetArray(uda, uMapping, &uGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	for(k=pstart; k<pstart+p; k++)
+	{
+		for(j=nstart; j<nstart+n; j++)
+		{
+			for(i=mstart; i<mstart+m; i++)
+			{
+				getColumns(uGlobalIdx, i, j, k, cols);
+				getCoefficients(dxU[i], dxU[i+1], dyU[j], dyU[j+1], dzU[k], dzU[k+1], values);
+				ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRV(ierr);
+			}
+		}
+	}
+	ierr = DMDAVecRestoreArray(uda, uMapping, &uGlobalIdx); CHKERRV(ierr);
+	// V
+	ierr = DMDAVecGetArray(vda, vMapping, &vGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	for(k=pstart; k<pstart+p; k++)
+	{
+		for(j=nstart; j<nstart+n; j++)
+		{
+			for(i=mstart; i<mstart+m; i++)
+			{
+				getColumns(vGlobalIdx, i, j, k, cols);
+				getCoefficients(dxV[i], dxV[i+1], dyV[j], dyV[j+1], dzV[k], dzV[k+1], values);
+				ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRV(ierr);
+			}
+		}
+	}
+	ierr = DMDAVecRestoreArray(vda, vMapping, &vGlobalIdx); CHKERRV(ierr);
+	// W
+	ierr = DMDAVecGetArray(wda, wMapping, &wGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	for(k=pstart; k<pstart+p; k++)
+	{
+		for(j=nstart; j<nstart+n; j++)
+		{
+			for(i=mstart; i<mstart+m; i++)
+			{
+				getColumns(wGlobalIdx, i, j, k, cols);
+				getCoefficients(dxW[i], dxW[i+1], dyW[j], dyW[j+1], dzW[k], dzW[k+1], values);
+				ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRV(ierr);
+			}
+		}
+	}
+	ierr = DMDAVecRestoreArray(wda, wMapping, &wGlobalIdx); CHKERRV(ierr);
+
+	ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
+	ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
+
+	ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
 }

@@ -1,4 +1,3 @@
-#include <petscdmda.h>
 template <>
 void NavierStokesSolver<2>::createLocalToGlobalMappings()
 {

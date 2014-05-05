@@ -26,7 +26,8 @@ protected:
 	                       dxV, dyV, dzV,
 	                       dxW, dyW, dzW;
 	
-	DM  uda,
+	DM  pda,
+	    uda,
 	    vda,
 	    wda,
 	    pack;
@@ -89,6 +90,7 @@ public:
 		simParams = SP;
 		mesh      = CM;
 		// DMs
+		pda  = PETSC_NULL;
 		uda  = PETSC_NULL;
 		vda  = PETSC_NULL;
 		wda  = PETSC_NULL;
@@ -119,6 +121,10 @@ public:
 	{
 		PetscErrorCode ierr;
 		// DMs
+		if(!pda)
+		{
+			ierr = DMDestroy(&pda); CHKERRV(ierr);
+		}
 		if(!uda)
 		{
 			ierr = DMDestroy(&uda); CHKERRV(ierr);
@@ -171,6 +177,10 @@ public:
 		if(!RInv)
 		{
 			ierr = VecDestroy(&RInv); CHKERRV(ierr);
+		}
+		if(!BN)
+		{
+			ierr = VecDestroy(&BN); CHKERRV(ierr);
 		}
 		if(!uMapping)
 		{

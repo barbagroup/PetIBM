@@ -16,7 +16,7 @@ void NavierStokesSolver<2>::createVecs()
 	ierr = VecDuplicate(q, &rn);           CHKERRV(ierr); // explicit terms
 	ierr = VecDuplicate(q, &bc1);          CHKERRV(ierr); // boundary conditions from implicit terms
 	ierr = VecDuplicate(q, &rhs1);         CHKERRV(ierr); // right-hand side for the intermediate-velocity solve
-	ierr = VecDuplicate(q, &M);            CHKERRV(ierr); // 
+	ierr = VecDuplicate(q, &MHat);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &RInv);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &BN);           CHKERRV(ierr); // 
 }
@@ -38,7 +38,7 @@ void NavierStokesSolver<3>::createVecs()
 	ierr = VecDuplicate(q, &rn);           CHKERRV(ierr); // explicit terms
 	ierr = VecDuplicate(q, &bc1);          CHKERRV(ierr); // boundary conditions from implicit terms
 	ierr = VecDuplicate(q, &rhs1);         CHKERRV(ierr); // right-hand side for the intermediate-velocity solve
-	ierr = VecDuplicate(q, &M);            CHKERRV(ierr); // 
+	ierr = VecDuplicate(q, &MHat);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &RInv);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &BN);           CHKERRV(ierr); // 
 }

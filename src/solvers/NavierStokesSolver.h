@@ -42,7 +42,7 @@ protected:
 	    wMapping;
 
 	Vec H, rn;
-	Vec RInv, M;
+	Vec RInv, MHat;
 
 	Mat A;
 	Mat QT, BNQ;
@@ -58,7 +58,7 @@ protected:
 	void initialiseFluxes();
 	void createLocalToGlobalMappings();
 	void updateBoundaryGhosts();
-	void generateMAndRInv();
+	void generateDiagonalMatrices();
 	void generateA();
 	void calculateExplicitTerms();
 	void generateBC1();
@@ -106,7 +106,7 @@ public:
 		bc1     = PETSC_NULL;
 		rhs1    = PETSC_NULL;
 		RInv    = PETSC_NULL;
-		M       = PETSC_NULL;
+		MHat	    = PETSC_NULL;
 		uMapping = PETSC_NULL;
 		vMapping = PETSC_NULL;
 		wMapping = PETSC_NULL;
@@ -170,9 +170,9 @@ public:
 		{
 			ierr = VecDestroy(&rn); CHKERRV(ierr);
 		}
-		if(!M)
+		if(!MHat)
 		{
-			ierr = VecDestroy(&M); CHKERRV(ierr);
+			ierr = VecDestroy(&MHat); CHKERRV(ierr);
 		}
 		if(!RInv)
 		{

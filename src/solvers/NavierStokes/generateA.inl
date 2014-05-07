@@ -30,7 +30,7 @@ void getColumns(PetscReal ***globalIndices, PetscInt i, PetscInt j, PetscInt k, 
 
 void getCoefficients(PetscReal dxMinus, PetscReal dxPlus, PetscReal dyMinus, PetscReal dyPlus, PetscReal *values)
 {
-	values[0] = 2.0/dxMinus/dxPlus + 2.0/dyMinus/dyPlus;
+	values[0] = -(2.0/dxMinus/dxPlus + 2.0/dyMinus/dyPlus);
 	values[1] = 2.0/dxMinus/(dxMinus + dxPlus);
 	values[2] = 2.0/ dxPlus/(dxMinus + dxPlus);
 	values[3] = 2.0/dyMinus/(dyMinus + dyPlus);
@@ -40,7 +40,7 @@ void getCoefficients(PetscReal dxMinus, PetscReal dxPlus, PetscReal dyMinus, Pet
 void getCoefficients(PetscReal dxMinus, PetscReal dxPlus, PetscReal dyMinus, PetscReal dyPlus, PetscReal dzMinus, PetscReal dzPlus, PetscReal *values)
 {
 	getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, values);	
-	values[0] += 2.0/dzMinus/dzPlus;
+	values[0] += (-2.0/dzMinus/dzPlus);
 	values[5] = 2.0/dzMinus/(dzMinus + dzPlus);
 	values[6] = 2.0/ dzPlus/(dzMinus + dzPlus);
 }
@@ -135,6 +135,8 @@ void NavierStokesSolver<2>::generateA()
 
 	ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 	ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
+
+	ierr = MatDiagonalScale(A, MHat, RInv);
 
 	ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
 }

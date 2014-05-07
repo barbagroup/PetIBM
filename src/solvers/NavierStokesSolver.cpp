@@ -34,7 +34,7 @@ void NavierStokesSolver<dim>::initialise()
 	initialiseFluxes();
 	updateBoundaryGhosts();
 
-	generateMAndRInv();
+	generateDiagonalMatrices();
 	generateA();
 }
 
@@ -62,7 +62,7 @@ bool NavierStokesSolver<dim>::finished()
 #include "NavierStokes/initialiseFluxes.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
 #include "NavierStokes/calculateExplicitTerms.inl"
-#include "NavierStokes/generateMAndRInv.inl"
+#include "NavierStokes/generateDiagonalMatrices.inl"
 #include "NavierStokes/generateA.inl"
 
 template class NavierStokesSolver<2>;

@@ -41,6 +41,8 @@ void NavierStokesSolver<dim>::initialise()
 template <PetscInt dim>
 void NavierStokesSolver<dim>::stepTime()
 {
+	//updateBoundaryGhosts();
+	//generateBC1();
 	timeStep++;
 }
 
@@ -64,6 +66,7 @@ bool NavierStokesSolver<dim>::finished()
 #include "NavierStokes/calculateExplicitTerms.inl"
 #include "NavierStokes/generateDiagonalMatrices.inl"
 #include "NavierStokes/generateA.inl"
+#include "NavierStokes/generateBC1.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

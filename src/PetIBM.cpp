@@ -1,9 +1,10 @@
 #include "FlowDescription.h"
 #include "CartesianMesh.h"
 #include "SimulationParameters.h"
-#include "NavierStokesSolver.h"
+#include "createSolver.h"
 #include <petscsys.h>
 #include <string>
+#include <memory>
 
 int main(int argc,char **argv)
 {
@@ -19,20 +20,18 @@ int main(int argc,char **argv)
 	FlowDescription         FD(folder+"/flowDescription.yaml");
 	CartesianMesh           CM(folder+"/cartesianMesh.yaml");
 	SimulationParameters    SP(folder+"/simulationParameters.yaml");
-	NavierStokesSolver<dim> *solver = NULL;
 	
-	solver = NavierStokesSolver<dim>::createSolver(&FD, &SP, &CM);
+	std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&FD, &SP, &CM);
 	
 	solver->initialise();
 	
 	while(!solver->finished())
 	{
 		solver->stepTime();
-		solver->writeData();
 	}
-	
-	if(!solver)
-		delete solver;
+	solver->writeData();
+	solver->finalise();
+
 	ierr = PetscFinalize(); CHKERRQ(ierr);
 	return 0;
 }

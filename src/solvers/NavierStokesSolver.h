@@ -66,12 +66,10 @@ protected:
 	
 public:
 	void initialise();
+	void finalise();
 	void stepTime();
 	void writeData();
 	bool finished();
-	
-	// Factory methods are static (not entirely sure why)
-	static NavierStokesSolver<dim>* createSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM);
 	
 	/**
 	* @brief Give the name of the current solver 
@@ -82,7 +80,7 @@ public:
 		return "Navier-Stokes";
 	}
 	
-	NavierStokesSolver(FlowDescription *FD=NULL, SimulationParameters *SP=NULL, CartesianMesh *CM=NULL)
+	NavierStokesSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
 	{
 		timeStep = 0;
 		// classes
@@ -96,110 +94,26 @@ public:
 		wda  = PETSC_NULL;
 		pack = PETSC_NULL;
 		// Vecs
-		qxLocal = PETSC_NULL;
-		qyLocal = PETSC_NULL;
-		qzLocal = PETSC_NULL;
-		q       = PETSC_NULL;
-		qStar   = PETSC_NULL;
-		H       = PETSC_NULL;
-		rn      = PETSC_NULL;
-		bc1     = PETSC_NULL;
-		rhs1    = PETSC_NULL;
-		RInv    = PETSC_NULL;
-		MHat	    = PETSC_NULL;
+		qxLocal  = PETSC_NULL;
+		qyLocal  = PETSC_NULL;
+		qzLocal  = PETSC_NULL;
+		q        = PETSC_NULL;
+		qStar    = PETSC_NULL;
+		H        = PETSC_NULL;
+		rn       = PETSC_NULL;
+		bc1      = PETSC_NULL;
+		rhs1     = PETSC_NULL;
+		RInv     = PETSC_NULL;
+		MHat	 = PETSC_NULL;
+		BN       = PETSC_NULL;
 		uMapping = PETSC_NULL;
 		vMapping = PETSC_NULL;
 		wMapping = PETSC_NULL;
 		// Mats
 		A       = PETSC_NULL;
-		BN      = PETSC_NULL;
 		QT      = PETSC_NULL;
 		BNQ     = PETSC_NULL;
 		QTBNQ   = PETSC_NULL;
-	}
-	virtual ~NavierStokesSolver()
-	{
-		PetscErrorCode ierr;
-		// DMs
-		if(!pda)
-		{
-			ierr = DMDestroy(&pda); CHKERRV(ierr);
-		}
-		if(!uda)
-		{
-			ierr = DMDestroy(&uda); CHKERRV(ierr);
-		}
-		if(!vda)
-		{
-			ierr = DMDestroy(&vda); CHKERRV(ierr);
-		}
-		if(!wda)
-		{
-			ierr = DMDestroy(&wda); CHKERRV(ierr);
-		}
-		if(!pack)
-		{
-			ierr = DMDestroy(&pack); CHKERRV(ierr);
-		}
-		// Vecs
-		if(!q)
-		{
-			ierr = VecDestroy(&q); CHKERRV(ierr);
-		}
-		if(!qStar)
-		{
-			ierr = VecDestroy(&qStar); CHKERRV(ierr);
-		}
-		if(!qxLocal)
-		{
-			ierr = VecDestroy(&qxLocal); CHKERRV(ierr);
-		}
-		if(!qyLocal)
-		{
-			ierr = VecDestroy(&qyLocal); CHKERRV(ierr);
-		}
-		if(!qzLocal)
-		{
-			ierr = VecDestroy(&qzLocal); CHKERRV(ierr);
-		}
-		if(!H)
-		{
-			ierr = VecDestroy(&H); CHKERRV(ierr);
-		}
-		if(!rn)
-		{
-			ierr = VecDestroy(&rn); CHKERRV(ierr);
-		}
-		if(!MHat)
-		{
-			ierr = VecDestroy(&MHat); CHKERRV(ierr);
-		}
-		if(!RInv)
-		{
-			ierr = VecDestroy(&RInv); CHKERRV(ierr);
-		}
-		if(!BN)
-		{
-			ierr = VecDestroy(&BN); CHKERRV(ierr);
-		}
-		if(!uMapping)
-		{
-			ierr = VecDestroy(&uMapping); CHKERRV(ierr);
-		}
-		if(!vMapping)
-		{
-			ierr = VecDestroy(&vMapping); CHKERRV(ierr);
-		}
-		if(!wMapping)
-		{
-			ierr = VecDestroy(&wMapping); CHKERRV(ierr);
-		}
-		if(!flowDesc)
-			delete flowDesc;
-		if(!simParams)
-			delete simParams;
-		if(!mesh)
-			delete mesh;
 	}
 };
 

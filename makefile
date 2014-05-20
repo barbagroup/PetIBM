@@ -10,6 +10,7 @@ include ${PETSC_DIR}/conf/variables
 include ${PETSC_DIR}/conf/rules
 
 PETSC_CC_INCLUDES += -I./src/include -I./src/solvers
+PCC_FLAGS += -std=c++0x -Wextra -pedantic
 
 bin/PetIBM: ${OBJ} ${LIBS}
 	${CLINKER} $^ -o $@ ${PETSC_SYS_LIB}
@@ -30,7 +31,7 @@ check4:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
 
 memcheck:
-	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/test
+	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/memtest
 
 vars:
 	@echo CLINKER: ${CLINKER}
@@ -39,6 +40,7 @@ vars:
 	@echo PCC_LINKER_FLAGS: ${PCC_LINKER_FLAGS}
 	@echo CFLAGS: ${CFLAGS}
 	@echo CC_FLAGS: ${CC_FLAGS}
+	@echo PCC_FLAGS: ${PCC_FLAGS}
 	@echo CPPFLAGS: ${CPPFLAGS}
 	@echo CPP_FLAGS: ${CPP_FLAGS}
 	@echo CCPPFLAGS: ${CCPPFLAGS}

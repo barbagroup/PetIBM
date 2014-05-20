@@ -3,30 +3,9 @@
 #include <iostream>
 #include <string>
 
-// this factory pattern causes a memory leak. Try to fix it later
-template <PetscInt dim>
-NavierStokesSolver<dim>* NavierStokesSolver<dim>::createSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
-{
-	NavierStokesSolver<dim> *solver = NULL;
-	switch(SP->solverType)
-	{
-		case NAVIER_STOKES:
-			solver = new NavierStokesSolver<dim>(FD, SP, CM);
-			break;
-		default:
-			std::cout << "Unrecognised solver!\n";
-	}
-	
-	PetscPrintf(PETSC_COMM_WORLD, "Solver type selected: %s\n", solver->name().c_str());
-	PetscPrintf(PETSC_COMM_WORLD, "gamma: %f, zeta: %f, alphaExplicit: %f, alphaImplicit: %f\n", solver->simParams->gamma, solver->simParams->zeta, solver->simParams->alphaExplicit, solver->simParams->alphaImplicit);
-	
-	return solver;
-}
-
 template <PetscInt dim>
 void NavierStokesSolver<dim>::initialise()
 {
-	// Initialise fluxes
 	createDMs();
 	createVecs();
 	createLocalToGlobalMappings();
@@ -39,10 +18,55 @@ void NavierStokesSolver<dim>::initialise()
 }
 
 template <PetscInt dim>
+void NavierStokesSolver<dim>::finalise()
+{
+	PetscErrorCode ierr;
+	
+	// DMs
+	if(pda!=PETSC_NULL) {ierr = DMDestroy(&pda); CHKERRV(ierr);}
+	if(uda!=PETSC_NULL) {ierr = DMDestroy(&uda); CHKERRV(ierr);}
+	if(vda!=PETSC_NULL) {ierr = DMDestroy(&vda); CHKERRV(ierr);}
+	if(wda!=PETSC_NULL) {ierr = DMDestroy(&wda); CHKERRV(ierr);}
+	if(pack!=PETSC_NULL){ierr = DMDestroy(&pack); CHKERRV(ierr);}
+	
+	// Vecs
+	if(q!=PETSC_NULL)    {ierr = VecDestroy(&q); CHKERRV(ierr);}
+	if(qStar!=PETSC_NULL){ierr = VecDestroy(&qStar); CHKERRV(ierr);}
+	
+	if(qxLocal!=PETSC_NULL){ierr = VecDestroy(&qxLocal); CHKERRV(ierr);}
+	if(qyLocal!=PETSC_NULL){ierr = VecDestroy(&qyLocal); CHKERRV(ierr);}
+	if(qzLocal!=PETSC_NULL){ierr = VecDestroy(&qzLocal); CHKERRV(ierr);}
+
+	if(H!=PETSC_NULL)   {ierr = VecDestroy(&H); CHKERRV(ierr);}
+	if(rn!=PETSC_NULL)  {ierr = VecDestroy(&rn); CHKERRV(ierr);}
+	if(bc1!=PETSC_NULL) {ierr = VecDestroy(&bc1); CHKERRV(ierr);}
+	if(rhs1!=PETSC_NULL){ierr = VecDestroy(&rhs1); CHKERRV(ierr);}
+
+	if(uMapping!=PETSC_NULL){ierr = VecDestroy(&uMapping); CHKERRV(ierr);}
+	if(vMapping!=PETSC_NULL){ierr = VecDestroy(&vMapping); CHKERRV(ierr);}
+	if(wMapping!=PETSC_NULL){ierr = VecDestroy(&wMapping); CHKERRV(ierr);}
+
+	if(MHat!=PETSC_NULL){ierr = VecDestroy(&MHat); CHKERRV(ierr);}
+	if(RInv!=PETSC_NULL){ierr = VecDestroy(&RInv); CHKERRV(ierr);}
+	if(BN!=PETSC_NULL)  {ierr = VecDestroy(&BN); CHKERRV(ierr);}
+
+	// Mats
+	if(A!=PETSC_NULL)    {ierr = MatDestroy(&A); CHKERRV(ierr);}
+	if(QT!=PETSC_NULL)   {ierr = MatDestroy(&QT); CHKERRV(ierr);}
+	if(BNQ!=PETSC_NULL)  {ierr = MatDestroy(&BNQ); CHKERRV(ierr);}
+	if(QTBNQ!=PETSC_NULL){ierr = MatDestroy(&QTBNQ); CHKERRV(ierr);}
+}
+
+template <PetscInt dim>
+void NavierStokesSolver<dim>::generateRHS1()
+{
+	PetscErrorCode ierr;
+	ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRV(ierr);
+}
+
+template <PetscInt dim>
 void NavierStokesSolver<dim>::stepTime()
 {
-	//updateBoundaryGhosts();
-	//generateBC1();
 	timeStep++;
 }
 

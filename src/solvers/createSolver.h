@@ -1,7 +1,7 @@
 #if !defined(CREATE_SOLVER_H)
 #define CREATE_SOLVER_H
 
-#include <NavierStokesSolver.h>
+#include "NavierStokesSolver.h"
 #include <memory>
 
 template <PetscInt dim>

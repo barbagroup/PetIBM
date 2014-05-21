@@ -29,7 +29,7 @@ int main(int argc,char **argv)
 	{
 		solver->stepTime();
 	}
-	solver->writeData();
+	solver->writeData(folder);
 	solver->finalise();
 
 	ierr = PetscFinalize(); CHKERRQ(ierr);

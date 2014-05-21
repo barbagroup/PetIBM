@@ -64,7 +64,7 @@ SimulationParameters::SimulationParameters(std::string fileName)
 				break;
 			case ADAMS_BASHFORTH_2:
 				gamma = 1.5;
-				zeta  = 0.5;
+				zeta  = -0.5;
 				break;
 			default:
 				gamma = 1.0;
@@ -80,6 +80,7 @@ SimulationParameters::SimulationParameters(std::string fileName)
 			case EULER_IMPLICIT:
 				alphaExplicit = 0.0;
 				alphaImplicit = 1.0;
+				break;
 			case CRANK_NICOLSON:
 				alphaExplicit = 0.5;
 				alphaImplicit = 0.5;
@@ -91,10 +92,16 @@ SimulationParameters::SimulationParameters(std::string fileName)
 		}
 		solverType = solverTypeFromString(solver);
 	}
+	//gamma = 0.0;
+	//zeta = 0.0;
 	MPI_Barrier(PETSC_COMM_WORLD);
 	
 	// broadcast parameters to all processes
 	MPI_Bcast(&dt, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&nt, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&gamma, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&zeta, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&alphaExplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&alphaImplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 }

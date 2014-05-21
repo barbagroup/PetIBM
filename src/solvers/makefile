@@ -6,8 +6,10 @@ CLEANFILES = ${OBJ}
 include ${PETSC_DIR}/conf/variables
 include ${PETSC_DIR}/conf/rules
 
+-include ${OBJ:.o=.d}
+
 PETSC_CC_INCLUDES += -I../../external/yaml-cpp/include -I../include
-PCC_FLAGS += -std=c++0x -Wextra -pedantic
+PCC_FLAGS += -std=c++0x -Wextra -pedantic -MMD
 
 libsolvers.a: ${OBJ}
 	${AR} ${ARFLAGS} $@ $^

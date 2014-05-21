@@ -27,7 +27,7 @@ lib/libsolvers.a:
 check:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/test
 
-check4:
+cavity:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
 
 memcheck:

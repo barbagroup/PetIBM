@@ -56,6 +56,9 @@ void NavierStokesSolver<2>::generateA()
 	PetscInt       qStart, qEnd, qLocalSize;
 	PetscInt       *d_nnz, *o_nnz;
 	PetscInt       localIdx;
+	PetscReal      dt = simParams->dt,
+	               nu = flowDesc->nu,
+	               alphaImplicit = simParams->alphaImplicit;
 
 	// ownership range of q
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
@@ -136,9 +139,12 @@ void NavierStokesSolver<2>::generateA()
 	ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 	ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 
+	ierr = MatScale(A, nu*alphaImplicit); CHKERRV(ierr);
+	ierr = MatShift(A, -1.0/dt); CHKERRV(ierr);
+	ierr = MatScale(A, -1.0); CHKERRV(ierr);
 	ierr = MatDiagonalScale(A, MHat, RInv);
 
-	ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
+	//ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
 }
 
 template <>
@@ -152,6 +158,9 @@ void NavierStokesSolver<3>::generateA()
 	PetscInt       qStart, qEnd, qLocalSize;
 	PetscInt       *d_nnz, *o_nnz;
 	PetscInt       localIdx;
+	PetscReal      dt = simParams->dt,
+	               nu = flowDesc->nu,
+	               alphaImplicit = simParams->alphaImplicit;
 
 	// ownership range of q
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
@@ -276,5 +285,10 @@ void NavierStokesSolver<3>::generateA()
 	ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 	ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 
-	ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
+	ierr = MatScale(A, nu*alphaImplicit); CHKERRV(ierr);
+	ierr = MatShift(A, -1.0/dt); CHKERRV(ierr);
+	ierr = MatScale(A, -1.0); CHKERRV(ierr);
+	ierr = MatDiagonalScale(A, MHat, RInv);
+
+	//ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
 }

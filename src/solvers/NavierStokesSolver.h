@@ -54,6 +54,7 @@ protected:
 
 	void createDMs();
 	void createVecs();
+	void createKSPs();
 	void initialiseMeshSpacings();
 	void initialiseFluxes();
 	void createLocalToGlobalMappings();
@@ -63,12 +64,14 @@ protected:
 	void calculateExplicitTerms();
 	void generateBC1();
 	void generateRHS1();
+	void solveIntermediateVelocity();
+	void projectionStep();
 	
 public:
 	void initialise();
 	void finalise();
 	void stepTime();
-	void writeData();
+	void writeData(std::string caseFolder);
 	bool finished();
 	
 	/**
@@ -114,6 +117,9 @@ public:
 		QT      = PETSC_NULL;
 		BNQ     = PETSC_NULL;
 		QTBNQ   = PETSC_NULL;
+		//KSPs
+		ksp1 = PETSC_NULL;
+		ksp2 = PETSC_NULL;
 	}
 };
 

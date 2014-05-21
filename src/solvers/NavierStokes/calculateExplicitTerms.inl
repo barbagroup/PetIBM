@@ -18,6 +18,7 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 	PetscReal      uNorth, uEast, uWest, uSouth;
 	PetscReal      vNorth, vEast, vWest, vSouth;
 	PetscReal      convectionTerm, diffusionTerm;
+	PetscReal      nu = flowDesc->nu;
 	PetscReal      alphaExplicit = simParams->alphaExplicit,
 	               gamma = simParams->gamma,
 	               zeta  = simParams->zeta;
@@ -63,10 +64,9 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 			uSouth = (j > 0)?   qx[j-1][i]/mesh->dy[j-1] : (flowDesc->bc[0][YMINUS].type!=PERIODIC)? qx[j-1][i] : qx[j-1][i]/mesh->dy[mesh->ny-1];
 			uNorth = (j < N-1)? qx[j+1][i]/mesh->dy[j+1] : (flowDesc->bc[0][YPLUS].type !=PERIODIC)? qx[j+1][i] : qx[j+1][i]/mesh->dy[0];
 			// Dx = d^2(u)/dx^2 + d^2(u)/dy^2
-			diffusionTerm = alphaExplicit*(   du2dx2(uWest,  u, uEast,  dxU[i], dxU[i+1])
-			                                + du2dx2(uSouth, u, uNorth, dyU[j], dyU[j+1])
-			                              );
-			
+			diffusionTerm = alphaExplicit*nu*(   du2dx2(uWest,  u, uEast,  dxU[i], dxU[i+1])
+			                                   + du2dx2(uSouth, u, uNorth, dyU[j], dyU[j+1])
+			                                 );
 			rx[j][i] = (u/dt - convectionTerm + diffusionTerm);
 		}
 	}
@@ -106,9 +106,9 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 			vWest  = (i > 0)?   qy[j][i-1]/mesh->dx[i-1] : (flowDesc->bc[1][XMINUS].type!=PERIODIC)? qy[j][i-1] : qy[j][i-1]/mesh->dx[mesh->nx-1];
 			vEast  = (i < M-1)? qy[j][i+1]/mesh->dx[i+1] : (flowDesc->bc[1][XPLUS].type !=PERIODIC)? qy[j][i+1] : qy[j][i+1]/mesh->dx[0];
 			// Dy = d^2(v)/dx^2 + d^2(v)/dy^2
-			diffusionTerm = alphaExplicit*(   du2dx2(vWest,  v, vEast,  dxV[i], dxV[i+1])
-			                                + du2dx2(vSouth, v, vNorth, dyV[j], dyV[j+1])
-			                              );
+			diffusionTerm = alphaExplicit*nu*(   du2dx2(vWest,  v, vEast,  dxV[i], dxV[i+1])
+			                                   + du2dx2(vSouth, v, vNorth, dyV[j], dyV[j+1])
+			                                 );
 			
 			ry[j][i] = (v/dt - convectionTerm + diffusionTerm);
 		}
@@ -137,6 +137,7 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 	PetscReal      vNorth, vEast, vWest, vSouth, vNadir, vZenith;
 	PetscReal      wNorth, wEast, wWest, wSouth, wNadir, wZenith;
 	PetscReal      convectionTerm, diffusionTerm;
+	PetscReal      nu = flowDesc->nu;
 	PetscReal      alphaExplicit = simParams->alphaExplicit,
 	               gamma = simParams->gamma,
 	               zeta  = simParams->zeta;
@@ -197,10 +198,10 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 				uNadir  = (k < 0)?   qx[k-1][j][i]/(mesh->dy[j]*mesh->dz[k-1]) : (flowDesc->bc[0][ZMINUS].type!=PERIODIC)? qx[k-1][j][i] : qx[k-1][j][i]/(mesh->dy[j]*mesh->dz[mesh->nz-1]);
 				uZenith = (k > P-1)? qx[k+1][j][i]/(mesh->dy[j]*mesh->dz[k+1]) : (flowDesc->bc[0][ZPLUS].type !=PERIODIC)? qx[k+1][j][i] : qx[k+1][j][i]/(mesh->dy[j]*mesh->dz[0]);
 				// Dx = d^2(u)/dx^2 + d^2(u)/dy^2 + d^2(u)/dz^2
-				diffusionTerm = alphaExplicit*(   du2dx2(uWest,  u, uEast,   dxU[i], dxU[i+1])
-				                                + du2dx2(uSouth, u, uNorth,  dyU[j], dyU[j+1])
-				                                + du2dx2(uNadir, u, uZenith, dzU[k], dzU[k+1])
-				                              );
+				diffusionTerm = alphaExplicit*nu*(   du2dx2(uWest,  u, uEast,   dxU[i], dxU[i+1])
+				                                   + du2dx2(uSouth, u, uNorth,  dyU[j], dyU[j+1])
+				                                   + du2dx2(uNadir, u, uZenith, dzU[k], dzU[k+1])
+				                                 );
 				
 				rx[k][j][i] = (u/dt - convectionTerm + diffusionTerm);
 			}
@@ -256,10 +257,10 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 				vNadir  = (k < 0)?   qy[k-1][j][i]/(mesh->dz[k-1]*mesh->dx[i]) : (flowDesc->bc[1][ZMINUS].type!=PERIODIC)? qy[k-1][j][i] : qy[k-1][j][i]/(mesh->dz[mesh->nz-1]*mesh->dx[i]);
 				vZenith = (k > P-1)? qy[k+1][j][i]/(mesh->dz[k+1]*mesh->dx[i]) : (flowDesc->bc[1][ZPLUS].type !=PERIODIC)? qy[k+1][j][i] : qy[k+1][j][i]/(mesh->dz[0]*mesh->dx[i]);
 				// Dy = d^2(v)/dx^2 + d^2(v)/dy^2 + d^2(v)/dz^2
-				diffusionTerm = alphaExplicit*(   du2dx2(vWest,  v, vEast,   dxV[i], dxV[i+1])
-				                                + du2dx2(vSouth, v, vNorth,  dyV[j], dyV[j+1])
-				                                + du2dx2(vNadir, v, vZenith, dzV[k], dzV[k+1])
-				                              );
+				diffusionTerm = alphaExplicit*nu*(   du2dx2(vWest,  v, vEast,   dxV[i], dxV[i+1])
+				                                   + du2dx2(vSouth, v, vNorth,  dyV[j], dyV[j+1])
+				                                   + du2dx2(vNadir, v, vZenith, dzV[k], dzV[k+1])
+				                                 );
 				
 				ry[k][j][i] = (v/dt - convectionTerm + diffusionTerm);
 			}
@@ -315,10 +316,10 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 				wNadir  = qz[k-1][j][i]/(mesh->dx[i]*mesh->dy[j]);
 				wZenith = qz[k+1][j][i]/(mesh->dx[i]*mesh->dy[j]);
 				// Dz = d^2(w)/dx^2 + d^2(w)/dy^2 + d^2(w)/dz^2
-				diffusionTerm = alphaExplicit*(   du2dx2(wWest,  w, wEast,   dxW[i], dxW[i+1])
-				                                + du2dx2(wSouth, w, wNorth,  dyW[j], dyW[j+1])
-				                                + du2dx2(wNadir, w, wZenith, dzW[k], dzW[k+1])
-				                              );
+				diffusionTerm = alphaExplicit*nu*(   du2dx2(wWest,  w, wEast,   dxW[i], dxW[i+1])
+				                                   + du2dx2(wSouth, w, wNorth,  dyW[j], dyW[j+1])
+				                                   + du2dx2(wNadir, w, wZenith, dzW[k], dzW[k+1])
+				                                 );
 				
 				rz[k][j][i] = (v/dt - convectionTerm + diffusionTerm);
 			}

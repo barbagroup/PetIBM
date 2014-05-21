@@ -1,5 +1,6 @@
 #include "NavierStokesSolver.h"
 #include <petscsys.h>
+#include <petscdmcomposite.h>
 #include <iostream>
 #include <string>
 
@@ -15,6 +16,7 @@ void NavierStokesSolver<dim>::initialise()
 
 	generateDiagonalMatrices();
 	generateA();
+	createKSPs();
 }
 
 template <PetscInt dim>
@@ -55,6 +57,10 @@ void NavierStokesSolver<dim>::finalise()
 	if(QT!=PETSC_NULL)   {ierr = MatDestroy(&QT); CHKERRV(ierr);}
 	if(BNQ!=PETSC_NULL)  {ierr = MatDestroy(&BNQ); CHKERRV(ierr);}
 	if(QTBNQ!=PETSC_NULL){ierr = MatDestroy(&QTBNQ); CHKERRV(ierr);}
+
+	// KSPs
+	if(ksp1!=PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRV(ierr);}
+	if(ksp2!=PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRV(ierr);}
 }
 
 template <PetscInt dim>
@@ -62,17 +68,46 @@ void NavierStokesSolver<dim>::generateRHS1()
 {
 	PetscErrorCode ierr;
 	ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRV(ierr);
+	ierr = VecPointwiseMult(rhs1, MHat, rhs1);
 }
 
 template <PetscInt dim>
 void NavierStokesSolver<dim>::stepTime()
 {
+	calculateExplicitTerms();
+	updateBoundaryGhosts();
+	generateBC1();
+	generateRHS1();
+	solveIntermediateVelocity();
+	projectionStep();
 	timeStep++;
 }
 
 template <PetscInt dim>
-void NavierStokesSolver<dim>::writeData()
+void NavierStokesSolver<dim>::solveIntermediateVelocity()
 {
+	PetscErrorCode ierr;
+	ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRV(ierr);
+}
+
+template <>
+void NavierStokesSolver<2>::projectionStep()
+{
+	PetscErrorCode ierr;
+	ierr = VecCopy(qStar, q); CHKERRV(ierr);
+	
+	// copy fluxes to local vectors
+	ierr = DMCompositeScatter(pack, q, qxLocal, qyLocal); CHKERRV(ierr);
+}
+
+template <>
+void NavierStokesSolver<3>::projectionStep()
+{
+	PetscErrorCode ierr;
+	ierr = VecCopy(qStar, q); CHKERRV(ierr);
+	
+	// copy fluxes to local vectors
+	ierr = DMCompositeScatter(pack, q, qxLocal, qyLocal, qzLocal); CHKERRV(ierr);
 }
 
 template <PetscInt dim>
@@ -83,6 +118,7 @@ bool NavierStokesSolver<dim>::finished()
 
 #include "NavierStokes/createDMs.inl"
 #include "NavierStokes/createVecs.inl"
+#include "NavierStokes/createKSPs.inl"
 #include "NavierStokes/createLocalToGlobalMappings.inl"
 #include "NavierStokes/initialiseMeshSpacings.inl"
 #include "NavierStokes/initialiseFluxes.inl"
@@ -91,6 +127,7 @@ bool NavierStokesSolver<dim>::finished()
 #include "NavierStokes/generateDiagonalMatrices.inl"
 #include "NavierStokes/generateA.inl"
 #include "NavierStokes/generateBC1.inl"
+#include "NavierStokes/writeData.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

@@ -5,7 +5,7 @@
   nsave: 1
   restart: false
   startStep: 0
-  timeScheme: [ADAMS_BASHFORTH_2, CRANK_NICOLSON]
+  timeScheme: [ADAMS_BASHFORTH_2, EULER_IMPLICIT]
   ibmScheme: NAVIER_STOKES
   linearSolvers:
     - system: velocity

@@ -1,13 +1,3 @@
-void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
-{
-	d_nnz = 0;
-	o_nnz = 0;
-	for(size_t i=0; i<numCols; i++)
-	{
-		(cols[i]>=rowStart && cols[i]<rowEnd)? d_nnz++ : o_nnz++;
-	}
-}
-
 void getColumns(PetscReal **globalIndices, PetscInt i, PetscInt j, PetscInt *cols)
 {
 	cols[0] = globalIndices[j][i];
@@ -288,7 +278,7 @@ void NavierStokesSolver<3>::generateA()
 	ierr = MatScale(A, nu*alphaImplicit); CHKERRV(ierr);
 	ierr = MatShift(A, -1.0/dt); CHKERRV(ierr);
 	ierr = MatScale(A, -1.0); CHKERRV(ierr);
-	ierr = MatDiagonalScale(A, MHat, RInv);
+	ierr = MatDiagonalScale(A, MHat, RInv); CHKERRV(ierr);
 
 	//ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
 }

@@ -11,7 +11,7 @@ void NavierStokesSolver<2>::generateBC1()
 	PetscReal      coeffMinus = 0.0, coeffPlus = 0.0;
 
 	ierr = VecSet(bc1, 0.0); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(pack, bc1,  &bc1xGlobal, &bc1yGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, bc1,  &bc1xGlobal, &bc1yGlobal); CHKERRV(ierr);
 	               
 	// U-FLUXES
 	ierr = DMDAVecGetArray(uda, bc1xGlobal, &bc1x); CHKERRV(ierr);
@@ -150,7 +150,7 @@ void NavierStokesSolver<2>::generateBC1()
 	ierr = DMDAVecRestoreArray(vda, bc1yGlobal, &bc1y); CHKERRV(ierr);
 	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
 
-	ierr = DMCompositeRestoreAccess(pack, bc1,  &bc1xGlobal, &bc1yGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, bc1,  &bc1xGlobal, &bc1yGlobal); CHKERRV(ierr);
 }
 
 template <>

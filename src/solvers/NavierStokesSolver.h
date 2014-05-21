@@ -30,16 +30,17 @@ protected:
 	    uda,
 	    vda,
 	    wda,
-	    pack;
+	    qPack,
+	    phiPack;
 	
 	Vec qxLocal,
 	    qyLocal,
 	    qzLocal;
 
-	Vec globalIndices,
-	    uMapping,
+	Vec uMapping,
 	    vMapping,
-	    wMapping;
+	    wMapping,
+	    pMapping;
 
 	Vec H, rn;
 	Vec RInv, MHat;
@@ -57,13 +58,15 @@ protected:
 	void createKSPs();
 	void initialiseMeshSpacings();
 	void initialiseFluxes();
-	void createLocalToGlobalMappings();
+	void createLocalToGlobalMappingsFluxes();
+	void createLocalToGlobalMappingsPhi();
 	void updateBoundaryGhosts();
 	void generateDiagonalMatrices();
 	void generateA();
 	void calculateExplicitTerms();
 	void generateBC1();
 	void generateRHS1();
+	void generateBNQ();
 	void solveIntermediateVelocity();
 	void projectionStep();
 	
@@ -91,11 +94,12 @@ public:
 		simParams = SP;
 		mesh      = CM;
 		// DMs
-		pda  = PETSC_NULL;
-		uda  = PETSC_NULL;
-		vda  = PETSC_NULL;
-		wda  = PETSC_NULL;
-		pack = PETSC_NULL;
+		pda = PETSC_NULL;
+		uda = PETSC_NULL;
+		vda = PETSC_NULL;
+		wda = PETSC_NULL;
+		qPack   = PETSC_NULL;
+		phiPack = PETSC_NULL;
 		// Vecs
 		qxLocal  = PETSC_NULL;
 		qyLocal  = PETSC_NULL;
@@ -109,6 +113,7 @@ public:
 		RInv     = PETSC_NULL;
 		MHat	 = PETSC_NULL;
 		BN       = PETSC_NULL;
+		pMapping = PETSC_NULL;
 		uMapping = PETSC_NULL;
 		vMapping = PETSC_NULL;
 		wMapping = PETSC_NULL;

@@ -24,8 +24,8 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 	               zeta  = simParams->zeta;
 	PetscReal      dt = simParams->dt;
 	
-	ierr = DMCompositeGetAccess(pack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(pack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
 	
 	// access local vectors through multi-dimensional pointers
 	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
@@ -119,8 +119,8 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRV(ierr);
 	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
 	
-	ierr = DMCompositeRestoreAccess(pack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
-	ierr = DMCompositeRestoreAccess(pack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
 }
 
 template<>
@@ -143,8 +143,8 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 	               zeta  = simParams->zeta;
 	PetscReal      dt = simParams->dt;
 	
-	ierr = DMCompositeGetAccess(pack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(pack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
 	
 	// access local vectors through multi-dimensional pointers
 	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
@@ -332,6 +332,6 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
 	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRV(ierr);
 	
-	ierr = DMCompositeRestoreAccess(pack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
-	ierr = DMCompositeRestoreAccess(pack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
 }

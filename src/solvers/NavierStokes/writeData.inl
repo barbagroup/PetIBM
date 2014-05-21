@@ -17,7 +17,7 @@ void NavierStokesSolver<2>::writeData(std::string caseFolder)
 	
 	mkdir(savePointDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	
-	ierr = DMCompositeGetAccess(pack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
 	
 	// print qx to file
 	ss.str("");
@@ -39,7 +39,7 @@ void NavierStokesSolver<2>::writeData(std::string caseFolder)
 
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRV(ierr);
 	
-	ierr = DMCompositeRestoreAccess(pack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
 }
 
 template <>
@@ -57,7 +57,7 @@ void NavierStokesSolver<3>::writeData(std::string caseFolder)
 	
 	mkdir(savePointDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	
-	ierr = DMCompositeGetAccess(pack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRV(ierr);
 	
 	// print qx to file
 	ss.str("");
@@ -88,5 +88,5 @@ void NavierStokesSolver<3>::writeData(std::string caseFolder)
 
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRV(ierr);
 	
-	ierr = DMCompositeRestoreAccess(pack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
 }

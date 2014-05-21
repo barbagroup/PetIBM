@@ -10,7 +10,7 @@ void NavierStokesSolver<2>::createVecs()
 	ierr = DMCreateLocalVector(vda, &qyLocal); CHKERRV(ierr);
 	
 	// global vectors
-	ierr = DMCreateGlobalVector(pack, &q); CHKERRV(ierr); // velocity fluxes
+	ierr = DMCreateGlobalVector(qPack, &q); CHKERRV(ierr); // velocity fluxes
 	ierr = VecDuplicate(q, &qStar);        CHKERRV(ierr); // intermediate velocity flux
 	ierr = VecDuplicate(q, &H);            CHKERRV(ierr); // convective term
 	ierr = VecDuplicate(q, &rn);           CHKERRV(ierr); // explicit terms
@@ -19,6 +19,8 @@ void NavierStokesSolver<2>::createVecs()
 	ierr = VecDuplicate(q, &MHat);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &RInv);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &BN);           CHKERRV(ierr); // 
+
+	ierr = DMCreateGlobalVector(phiPack, &phi); CHKERRV(ierr); // pressure
 }
 
 template <>
@@ -32,7 +34,7 @@ void NavierStokesSolver<3>::createVecs()
 	ierr = DMCreateLocalVector(wda, &qzLocal); CHKERRV(ierr);
 	
 	// global vectors
-	ierr = DMCreateGlobalVector(pack, &q); CHKERRV(ierr); // velocity fluxes
+	ierr = DMCreateGlobalVector(qPack, &q); CHKERRV(ierr); // velocity fluxes
 	ierr = VecDuplicate(q, &qStar);        CHKERRV(ierr); // intermediate velocity flux
 	ierr = VecDuplicate(q, &H);            CHKERRV(ierr); // convective term
 	ierr = VecDuplicate(q, &rn);           CHKERRV(ierr); // explicit terms
@@ -41,4 +43,6 @@ void NavierStokesSolver<3>::createVecs()
 	ierr = VecDuplicate(q, &MHat);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &RInv);         CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &BN);           CHKERRV(ierr); // 
+
+	ierr = DMCreateGlobalVector(phiPack, &phi); CHKERRV(ierr); // pressure
 }

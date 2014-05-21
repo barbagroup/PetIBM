@@ -49,7 +49,7 @@ protected:
 	Mat QT, BNQ;
 	Mat QTBNQ;
 	Vec BN;
-	Vec bc1, rhs1, rhs2;
+	Vec bc1, rhs1, r2, rhs2, temp;
 	Vec q, qStar, phi;
 	KSP ksp1, ksp2;
 
@@ -66,8 +66,12 @@ protected:
 	void calculateExplicitTerms();
 	void generateBC1();
 	void generateRHS1();
+	void generateR2();
+	void generateRHS2();
 	void generateBNQ();
+	void generateQTBNQ();
 	void solveIntermediateVelocity();
+	void solvePoissonSystem();
 	void projectionStep();
 	
 public:
@@ -110,6 +114,9 @@ public:
 		rn       = PETSC_NULL;
 		bc1      = PETSC_NULL;
 		rhs1     = PETSC_NULL;
+		r2       = PETSC_NULL;
+		rhs2     = PETSC_NULL;
+		temp     = PETSC_NULL;
 		RInv     = PETSC_NULL;
 		MHat	 = PETSC_NULL;
 		BN       = PETSC_NULL;

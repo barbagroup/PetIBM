@@ -18,6 +18,7 @@ void NavierStokesSolver<dim>::initialise()
 	generateDiagonalMatrices();
 	generateA();
 	generateBNQ();
+	generateQTBNQ();
 	createKSPs();
 }
 
@@ -46,7 +47,10 @@ void NavierStokesSolver<dim>::finalise()
 	if(rn!=PETSC_NULL)  {ierr = VecDestroy(&rn); CHKERRV(ierr);}
 	if(bc1!=PETSC_NULL) {ierr = VecDestroy(&bc1); CHKERRV(ierr);}
 	if(rhs1!=PETSC_NULL){ierr = VecDestroy(&rhs1); CHKERRV(ierr);}
+	if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRV(ierr);}
 	if(phi!=PETSC_NULL) {ierr = VecDestroy(&phi); CHKERRV(ierr);}
+	if(r2!=PETSC_NULL)  {ierr = VecDestroy(&r2); CHKERRV(ierr);}
+	if(rhs2!=PETSC_NULL){ierr = VecDestroy(&rhs2); CHKERRV(ierr);}
 
 	if(uMapping!=PETSC_NULL){ierr = VecDestroy(&uMapping); CHKERRV(ierr);}
 	if(vMapping!=PETSC_NULL){ierr = VecDestroy(&vMapping); CHKERRV(ierr);}
@@ -77,6 +81,14 @@ void NavierStokesSolver<dim>::generateRHS1()
 }
 
 template <PetscInt dim>
+void NavierStokesSolver<dim>::generateRHS2()
+{
+	PetscErrorCode ierr;
+	ierr = VecScale(r2, -1.0); CHKERRV(ierr);
+	ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRV(ierr);
+}
+
+template <PetscInt dim>
 void NavierStokesSolver<dim>::stepTime()
 {
 	calculateExplicitTerms();
@@ -84,6 +96,9 @@ void NavierStokesSolver<dim>::stepTime()
 	generateBC1();
 	generateRHS1();
 	solveIntermediateVelocity();
+	generateR2();
+	generateRHS2();
+	solvePoissonSystem();
 	projectionStep();
 	timeStep++;
 }
@@ -95,30 +110,43 @@ void NavierStokesSolver<dim>::solveIntermediateVelocity()
 	ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRV(ierr);
 }
 
-template <>
-void NavierStokesSolver<2>::projectionStep()
+template <PetscInt dim>
+void NavierStokesSolver<dim>::solvePoissonSystem()
 {
 	PetscErrorCode ierr;
-	ierr = VecCopy(qStar, q); CHKERRV(ierr);
-	
-	// copy fluxes to local vectors
-	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRV(ierr);
+	ierr = KSPSolve(ksp2, rhs2, phi); CHKERRV(ierr);
 }
 
-template <>
-void NavierStokesSolver<3>::projectionStep()
+template <PetscInt dim>
+void NavierStokesSolver<dim>::projectionStep()
 {
 	PetscErrorCode ierr;
-	ierr = VecCopy(qStar, q); CHKERRV(ierr);
-	
-	// copy fluxes to local vectors
-	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRV(ierr);
+	ierr = MatMult(BNQ, phi, temp); CHKERRV(ierr);
+	ierr = VecWAXPY(q, -1.0, temp, qStar);
 }
 
 template <PetscInt dim>
 bool NavierStokesSolver<dim>::finished()
 {
 	return (timeStep < simParams->nt)? false : true;
+}
+
+template <PetscInt dim>
+void NavierStokesSolver<dim>::generateQTBNQ()
+{
+	PetscErrorCode ierr;
+	PetscInt       pStart, row=0, col=0;
+	PetscReal      value = 1.0;
+
+	ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRV(ierr);
+	
+	ierr = VecGetOwnershipRange(phi, &pStart, NULL); CHKERRV(ierr);
+	if(pStart==0)
+	{
+		ierr = MatSetValue(QTBNQ, row, col, value, ADD_VALUES); CHKERRV(ierr);
+	}
+	ierr = MatAssemblyBegin(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
+	ierr = MatAssemblyEnd(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 }
 
 void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
@@ -144,6 +172,7 @@ void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscIn
 #include "NavierStokes/generateA.inl"
 #include "NavierStokes/generateBC1.inl"
 #include "NavierStokes/generateBNQ.inl"
+#include "NavierStokes/generateR2.inl"
 #include "NavierStokes/writeData.inl"
 
 template class NavierStokesSolver<2>;

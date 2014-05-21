@@ -23,6 +23,9 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 	               gamma = simParams->gamma,
 	               zeta  = simParams->zeta;
 	PetscReal      dt = simParams->dt;
+
+	// copy fluxes to local vectors
+	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRV(ierr);
 	
 	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
 	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
@@ -142,6 +145,9 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 	               gamma = simParams->gamma,
 	               zeta  = simParams->zeta;
 	PetscReal      dt = simParams->dt;
+
+	// copy fluxes to local vectors
+	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRV(ierr);
 	
 	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
 	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);

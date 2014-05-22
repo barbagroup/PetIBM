@@ -55,6 +55,7 @@ void NavierStokesSolver<3>::createLocalToGlobalMappingsPhi()
 			for(i=mstart; i<mstart+m; i++)
 			{
 				lp[k][j][i] = localIdx;
+				localIdx++;
 			}
 		}
 	}

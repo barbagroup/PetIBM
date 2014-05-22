@@ -6,10 +6,10 @@ void NavierStokesSolver<2>::generateBNQ()
 	PetscInt       mstart, nstart, m, n;
 	PetscInt       *d_nnz, *o_nnz;
 	PetscInt       qStart, qEnd, phiStart, phiEnd, qLocalSize, phiLocalSize;
-	PetscInt       row, cols[2];
-	PetscReal      values[2];
 	PetscInt       localIdx;
 	PetscReal      **pGlobalIdx;
+	PetscInt       row, cols[2];
+	PetscReal      values[2] = {-1.0, 1.0};
 	
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
 	qLocalSize = qEnd-qStart;
@@ -73,8 +73,6 @@ void NavierStokesSolver<2>::generateBNQ()
 			row = localIdx + qStart;
 			cols[0] = pGlobalIdx[j][i];
 			cols[1] = pGlobalIdx[j][i+1];
-			values[0] = -1.0;
-			values[1] = 1.0;
 			ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
 			localIdx++;
 		}
@@ -88,8 +86,6 @@ void NavierStokesSolver<2>::generateBNQ()
 			row = localIdx + qStart;
 			cols[0] = pGlobalIdx[j][i];
 			cols[1] = pGlobalIdx[j+1][i];
-			values[0] = -1.0;
-			values[1] = 1.0;
 			ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
 			localIdx++;
 		}
@@ -111,10 +107,10 @@ void NavierStokesSolver<3>::generateBNQ()
 	PetscInt       mstart, nstart, pstart, m, n, p;
 	PetscInt       *d_nnz, *o_nnz;
 	PetscInt       qStart, qEnd, phiStart, phiEnd, qLocalSize, phiLocalSize;
-	PetscInt       row, cols[2];
-	PetscReal      values[2];
 	PetscInt       localIdx;
 	PetscReal      ***pGlobalIdx;
+	PetscInt       row, cols[2];
+	PetscReal      values[2] = {-1.0, 1.0};	
 	
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
 	qLocalSize = qEnd-qStart;
@@ -201,8 +197,6 @@ void NavierStokesSolver<3>::generateBNQ()
 				row = localIdx + qStart;
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j][i+1];
-				values[0] = -1.0;
-				values[1] = 1.0;
 				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
 				localIdx++;
 			}
@@ -219,8 +213,6 @@ void NavierStokesSolver<3>::generateBNQ()
 				row = localIdx + qStart;
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j+1][i];
-				values[0] = -1.0;
-				values[1] = 1.0;
 				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
 				localIdx++;
 			}
@@ -237,8 +229,6 @@ void NavierStokesSolver<3>::generateBNQ()
 				row = localIdx + qStart;
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k+1][j][i];
-				values[0] = -1.0;
-				values[1] = 1.0;
 				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
 				localIdx++;
 			}

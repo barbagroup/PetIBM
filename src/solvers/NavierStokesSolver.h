@@ -79,6 +79,9 @@ public:
 	void finalise();
 	void stepTime();
 	void writeData(std::string caseFolder);
+	void writeSimulationInfo(std::string caseFolder);
+	void writeGrid(std::string caseFolder);
+	bool savePoint();
 	bool finished();
 	
 	/**

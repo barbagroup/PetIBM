@@ -126,6 +126,12 @@ void NavierStokesSolver<dim>::projectionStep()
 }
 
 template <PetscInt dim>
+bool NavierStokesSolver<dim>::savePoint()
+{
+	return (timeStep%simParams->nsave == 0);
+}
+
+template <PetscInt dim>
 bool NavierStokesSolver<dim>::finished()
 {
 	return (timeStep < simParams->nt)? false : true;
@@ -174,6 +180,8 @@ void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscIn
 #include "NavierStokes/generateBNQ.inl"
 #include "NavierStokes/generateR2.inl"
 #include "NavierStokes/writeData.inl"
+#include "NavierStokes/writeSimulationInfo.inl"
+#include "NavierStokes/writeGrid.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

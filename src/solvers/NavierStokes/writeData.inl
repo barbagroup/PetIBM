@@ -88,5 +88,5 @@ void NavierStokesSolver<3>::writeData(std::string caseFolder)
 
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRV(ierr);
 	
-	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRV(ierr);
 }

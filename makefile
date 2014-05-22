@@ -30,6 +30,12 @@ check:
 cavity:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
 
+check3d:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/test
+
+cavity3d:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityRe100
+
 memcheck:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/memtest
 

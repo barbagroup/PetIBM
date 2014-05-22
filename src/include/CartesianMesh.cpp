@@ -125,7 +125,12 @@ CartesianMesh::CartesianMesh(std::string fileName)
 						{
 							dy[j]  = h;
 							y[j+1] = y[j] + dy[j];
-						}	
+						}
+						else if(direction=="z")
+						{
+							dz[j]  = h;
+							z[j+1] = z[j] + dz[j];
+						}
 					}
 				}
 				else
@@ -142,6 +147,11 @@ CartesianMesh::CartesianMesh(std::string fileName)
 						{
 							dy[j]  = h*pow(stretchRatio, j-first);
 							y[j+1] = y[j] + dy[j];
+						}
+						else if(direction=="z")
+						{
+							dz[j]  = h*pow(stretchRatio, j-first);
+							z[j+1] = z[j] + dz[j];
 						}
 					}
 				}

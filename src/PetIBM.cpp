@@ -24,12 +24,15 @@ int main(int argc,char **argv)
 	std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&FD, &SP, &CM);
 	
 	solver->initialise();
+	solver->writeSimulationInfo(folder);
+	solver->writeGrid(folder);
 	
 	while(!solver->finished())
 	{
 		solver->stepTime();
+		if(solver->savePoint())
+			solver->writeData(folder);
 	}
-	solver->writeData(folder);
 	solver->finalise();
 
 	ierr = PetscFinalize(); CHKERRQ(ierr);

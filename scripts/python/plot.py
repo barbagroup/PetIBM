@@ -49,7 +49,7 @@ if __name__=="__main__":
 	fileParser.add_argument("-ny", type=int, dest="ny", help="number of cells in y-direction", default=32)
 	fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=200)
 	fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=100)
-	fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="True")
+	fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="False")
 	fileParser.add_argument("-yperiodic", dest="yperiodic", help="periodicity in y-direction", default="False")
 	args = fileParser.parse_args(args_list)
 	

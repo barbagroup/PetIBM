@@ -31,7 +31,7 @@ protected:
 	    vda,
 	    wda,
 	    qPack,
-	    phiPack;
+	    lambdaPack;
 	
 	Vec qxLocal,
 	    qyLocal,
@@ -50,7 +50,7 @@ protected:
 	Mat QTBNQ;
 	Vec BN;
 	Vec bc1, rhs1, r2, rhs2, temp;
-	Vec q, qStar, phi;
+	Vec q, qStar, lambda;
 	KSP ksp1, ksp2;
 
 	void createDMs();
@@ -59,7 +59,7 @@ protected:
 	void initialiseMeshSpacings();
 	void initialiseFluxes();
 	void createLocalToGlobalMappingsFluxes();
-	void createLocalToGlobalMappingsPhi();
+	void createLocalToGlobalMappingsLambda();
 	void updateBoundaryGhosts();
 	void generateDiagonalMatrices();
 	void generateA();
@@ -106,7 +106,7 @@ public:
 		vda = PETSC_NULL;
 		wda = PETSC_NULL;
 		qPack   = PETSC_NULL;
-		phiPack = PETSC_NULL;
+		lambdaPack = PETSC_NULL;
 		// Vecs
 		qxLocal  = PETSC_NULL;
 		qyLocal  = PETSC_NULL;

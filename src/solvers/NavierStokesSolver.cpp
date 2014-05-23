@@ -10,7 +10,7 @@ void NavierStokesSolver<dim>::initialise()
 	createDMs();
 	createVecs();
 	createLocalToGlobalMappingsFluxes();
-	createLocalToGlobalMappingsPhi();
+	createLocalToGlobalMappingsLambda();
 	initialiseMeshSpacings();
 	initialiseFluxes();
 	updateBoundaryGhosts();
@@ -33,7 +33,7 @@ void NavierStokesSolver<dim>::finalise()
 	if(vda!=PETSC_NULL) {ierr = DMDestroy(&vda); CHKERRV(ierr);}
 	if(wda!=PETSC_NULL) {ierr = DMDestroy(&wda); CHKERRV(ierr);}
 	if(qPack!=PETSC_NULL){ierr = DMDestroy(&qPack); CHKERRV(ierr);}
-	if(phiPack!=PETSC_NULL){ierr = DMDestroy(&phiPack); CHKERRV(ierr);}
+	if(lambdaPack!=PETSC_NULL){ierr = DMDestroy(&lambdaPack); CHKERRV(ierr);}
 	
 	// Vecs
 	if(q!=PETSC_NULL)    {ierr = VecDestroy(&q); CHKERRV(ierr);}
@@ -48,7 +48,7 @@ void NavierStokesSolver<dim>::finalise()
 	if(bc1!=PETSC_NULL) {ierr = VecDestroy(&bc1); CHKERRV(ierr);}
 	if(rhs1!=PETSC_NULL){ierr = VecDestroy(&rhs1); CHKERRV(ierr);}
 	if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRV(ierr);}
-	if(phi!=PETSC_NULL) {ierr = VecDestroy(&phi); CHKERRV(ierr);}
+	if(lambda!=PETSC_NULL) {ierr = VecDestroy(&lambda); CHKERRV(ierr);}
 	if(r2!=PETSC_NULL)  {ierr = VecDestroy(&r2); CHKERRV(ierr);}
 	if(rhs2!=PETSC_NULL){ierr = VecDestroy(&rhs2); CHKERRV(ierr);}
 
@@ -114,14 +114,14 @@ template <PetscInt dim>
 void NavierStokesSolver<dim>::solvePoissonSystem()
 {
 	PetscErrorCode ierr;
-	ierr = KSPSolve(ksp2, rhs2, phi); CHKERRV(ierr);
+	ierr = KSPSolve(ksp2, rhs2, lambda); CHKERRV(ierr);
 }
 
 template <PetscInt dim>
 void NavierStokesSolver<dim>::projectionStep()
 {
 	PetscErrorCode ierr;
-	ierr = MatMult(BNQ, phi, temp); CHKERRV(ierr);
+	ierr = MatMult(BNQ, lambda, temp); CHKERRV(ierr);
 	ierr = VecWAXPY(q, -1.0, temp, qStar);
 }
 
@@ -146,7 +146,7 @@ void NavierStokesSolver<dim>::generateQTBNQ()
 
 	ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRV(ierr);
 	
-	ierr = VecGetOwnershipRange(phi, &pStart, NULL); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &pStart, NULL); CHKERRV(ierr);
 	if(pStart==0)
 	{
 		ierr = MatSetValue(QTBNQ, row, col, value, ADD_VALUES); CHKERRV(ierr);
@@ -169,7 +169,7 @@ void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscIn
 #include "NavierStokes/createVecs.inl"
 #include "NavierStokes/createKSPs.inl"
 #include "NavierStokes/createLocalToGlobalMappingsFluxes.inl"
-#include "NavierStokes/createLocalToGlobalMappingsPhi.inl"
+#include "NavierStokes/createLocalToGlobalMappingsLambda.inl"
 #include "NavierStokes/initialiseMeshSpacings.inl"
 #include "NavierStokes/initialiseFluxes.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"

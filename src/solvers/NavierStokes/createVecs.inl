@@ -21,9 +21,9 @@ void NavierStokesSolver<2>::createVecs()
 	ierr = VecDuplicate(q, &BN);           CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &temp);         CHKERRV(ierr); // 
 
-	ierr = DMCreateGlobalVector(phiPack, &phi); CHKERRV(ierr); // pressure
-	ierr = VecDuplicate(phi, &r2);              CHKERRV(ierr); // 
-	ierr = VecDuplicate(phi, &rhs2);            CHKERRV(ierr); // 
+	ierr = DMCreateGlobalVector(lambdaPack, &lambda); CHKERRV(ierr); // pressure
+	ierr = VecDuplicate(lambda, &r2);              CHKERRV(ierr); // 
+	ierr = VecDuplicate(lambda, &rhs2);            CHKERRV(ierr); // 
 }
 
 template <>
@@ -48,7 +48,7 @@ void NavierStokesSolver<3>::createVecs()
 	ierr = VecDuplicate(q, &BN);           CHKERRV(ierr); // 
 	ierr = VecDuplicate(q, &temp);         CHKERRV(ierr); // 
 
-	ierr = DMCreateGlobalVector(phiPack, &phi); CHKERRV(ierr); // pressure
-	ierr = VecDuplicate(phi, &r2);              CHKERRV(ierr); // 
-	ierr = VecDuplicate(phi, &rhs2);            CHKERRV(ierr); // 
+	ierr = DMCreateGlobalVector(lambdaPack, &lambda); CHKERRV(ierr); // pressure
+	ierr = VecDuplicate(lambda, &r2);              CHKERRV(ierr); // 
+	ierr = VecDuplicate(lambda, &rhs2);            CHKERRV(ierr); // 
 }

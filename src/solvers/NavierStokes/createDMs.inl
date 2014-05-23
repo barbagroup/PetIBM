@@ -22,8 +22,8 @@ void NavierStokesSolver<2>::createDMs()
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
 	// packed DMs
 	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRV(ierr);
-	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &phiPack); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(phiPack, pda); CHKERRV(ierr);
+	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRV(ierr);
+	ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRV(ierr);
 	// x-velocity
 	ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRV(ierr);
 	ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRV(ierr);
@@ -85,8 +85,8 @@ void NavierStokesSolver<3>::createDMs()
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
 	// packed DMs
 	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRV(ierr);
-	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &phiPack); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(phiPack, pda); CHKERRV(ierr);
+	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRV(ierr);
+	ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRV(ierr);
 	// x-velocity
 	ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRV(ierr);
 	ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRV(ierr);

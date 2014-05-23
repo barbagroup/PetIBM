@@ -1,5 +1,5 @@
 template <>
-void NavierStokesSolver<2>::createLocalToGlobalMappingsPhi()
+void NavierStokesSolver<2>::createLocalToGlobalMappingsLambda()
 {
 	PetscErrorCode ierr;
 	PetscInt       m, n, i, j, mstart, nstart;
@@ -7,7 +7,7 @@ void NavierStokesSolver<2>::createLocalToGlobalMappingsPhi()
 	PetscInt       localIdx;
 
 	// get the range of the vector in the current process
-	ierr = VecGetOwnershipRange(phi, &localIdx, NULL); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &localIdx, NULL); CHKERRV(ierr);
 
 	// populate local vector with the global indices
 	// values outside the domain are never accessed and hence not set
@@ -32,7 +32,7 @@ void NavierStokesSolver<2>::createLocalToGlobalMappingsPhi()
 }
 
 template <>
-void NavierStokesSolver<3>::createLocalToGlobalMappingsPhi()
+void NavierStokesSolver<3>::createLocalToGlobalMappingsLambda()
 {
 	PetscErrorCode ierr;
 	PetscInt       m, n, p, i, j, k, mstart, nstart, pstart;
@@ -40,7 +40,7 @@ void NavierStokesSolver<3>::createLocalToGlobalMappingsPhi()
 	PetscInt       localIdx;
 
 	// get the range of the vector in the current process
-	ierr = VecGetOwnershipRange(phi, &localIdx, NULL); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &localIdx, NULL); CHKERRV(ierr);
 
 	// populate local vector with the global indices
 	// values outside the domain are never accessed and hence not set

@@ -24,14 +24,17 @@ lib/libyaml.a:
 lib/libsolvers.a:
 	cd src/solvers; ${MAKE}
 
-check:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/test
+check2d:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/test
+
+memcheck2d:
+	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/2d/memtest
 
 cavity:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/cavityRe100
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe100
 
-check3d:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/test
+memcheck3d:
+	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/3d/memtest
 
 cavityX:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityX
@@ -41,9 +44,6 @@ cavityY:
 
 cavityZ:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityZ
-
-memcheck:
-	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/memtest
 
 vars:
 	@echo CLINKER: ${CLINKER}

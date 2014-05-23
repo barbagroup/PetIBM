@@ -5,7 +5,7 @@ void NavierStokesSolver<2>::generateBNQ()
 	PetscInt       i, j;
 	PetscInt       mstart, nstart, m, n;
 	PetscInt       *d_nnz, *o_nnz;
-	PetscInt       qStart, qEnd, phiStart, phiEnd, qLocalSize, phiLocalSize;
+	PetscInt       qStart, qEnd, lambdaStart, lambdaEnd, qLocalSize, lambdaLocalSize;
 	PetscInt       localIdx;
 	PetscReal      **pGlobalIdx;
 	PetscInt       row, cols[2];
@@ -18,9 +18,9 @@ void NavierStokesSolver<2>::generateBNQ()
 	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRV(ierr);
 	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRV(ierr);
 	
-	// ownership range of PHI
-	ierr = VecGetOwnershipRange(phi, &phiStart, &phiEnd); CHKERRV(ierr);
-	phiLocalSize = phiEnd-phiStart;
+	// ownership range of lambda
+	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRV(ierr);
+	lambdaLocalSize = lambdaEnd-lambdaStart;
 
 	ierr = DMDAVecGetArray(pda, pMapping, &pGlobalIdx); CHKERRV(ierr);
 
@@ -35,7 +35,7 @@ void NavierStokesSolver<2>::generateBNQ()
 		{
 			cols[0] = pGlobalIdx[j][i];
 			cols[1] = pGlobalIdx[j][i+1];
-			countNumNonZeros(cols, 2, phiStart, phiEnd, d_nnz[localIdx], o_nnz[localIdx]);
+			countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
 			localIdx++;
 		}
 	}
@@ -47,7 +47,7 @@ void NavierStokesSolver<2>::generateBNQ()
 		{
 			cols[0] = pGlobalIdx[j][i];
 			cols[1] = pGlobalIdx[j+1][i];
-			countNumNonZeros(cols, 2, phiStart, phiEnd, d_nnz[localIdx], o_nnz[localIdx]);
+			countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
 			localIdx++;
 		}
 	}
@@ -55,7 +55,7 @@ void NavierStokesSolver<2>::generateBNQ()
 	// allocate memory for the matrix
 	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRV(ierr);
 	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRV(ierr);
-	ierr = MatSetSizes(BNQ, qLocalSize, phiLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
+	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
 	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRV(ierr);
 
 	// deallocate d_nnz and o_nnz
@@ -106,7 +106,7 @@ void NavierStokesSolver<3>::generateBNQ()
 	PetscInt       i, j, k;
 	PetscInt       mstart, nstart, pstart, m, n, p;
 	PetscInt       *d_nnz, *o_nnz;
-	PetscInt       qStart, qEnd, phiStart, phiEnd, qLocalSize, phiLocalSize;
+	PetscInt       qStart, qEnd, lambdaStart, lambdaEnd, qLocalSize, lambdaLocalSize;
 	PetscInt       localIdx;
 	PetscReal      ***pGlobalIdx;
 	PetscInt       row, cols[2];
@@ -119,9 +119,9 @@ void NavierStokesSolver<3>::generateBNQ()
 	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRV(ierr);
 	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRV(ierr);
 	
-	// ownership range of PHI
-	ierr = VecGetOwnershipRange(phi, &phiStart, &phiEnd); CHKERRV(ierr);
-	phiLocalSize = phiEnd-phiStart;
+	// ownership range of lambda
+	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRV(ierr);
+	lambdaLocalSize = lambdaEnd-lambdaStart;
 
 	ierr = DMDAVecGetArray(pda, pMapping, &pGlobalIdx); CHKERRV(ierr);
 
@@ -138,7 +138,7 @@ void NavierStokesSolver<3>::generateBNQ()
 			{
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j][i+1];
-				countNumNonZeros(cols, 2, phiStart, phiEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
 				localIdx++;
 			}
 		}
@@ -153,7 +153,7 @@ void NavierStokesSolver<3>::generateBNQ()
 			{
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j+1][i];
-				countNumNonZeros(cols, 2, phiStart, phiEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
 				localIdx++;
 			}
 		}
@@ -168,7 +168,7 @@ void NavierStokesSolver<3>::generateBNQ()
 			{
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k+1][j][i];
-				countNumNonZeros(cols, 2, phiStart, phiEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
 				localIdx++;
 			}
 		}
@@ -177,7 +177,7 @@ void NavierStokesSolver<3>::generateBNQ()
 	// allocate memory for the matrix
 	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRV(ierr);
 	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRV(ierr);
-	ierr = MatSetSizes(BNQ, qLocalSize, phiLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
+	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
 	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRV(ierr);
 
 	// deallocate d_nnz and o_nnz

@@ -25,7 +25,7 @@ def mkdir(path, overwrite=False):
 	except OSError as exception:
 		if exception.errno == errno.EEXIST:
 			if not overwrite:
-				print "Path '%s' already exists" % path
+				#print "Path '%s' already exists" % path
 				return
 		else: raise
 

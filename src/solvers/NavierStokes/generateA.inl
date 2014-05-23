@@ -279,6 +279,4 @@ void NavierStokesSolver<3>::generateA()
 	ierr = MatShift(A, -1.0/dt); CHKERRV(ierr);
 	ierr = MatScale(A, -1.0); CHKERRV(ierr);
 	ierr = MatDiagonalScale(A, MHat, RInv); CHKERRV(ierr);
-
-	//ierr = MatView(A, PETSC_VIEWER_STDOUT_WORLD); CHKERRV(ierr);
 }

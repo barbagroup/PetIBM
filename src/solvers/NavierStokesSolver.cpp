@@ -141,15 +141,14 @@ template <PetscInt dim>
 void NavierStokesSolver<dim>::generateQTBNQ()
 {
 	PetscErrorCode ierr;
-	PetscInt       pStart, row=0, col=0;
-	PetscReal      value = 1.0;
+	PetscInt       pStart;
 
 	ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRV(ierr);
 	
 	ierr = VecGetOwnershipRange(lambda, &pStart, NULL); CHKERRV(ierr);
 	if(pStart==0)
 	{
-		ierr = MatSetValue(QTBNQ, row, col, value, ADD_VALUES); CHKERRV(ierr);
+		ierr = MatSetValue(QTBNQ, 0, 0, 1.0, ADD_VALUES); CHKERRV(ierr);
 	}
 	ierr = MatAssemblyBegin(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 	ierr = MatAssemblyEnd(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);

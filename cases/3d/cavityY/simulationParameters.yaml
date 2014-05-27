@@ -5,7 +5,7 @@
   nsave: 500
   restart: false
   startStep: 0
-  timeScheme: [EULER_EXPLICIT, EULER_EXPLICIT]
+  timeScheme: [EULER_EXPLICIT, EULER_IMPLICIT]
   ibmScheme: NAVIER_STOKES
   linearSolvers:
     - system: velocity

@@ -92,8 +92,6 @@ SimulationParameters::SimulationParameters(std::string fileName)
 		}
 		solverType = solverTypeFromString(solver);
 	}
-	//gamma = 0.0;
-	//zeta = 0.0;
 	MPI_Barrier(PETSC_COMM_WORLD);
 	
 	// broadcast parameters to all processes

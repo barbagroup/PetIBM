@@ -154,7 +154,8 @@ void NavierStokesSolver<dim>::generateQTBNQ()
 	ierr = MatAssemblyEnd(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 }
 
-void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
+template <PetscInt dim>
+void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
 {
 	d_nnz = 0;
 	o_nnz = 0;

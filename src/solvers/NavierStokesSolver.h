@@ -62,6 +62,7 @@ protected:
 	void createLocalToGlobalMappingsLambda();
 	void updateBoundaryGhosts();
 	void generateDiagonalMatrices();
+	void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz);
 	void generateA();
 	void calculateExplicitTerms();
 	void generateBC1();

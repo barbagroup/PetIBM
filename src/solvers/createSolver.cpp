@@ -1,4 +1,5 @@
 #include "createSolver.h"
+#include "TairaColoniusSolver.h"
 
 template <PetscInt dim>
 std::unique_ptr< NavierStokesSolver<dim> > createSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
@@ -10,6 +11,10 @@ std::unique_ptr< NavierStokesSolver<dim> > createSolver(FlowDescription *FD, Sim
 		case NAVIER_STOKES:
 			PetscPrintf(PETSC_COMM_WORLD, "Navier-Stokes\n");
 			return std::unique_ptr< NavierStokesSolver<dim> >(new NavierStokesSolver<dim>(FD, SP, CM));
+			break;
+		case TAIRA_COLONIUS:
+			PetscPrintf(PETSC_COMM_WORLD, "Taira and Colonius\n");
+			return std::unique_ptr< TairaColoniusSolver<dim> >(new TairaColoniusSolver<dim>(FD, SP, CM));
 			break;
 		default:
 			PetscPrintf(PETSC_COMM_WORLD, "Unrecognised solver!\n");

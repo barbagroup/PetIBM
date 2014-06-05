@@ -53,7 +53,7 @@ protected:
 	Vec q, qStar, lambda;
 	KSP ksp1, ksp2;
 
-	void createDMs();
+	virtual void createDMs();
 	void createVecs();
 	void createKSPs();
 	void initialiseMeshSpacings();
@@ -76,8 +76,8 @@ protected:
 	void projectionStep();
 	
 public:
-	void initialise();
-	void finalise();
+	virtual void initialise();
+	virtual void finalise();
 	void stepTime();
 	void writeData(std::string caseFolder);
 	void writeSimulationInfo(std::string caseFolder);

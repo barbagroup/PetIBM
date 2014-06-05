@@ -33,6 +33,9 @@ memcheck2d:
 cavity:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe100
 
+body2d:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest
+
 memcheck3d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/3d/memtest
 

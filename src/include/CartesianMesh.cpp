@@ -163,12 +163,12 @@ CartesianMesh::CartesianMesh(std::string fileName)
 	MPI_Barrier(PETSC_COMM_WORLD);
 	
 	// broadcast vectors to all processes
-	MPI_Bcast(&x.front(), nx+1, MPIU_REAL, 0, MPI_COMM_WORLD);
-	MPI_Bcast(&dx.front(), nx, MPIU_REAL, 0, MPI_COMM_WORLD);
+	MPI_Bcast(&x.front(), nx+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&dx.front(), nx, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	
-	MPI_Bcast(&y.front(), ny+1, MPIU_REAL, 0, MPI_COMM_WORLD);
-	MPI_Bcast(&dy.front(), ny, MPIU_REAL, 0, MPI_COMM_WORLD);
+	MPI_Bcast(&y.front(), ny+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&dy.front(), ny, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	
-	MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, MPI_COMM_WORLD);	
-	MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, MPI_COMM_WORLD);
+	MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, PETSC_COMM_WORLD);
 }

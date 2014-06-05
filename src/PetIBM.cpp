@@ -25,7 +25,7 @@ int main(int argc,char **argv)
 	std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&FD, &SP, &CM);
 	
 	solver->initialise();
-/*	solver->writeSimulationInfo(folder);
+	solver->writeSimulationInfo(folder);
 	solver->writeGrid(folder);
 	
 	while(!solver->finished())
@@ -34,7 +34,7 @@ int main(int argc,char **argv)
 		if(solver->savePoint())
 			solver->writeData(folder);
 	}
-*/	solver->finalise();
+	solver->finalise();
 
 	ierr = PetscFinalize(); CHKERRQ(ierr);
 	return 0;

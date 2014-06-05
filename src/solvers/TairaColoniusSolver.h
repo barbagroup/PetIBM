@@ -19,6 +19,7 @@ protected:
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
 	void generateBNQ();
+	void generateR2();
 
 public:
 	void initialise();

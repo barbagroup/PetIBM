@@ -67,7 +67,7 @@ protected:
 	void calculateExplicitTerms();
 	void generateBC1();
 	void generateRHS1();
-	void generateR2();
+	virtual void generateR2();
 	void generateRHS2();
 	virtual void generateBNQ();
 	void generateQTBNQ();

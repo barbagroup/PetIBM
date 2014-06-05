@@ -5,6 +5,7 @@
 #include <string>
 
 #include "TairaColonius/generateBNQ.inl"
+#include "TairaColonius/generateR2.inl"
 
 template <>
 void TairaColoniusSolver<2>::initialise()

@@ -7,15 +7,18 @@ template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
 protected:
-	DM bda;
-
-	PetscInt startGlobalIndex;
+	DM        bda;
+	PetscInt  startGlobalIndex;
+	PetscReal h;
 
 	std::vector<PetscReal> x, y, z;
 	std::vector<PetscReal> ds;
 	std::vector<PetscInt>  bodyGlobalIndices;
 	std::vector<PetscInt>  startGlobalIndices;
+	std::vector<PetscInt>  numBoundaryPointsOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
+	
+	void generateBNQ();
 
 public:
 	void initialise();

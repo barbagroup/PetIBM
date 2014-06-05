@@ -53,7 +53,7 @@ protected:
 	Vec q, qStar, lambda;
 	KSP ksp1, ksp2;
 
-	virtual void createDMs();
+	void createDMs();
 	void createVecs();
 	void createKSPs();
 	void initialiseMeshSpacings();
@@ -69,7 +69,7 @@ protected:
 	void generateRHS1();
 	void generateR2();
 	void generateRHS2();
-	void generateBNQ();
+	virtual void generateBNQ();
 	void generateQTBNQ();
 	void solveIntermediateVelocity();
 	void solvePoissonSystem();

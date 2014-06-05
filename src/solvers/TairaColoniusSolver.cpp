@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+#include "TairaColonius/generateBNQ.inl"
+
 template <>
 void TairaColoniusSolver<2>::initialise()
 {
@@ -11,14 +13,15 @@ void TairaColoniusSolver<2>::initialise()
 	PetscInt       rank, numProcs;
 	PetscInt       m, n;
 	const PetscInt *lxp, *lyp;
-	PetscInt       *lb;
 	PetscInt       totalPoints = 51;
+	
+	h = 1.0/32;
 
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 	PetscPrintf(PETSC_COMM_WORLD, "rank: %d, numProcs: %d\n", rank, numProcs);
 
-	ierr = PetscMalloc(numProcs*sizeof(*lb), &lb); CHKERRV(ierr);
+	numBoundaryPointsOnProcess.resize(numProcs);
 
 	for(PetscInt l=0; l < totalPoints; l++)
 	{
@@ -27,7 +30,7 @@ void TairaColoniusSolver<2>::initialise()
 	}
 	bodyGlobalIndices.resize(x.size());
 
-	NavierStokesSolver<2>::createDMs();
+	createDMs();
 
 	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRV(ierr);
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
@@ -52,7 +55,7 @@ void TairaColoniusSolver<2>::initialise()
 				if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd])
 				{
 					boundaryPointIndices[procIdx].push_back(l);
-					lb[procIdx]++;
+					numBoundaryPointsOnProcess[procIdx]++;
 				}
 			}
 			xStart = xEnd;
@@ -60,7 +63,7 @@ void TairaColoniusSolver<2>::initialise()
 		yStart = yEnd;
 	}
 
-	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 2, 0, lb, &bda);
+	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 2, 0, &numBoundaryPointsOnProcess.front(), &bda);
 	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRV(ierr);
 
 	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "[%d]\n", rank);
@@ -78,7 +81,7 @@ void TairaColoniusSolver<2>::initialise()
 
 	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Number of body points on each process\n");
 	for(PetscInt i=0; i<numProcs; i++)
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", lb[i]);
+		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", numBoundaryPointsOnProcess[i]);
 	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
 
 	ierr = DMCreateGlobalVector(lambdaPack, &lambda); CHKERRV(ierr);
@@ -120,7 +123,18 @@ void TairaColoniusSolver<2>::initialise()
 		PetscPrintf(PETSC_COMM_WORLD, "%d : %d\n", i, bodyGlobalIndices[i]);
 	}
 
-	PetscFree(lb);
+	createVecs();
+	createLocalToGlobalMappingsFluxes();
+	createLocalToGlobalMappingsLambda();
+	initialiseMeshSpacings();
+	initialiseFluxes();
+	updateBoundaryGhosts();
+
+	generateDiagonalMatrices();
+	generateA();
+	generateBNQ();
+	generateQTBNQ();
+	createKSPs();
 }
 
 template <>

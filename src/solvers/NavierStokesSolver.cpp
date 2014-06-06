@@ -70,9 +70,6 @@ void NavierStokesSolver<dim>::finalise()
 	// KSPs
 	if(ksp1!=PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRV(ierr);}
 	if(ksp2!=PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRV(ierr);}
-
-	// PCs
-	//if(pc2!=PETSC_NULL){ierr = PCDestroy(&pc2); CHKERRV(ierr);}
 }
 
 template <PetscInt dim>

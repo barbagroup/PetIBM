@@ -31,25 +31,25 @@ memcheck2d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/2d/memtest
 
 cavity:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe100
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 body2d:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 memcheck3d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/3d/memtest
 
 cavityX:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityX
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityX -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cavityY:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityY
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityY -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cavityZ:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityZ
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityZ -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 body3d:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyTest
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
 	@echo CLINKER: ${CLINKER}
@@ -76,10 +76,13 @@ vars:
 	@echo CLEANFILES: ${CLEANFILES}
 	@echo FIND: ${FIND}
 
-cleanall: clean
-	${RM} ${YAMLOBJ}
+cleanout: clean
+	find . -name '*.d' -exec rm -rf {} \;
 	find ./cases -name '*.txt' -exec rm -rf {} \;
 	find ./cases -name '0*' -prune -exec rm -rf {} \;
 	find ./cases -name 'output' -prune -exec rm -rf {} \;
+
+cleanall: cleanout
+	${RM} ${YAMLOBJ}
 
 .PHONY: ${LIBS} check4 memcheck vars cleanall

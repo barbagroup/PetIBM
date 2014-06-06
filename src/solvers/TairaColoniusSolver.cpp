@@ -20,7 +20,6 @@ void TairaColoniusSolver<2>::initialise()
 
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
-	PetscPrintf(PETSC_COMM_WORLD, "rank: %d, numProcs: %d\n", rank, numProcs);
 
 	numBoundaryPointsOnProcess.resize(numProcs);
 
@@ -67,25 +66,7 @@ void TairaColoniusSolver<2>::initialise()
 	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 2, 0, &numBoundaryPointsOnProcess.front(), &bda);
 	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRV(ierr);
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "[%d]\n", rank);
-
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Body indices on each process\n", rank);
-	for(PetscInt j=0; j<numProcs; j++)
-	{
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "[%d] ", j);
-		for(auto i=boundaryPointIndices[j].begin(); i!=boundaryPointIndices[j].end(); i++)
-		{
-			PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", *i);
-		}
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-	}
-
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Number of body points on each process\n");
-	for(PetscInt i=0; i<numProcs; i++)
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", numBoundaryPointsOnProcess[i]);
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-
-	ierr = DMCreateGlobalVector(lambdaPack, &lambda); CHKERRV(ierr);
+	createVecs();
 
 	PetscInt lambdaStart, lambdaEnd;
 
@@ -93,18 +74,8 @@ void TairaColoniusSolver<2>::initialise()
 	ierr = DMDAGetCorners(pda, NULL, NULL, NULL, &m, &n, NULL); CHKERRV(ierr);
 	startGlobalIndex = lambdaStart + m*n;
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "startGlobalIndex: %d\n", startGlobalIndex);	
-
 	MPI_Barrier(PETSC_COMM_WORLD);
 	MPI_Allgather(&startGlobalIndex, 1, MPIU_INT, &startGlobalIndices.front(), 1, MPIU_INT, PETSC_COMM_WORLD);
-
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Global indices of body points on each process\n");
-	for(PetscInt i=0; i<numProcs; i++)
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", startGlobalIndices[i]);
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-	PetscSynchronizedFlush(PETSC_COMM_WORLD);
 
 	PetscInt globalIndex;
 
@@ -118,13 +89,6 @@ void TairaColoniusSolver<2>::initialise()
 		}
 	}
 
-	PetscPrintf(PETSC_COMM_WORLD, "Mapping\n");
-	for(size_t i=0; i<bodyGlobalIndices.size(); i++)
-	{
-		PetscPrintf(PETSC_COMM_WORLD, "%d : %d\n", i, bodyGlobalIndices[i]);
-	}
-
-	createVecs();
 	createLocalToGlobalMappingsFluxes();
 	createLocalToGlobalMappingsLambda();
 	initialiseMeshSpacings();
@@ -150,7 +114,6 @@ void TairaColoniusSolver<3>::initialise()
 
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
-	PetscPrintf(PETSC_COMM_WORLD, "rank: %d, numProcs: %d\n", rank, numProcs);
 
 	numBoundaryPointsOnProcess.resize(numProcs);
 
@@ -203,30 +166,11 @@ void TairaColoniusSolver<3>::initialise()
 		}
 		zStart = zEnd;
 	}
-	PetscPrintf(PETSC_COMM_WORLD, "\n");
 	
 	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 3, 0, &numBoundaryPointsOnProcess.front(), &bda);
 	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRV(ierr);
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "[%d]\n", rank);
-
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Body indices on each process\n", rank);
-	for(PetscInt j=0; j<numProcs; j++)
-	{
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "[%d] ", j);
-		for(auto i=boundaryPointIndices[j].begin(); i!=boundaryPointIndices[j].end(); i++)
-		{
-			PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", *i);
-		}
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-	}
-	
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Number of body points on each process\n");
-	for(PetscInt i=0; i<numProcs; i++)
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", numBoundaryPointsOnProcess[i]);
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-
-	ierr = DMCreateGlobalVector(lambdaPack, &lambda); CHKERRV(ierr);
+	createVecs();
 
 	PetscInt lambdaStart, lambdaEnd;
 
@@ -234,19 +178,9 @@ void TairaColoniusSolver<3>::initialise()
 	ierr = DMDAGetCorners(pda, NULL, NULL, NULL, &m, &n, &p); CHKERRV(ierr);
 	startGlobalIndex = lambdaStart + m*n*p;
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "startGlobalIndex: %d\n", startGlobalIndex);	
-
 	MPI_Barrier(PETSC_COMM_WORLD);
 	MPI_Allgather(&startGlobalIndex, 1, MPIU_INT, &startGlobalIndices.front(), 1, MPIU_INT, PETSC_COMM_WORLD);
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Global indices of body points on each process\n");
-	for(PetscInt i=0; i<numProcs; i++)
-		PetscSynchronizedPrintf(PETSC_COMM_WORLD, "%d, ", startGlobalIndices[i]);
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "\n");
-	PetscSynchronizedFlush(PETSC_COMM_WORLD);
-	
 	PetscInt globalIndex;
 
 	for(PetscInt j=0; j<numProcs; j++)
@@ -259,13 +193,6 @@ void TairaColoniusSolver<3>::initialise()
 		}
 	}
 
-	PetscPrintf(PETSC_COMM_WORLD, "Mapping\n");
-	for(size_t i=0; i<bodyGlobalIndices.size(); i++)
-	{
-		PetscPrintf(PETSC_COMM_WORLD, "%d : %d\n", i, bodyGlobalIndices[i]);
-	}
-
-	createVecs();
 	createLocalToGlobalMappingsFluxes();
 	createLocalToGlobalMappingsLambda();
 	initialiseMeshSpacings();

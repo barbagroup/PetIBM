@@ -14,6 +14,11 @@ PetscReal delta(PetscReal x, PetscReal y, PetscReal h)
 	return dhRoma(x, h) * dhRoma(y, h);
 }
 
+PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
+{
+	return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
+}
+
 template <>
 void TairaColoniusSolver<2>::generateBNQ()
 {
@@ -183,15 +188,18 @@ void TairaColoniusSolver<2>::generateBNQ()
 template <>
 void TairaColoniusSolver<3>::generateBNQ()
 {
-/*	PetscErrorCode ierr;
-	PetscInt       i, j, k;
+	PetscErrorCode ierr;
+	PetscInt       numProcs;
 	PetscInt       mstart, nstart, pstart, m, n, p;
 	PetscInt       *d_nnz, *o_nnz;
 	PetscInt       qStart, qEnd, lambdaStart, lambdaEnd, qLocalSize, lambdaLocalSize;
 	PetscInt       localIdx;
 	PetscReal      ***pGlobalIdx;
-	PetscInt       row, cols[2];
-	PetscReal      values[2] = {-1.0, 1.0};	
+	PetscInt       row, cols[2], col, value;
+	PetscReal      values[2] = {-1.0, 1.0};
+	PetscReal      xCoord, yCoord, zCoord;
+	
+	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 	
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
 	qLocalSize = qEnd-qStart;
@@ -211,45 +219,93 @@ void TairaColoniusSolver<3>::generateBNQ()
 	localIdx = 0;
 	// U
 	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	for(k=pstart; k<pstart+p; k++)
+	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
-		for(j=nstart; j<nstart+n; j++)
+		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
-			for(i=mstart; i<mstart+m; i++)
+			yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				xCoord = mesh->x[i+1];
+				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j][i+1];
 				countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				// ET portion
+				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+				{
+					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
+					{
+						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						{
+							col = bodyGlobalIndices[*l];
+							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						}
+					}
+				}
 				localIdx++;
 			}
 		}
 	}
 	// V
 	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	for(k=pstart; k<pstart+p; k++)
+	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
-		for(j=nstart; j<nstart+n; j++)
+		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
-			for(i=mstart; i<mstart+m; i++)
+			yCoord = mesh->y[j+1];
+			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j+1][i];
 				countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				// ET portion
+				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+				{
+					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
+					{
+						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						{
+							col = bodyGlobalIndices[*l] + numBoundaryPointsOnProcess[procIdx];
+							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						}
+					}
+				}
 				localIdx++;
 			}
 		}
 	}
 	// W
 	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	for(k=pstart; k<pstart+p; k++)
+	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
-		for(j=nstart; j<nstart+n; j++)
+		zCoord = mesh->z[k+1];
+		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
-			for(i=mstart; i<mstart+m; i++)
+			yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k+1][j][i];
 				countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, d_nnz[localIdx], o_nnz[localIdx]);
+				// ET portion
+				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+				{
+					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
+					{
+						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						{
+							col = bodyGlobalIndices[*l] + 2*numBoundaryPointsOnProcess[procIdx];
+							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						}
+					}
+				}
 				localIdx++;
 			}
 		}
@@ -269,48 +325,99 @@ void TairaColoniusSolver<3>::generateBNQ()
 	localIdx = 0;
 	// U
 	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	for(k=pstart; k<pstart+p; k++)
+	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
-		for(j=nstart; j<nstart+n; j++)
+		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
-			for(i=mstart; i<mstart+m; i++)
+			yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				xCoord = mesh->x[i+1];
 				row = localIdx + qStart;
+				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j][i+1];
 				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+				// ET portion
+				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+				{
+					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
+					{
+						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						{
+							col  = bodyGlobalIndices[*l];
+							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+						}
+					}
+				}
 				localIdx++;
 			}
 		}
 	}
 	// V
 	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	for(k=pstart; k<pstart+p; k++)
+	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
-		for(j=nstart; j<nstart+n; j++)
+		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
-			for(i=mstart; i<mstart+m; i++)
+			yCoord = mesh->y[j+1];
+			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
 				row = localIdx + qStart;
+				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j+1][i];
 				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+				// ET portion
+				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+				{
+					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
+					{
+						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						{
+							col  = bodyGlobalIndices[*l] + numBoundaryPointsOnProcess[procIdx];
+							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+						}
+					}
+				}
 				localIdx++;
 			}
 		}
 	}
 	// W
 	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	for(k=pstart; k<pstart+p; k++)
+	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
-		for(j=nstart; j<nstart+n; j++)
+		zCoord = mesh->z[k+1];
+		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
-			for(i=mstart; i<mstart+m; i++)
+			yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
 				row = localIdx + qStart;
+				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k+1][j][i];
 				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+				// ET portion
+				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+				{
+					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
+					{
+						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						{
+							col  = bodyGlobalIndices[*l] + 2*numBoundaryPointsOnProcess[procIdx];
+							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+						}
+					}
+				}
 				localIdx++;
 			}
 		}
@@ -321,5 +428,5 @@ void TairaColoniusSolver<3>::generateBNQ()
 	ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 
 	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRV(ierr);
-	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRV(ierr);*/
+	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRV(ierr);
 }

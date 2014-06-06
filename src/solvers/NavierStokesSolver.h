@@ -52,6 +52,7 @@ protected:
 	Vec bc1, rhs1, r2, rhs2, temp;
 	Vec q, qStar, lambda;
 	KSP ksp1, ksp2;
+	PC  pc2;
 
 	void createDMs();
 	void createVecs();
@@ -136,6 +137,8 @@ public:
 		//KSPs
 		ksp1 = PETSC_NULL;
 		ksp2 = PETSC_NULL;
+		// PCs
+		pc2 = PETSC_NULL;
 	}
 };
 

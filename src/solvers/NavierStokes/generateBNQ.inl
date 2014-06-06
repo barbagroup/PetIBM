@@ -102,7 +102,7 @@ void NavierStokesSolver<2>::generateBNQ()
 template <>
 void NavierStokesSolver<3>::generateBNQ()
 {
-/*	PetscErrorCode ierr;
+	PetscErrorCode ierr;
 	PetscInt       i, j, k;
 	PetscInt       mstart, nstart, pstart, m, n, p;
 	PetscInt       *d_nnz, *o_nnz;
@@ -240,5 +240,5 @@ void NavierStokesSolver<3>::generateBNQ()
 	ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
 
 	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRV(ierr);
-	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRV(ierr);*/
+	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRV(ierr);
 }

@@ -69,7 +69,7 @@ void TairaColoniusSolver<3>::generateR2()
 	Vec            bc2Global;
 
 	ierr = VecSet(r2, 0.0); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(lambdaPack, r2,  &bc2Global); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(lambdaPack, r2,  &bc2Global, NULL); CHKERRV(ierr);
 
 	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
 	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRV(ierr);
@@ -146,5 +146,5 @@ void TairaColoniusSolver<3>::generateR2()
 	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
 	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRV(ierr);
 
-	ierr = DMCompositeRestoreAccess(lambdaPack, r2,  &bc2Global); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(lambdaPack, r2,  &bc2Global, NULL); CHKERRV(ierr);
 }

@@ -1,0 +1,20 @@
+- type: simulation
+  dt: 0.01
+  scaleCV: 5.0
+  nt: 200
+  nsave: 10
+  restart: false
+  startStep: 0
+  timeScheme: [EULER_EXPLICIT, EULER_IMPLICIT]
+  ibmScheme: TAIRA_COLONIUS
+  linearSolvers:
+    - system: velocity
+      solver: CG
+      preconditioner: DIAGONAL
+      tolerance: 1e-5
+      maxIterations: 10000
+    - system: Poisson
+      solver: CG
+      preconditioner: SMOOTHED_AGGREGATION
+      tolerance: 1e-5
+      maxIterations: 20000

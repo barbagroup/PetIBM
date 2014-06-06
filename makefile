@@ -48,6 +48,9 @@ cavityY:
 cavityZ:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityZ
 
+body3d:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyTest
+
 vars:
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}
@@ -71,8 +74,12 @@ vars:
 	@echo SRC: ${SRC}
 	@echo OBJ: ${OBJ}
 	@echo CLEANFILES: ${CLEANFILES}
+	@echo FIND: ${FIND}
 
 cleanall: clean
 	${RM} ${YAMLOBJ}
+	find ./cases -name '*.txt' -exec rm -rf {} \;
+	find ./cases -name '0*' -prune -exec rm -rf {} \;
+	find ./cases -name 'output' -prune -exec rm -rf {} \;
 
 .PHONY: ${LIBS} check4 memcheck vars cleanall

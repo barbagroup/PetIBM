@@ -23,9 +23,10 @@ protected:
 
 public:
 	void initialise();
+	void initialiseBodies();
 	void finalise();
 
-	TairaColoniusSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(FD, SP, CM)
+	TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
 	{
 	}
 	

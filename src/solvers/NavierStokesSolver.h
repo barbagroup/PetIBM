@@ -4,7 +4,6 @@
 #include "FlowDescription.h"
 #include "CartesianMesh.h"
 #include "SimulationParameters.h"
-//#include "FractionalStepMethod.h"
 #include <petscdmda.h>
 #include <petscksp.h>
 
@@ -12,11 +11,11 @@ template <PetscInt dim>
 class NavierStokesSolver
 {
 protected:
-	// classes
+	std::string caseFolder;
+
 	FlowDescription      *flowDesc;
 	SimulationParameters *simParams;
 	CartesianMesh        *mesh;
-	//FractionalStepMethod FSM;
 	
 	PetscInt timeStep,
 	         iteratonCount1,
@@ -95,9 +94,10 @@ public:
 		return "Navier-Stokes";
 	}
 	
-	NavierStokesSolver(FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
+	NavierStokesSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
 	{
 		timeStep = 0;
+		caseFolder = folder;
 		// classes
 		flowDesc  = FD;
 		simParams = SP;

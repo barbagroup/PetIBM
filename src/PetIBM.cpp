@@ -22,7 +22,7 @@ int main(int argc,char **argv)
 	CartesianMesh           CM(folder+"/cartesianMesh.yaml");
 	SimulationParameters    SP(folder+"/simulationParameters.yaml");
 
-	std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&FD, &SP, &CM);
+	std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(folder, &FD, &SP, &CM);
 	
 	solver->initialise();
 	solver->writeSimulationInfo(folder);

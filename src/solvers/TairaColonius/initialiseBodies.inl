@@ -42,37 +42,51 @@ void TairaColoniusSolver<2>::initialiseBodies()
 				y.push_back(cy + R*sin(i*2*PETSC_PI/numPoints));
 			}
 		}
-	/*	else if (type == "points")
+		else if (type == "points")
 		{
-			string fname;
+			std::string fname;
+			PetscInt    numPoints;
+			PetscReal   xCoord, yCoord;
 			node["pointsFile"] >> fname;
-			fname = "bodyFiles/" + fname;
-			std::cout << fname << std::endl;
+			fname = caseFolder + "/" + fname;
+			std::cout << "Reading body data from file: " << fname << std::endl;
 			// initialise points
 			std::ifstream file(fname.c_str());
-			file >> Body.numPoints;
-			Body.X.resize(Body.numPoints);
-			Body.Y.resize(Body.numPoints);
-			for(int i=0; i<Body.numPoints; i++)
+			file >> numPoints;
+			x.reserve(numPoints);
+			y.reserve(numPoints);
+			for(PetscInt i=0; i<numPoints; i++)
 			{
-				file >> Body.X[i] >> Body.Y[i];
+				file >> xCoord >> yCoord;
+				x.push_back(xCoord);
+				y.push_back(yCoord);
 			}
 			file.close();
 		}
 		else if (type == "lineSegment")
 		{
-			real startX, startY, endX, endY;
-			int numPoints;
+			PetscReal startX, startY, endX, endY;
+			PetscInt  numPoints;
 			node["segmentOptions"][0] >> startX;
 			node["segmentOptions"][1] >> endX;
 			node["segmentOptions"][2] >> startY;
 			node["segmentOptions"][3] >> endY;
 			node["segmentOptions"][4] >> numPoints;
-			Body.numPoints = numPoints;
 			// initialise line segment
-		}*/
+			x.reserve(numPoints);
+			y.reserve(numPoints);
+			for(PetscInt i=0; i<numPoints; i++)
+			{
+				PetscReal xi = (i+0.5)/numPoints;
+				x.push_back((1-xi)*startX + xi*endX);
+				y.push_back((1-xi)*startY + xi*endY);
+			}
+		}
 		else
+		{
 			std::cout << "[E]: unknown Body type\n";
+		}
+
 		totalPoints = x.size();
 	}
 
@@ -152,37 +166,34 @@ void TairaColoniusSolver<3>::initialiseBodies()
 				}
 			}
 		}
-	/*	else if (type == "points")
+		else if (type == "points")
 		{
-			string fname;
+			std::string fname;
+			PetscInt    numPoints;
+			PetscReal   xCoord, yCoord, zCoord;
 			node["pointsFile"] >> fname;
-			fname = "bodyFiles/" + fname;
-			std::cout << fname << std::endl;
+			fname = caseFolder + "/" + fname;
+			std::cout << "Reading body data from file: " << fname << std::endl;
 			// initialise points
 			std::ifstream file(fname.c_str());
-			file >> Body.numPoints;
-			Body.X.resize(Body.numPoints);
-			Body.Y.resize(Body.numPoints);
-			for(int i=0; i<Body.numPoints; i++)
+			file >> numPoints;
+			x.reserve(numPoints);
+			y.reserve(numPoints);
+			z.reserve(numPoints);
+			for(PetscInt i=0; i<numPoints; i++)
 			{
-				file >> Body.X[i] >> Body.Y[i];
+				file >> xCoord >> yCoord >> zCoord;
+				x.push_back(xCoord);
+				y.push_back(yCoord);
+				z.push_back(zCoord);
 			}
 			file.close();
 		}
-		else if (type == "lineSegment")
-		{
-			real startX, startY, endX, endY;
-			int numPoints;
-			node["segmentOptions"][0] >> startX;
-			node["segmentOptions"][1] >> endX;
-			node["segmentOptions"][2] >> startY;
-			node["segmentOptions"][3] >> endY;
-			node["segmentOptions"][4] >> numPoints;
-			Body.numPoints = numPoints;
-			// initialise line segment
-		}*/
 		else
+		{
 			std::cout << "[E]: unknown Body type\n";
+		}
+
 		totalPoints = x.size();
 	}
 

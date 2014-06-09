@@ -31,7 +31,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 	PetscReal      **pGlobalIdx;
 	PetscInt       row, cols[2], col, value;
 	PetscReal      values[2] = {-1.0, 1.0};
-	PetscReal      xCoord, yCoord;
+	PetscReal      xCoord, yCoord, h;
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 	
@@ -58,6 +58,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 		yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
 		for(PetscInt i=mstart; i<mstart+m; i++)
 		{
+			h = mesh->dx[i];
 			xCoord = mesh->x[i+1];
 			// G portion
 			cols[0] = pGlobalIdx[j][i];
@@ -82,6 +83,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
 	for(PetscInt j=nstart; j<nstart+n; j++)
 	{
+		h = mesh->dy[j];
 		yCoord = mesh->y[j+1];
 		for(PetscInt i=mstart; i<mstart+m; i++)
 		{
@@ -125,6 +127,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 		yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
 		for(PetscInt i=mstart; i<mstart+m; i++)
 		{
+			h = mesh->dx[i];
 			xCoord = mesh->x[i+1];
 			row = localIdx + qStart;
 			// G portion
@@ -151,6 +154,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
 	for(PetscInt j=nstart; j<nstart+n; j++)
 	{
+		h = mesh->dy[j];
 		yCoord = mesh->y[j+1];
 		for(PetscInt i=mstart; i<mstart+m; i++)
 		{
@@ -197,7 +201,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 	PetscReal      ***pGlobalIdx;
 	PetscInt       row, cols[2], col, value;
 	PetscReal      values[2] = {-1.0, 1.0};
-	PetscReal      xCoord, yCoord, zCoord;
+	PetscReal      xCoord, yCoord, zCoord, h;
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 	
@@ -227,6 +231,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 			yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				h = mesh->dx[i];
 				xCoord = mesh->x[i+1];
 				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
@@ -255,6 +260,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
 		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
+			h = mesh->dy[j];
 			yCoord = mesh->y[j+1];
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
@@ -283,6 +289,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
+		h = mesh->dz[k];
 		zCoord = mesh->z[k+1];
 		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
@@ -333,6 +340,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 			yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
+				h = mesh->dx[i];
 				xCoord = mesh->x[i+1];
 				row = localIdx + qStart;
 				// G portion
@@ -363,6 +371,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
 		for(PetscInt j=nstart; j<nstart+n; j++)
 		{
+			h = mesh->dy[j];
 			yCoord = mesh->y[j+1];
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
@@ -393,6 +402,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
+		h = mesh->dz[k];
 		zCoord = mesh->z[k+1];
 		for(PetscInt j=nstart; j<nstart+n; j++)
 		{

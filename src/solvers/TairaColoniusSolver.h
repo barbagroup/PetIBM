@@ -9,7 +9,6 @@ class TairaColoniusSolver : public NavierStokesSolver<dim>
 protected:
 	DM        bda;
 	PetscInt  startGlobalIndex;
-	PetscReal h;
 
 	std::vector<PetscReal> x, y, z;
 	std::vector<PetscReal> ds;

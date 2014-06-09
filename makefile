@@ -36,6 +36,12 @@ cavity:
 body2d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
+cylinder:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinderRe40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cylinderPeriodicDomain:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinderPeriodicDomain -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
 memcheck3d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/3d/memtest
 
@@ -76,7 +82,7 @@ vars:
 	@echo CLEANFILES: ${CLEANFILES}
 	@echo FIND: ${FIND}
 
-cleanout: clean
+cleanoutput:
 	find . -name '*.d' -exec rm -rf {} \;
 	find ./cases -name '*.txt' -exec rm -rf {} \;
 	find ./cases -name '0*' -prune -exec rm -rf {} \;

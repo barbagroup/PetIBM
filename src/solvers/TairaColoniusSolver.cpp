@@ -6,6 +6,7 @@
 
 #include "TairaColonius/generateBNQ.inl"
 #include "TairaColonius/generateR2.inl"
+#include "TairaColonius/initialiseBodies.inl"
 
 template <>
 void TairaColoniusSolver<2>::initialise()
@@ -14,29 +15,15 @@ void TairaColoniusSolver<2>::initialise()
 	PetscInt       rank, numProcs;
 	PetscInt       m, n;
 	const PetscInt *lxp, *lyp;
-	PetscInt       totalPoints = 51;
-	
-	h = 1.0/32;
 
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 
-	numBoundaryPointsOnProcess.resize(numProcs);
-
-	for(PetscInt l=0; l < totalPoints; l++)
-	{
-		x.push_back(0.5+0.25*cos(2*PETSC_PI*l/totalPoints));
-		y.push_back(0.5+0.25*sin(2*PETSC_PI*l/totalPoints));
-	}
-	bodyGlobalIndices.resize(x.size());
-
+	initialiseBodies();
 	createDMs();
 
 	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRV(ierr);
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
-
-	boundaryPointIndices.resize(numProcs);
-	startGlobalIndices.resize(numProcs);
 
 	PetscInt xStart, yStart, xEnd, yEnd,
 	         procIdx = 0;
@@ -109,32 +96,15 @@ void TairaColoniusSolver<3>::initialise()
 	PetscInt       rank, numProcs;
 	PetscInt       m, n, p;
 	const PetscInt *lxp, *lyp, *lzp;
-	
-	h = 1.0/32;
 
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 
-	numBoundaryPointsOnProcess.resize(numProcs);
-
-	for(size_t k=0; k<16; k++)
-	{
-		for(size_t i=0; i<16; i++)
-		{
-			x.push_back(0.25 + (i+0.5)*h);
-			y.push_back(0.5);
-			z.push_back(0.25 + (k+0.5)*h);
-		}
-	}
-	bodyGlobalIndices.resize(x.size());
-
+	initialiseBodies();
 	createDMs();
 	
 	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRV(ierr);
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
-
-	boundaryPointIndices.resize(numProcs);
-	startGlobalIndices.resize(numProcs);
 
 	PetscInt xStart, yStart, zStart, xEnd, yEnd, zEnd,
 	         procIdx = 0;

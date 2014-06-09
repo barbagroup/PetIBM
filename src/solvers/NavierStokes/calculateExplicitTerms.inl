@@ -6,7 +6,7 @@ inline PetscReal du2dx2(PetscReal uMinus, PetscReal uCenter, PetscReal uPlus, Pe
 }
 
 template<>
-void NavierStokesSolver<2>::calculateExplicitTerms()
+PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
 {
 	PetscErrorCode ierr;
 	PetscInt       mstart, nstart, m, n, i, j, M, N;
@@ -25,20 +25,20 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 	PetscReal      dt = simParams->dt;
 
 	// copy fluxes to local vectors
-	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRV(ierr);
+	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
 	
-	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRQ(ierr);
 	
 	// access local vectors through multi-dimensional pointers
-	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRQ(ierr);
 	
 	// x-component
-	ierr = DMDAVecGetArray(uda, HxGlobal, &Hx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(uda, rxGlobal, &rx); CHKERRV(ierr);
-	ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
-	ierr = DMDAGetInfo(uda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(uda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	for(j=nstart; j<nstart+n; j++)
 	{
 		for(i=mstart; i<mstart+m; i++)
@@ -73,14 +73,14 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 			rx[j][i] = (u/dt - convectionTerm + diffusionTerm);
 		}
 	}
-	ierr = DMDAVecRestoreArray(uda, HxGlobal, &Hx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(uda, rxGlobal, &rx); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
 	
 	// y-component
-	ierr = DMDAVecGetArray(vda, HyGlobal, &Hy); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, ryGlobal, &ry); CHKERRV(ierr);
-	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
-	ierr = DMDAGetInfo(vda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(vda, HyGlobal, &Hy); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, ryGlobal, &ry); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(vda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	for(j=nstart; j<nstart+n; j++)
 	{
 		for(i=mstart; i<mstart+m; i++)
@@ -116,18 +116,20 @@ void NavierStokesSolver<2>::calculateExplicitTerms()
 			ry[j][i] = (v/dt - convectionTerm + diffusionTerm);
 		}
 	}
-	ierr = DMDAVecRestoreArray(vda, HyGlobal, &Hy); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, ryGlobal, &ry); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(vda, HyGlobal, &Hy); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(vda, ryGlobal, &ry); CHKERRQ(ierr);
 	
-	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRQ(ierr);
 	
-	ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRV(ierr);
-	ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRQ(ierr);
+
+	return 0;
 }
 
 template<>
-void NavierStokesSolver<3>::calculateExplicitTerms()
+PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
 {
 	PetscErrorCode ierr;
 	PetscInt       mstart, nstart, pstart, m, n, p, i, j, k, M, N, P;
@@ -147,21 +149,21 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 	PetscReal      dt = simParams->dt;
 
 	// copy fluxes to local vectors
-	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRV(ierr);
+	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 	
-	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeGetAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRQ(ierr);
 	
 	// access local vectors through multi-dimensional pointers
-	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(wda, qzLocal, &qz); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(wda, qzLocal, &qz); CHKERRQ(ierr);
 	
 	// x-component
-	ierr = DMDAVecGetArray(uda, HxGlobal, &Hx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(uda, rxGlobal, &rx); CHKERRV(ierr);
-	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	ierr = DMDAGetInfo(uda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(uda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	for(k=pstart; k<pstart+p; k++)
 	{
 		for(j=nstart; j<nstart+n; j++)
@@ -212,14 +214,14 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(uda, HxGlobal, &Hx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(uda, rxGlobal, &rx); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
 
 	// y-component
-	ierr = DMDAVecGetArray(vda, HyGlobal, &Hy); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, ryGlobal, &ry); CHKERRV(ierr);
-	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	ierr = DMDAGetInfo(vda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(vda, HyGlobal, &Hy); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, ryGlobal, &ry); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(vda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	for(k=pstart; k<pstart+p; k++)
 	{
 		for(j=nstart; j<nstart+n; j++)
@@ -270,14 +272,14 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(vda, HyGlobal, &Hy); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, ryGlobal, &ry); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(vda, HyGlobal, &Hy); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(vda, ryGlobal, &ry); CHKERRQ(ierr);
 
 	// z-component
-	ierr = DMDAVecGetArray(wda, HzGlobal, &Hz); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(wda, rzGlobal, &rz); CHKERRV(ierr);
-	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
-	ierr = DMDAGetInfo(wda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(wda, HzGlobal, &Hz); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(wda, rzGlobal, &rz); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(wda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	for(k=pstart; k<pstart+p; k++)
 	{
 		for(j=nstart; j<nstart+n; j++)
@@ -328,13 +330,15 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(wda, HzGlobal, &Hz); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(wda, rzGlobal, &rz); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(wda, HzGlobal, &Hz); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(wda, rzGlobal, &rz); CHKERRQ(ierr);
 	
-	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRQ(ierr);
 	
-	ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRV(ierr);
-	ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRQ(ierr);
+
+	return 0;
 }

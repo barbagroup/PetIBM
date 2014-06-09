@@ -1,5 +1,5 @@
 template <>
-void TairaColoniusSolver<2>::createDMs()
+PetscErrorCode TairaColoniusSolver<2>::createDMs()
 {
 	NavierStokesSolver<2>::createDMs();
 
@@ -7,8 +7,8 @@ void TairaColoniusSolver<2>::createDMs()
 	PetscInt       m, n;
 	const PetscInt *lxp, *lyp;
 
-	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRV(ierr);
-	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 
 	PetscInt xStart, yStart, xEnd, yEnd,
 	         procIdx = 0;
@@ -36,11 +36,13 @@ void TairaColoniusSolver<2>::createDMs()
 	}
 
 	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 2, 0, &numBoundaryPointsOnProcess.front(), &bda);
-	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRV(ierr);
+	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRQ(ierr);
+
+	return 0;
 }
 
 template <>
-void TairaColoniusSolver<3>::createDMs()
+PetscErrorCode TairaColoniusSolver<3>::createDMs()
 {
 	NavierStokesSolver<3>::createDMs();
 
@@ -48,8 +50,8 @@ void TairaColoniusSolver<3>::createDMs()
 	PetscInt       m, n, p;
 	const PetscInt *lxp, *lyp, *lzp;
 
-	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRV(ierr);
-	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 
 	PetscInt xStart, yStart, zStart, xEnd, yEnd, zEnd,
 	         procIdx = 0;
@@ -83,5 +85,7 @@ void TairaColoniusSolver<3>::createDMs()
 	}
 	
 	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 3, 0, &numBoundaryPointsOnProcess.front(), &bda);
-	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRV(ierr);
+	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRQ(ierr);
+
+	return 0;
 }

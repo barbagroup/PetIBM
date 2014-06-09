@@ -1,5 +1,5 @@
 template <>
-void NavierStokesSolver<2>::generateR2()
+PetscErrorCode NavierStokesSolver<2>::generateR2()
 {
 	PetscErrorCode ierr;
 	PetscInt       mstart, nstart, m, n, i, j;
@@ -7,14 +7,14 @@ void NavierStokesSolver<2>::generateR2()
 	PetscReal      **bc2;
 	Vec            bc2Global;
 
-	ierr = VecSet(r2, 0.0); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(lambdaPack, r2,  &bc2Global); CHKERRV(ierr);
+	ierr = VecSet(r2, 0.0); CHKERRQ(ierr);
+	ierr = DMCompositeGetAccess(lambdaPack, r2,  &bc2Global); CHKERRQ(ierr);
 
-	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRQ(ierr);
 
-	ierr = DMDAVecGetArray(pda, bc2Global, &bc2); CHKERRV(ierr);
-	ierr = DMDAGetCorners(pda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(pda, bc2Global, &bc2); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(pda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	// x-faces
 	if(flowDesc->bc[0][XPLUS].type != PERIODIC) // don't update if the BC type is periodic
 	{
@@ -51,16 +51,18 @@ void NavierStokesSolver<2>::generateR2()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(pda, bc2Global, &bc2); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(pda, bc2Global, &bc2); CHKERRQ(ierr);
 
-	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRQ(ierr);
 
-	ierr = DMCompositeRestoreAccess(lambdaPack, r2,  &bc2Global); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(lambdaPack, r2,  &bc2Global); CHKERRQ(ierr);
+
+	return 0;
 }
 
 template <>
-void NavierStokesSolver<3>::generateR2()
+PetscErrorCode NavierStokesSolver<3>::generateR2()
 {
 	PetscErrorCode ierr;
 	PetscInt       mstart, nstart, pstart, m, n, p, i, j, k;
@@ -68,15 +70,15 @@ void NavierStokesSolver<3>::generateR2()
 	PetscReal      ***bc2;
 	Vec            bc2Global;
 
-	ierr = VecSet(r2, 0.0); CHKERRV(ierr);
-	ierr = DMCompositeGetAccess(lambdaPack, r2,  &bc2Global); CHKERRV(ierr);
+	ierr = VecSet(r2, 0.0); CHKERRQ(ierr);
+	ierr = DMCompositeGetAccess(lambdaPack, r2,  &bc2Global); CHKERRQ(ierr);
 
-	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(wda, qzLocal, &qz); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(wda, qzLocal, &qz); CHKERRQ(ierr);
 
-	ierr = DMDAVecGetArray(pda, bc2Global, &bc2); CHKERRV(ierr);
-	ierr = DMDAGetCorners(pda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(pda, bc2Global, &bc2); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(pda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	// x-faces
 	if(flowDesc->bc[0][XPLUS].type != PERIODIC) // don't update if the BC type is periodic
 	{
@@ -140,11 +142,13 @@ void NavierStokesSolver<3>::generateR2()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(pda, bc2Global, &bc2); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(pda, bc2Global, &bc2); CHKERRQ(ierr);
 
-	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRV(ierr);
-	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(vda, qyLocal, &qy); CHKERRQ(ierr);
+	ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRQ(ierr);
 
-	ierr = DMCompositeRestoreAccess(lambdaPack, r2,  &bc2Global); CHKERRV(ierr);
+	ierr = DMCompositeRestoreAccess(lambdaPack, r2,  &bc2Global); CHKERRQ(ierr);
+
+	return 0;
 }

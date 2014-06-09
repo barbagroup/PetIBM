@@ -3,15 +3,10 @@
 template <>
 void TairaColoniusSolver<2>::initialiseBodies()
 {
-	PetscInt rank, numProcs;
+	PetscInt rank;
 	PetscInt totalPoints;
 	
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
-
-	numBoundaryPointsOnProcess.resize(numProcs);
-	boundaryPointIndices.resize(numProcs);
-	startGlobalIndices.resize(numProcs);
 
 	if(rank==0)
 	{
@@ -33,7 +28,7 @@ void TairaColoniusSolver<2>::initialiseBodies()
 			node["circleOptions"][1] >> cy;
 			node["circleOptions"][2] >> R;
 			node["circleOptions"][3] >> numPoints;
-			// initialise circle
+
 			x.reserve(numPoints);
 			y.reserve(numPoints);
 			for(PetscInt i=0; i<numPoints; i++)
@@ -50,7 +45,7 @@ void TairaColoniusSolver<2>::initialiseBodies()
 			node["pointsFile"] >> fname;
 			fname = caseFolder + "/" + fname;
 			std::cout << "Reading body data from file: " << fname << std::endl;
-			// initialise points
+
 			std::ifstream file(fname.c_str());
 			file >> numPoints;
 			x.reserve(numPoints);
@@ -103,7 +98,14 @@ void TairaColoniusSolver<2>::initialiseBodies()
 	MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
 
-	bodyGlobalIndices.resize(x.size());
+	PetscInt numProcs;
+	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+
+	numBoundaryPointsOnProcess.resize(numProcs);
+	boundaryPointIndices.resize(numProcs);
+	startGlobalIndices.resize(numProcs);
+
+	globalIndexMapping.resize(x.size());
 
 	PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
 }
@@ -111,15 +113,10 @@ void TairaColoniusSolver<2>::initialiseBodies()
 template <>
 void TairaColoniusSolver<3>::initialiseBodies()
 {
-	PetscInt rank, numProcs;
+	PetscInt rank;
 	PetscInt totalPoints;
 	
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
-
-	numBoundaryPointsOnProcess.resize(numProcs);
-	boundaryPointIndices.resize(numProcs);
-	startGlobalIndices.resize(numProcs);
 
 	if(rank==0)
 	{
@@ -212,7 +209,14 @@ void TairaColoniusSolver<3>::initialiseBodies()
 	MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&z.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
 
-	bodyGlobalIndices.resize(x.size());
+	PetscInt numProcs;
+	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+
+	numBoundaryPointsOnProcess.resize(numProcs);
+	boundaryPointIndices.resize(numProcs);
+	startGlobalIndices.resize(numProcs);
+
+	globalIndexMapping.resize(x.size());
 
 	PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
 }

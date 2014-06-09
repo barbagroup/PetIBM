@@ -11,19 +11,18 @@ protected:
 	PetscInt  startGlobalIndex;
 
 	std::vector<PetscReal> x, y, z;
-	std::vector<PetscReal> ds;
-	std::vector<PetscInt>  bodyGlobalIndices;
+	std::vector<PetscInt>  globalIndexMapping;
 	std::vector<PetscInt>  startGlobalIndices;
 	std::vector<PetscInt>  numBoundaryPointsOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
-	void createDMs();
-	void generateBNQ();
-	void generateR2();
-	void createGlobalMappingBodies();
+	PetscErrorCode createDMs();
+	PetscErrorCode generateBNQ();
+	PetscErrorCode generateR2();
+	PetscErrorCode createGlobalMappingBodies();
 
 public:
-	void initialise();
+	PetscErrorCode initialise();
 	void initialiseBodies();
 
 	TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)

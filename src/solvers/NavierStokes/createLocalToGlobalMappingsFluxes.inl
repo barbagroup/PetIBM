@@ -1,5 +1,5 @@
 template <>
-void NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
+PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 {
 	PetscErrorCode ierr;
 	PetscInt       m, n, i, j, mstart, nstart;
@@ -7,14 +7,14 @@ void NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 	PetscInt       localIdx;
 
 	// get the range of the vector in the current process
-	ierr = VecGetOwnershipRange(q, &localIdx, NULL); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(q, &localIdx, NULL); CHKERRQ(ierr);
 
 	// populate local vectors with the global indices
 	// set value to -1 if the cell is outside the domain
 	// U
-	ierr = DMCreateLocalVector(uda, &uMapping); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(uda, uMapping, &lx); CHKERRV(ierr);
-	ierr = DMDAGetGhostCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMCreateLocalVector(uda, &uMapping); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(uda, uMapping, &lx); CHKERRQ(ierr);
+	ierr = DMDAGetGhostCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	for(j=nstart; j<nstart+n; j++)
 	{
 		for(i=mstart; i<mstart+m; i++)
@@ -27,12 +27,12 @@ void NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(uda, uMapping, &lx); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, uMapping, &lx); CHKERRQ(ierr);
 
 	// V
-	ierr = DMCreateLocalVector(vda, &vMapping); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, vMapping, &ly); CHKERRV(ierr);
-	ierr = DMDAGetGhostCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMCreateLocalVector(vda, &vMapping); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, vMapping, &ly); CHKERRQ(ierr);
+	ierr = DMDAGetGhostCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	for(j=nstart; j<nstart+n; j++)
 	{
 		for(i=mstart; i<mstart+m; i++)
@@ -45,19 +45,21 @@ void NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 			}	
 		}
 	}
-	ierr = DMDAVecRestoreArray(vda, vMapping, &ly); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(vda, vMapping, &ly); CHKERRQ(ierr);
 
 	// scatter from local to local to obtain correct values in ghost cells
 	// U
-	ierr = DMDALocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRV(ierr);
-	ierr = DMDALocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRV(ierr);
+	ierr = DMDALocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
+	ierr = DMDALocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
 	// V
-	ierr = DMDALocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRV(ierr);
-	ierr = DMDALocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRV(ierr);
+	ierr = DMDALocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+	ierr = DMDALocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+
+	return 0;
 }
 
 template <>
-void NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()		
+PetscErrorCode NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()		
 {
 	PetscErrorCode ierr;
 	PetscInt       i, j, k, m, n, p, mstart, nstart, pstart;
@@ -65,14 +67,14 @@ void NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()
 	PetscInt       localIdx;
 
 	// get the range of the vector in the current process
-	ierr = VecGetOwnershipRange(q, &localIdx, NULL); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(q, &localIdx, NULL); CHKERRQ(ierr);
 
 	// populate local vectors with the global indices
 	// set value to -1 if the cell is outside the domain
 	// U
-	ierr = DMCreateLocalVector(uda, &uMapping); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(uda, uMapping, &lx); CHKERRV(ierr);
-	ierr = DMDAGetGhostCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMCreateLocalVector(uda, &uMapping); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(uda, uMapping, &lx); CHKERRQ(ierr);
+	ierr = DMDAGetGhostCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(k=pstart; k<pstart+p; k++)
 	{
 		for(j=nstart; j<nstart+n; j++)
@@ -88,11 +90,11 @@ void NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(uda, uMapping, &lx); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(uda, uMapping, &lx); CHKERRQ(ierr);
 	// V
-	ierr = DMCreateLocalVector(vda, &vMapping); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(vda, vMapping, &ly); CHKERRV(ierr);
-	ierr = DMDAGetGhostCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMCreateLocalVector(vda, &vMapping); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(vda, vMapping, &ly); CHKERRQ(ierr);
+	ierr = DMDAGetGhostCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(k=pstart; k<pstart+p; k++)
 	{
 		for(j=nstart; j<nstart+n; j++)
@@ -108,11 +110,11 @@ void NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(vda, vMapping, &ly); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(vda, vMapping, &ly); CHKERRQ(ierr);
 	// W
-	ierr = DMCreateLocalVector(wda, &wMapping); CHKERRV(ierr);
-	ierr = DMDAVecGetArray(wda, wMapping, &lz); CHKERRV(ierr);
-	ierr = DMDAGetGhostCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMCreateLocalVector(wda, &wMapping); CHKERRQ(ierr);
+	ierr = DMDAVecGetArray(wda, wMapping, &lz); CHKERRQ(ierr);
+	ierr = DMDAGetGhostCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(k=pstart; k<pstart+p; k++)
 	{
 		for(j=nstart; j<nstart+n; j++)
@@ -128,16 +130,18 @@ void NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(wda, wMapping, &lz); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(wda, wMapping, &lz); CHKERRQ(ierr);
 
 	// scatter from local to local to obtain correct values in ghost cells
 	// U
-	ierr = DMDALocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRV(ierr);
-	ierr = DMDALocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRV(ierr);
+	ierr = DMDALocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
+	ierr = DMDALocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
 	// V
-	ierr = DMDALocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRV(ierr);
-	ierr = DMDALocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRV(ierr);
+	ierr = DMDALocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+	ierr = DMDALocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
 	// W
-	ierr = DMDALocalToLocalBegin(wda, wMapping, INSERT_VALUES, wMapping); CHKERRV(ierr);
-	ierr = DMDALocalToLocalEnd(wda, wMapping, INSERT_VALUES, wMapping); CHKERRV(ierr);
+	ierr = DMDALocalToLocalBegin(wda, wMapping, INSERT_VALUES, wMapping); CHKERRQ(ierr);
+	ierr = DMDALocalToLocalEnd(wda, wMapping, INSERT_VALUES, wMapping); CHKERRQ(ierr);
+
+	return 0;
 }

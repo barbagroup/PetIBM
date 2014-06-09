@@ -20,7 +20,7 @@ PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
 }
 
 template <>
-void TairaColoniusSolver<2>::generateBNQ()
+PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 {
 	PetscErrorCode ierr;
 	PetscInt       numProcs;
@@ -35,24 +35,24 @@ void TairaColoniusSolver<2>::generateBNQ()
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 	
-	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
 	qLocalSize = qEnd-qStart;
 
 	// create arrays to store nnz values
-	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRV(ierr);
-	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRV(ierr);
+	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRQ(ierr);
+	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRQ(ierr);
 	
 	// ownership range of lambda
-	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
 	lambdaLocalSize = lambdaEnd-lambdaStart;
 
-	ierr = DMDAVecGetArray(pda, pMapping, &pGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(pda, pMapping, &pGlobalIdx); CHKERRQ(ierr);
 
 	// determine the number of non-zeros in each row
 	// in the diagonal and off-diagonal portions of the matrix
 	localIdx = 0;
 	// U
-	ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	for(PetscInt j=nstart; j<nstart+n; j++)
 	{
 		yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
@@ -71,7 +71,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 				{
 					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
 					{
-						col = bodyGlobalIndices[*l];
+						col = globalIndexMapping[*l];
 						(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 					}
 				}
@@ -80,7 +80,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 		}
 	}
 	// V
-	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	for(PetscInt j=nstart; j<nstart+n; j++)
 	{
 		h = mesh->dy[j];
@@ -99,7 +99,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 				{
 					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
 					{
-						col = bodyGlobalIndices[*l] + numBoundaryPointsOnProcess[procIdx];
+						col = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
 						(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 					}
 				}
@@ -109,19 +109,19 @@ void TairaColoniusSolver<2>::generateBNQ()
 	}
 	
 	// allocate memory for the matrix
-	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRV(ierr);
-	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRV(ierr);
-	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
-	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRV(ierr);
+	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
+	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRQ(ierr);
+	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz
-	ierr = PetscFree(d_nnz); CHKERRV(ierr);
-	ierr = PetscFree(o_nnz); CHKERRV(ierr);
+	ierr = PetscFree(d_nnz); CHKERRQ(ierr);
+	ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
 	// assemble matrix Q
 	localIdx = 0;
 	// U
-	ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	for(PetscInt j=nstart; j<nstart+n; j++)
 	{
 		yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
@@ -133,7 +133,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 			// G portion
 			cols[0] = pGlobalIdx[j][i];
 			cols[1] = pGlobalIdx[j][i+1];
-			ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+			ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
 			// ET portion
 			for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
 			{
@@ -141,9 +141,9 @@ void TairaColoniusSolver<2>::generateBNQ()
 				{
 					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
 					{
-						col  = bodyGlobalIndices[*l];
+						col  = globalIndexMapping[*l];
 						value= h*delta(xCoord-x[*l], yCoord-y[*l], h);
-						ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+						ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
 				}
 			}
@@ -151,7 +151,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 		}
 	}
 	// V
-	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	for(PetscInt j=nstart; j<nstart+n; j++)
 	{
 		h = mesh->dy[j];
@@ -163,7 +163,7 @@ void TairaColoniusSolver<2>::generateBNQ()
 			// G portion
 			cols[0] = pGlobalIdx[j][i];
 			cols[1] = pGlobalIdx[j+1][i];
-			ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+			ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
 			// ET portion
 			for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
 			{
@@ -171,26 +171,28 @@ void TairaColoniusSolver<2>::generateBNQ()
 				{
 					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
 					{
-						col = bodyGlobalIndices[*l] + numBoundaryPointsOnProcess[procIdx];
+						col = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
 						value= h*delta(xCoord-x[*l], yCoord-y[*l], h);
-						ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+						ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
 				}
 			}
 			localIdx++;
 		}
 	}
-	ierr = DMDAVecRestoreArray(pda, pMapping, &pGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(pda, pMapping, &pGlobalIdx); CHKERRQ(ierr);
 
-	ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
-	ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
+	ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRV(ierr);
-	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRV(ierr);
+	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
+	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+
+	return 0;
 }
 
 template <>
-void TairaColoniusSolver<3>::generateBNQ()
+PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 {
 	PetscErrorCode ierr;
 	PetscInt       numProcs;
@@ -205,24 +207,24 @@ void TairaColoniusSolver<3>::generateBNQ()
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 	
-	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
 	qLocalSize = qEnd-qStart;
 
 	// create arrays to store nnz values
-	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRV(ierr);
-	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRV(ierr);
+	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRQ(ierr);
+	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRQ(ierr);
 	
 	// ownership range of lambda
-	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
 	lambdaLocalSize = lambdaEnd-lambdaStart;
 
-	ierr = DMDAVecGetArray(pda, pMapping, &pGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAVecGetArray(pda, pMapping, &pGlobalIdx); CHKERRQ(ierr);
 
 	// determine the number of non-zeros in each row
 	// in the diagonal and off-diagonal portions of the matrix
 	localIdx = 0;
 	// U
-	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
 		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
@@ -244,7 +246,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 					{
 						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
 						{
-							col = bodyGlobalIndices[*l];
+							col = globalIndexMapping[*l];
 							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 						}
 					}
@@ -254,7 +256,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 		}
 	}
 	// V
-	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
 		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
@@ -276,7 +278,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 					{
 						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
 						{
-							col = bodyGlobalIndices[*l] + numBoundaryPointsOnProcess[procIdx];
+							col = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
 							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 						}
 					}
@@ -286,7 +288,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 		}
 	}
 	// W
-	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
 		h = mesh->dz[k];
@@ -308,7 +310,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 					{
 						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
 						{
-							col = bodyGlobalIndices[*l] + 2*numBoundaryPointsOnProcess[procIdx];
+							col = globalIndexMapping[*l] + 2*numBoundaryPointsOnProcess[procIdx];
 							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 						}
 					}
@@ -319,19 +321,19 @@ void TairaColoniusSolver<3>::generateBNQ()
 	}
 	
 	// allocate memory for the matrix
-	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRV(ierr);
-	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRV(ierr);
-	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRV(ierr);
-	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRV(ierr);
+	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
+	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRQ(ierr);
+	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz
-	ierr = PetscFree(d_nnz); CHKERRV(ierr);
-	ierr = PetscFree(o_nnz); CHKERRV(ierr);
+	ierr = PetscFree(d_nnz); CHKERRQ(ierr);
+	ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
 	// assemble matrix Q
 	localIdx = 0;
 	// U
-	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
 		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
@@ -346,7 +348,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j][i+1];
-				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
 				// ET portion
 				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
 				{
@@ -354,9 +356,9 @@ void TairaColoniusSolver<3>::generateBNQ()
 					{
 						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
 						{
-							col  = bodyGlobalIndices[*l];
+							col  = globalIndexMapping[*l];
 							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
-							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
 				}
@@ -365,7 +367,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 		}
 	}
 	// V
-	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
 		zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
@@ -380,7 +382,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k][j+1][i];
-				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
 				// ET portion
 				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
 				{
@@ -388,9 +390,9 @@ void TairaColoniusSolver<3>::generateBNQ()
 					{
 						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
 						{
-							col  = bodyGlobalIndices[*l] + numBoundaryPointsOnProcess[procIdx];
+							col  = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
 							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
-							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
 				}
@@ -399,7 +401,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 		}
 	}
 	// W
-	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRV(ierr);
+	ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
 	for(PetscInt k=pstart; k<pstart+p; k++)
 	{
 		h = mesh->dz[k];
@@ -414,7 +416,7 @@ void TairaColoniusSolver<3>::generateBNQ()
 				// G portion
 				cols[0] = pGlobalIdx[k][j][i];
 				cols[1] = pGlobalIdx[k+1][j][i];
-				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRV(ierr);
+				ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
 				// ET portion
 				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
 				{
@@ -422,9 +424,9 @@ void TairaColoniusSolver<3>::generateBNQ()
 					{
 						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
 						{
-							col  = bodyGlobalIndices[*l] + 2*numBoundaryPointsOnProcess[procIdx];
+							col  = globalIndexMapping[*l] + 2*numBoundaryPointsOnProcess[procIdx];
 							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
-							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRV(ierr);
+							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
 				}
@@ -432,11 +434,13 @@ void TairaColoniusSolver<3>::generateBNQ()
 			}
 		}
 	}
-	ierr = DMDAVecRestoreArray(pda, pMapping, &pGlobalIdx); CHKERRV(ierr);
+	ierr = DMDAVecRestoreArray(pda, pMapping, &pGlobalIdx); CHKERRQ(ierr);
 
-	ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
-	ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRV(ierr);
+	ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRV(ierr);
-	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRV(ierr);
+	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
+	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+
+	return 0;
 }

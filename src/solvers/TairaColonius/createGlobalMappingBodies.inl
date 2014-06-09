@@ -1,5 +1,5 @@
 template <>
-void TairaColoniusSolver<2>::createGlobalMappingBodies()
+PetscErrorCode TairaColoniusSolver<2>::createGlobalMappingBodies()
 {
 	PetscErrorCode ierr;
 	PetscInt       m, n;
@@ -8,8 +8,8 @@ void TairaColoniusSolver<2>::createGlobalMappingBodies()
 
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 
-	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRV(ierr);
-	ierr = DMDAGetCorners(pda, NULL, NULL, NULL, &m, &n, NULL); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(pda, NULL, NULL, NULL, &m, &n, NULL); CHKERRQ(ierr);
 	startGlobalIndex = lambdaStart + m*n;
 
 	MPI_Barrier(PETSC_COMM_WORLD);
@@ -22,14 +22,16 @@ void TairaColoniusSolver<2>::createGlobalMappingBodies()
 		globalIndex = startGlobalIndices[j];
 		for(auto i=boundaryPointIndices[j].begin(); i!=boundaryPointIndices[j].end(); i++)
 		{
-			bodyGlobalIndices[*i] = globalIndex;
+			globalIndexMapping[*i] = globalIndex;
 			globalIndex++;
 		}
 	}
+
+	return 0;
 }
 
 template <>
-void TairaColoniusSolver<3>::createGlobalMappingBodies()
+PetscErrorCode TairaColoniusSolver<3>::createGlobalMappingBodies()
 {
 	PetscErrorCode ierr;
 	PetscInt       m, n, p;
@@ -38,8 +40,8 @@ void TairaColoniusSolver<3>::createGlobalMappingBodies()
 
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 
-	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRV(ierr);
-	ierr = DMDAGetCorners(pda, NULL, NULL, NULL, &m, &n, &p); CHKERRV(ierr);
+	ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
+	ierr = DMDAGetCorners(pda, NULL, NULL, NULL, &m, &n, &p); CHKERRQ(ierr);
 	startGlobalIndex = lambdaStart + m*n*p;
 
 	MPI_Barrier(PETSC_COMM_WORLD);
@@ -52,8 +54,10 @@ void TairaColoniusSolver<3>::createGlobalMappingBodies()
 		globalIndex = startGlobalIndices[j];
 		for(auto i=boundaryPointIndices[j].begin(); i!=boundaryPointIndices[j].end(); i++)
 		{
-			bodyGlobalIndices[*i] = globalIndex;
+			globalIndexMapping[*i] = globalIndex;
 			globalIndex++;
 		}
 	}
+
+	return 0;
 }

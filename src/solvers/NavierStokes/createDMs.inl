@@ -1,7 +1,7 @@
 #include <petscdmcomposite.h>
 
 template <>
-void NavierStokesSolver<2>::createDMs()
+PetscErrorCode NavierStokesSolver<2>::createDMs()
 {
 	PetscErrorCode    ierr;
 	PetscInt          m, n;
@@ -17,18 +17,18 @@ void NavierStokesSolver<2>::createDMs()
 	// pressure
 	numX = mesh->nx;
 	numY = mesh->ny;
-	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_STAR, numX, numY, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, &pda); CHKERRV(ierr);
-	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRV(ierr);
-	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_STAR, numX, numY, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, &pda); CHKERRQ(ierr);
+	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	// packed DMs
-	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRV(ierr);
-	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRV(ierr);
+	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRQ(ierr);
+	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRQ(ierr);
 	// x-velocity
-	ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRV(ierr);
-	ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRV(ierr);
-	ierr = PetscMemcpy(lxu, lxp, m*sizeof(*lxu)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRV(ierr);
+	ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRQ(ierr);
+	ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lxu, lxp, m*sizeof(*lxu)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRQ(ierr);
 	numX = mesh->nx;
 	numY = mesh->ny;
 	if(flowDesc->bc[0][XPLUS].type != PERIODIC)
@@ -36,13 +36,13 @@ void NavierStokesSolver<2>::createDMs()
 		lxu[m-1]--;
 		numX = mesh->nx-1;
 	}
-	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_BOX, numX, numY, m, n, 1, 1, lxu, lyu, &uda); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(qPack, uda); CHKERRV(ierr);
+	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_BOX, numX, numY, m, n, 1, 1, lxu, lyu, &uda); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(qPack, uda); CHKERRQ(ierr);
 	// y-velocity
-	ierr = PetscMalloc(m*sizeof(*lxv), &lxv); CHKERRV(ierr);
-	ierr = PetscMalloc(n*sizeof(*lyv), &lyv); CHKERRV(ierr);
-	ierr = PetscMemcpy(lxv, lxp, m*sizeof(*lxv)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRV(ierr);
+	ierr = PetscMalloc(m*sizeof(*lxv), &lxv); CHKERRQ(ierr);
+	ierr = PetscMalloc(n*sizeof(*lyv), &lyv); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lxv, lxp, m*sizeof(*lxv)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRQ(ierr);
 	numX = mesh->nx;
 	numY = mesh->ny;
 	if(flowDesc->bc[1][YPLUS].type != PERIODIC)
@@ -50,17 +50,19 @@ void NavierStokesSolver<2>::createDMs()
 		lyv[n-1]--;
 		numY = mesh->ny-1;
 	}
-	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_BOX, numX, numY, m, n, 1, 1, lxv, lyv, &vda); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(qPack, vda); CHKERRV(ierr);
+	ierr = DMDACreate2d(PETSC_COMM_WORLD, bx, by, DMDA_STENCIL_BOX, numX, numY, m, n, 1, 1, lxv, lyv, &vda); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(qPack, vda); CHKERRQ(ierr);
 	
 	PetscFree(lxu);
 	PetscFree(lyu);	
 	PetscFree(lxv);
 	PetscFree(lyv);
+
+	return 0;
 }
 
 template <>
-void NavierStokesSolver<3>::createDMs()
+PetscErrorCode NavierStokesSolver<3>::createDMs()
 {
 	PetscErrorCode    ierr;
 	PetscInt          m, n, p;
@@ -80,20 +82,20 @@ void NavierStokesSolver<3>::createDMs()
 	numX = mesh->nx;
 	numY = mesh->ny;
 	numZ = mesh->nz;
-	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_STAR, numX, numY, numZ, PETSC_DECIDE, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, NULL, &pda); CHKERRV(ierr);
-	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRV(ierr);
-	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRV(ierr);
+	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_STAR, numX, numY, numZ, PETSC_DECIDE, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, NULL, &pda); CHKERRQ(ierr);
+	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRQ(ierr);
+	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 	// packed DMs
-	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRV(ierr);
-	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRV(ierr);
+	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRQ(ierr);
+	ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRQ(ierr);
 	// x-velocity
-	ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRV(ierr);
-	ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRV(ierr);
-	ierr = PetscMalloc(p*sizeof(*lzu), &lzu); CHKERRV(ierr);
-	ierr = PetscMemcpy(lxu, lxp, m*sizeof(*lxu)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lzu, lzp, p*sizeof(*lzu)); CHKERRV(ierr);
+	ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRQ(ierr);
+	ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRQ(ierr);
+	ierr = PetscMalloc(p*sizeof(*lzu), &lzu); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lxu, lxp, m*sizeof(*lxu)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lzu, lzp, p*sizeof(*lzu)); CHKERRQ(ierr);
 	numX = mesh->nx;
 	numY = mesh->ny;
 	numZ = mesh->nz;
@@ -102,15 +104,15 @@ void NavierStokesSolver<3>::createDMs()
 		lxu[m-1]--;
 		numX = mesh->nx-1;
 	}
-	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_BOX, numX, numY, numZ, m, n, p, 1, 1, lxu, lyu, lzu, &uda); CHKERRV(ierr);	
-	ierr = DMCompositeAddDM(qPack, uda); CHKERRV(ierr);
+	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_BOX, numX, numY, numZ, m, n, p, 1, 1, lxu, lyu, lzu, &uda); CHKERRQ(ierr);	
+	ierr = DMCompositeAddDM(qPack, uda); CHKERRQ(ierr);
 	// y-velocity
-	ierr = PetscMalloc(m*sizeof(*lxv), &lxv); CHKERRV(ierr);
-	ierr = PetscMalloc(n*sizeof(*lyv), &lyv); CHKERRV(ierr);
-	ierr = PetscMalloc(p*sizeof(*lzv), &lzv); CHKERRV(ierr);
-	ierr = PetscMemcpy(lxv, lxp, m*sizeof(*lxv)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lzv, lzp, p*sizeof(*lzv)); CHKERRV(ierr);
+	ierr = PetscMalloc(m*sizeof(*lxv), &lxv); CHKERRQ(ierr);
+	ierr = PetscMalloc(n*sizeof(*lyv), &lyv); CHKERRQ(ierr);
+	ierr = PetscMalloc(p*sizeof(*lzv), &lzv); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lxv, lxp, m*sizeof(*lxv)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lzv, lzp, p*sizeof(*lzv)); CHKERRQ(ierr);
 	numX = mesh->nx;
 	numY = mesh->ny;
 	numZ = mesh->nz;
@@ -119,15 +121,15 @@ void NavierStokesSolver<3>::createDMs()
 		lyv[n-1]--;
 		numY = mesh->ny-1;
 	}
-	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_BOX, numX, numY, numZ, m, n, p, 1, 1, lxv, lyv, lzv, &vda); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(qPack, vda); CHKERRV(ierr);
+	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_BOX, numX, numY, numZ, m, n, p, 1, 1, lxv, lyv, lzv, &vda); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(qPack, vda); CHKERRQ(ierr);
 	// z-velocity
-	ierr = PetscMalloc(m*sizeof(*lxw), &lxw); CHKERRV(ierr);
-	ierr = PetscMalloc(n*sizeof(*lyw), &lyw); CHKERRV(ierr);
-	ierr = PetscMalloc(p*sizeof(*lzw), &lzw); CHKERRV(ierr);
-	ierr = PetscMemcpy(lxw, lxp, m*sizeof(*lxw)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lyw, lyp, n*sizeof(*lyw)); CHKERRV(ierr);
-	ierr = PetscMemcpy(lzw, lzp, p*sizeof(*lzw)); CHKERRV(ierr);
+	ierr = PetscMalloc(m*sizeof(*lxw), &lxw); CHKERRQ(ierr);
+	ierr = PetscMalloc(n*sizeof(*lyw), &lyw); CHKERRQ(ierr);
+	ierr = PetscMalloc(p*sizeof(*lzw), &lzw); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lxw, lxp, m*sizeof(*lxw)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lyw, lyp, n*sizeof(*lyw)); CHKERRQ(ierr);
+	ierr = PetscMemcpy(lzw, lzp, p*sizeof(*lzw)); CHKERRQ(ierr);
 	numX = mesh->nx;
 	numY = mesh->ny;
 	numZ = mesh->nz;
@@ -136,8 +138,8 @@ void NavierStokesSolver<3>::createDMs()
 		lzw[p-1]--;
 		numZ = mesh->nz-1;
 	}
-	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_BOX, numX, numY, numZ, m, n, p, 1, 1, lxw, lyw, lzw, &wda); CHKERRV(ierr);
-	ierr = DMCompositeAddDM(qPack, wda); CHKERRV(ierr);
+	ierr = DMDACreate3d(PETSC_COMM_WORLD, bx, by, bz, DMDA_STENCIL_BOX, numX, numY, numZ, m, n, p, 1, 1, lxw, lyw, lzw, &wda); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(qPack, wda); CHKERRQ(ierr);
 	
 	PetscFree(lxu);
 	PetscFree(lyu);
@@ -148,4 +150,6 @@ void NavierStokesSolver<3>::createDMs()
 	PetscFree(lxw);
 	PetscFree(lyw);
 	PetscFree(lzw);
+
+	return 0;
 }

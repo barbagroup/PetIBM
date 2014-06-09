@@ -3,7 +3,7 @@
 #include <iomanip>
 
 template <>
-void NavierStokesSolver<2>::writeData(std::string caseFolder)
+PetscErrorCode NavierStokesSolver<2>::writeData(std::string caseFolder)
 {
 	PetscErrorCode  ierr;
 	PetscInt        rank;
@@ -18,8 +18,8 @@ void NavierStokesSolver<2>::writeData(std::string caseFolder)
 			iterationsFile.open(filename.c_str());
 		else	
 			iterationsFile.open(filename.c_str(), std::ios::out | std::ios::app);
-		ierr = KSPGetIterationNumber(ksp1, &its1); CHKERRV(ierr);
-		ierr = KSPGetIterationNumber(ksp2, &its2); CHKERRV(ierr);
+		ierr = KSPGetIterationNumber(ksp1, &its1); CHKERRQ(ierr);
+		ierr = KSPGetIterationNumber(ksp2, &its2); CHKERRQ(ierr);
 		iterationsFile << timeStep << '\t' << its1 << '\t' << its2 << std::endl;
 		iterationsFile.close();
 	}
@@ -37,34 +37,36 @@ void NavierStokesSolver<2>::writeData(std::string caseFolder)
 		
 		mkdir(savePointDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 		
-		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
+		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 		
 		// print qx to file
 		ss.str("");
 		ss.clear();
 		ss << savePointDir << "/qx.dat";
 		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRV(ierr);
-		ierr = VecView(qxGlobal, viewer); CHKERRV(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRV(ierr);
+		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+		ierr = VecView(qxGlobal, viewer); CHKERRQ(ierr);
+		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
 		// print qx to file
 		ss.str("");
 		ss.clear();
 		ss << savePointDir << "/qy.dat";
 		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRV(ierr);
-		ierr = VecView(qyGlobal, viewer); CHKERRV(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRV(ierr);
+		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+		ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
+		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-		ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRV(ierr);
+		ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRQ(ierr);
 		
-		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRV(ierr);
+		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 	}
+	
+	return 0;
 }
 
 template <>
-void NavierStokesSolver<3>::writeData(std::string caseFolder)
+PetscErrorCode NavierStokesSolver<3>::writeData(std::string caseFolder)
 {
 	PetscErrorCode  ierr;
 	PetscInt        rank;
@@ -74,13 +76,13 @@ void NavierStokesSolver<3>::writeData(std::string caseFolder)
 	if(rank==0)
 	{
 		PetscInt its1, its2;
-		std::string filename = caseFolder + "/iterationCount";
+		std::string filename = caseFolder + "/iterationCount.txt";
 		if(timeStep==1)
 			iterationsFile.open(filename.c_str());
 		else	
 			iterationsFile.open(filename.c_str(), std::ios::out | std::ios::app);
-		ierr = KSPGetIterationNumber(ksp1, &its1); CHKERRV(ierr);
-		ierr = KSPGetIterationNumber(ksp2, &its2); CHKERRV(ierr);
+		ierr = KSPGetIterationNumber(ksp1, &its1); CHKERRQ(ierr);
+		ierr = KSPGetIterationNumber(ksp2, &its2); CHKERRQ(ierr);
 		iterationsFile << timeStep << '\t' << its1 << '\t' << its2 << std::endl;
 		iterationsFile.close();
 	}
@@ -98,37 +100,39 @@ void NavierStokesSolver<3>::writeData(std::string caseFolder)
 		
 		mkdir(savePointDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 		
-		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRV(ierr);
+		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 		
 		// print qx to file
 		ss.str("");
 		ss.clear();
 		ss << savePointDir << "/qx.dat";
 		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRV(ierr);
-		ierr = VecView(qxGlobal, viewer); CHKERRV(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRV(ierr);
+		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+		ierr = VecView(qxGlobal, viewer); CHKERRQ(ierr);
+		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
 		// print qy to file
 		ss.str("");
 		ss.clear();
 		ss << savePointDir << "/qy.dat";
 		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRV(ierr);
-		ierr = VecView(qyGlobal, viewer); CHKERRV(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRV(ierr);
+		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+		ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
+		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
 		// print qz to file
 		ss.str("");
 		ss.clear();
 		ss << savePointDir << "/qz.dat";
 		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRV(ierr);
-		ierr = VecView(qzGlobal, viewer); CHKERRV(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRV(ierr);
+		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+		ierr = VecView(qzGlobal, viewer); CHKERRQ(ierr);
+		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-		ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRV(ierr);
+		ierr = PetscPrintf(PETSC_COMM_WORLD, "Data written to folder %s.\n", savePointDir.c_str()); CHKERRQ(ierr);
 		
-		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRV(ierr);
+		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 	}
+
+	return 0;
 }

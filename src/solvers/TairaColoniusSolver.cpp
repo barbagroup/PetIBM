@@ -11,23 +11,27 @@
 #include "TairaColonius/createGlobalMappingBodies.inl"
 
 template <PetscInt dim>
-void TairaColoniusSolver<dim>::initialise()
+PetscErrorCode TairaColoniusSolver<dim>::initialise()
 {
-	initialiseBodies();
-	createDMs();
-	NavierStokesSolver<dim>::createVecs();
-	createGlobalMappingBodies();
-	NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes();
-	NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda();
-	NavierStokesSolver<dim>::initialiseMeshSpacings();
-	NavierStokesSolver<dim>::initialiseFluxes();
-	NavierStokesSolver<dim>::updateBoundaryGhosts();
+	PetscErrorCode ierr;
 
-	NavierStokesSolver<dim>::generateDiagonalMatrices();
-	NavierStokesSolver<dim>::generateA();
-	generateBNQ();
-	NavierStokesSolver<dim>::generateQTBNQ();
-	NavierStokesSolver<dim>::createKSPs();
+	initialiseBodies();
+	ierr = createDMs(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::createVecs(); CHKERRQ(ierr);
+	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
+	NavierStokesSolver<dim>::initialiseMeshSpacings();
+	ierr = NavierStokesSolver<dim>::initialiseFluxes(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::updateBoundaryGhosts(); CHKERRQ(ierr);
+
+	ierr = NavierStokesSolver<dim>::generateDiagonalMatrices(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::generateA(); CHKERRQ(ierr);
+	ierr = generateBNQ(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::generateQTBNQ(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::createKSPs(); CHKERRQ(ierr);
+
+	return 0;
 }
 
 template class TairaColoniusSolver<2>;

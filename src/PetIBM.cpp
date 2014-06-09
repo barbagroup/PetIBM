@@ -10,7 +10,7 @@
 int main(int argc,char **argv)
 {
 	PetscErrorCode ierr;
-	const PetscInt dim = 3;
+	const PetscInt dim = 2;
 	char           caseFolder[PETSC_MAX_PATH_LEN];
 	
 	ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);

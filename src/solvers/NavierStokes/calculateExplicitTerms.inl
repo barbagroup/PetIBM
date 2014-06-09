@@ -231,8 +231,8 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 				// x
 				// first check if the node is adjacent to the -X or +X boundaries
 				// then check if the boundary condition in the x-direction is periodic
-				vWest   = (i > 0)?   0.5*(v + qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[i-1])) : (flowDesc->bc[1][XMINUS].type!=PERIODIC)? qy[k][j][i-1] : 0.5*(u + qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[mesh->nx-1]));
-				vEast   = (i < M-1)? 0.5*(v + qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[i+1])) : (flowDesc->bc[1][XPLUS].type !=PERIODIC)? qy[k][j][i+1] : 0.5*(u + qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[0]));
+				vWest   = (i > 0)?   0.5*(v + qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[i-1])) : (flowDesc->bc[1][XMINUS].type!=PERIODIC)? qy[k][j][i-1] : 0.5*(v + qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[mesh->nx-1]));
+				vEast   = (i < M-1)? 0.5*(v + qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[i+1])) : (flowDesc->bc[1][XPLUS].type !=PERIODIC)? qy[k][j][i+1] : 0.5*(v + qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[0]));
 				uWest   = 0.5*(qx[k][j][i-1]/(dyV[j]*mesh->dz[k]) + qx[k][j+1][i-1]/(dyV[j+1]*mesh->dz[k]));
 				uEast   = 0.5*(  qx[k][j][i]/(dyV[j]*mesh->dz[k]) +   qx[k][j+1][i]/(dyV[j+1]*mesh->dz[k]));
 				// y
@@ -241,8 +241,8 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 				// z
 				// first check if the node is adjacent to the -Z or +Z boundaries
 				// then check if the boundary condition in the z-direction is periodic
-				vNadir  = (k > 0)?   0.5*(v + qy[k-1][j][i]/(mesh->dz[k-1]*mesh->dx[i])) : (flowDesc->bc[1][ZMINUS].type!=PERIODIC)? qy[k-1][j][i] : 0.5*(u + qy[k-1][j][i]/(mesh->dz[mesh->nz-1]*mesh->dx[i]));
-				vZenith = (k < P-1)? 0.5*(v + qy[k+1][j][i]/(mesh->dz[k+1]*mesh->dx[i])) : (flowDesc->bc[1][ZPLUS].type !=PERIODIC)? qy[k+1][j][i] : 0.5*(u + qy[k+1][j][i]/(mesh->dz[0]*mesh->dx[i]));
+				vNadir  = (k > 0)?   0.5*(v + qy[k-1][j][i]/(mesh->dz[k-1]*mesh->dx[i])) : (flowDesc->bc[1][ZMINUS].type!=PERIODIC)? qy[k-1][j][i] : 0.5*(v + qy[k-1][j][i]/(mesh->dz[mesh->nz-1]*mesh->dx[i]));
+				vZenith = (k < P-1)? 0.5*(v + qy[k+1][j][i]/(mesh->dz[k+1]*mesh->dx[i])) : (flowDesc->bc[1][ZPLUS].type !=PERIODIC)? qy[k+1][j][i] : 0.5*(v + qy[k+1][j][i]/(mesh->dz[0]*mesh->dx[i]));
 				wNadir  = 0.5*(qz[k-1][j][i]/(mesh->dx[i]*dyV[j]) + qz[k-1][j+1][i]/(mesh->dx[i]*dyV[j+1]));
 				wZenith = 0.5*(  qz[k][j][i]/(mesh->dx[i]*dyV[j]) +   qz[k][j+1][i]/(mesh->dx[i]*dyV[j+1]));
 				// Hx = d(vu)/dx + d(v^2)/dy + d(vw)/dz
@@ -289,15 +289,15 @@ void NavierStokesSolver<3>::calculateExplicitTerms()
 				// x
 				// first check if the node is adjacent to the -X or +X boundaries
 				// then check if the boundary condition in the x-direction is periodic
-				wWest   = (i > 0)?   0.5*(w + qz[k][j][i-1]/(mesh->dx[i-1]*mesh->dy[j])) : (flowDesc->bc[2][XMINUS].type!=PERIODIC)? qz[k][j][i-1] : 0.5*(u + qz[k][j][i-1]/(mesh->dx[mesh->nx-1]*mesh->dy[j]));
-				wEast   = (i < M-1)? 0.5*(w + qz[k][j][i+1]/(mesh->dx[i+1]*mesh->dy[j])) : (flowDesc->bc[2][XPLUS].type !=PERIODIC)? qz[k][j][i+1] : 0.5*(u + qz[k][j][i+1]/(mesh->dx[0]*mesh->dy[j]));
+				wWest   = (i > 0)?   0.5*(w + qz[k][j][i-1]/(mesh->dx[i-1]*mesh->dy[j])) : (flowDesc->bc[2][XMINUS].type!=PERIODIC)? qz[k][j][i-1] : 0.5*(w + qz[k][j][i-1]/(mesh->dx[mesh->nx-1]*mesh->dy[j]));
+				wEast   = (i < M-1)? 0.5*(w + qz[k][j][i+1]/(mesh->dx[i+1]*mesh->dy[j])) : (flowDesc->bc[2][XPLUS].type !=PERIODIC)? qz[k][j][i+1] : 0.5*(w + qz[k][j][i+1]/(mesh->dx[0]*mesh->dy[j]));
 				uWest   = 0.5*(qx[k][j][i-1]/(mesh->dy[j]*dzW[k]) + qx[k+1][j][i-1]/(mesh->dy[j]*dzW[k+1]));
 				uEast   = 0.5*(  qx[k][j][i]/(mesh->dy[j]*dzW[k]) +   qx[k+1][j][i]/(mesh->dy[j]*dzW[k+1]));
 				// y
 				// first check if the node is adjacent to the -Y or +Y boundaries
 				// then check if the boundary condition in the y-direction is periodic
-				wSouth  = (j > 0)?   0.5*(w + qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[j-1])) : (flowDesc->bc[2][YMINUS].type!=PERIODIC)? qz[k][j-1][i] : 0.5*(u + qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[mesh->ny-1]));
-				wNorth  = (j < N-1)? 0.5*(w + qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[j+1])) : (flowDesc->bc[2][YPLUS].type !=PERIODIC)? qz[k][j+1][i] : 0.5*(u + qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[0]));
+				wSouth  = (j > 0)?   0.5*(w + qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[j-1])) : (flowDesc->bc[2][YMINUS].type!=PERIODIC)? qz[k][j-1][i] : 0.5*(w + qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[mesh->ny-1]));
+				wNorth  = (j < N-1)? 0.5*(w + qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[j+1])) : (flowDesc->bc[2][YPLUS].type !=PERIODIC)? qz[k][j+1][i] : 0.5*(w + qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[0]));
 				vSouth  = 0.5*(qy[k][j-1][i]/(dzW[k]*mesh->dx[i]) + qy[k+1][j-1][i]/(dzW[k+1]*mesh->dx[i]));
 				vNorth  = 0.5*(  qy[k][j][i]/(dzW[k]*mesh->dx[i]) +   qy[k+1][j][i]/(dzW[k+1]*mesh->dx[i]));
 				// z

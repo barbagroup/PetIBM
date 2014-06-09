@@ -91,8 +91,7 @@ void TairaColoniusSolver<2>::initialiseBodies()
 
 	bodyGlobalIndices.resize(x.size());
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
-	PetscSynchronizedFlush(PETSC_COMM_WORLD);
+	PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
 }
 
 template <>
@@ -204,6 +203,5 @@ void TairaColoniusSolver<3>::initialiseBodies()
 
 	bodyGlobalIndices.resize(x.size());
 
-	PetscSynchronizedPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
-	PetscSynchronizedFlush(PETSC_COMM_WORLD);
+	PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
 }

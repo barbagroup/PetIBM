@@ -17,13 +17,14 @@ protected:
 	std::vector<PetscInt>  numBoundaryPointsOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
+	void createDMs();
 	void generateBNQ();
 	void generateR2();
+	void createGlobalMappingBodies();
 
 public:
 	void initialise();
 	void initialiseBodies();
-	void finalise();
 
 	TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
 	{

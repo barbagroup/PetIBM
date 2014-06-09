@@ -53,7 +53,7 @@ protected:
 	KSP ksp1, ksp2;
 	PC  pc2;
 
-	void createDMs();
+	virtual void createDMs();
 	void createVecs();
 	void createKSPs();
 	void initialiseMeshSpacings();
@@ -77,7 +77,7 @@ protected:
 	
 public:
 	virtual void initialise();
-	virtual void finalise();
+	void finalise();
 	void stepTime();
 	void writeData(std::string caseFolder);
 	void writeSimulationInfo(std::string caseFolder);

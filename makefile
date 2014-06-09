@@ -66,6 +66,9 @@ bodyAngle:
 vortexShedding:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/vortexShedding -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
+flatPlateRe200:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/flatPlateRe200 -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
 vars:
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}

@@ -13,7 +13,7 @@ void NavierStokesSolver<2>::writeData(std::string caseFolder)
 	if(rank==0)
 	{
 		PetscInt its1, its2;
-		std::string filename = caseFolder + "/iterationCount";
+		std::string filename = caseFolder + "/iterationCount.txt";
 		if(timeStep==1)
 			iterationsFile.open(filename.c_str());
 		else	

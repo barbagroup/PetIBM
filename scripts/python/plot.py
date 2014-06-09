@@ -134,11 +134,11 @@ if __name__=="__main__":
 			for i in xrange(nx-1):
 				Omg[j, i] = (V[j, i+1]-V[j, i])/(0.5*(dx[i]+dx[i+1])) - (U[j+1, i]-U[j, i])/(0.5*(dy[j]+dy[j+1]))
 		
-		#CS = plt.contour(X, Y, Omg, levels=np.linspace(-3, 3, 16))
-		#plt.colorbar(CS)
-		#plt.axis([CLargs.xmin, CLargs.xmax, CLargs.ymin, CLargs.ymax])
-		#plt.savefig('%s/output/O%07d.png' %(folder,n))
-		#plt.clf()
+		CS = plt.contour(X, Y, Omg, levels=np.linspace(-3, 3, 16))
+		plt.colorbar(CS)
+		plt.axis([CLargs.xmin, CLargs.xmax, CLargs.ymin, CLargs.ymax])
+		plt.savefig('%s/output/O%07d.png' %(folder,n))
+		plt.clf()
 
 		CS = plt.pcolor(X, Y, Omg, cmap='RdBu', vmin=-CLargs.vlim, vmax=CLargs.vlim)
 		plt.colorbar(CS)

@@ -30,8 +30,11 @@ check2d:
 memcheck2d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/2d/memtest
 
-cavity:
+cavityRe100:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cavityRe1000:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 body2d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
@@ -59,6 +62,9 @@ body3d:
 
 bodyAngle:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyAngle -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+vortexShedding:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/vortexShedding -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
 	@echo CLINKER: ${CLINKER}
@@ -91,7 +97,7 @@ cleanoutput:
 	find ./cases -name '0*' -prune -exec rm -rf {} \;
 	find ./cases -name 'output' -prune -exec rm -rf {} \;
 
-cleanall: cleanout
+cleanall: clean cleanoutput
 	${RM} ${YAMLOBJ}
 
 .PHONY: ${LIBS} check4 memcheck vars cleanall

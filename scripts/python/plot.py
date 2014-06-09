@@ -31,10 +31,16 @@ def mkdir(path, overwrite=False):
 		
 if __name__=="__main__":
 
-	try:
-		folder = sys.argv[1]
-	except IndexError:
-		folder = "cases/cavityRe100"
+	parser = argparse.ArgumentParser(description="Converts the PETSc output to VTK format", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument("-folder", dest="folder", help="Case folder", default="cases/2d/cylinderRe40")
+	parser.add_argument("-xmin", type=float, dest="xmin", help="lower x-limit of the plotting region", default=-2)
+	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=4)
+	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=-3)
+	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=3)
+	parser.add_argument("-vlim", type=float, dest="vlim", help="saturation limit for vorticity in the plot", default=7)
+	CLargs = parser.parse_args()
+
+	folder = CLargs.folder
 	
 	print "Case folder: " + folder
 	
@@ -82,6 +88,12 @@ if __name__=="__main__":
 	xv[0:Vnx] = 0.5*(x[0:Vnx]+x[1:Vnx+1])
 	yv[0:Vny] = y[1:Vny+1]
 
+	xo = np.zeros(nx-1)
+	yo = np.zeros(ny-1)
+	xo[0:nx-1] = x[1:nx]
+	yo[0:ny-1] = y[1:ny]
+	Omg = np.zeros((ny-1, nx-1))
+
 	mkdir(folder+"/output")
 	plt.ioff()
 	
@@ -97,6 +109,7 @@ if __name__=="__main__":
 		X, Y = np.meshgrid(xu,yu)
 		CS = plt.contour(X, Y, U, levels=np.linspace(-0.5, 1, 16))
 		plt.colorbar(CS)
+		plt.axis([CLargs.xmin, CLargs.xmax, CLargs.ymin, CLargs.ymax])
 		plt.savefig('%s/output/U%07d.png' % (folder,n))
 		plt.clf()
 
@@ -110,7 +123,27 @@ if __name__=="__main__":
 		X, Y = np.meshgrid(xv,yv)
 		CS = plt.contour(X, Y, V, levels=np.linspace(-0.5, 0.5, 11))
 		plt.colorbar(CS)
+		plt.axis([CLargs.xmin, CLargs.xmax, CLargs.ymin, CLargs.ymax])
 		plt.savefig('%s/output/V%07d.png' %(folder,n))
+		plt.clf()
+
+		# Vorticity
+
+		X, Y = np.meshgrid(xo,yo)
+		for j in xrange(ny-1):
+			for i in xrange(nx-1):
+				Omg[j, i] = (V[j, i+1]-V[j, i])/(0.5*(dx[i]+dx[i+1])) - (U[j+1, i]-U[j, i])/(0.5*(dy[j]+dy[j+1]))
+		
+		#CS = plt.contour(X, Y, Omg, levels=np.linspace(-3, 3, 16))
+		#plt.colorbar(CS)
+		#plt.axis([CLargs.xmin, CLargs.xmax, CLargs.ymin, CLargs.ymax])
+		#plt.savefig('%s/output/O%07d.png' %(folder,n))
+		#plt.clf()
+
+		CS = plt.pcolor(X, Y, Omg, cmap='RdBu', vmin=-CLargs.vlim, vmax=CLargs.vlim)
+		plt.colorbar(CS)
+		plt.axis([CLargs.xmin, CLargs.xmax, CLargs.ymin, CLargs.ymax])
+		plt.savefig('%s/output/R%07d.png' %(folder,n))
 		plt.clf()
 		
 		print 'Plots generated for timestep %d.' % n

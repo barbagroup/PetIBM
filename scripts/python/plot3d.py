@@ -31,12 +31,19 @@ def mkdir(path, overwrite=False):
 
 if __name__=="__main__":
 
-	try:
-		folder = sys.argv[1]
-	except IndexError:
-		folder = "cases/3d/cavityRe100"
+	parser = argparse.ArgumentParser(description="Converts the PETSc output to VTK format", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument("-folder", dest="folder", help="Case folder", default="cases/3d/cavityX")
+	parser.add_argument("-xmin", type=float, dest="xmin", help="lower x-limit of the plotting region", default=-2)
+	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=5)
+	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=-2)
+	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=2)
+	parser.add_argument("-zmin", type=float, dest="zmin", help="lower z-limit of the plotting region", default=-2)
+	parser.add_argument("-zmax", type=float, dest="zmax", help="upper z-limit of the plotting region", default=2)
+	CLargs = parser.parse_args()
+
+	folder = CLargs.folder
 		
-	print "Case folder: " + folder
+	print "Case folder:", folder
 	
 	infoFile = folder + "/simulationInfo.txt"
 	
@@ -88,18 +95,55 @@ if __name__=="__main__":
 	X[0:Unx-1] = 0.5*(x[1:Unx]+x[2:Unx+1])
 	Y[0:Vny-1] = 0.5*(y[1:Vny]+y[2:Vny+1])
 	Z[0:Wnz-1] = 0.5*(z[1:Wnz]+z[2:Wnz+1])
+
+	startx, starty, startz = 0, 0, 0
+	endx, endy, endz = Unx-1, Vny-1, Wnz-1
 	
+	for i in xrange(Unx-1):
+		if CLargs.xmin < X[i]:
+			break
+		startx += 1
+
+	for i in reversed(xrange(Unx-1)):
+		if CLargs.xmax > X[i]:
+			break
+		endx -= 1
+
+	for j in xrange(Vny-1):
+		if CLargs.ymin < Y[j]:
+			break
+		starty += 1
+
+	for j in reversed(xrange(Vny-1)):
+		if CLargs.ymax > Y[j]:
+			break
+		endy -= 1
+
+	for k in xrange(Wnz-1):
+		if CLargs.zmin < Z[k]:
+			break
+		startz += 1
+
+	for k in reversed(xrange(Wnz-1)):
+		if CLargs.zmax > Z[k]:
+			break
+		endz -= 1
+
+	print startx, endx
+	print starty, endy
+	print startz, endz
+
 	mkdir(folder+"/output")
 	
 	for n in xrange(args.nsave, args.nt+args.nsave, args.nsave):
 		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qx.dat' % (folder,n))[1:]
-		U = petscObjs.reshape((Unz, Uny, Unx))
+		qx = petscObjs.reshape((Unz, Uny, Unx))
 		
 		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qy.dat' % (folder,n))[1:]
-		V = petscObjs.reshape((Vnz, Vny, Vnx))
+		qy = petscObjs.reshape((Vnz, Vny, Vnx))
 
 		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qz.dat' % (folder,n))[1:]
-		W = petscObjs.reshape((Wnz, Wny, Wnx))
+		qz = petscObjs.reshape((Wnz, Wny, Wnx))
 
 		outFile = '%s/output/velocity%07d.vtk' % (folder,n)
 		g = open(outFile, 'w')
@@ -109,26 +153,26 @@ if __name__=="__main__":
 		g.write('ASCII\n')
 
 		g.write('DATASET RECTILINEAR_GRID\n')
-		g.write('DIMENSIONS %d %d %d\n' % (Unx-1, Vny-1, Wnz-1))
-		g.write('X_COORDINATES %d double\n' % (Unx-1))
-		for i in xrange(Unx-1):
+		g.write('DIMENSIONS %d %d %d\n' % (endx-startx, endy-starty, endz-startz))
+		g.write('X_COORDINATES %d double\n' % (endx-startx))
+		for i in xrange(startx, endx):
 			g.write('%f ' % X[i])
 		g.write('\n')
-		g.write('Y_COORDINATES %d double\n' % (Vny-1))
-		for j in xrange(Vny-1):
+		g.write('Y_COORDINATES %d double\n' % (endy-starty))
+		for j in xrange(starty, endy):
 			g.write('%f ' % Y[j])
 		g.write('\n')
-		g.write('Z_COORDINATES %d double\n' % (Wnz-1))
-		for k in xrange(Wnz-1):
+		g.write('Z_COORDINATES %d double\n' % (endz-startz))
+		for k in xrange(startz, endz):
 			g.write('%f ' % Z[k])
 		g.write('\n')
 	
-		g.write("POINT_DATA %d\n" % ((Unx-1)*(Vny-1)*(Wnz-1)))
+		g.write("POINT_DATA %d\n" % ((endx-startx)*(endy-starty)*(endz-startz)))
 		g.write('VECTORS velocity double\n')
-		for k in xrange(1,Wnz):
-			for j in xrange(1,Vny):
-				for i in xrange(1,Unx):
-					g.write( "%f\t%f\t%f\n" % ( 0.5*(U[k][j][i-1]+U[k][j][i])/(dy[j]*dz[k]), 0.5*(V[k][j-1][i]+V[k][j][i])/(dx[i]*dz[k]), 0.5*(W[k-1][j][i]+W[k][j][i])/(dx[i]*dy[j]) ) )
+		for k in xrange(startz+1,endz+1):
+			for j in xrange(starty+1,endy+1):
+				for i in xrange(startx+1,endx+1):
+					g.write( "%f\t%f\t%f\n" % ( 0.5*(qx[k][j][i-1]+qx[k][j][i])/(dy[j]*dz[k]), 0.5*(qy[k][j-1][i]+qy[k][j][i])/(dx[i]*dz[k]), 0.5*(qz[k-1][j][i]+qz[k][j][i])/(dx[i]*dy[j]) ) )
 	
 		g.close()
 		

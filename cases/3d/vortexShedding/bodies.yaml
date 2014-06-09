@@ -1,0 +1,16 @@
+- type: quad
+  quadOptions: [25, 25]
+  bottomLeft: [0.3535534, -0.3535534, 0.5]
+  bottomRight: [0.3535534, -0.3535534, -0.5]
+  topRight: [-0.3535534, 0.3535534, -0.5]
+  topLeft: [-0.3535534, 0.3535534, 0.5]
+  centerRotation: [0.0, 0.0]
+  initialOffset: [0.0, 0.0]
+  angleOfAttack: 0.0
+  moving: [false, false]
+  velocity: [0.0, 0.0]
+  omega: 0.0
+  xOscillation: [0.0, 0.0, 0.0]
+  yOscillation: [0.0, 0.0, 0.0]
+  pitchOscillation: [0.0, 0.0, 0.0]
+  circleOptions: [0.5, 0.5, 0.25, 51]

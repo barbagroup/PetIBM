@@ -9,6 +9,7 @@ void NavierStokesSolver<dim>::createKSPs()
 	ierr = KSPSetTolerances(ksp1, 1e-6, 0.0, PETSC_DEFAULT, PETSC_DEFAULT); CHKERRV(ierr);
 	ierr = KSPSetOperators(ksp1, A, A, SAME_NONZERO_PATTERN); CHKERRV(ierr);
 	ierr = KSPSetInitialGuessNonzero(ksp1, PETSC_TRUE); CHKERRV(ierr);
+	ierr = KSPSetType(ksp1, KSPCG); CHKERRV(ierr);
 	ierr = KSPSetFromOptions(ksp1); CHKERRV(ierr);
 
 	// linear system for the Poisson solver

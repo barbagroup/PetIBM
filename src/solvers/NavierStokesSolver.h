@@ -6,6 +6,7 @@
 #include "SimulationParameters.h"
 #include <petscdmda.h>
 #include <petscksp.h>
+#include <fstream>
 
 template <PetscInt dim>
 class NavierStokesSolver
@@ -24,6 +25,8 @@ protected:
 	std::vector<PetscReal> dxU, dyU, dzU,
 	                       dxV, dyV, dzV,
 	                       dxW, dyW, dzW;
+
+	std::ofstream iterationsFile;
 	
 	DM  pda,
 	    uda,

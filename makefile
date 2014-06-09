@@ -55,7 +55,10 @@ cavityZ:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityZ -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 body3d:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyTest -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+bodyAngle:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyAngle -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
 	@echo CLINKER: ${CLINKER}

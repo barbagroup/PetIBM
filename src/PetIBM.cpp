@@ -10,7 +10,7 @@
 int main(int argc,char **argv)
 {
 	PetscErrorCode ierr;
-	const PetscInt dim = 2;
+	const PetscInt dim = 3;
 	char           caseFolder[PETSC_MAX_PATH_LEN];
 	
 	ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
@@ -31,8 +31,7 @@ int main(int argc,char **argv)
 	while(!solver->finished())
 	{
 		solver->stepTime();
-		if(solver->savePoint())
-			solver->writeData(folder);
+		solver->writeData(folder);
 	}
 	solver->finalise();
 

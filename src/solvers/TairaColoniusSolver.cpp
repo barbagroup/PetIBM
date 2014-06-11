@@ -10,6 +10,8 @@
 #include "TairaColonius/generateR2.inl"
 #include "TairaColonius/initialiseBodies.inl"
 #include "TairaColonius/createGlobalMappingBodies.inl"
+#include "TairaColonius/calculateForce.inl"
+#include "TairaColonius/writeForces.inl"
 
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialise()
@@ -19,6 +21,7 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 	initialiseBodies();
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::createVecs(); CHKERRQ(ierr);
+	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
 
 	NavierStokesSolver<dim>::initialiseMeshSpacings();
 	ierr = NavierStokesSolver<dim>::initialiseFluxes(); CHKERRQ(ierr);
@@ -49,6 +52,18 @@ PetscErrorCode TairaColoniusSolver<dim>::finalise()
 	if(bda!=PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
 	// Mats
 	if(ET!=PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
+	// Vecs
+	if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRQ(ierr);}
+
+	return 0;
+}
+
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::writeData()
+{
+	NavierStokesSolver<dim>::writeData();
+	calculateForce();
+	writeForces();
 
 	return 0;
 }

@@ -10,6 +10,10 @@ protected:
 	PetscInt  startGlobalIndex;
 	DM        bda;
 	Mat       ET;
+	PetscReal force[3];
+	Vec       temp;
+
+	std::ofstream forcesFile;
 
 	std::vector<PetscReal> x, y, z;
 	std::vector<PetscInt>  globalIndexMapping;
@@ -17,11 +21,14 @@ protected:
 	std::vector<PetscInt>  numPhiOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
+	void initialiseBodies();
 	PetscErrorCode createDMs();
 	PetscErrorCode generateBNQ();
 	PetscErrorCode generateET();
 	PetscErrorCode generateR2();
 	PetscErrorCode createGlobalMappingBodies();
+	PetscErrorCode calculateForce();
+	void writeForces();
 
 	PetscReal dhRoma(PetscReal x, PetscReal h);
 	PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
@@ -30,12 +37,13 @@ protected:
 public:
 	PetscErrorCode initialise();
 	PetscErrorCode finalise();
-	void initialiseBodies();
+	PetscErrorCode writeData();
 
 	TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
 	{
 		bda = PETSC_NULL;
 		ET  = PETSC_NULL;
+		temp= PETSC_NULL;
 	}
 	
 	/**

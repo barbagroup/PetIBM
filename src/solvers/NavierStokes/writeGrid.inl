@@ -1,7 +1,7 @@
 #include <fstream>
 
 template <>
-void NavierStokesSolver<2>::writeGrid(std::string caseFolder)
+void NavierStokesSolver<2>::writeGrid()
 {
 	PetscInt    rank;
 	
@@ -19,7 +19,7 @@ void NavierStokesSolver<2>::writeGrid(std::string caseFolder)
 }
 
 template <>
-void NavierStokesSolver<3>::writeGrid(std::string caseFolder)
+void NavierStokesSolver<3>::writeGrid()
 {
 	PetscInt    rank;
 	

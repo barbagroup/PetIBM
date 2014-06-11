@@ -82,9 +82,9 @@ public:
 	virtual PetscErrorCode initialise();
 	virtual PetscErrorCode finalise();
 	PetscErrorCode stepTime();
-	PetscErrorCode writeData(std::string caseFolder);
-	void writeSimulationInfo(std::string caseFolder);
-	void writeGrid(std::string caseFolder);
+	virtual PetscErrorCode writeData();
+	void writeSimulationInfo();
+	void writeGrid();
 	bool savePoint();
 	bool finished();
 	

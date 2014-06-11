@@ -186,7 +186,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 	// ownership range of f
 	ierr = VecGetOwnershipRange(fGlobal, &fStart, &fEnd); CHKERRQ(ierr);
 	fLocalSize = fEnd-fStart;
-	
+
 	// create arrays to store nnz values
 	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &d_nnz); CHKERRQ(ierr);
 	ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &o_nnz); CHKERRQ(ierr);
@@ -206,6 +206,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 			{
 				h = mesh->dx[i];
 				xCoord = mesh->x[i+1];
+				d_nnz[localIdx] = 0;
+				o_nnz[localIdx] = 0;
 				// ET portion
 				PetscInt numPhi = 0;
 				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
@@ -233,6 +235,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 		{
 			h = mesh->dy[j];
 			yCoord = mesh->y[j+1];
+			d_nnz[localIdx] = 0;
+			o_nnz[localIdx] = 0;
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
 				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
@@ -266,6 +270,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
 				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+				d_nnz[localIdx] = 0;
+				o_nnz[localIdx] = 0;
 				// ET portion
 				PetscInt numPhi = 0;
 				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)

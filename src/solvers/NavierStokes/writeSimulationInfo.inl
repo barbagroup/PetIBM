@@ -1,7 +1,7 @@
 #include <fstream>
 
 template <>
-void NavierStokesSolver<2>::writeSimulationInfo(std::string caseFolder)
+void NavierStokesSolver<2>::writeSimulationInfo()
 {
 	PetscInt    rank;
 	
@@ -21,7 +21,7 @@ void NavierStokesSolver<2>::writeSimulationInfo(std::string caseFolder)
 }
 
 template <>
-void NavierStokesSolver<3>::writeSimulationInfo(std::string caseFolder)
+void NavierStokesSolver<3>::writeSimulationInfo()
 {
 	PetscInt    rank;
 	

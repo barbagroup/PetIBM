@@ -3,7 +3,7 @@
 #include <iomanip>
 
 template <>
-PetscErrorCode NavierStokesSolver<2>::writeData(std::string caseFolder)
+PetscErrorCode NavierStokesSolver<2>::writeData()
 {
 	PetscErrorCode  ierr;
 	PetscInt        rank;
@@ -66,7 +66,7 @@ PetscErrorCode NavierStokesSolver<2>::writeData(std::string caseFolder)
 }
 
 template <>
-PetscErrorCode NavierStokesSolver<3>::writeData(std::string caseFolder)
+PetscErrorCode NavierStokesSolver<3>::writeData()
 {
 	PetscErrorCode  ierr;
 	PetscInt        rank;

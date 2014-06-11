@@ -25,13 +25,13 @@ int main(int argc,char **argv)
 	std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(folder, &FD, &SP, &CM);
 	
 	ierr = solver->initialise(); CHKERRQ(ierr);
-	solver->writeSimulationInfo(folder);
-	solver->writeGrid(folder);
+	solver->writeSimulationInfo();
+	solver->writeGrid();
 	
 	while(!solver->finished())
 	{
 		ierr = solver->stepTime(); CHKERRQ(ierr);
-		ierr = solver->writeData(folder); CHKERRQ(ierr);
+		ierr = solver->writeData(); CHKERRQ(ierr);
 	}
 	ierr = solver->finalise(); CHKERRQ(ierr);
 

@@ -7,19 +7,26 @@ template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
 protected:
-	DM        bda;
 	PetscInt  startGlobalIndex;
+	DM        bda;
+	Mat       ET;
 
 	std::vector<PetscReal> x, y, z;
 	std::vector<PetscInt>  globalIndexMapping;
 	std::vector<PetscInt>  startGlobalIndices;
 	std::vector<PetscInt>  numBoundaryPointsOnProcess;
+	std::vector<PetscInt>  numPhiOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
 	PetscErrorCode createDMs();
 	PetscErrorCode generateBNQ();
+	PetscErrorCode generateET();
 	PetscErrorCode generateR2();
 	PetscErrorCode createGlobalMappingBodies();
+
+	PetscReal dhRoma(PetscReal x, PetscReal h);
+	PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
+	PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h);
 
 public:
 	PetscErrorCode initialise();

@@ -22,6 +22,7 @@ PetscErrorCode TairaColoniusSolver<2>::createDMs()
 		{
 			procIdx = j*m + i;
 			xEnd = xStart + lxp[i];
+			numPhiOnProcess[procIdx] = lxp[i]*lyp[i];
 			for(size_t l=0; l<x.size(); l++)
 			{
 				if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd])
@@ -69,6 +70,7 @@ PetscErrorCode TairaColoniusSolver<3>::createDMs()
 			{
 				procIdx = k*m*n + j*m + i;
 				xEnd = xStart + lxp[i];
+				numPhiOnProcess[procIdx] = lxp[i]*lyp[i]*lzp[i];
 				for(size_t l=0; l<x.size(); l++)
 				{
 					if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd] && z[l]>=mesh->z[zStart] && z[l]<mesh->z[zEnd])

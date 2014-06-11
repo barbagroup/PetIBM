@@ -6,6 +6,7 @@
 
 #include "TairaColonius/createDMs.inl"
 #include "TairaColonius/generateBNQ.inl"
+#include "TairaColonius/generateET.inl"
 #include "TairaColonius/generateR2.inl"
 #include "TairaColonius/initialiseBodies.inl"
 #include "TairaColonius/createGlobalMappingBodies.inl"
@@ -28,10 +29,35 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 	ierr = NavierStokesSolver<dim>::generateDiagonalMatrices(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::generateA(); CHKERRQ(ierr);
 	ierr = generateBNQ(); CHKERRQ(ierr);
+	ierr = generateET(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::generateQTBNQ(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::createKSPs(); CHKERRQ(ierr);
 
 	return 0;
+}
+
+template <PetscInt dim>
+PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
+{
+	PetscReal r = fabs(x)/h;
+	if(r>1.5)
+		return 0.0;
+	else if(r>0.5 && r<=1.5)
+		return 1.0/(6*h)*( 5.0 - 3.0*r - sqrt(-3.0*(1-r)*(1-r) + 1.0) );
+	else
+		return 1.0/(3*h)*( 1.0 + sqrt(-3.0*r*r + 1.0) );
+}
+
+template <PetscInt dim>
+PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal h)
+{
+	return dhRoma(x, h) * dhRoma(y, h);
+}
+
+template <PetscInt dim>
+PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
+{
+	return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
 }
 
 template class TairaColoniusSolver<2>;

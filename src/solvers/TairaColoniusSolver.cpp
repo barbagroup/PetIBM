@@ -19,19 +19,36 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 	initialiseBodies();
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::createVecs(); CHKERRQ(ierr);
-	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
+
 	NavierStokesSolver<dim>::initialiseMeshSpacings();
 	ierr = NavierStokesSolver<dim>::initialiseFluxes(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::updateBoundaryGhosts(); CHKERRQ(ierr);
 
+	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
+
 	ierr = NavierStokesSolver<dim>::generateDiagonalMatrices(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::generateA(); CHKERRQ(ierr);
 	ierr = generateBNQ(); CHKERRQ(ierr);
-	ierr = generateET(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::generateQTBNQ(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::createKSPs(); CHKERRQ(ierr);
+	ierr = generateET(); CHKERRQ(ierr);
+
+	return 0;
+}
+
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::finalise()
+{
+	PetscErrorCode ierr;
+
+	ierr = NavierStokesSolver<dim>::finalise();
+
+	// DMs
+	if(bda!=PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
+	// Mats
+	if(ET!=PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
 
 	return 0;
 }

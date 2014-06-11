@@ -13,7 +13,6 @@ protected:
 
 	std::vector<PetscReal> x, y, z;
 	std::vector<PetscInt>  globalIndexMapping;
-	std::vector<PetscInt>  startGlobalIndices;
 	std::vector<PetscInt>  numBoundaryPointsOnProcess;
 	std::vector<PetscInt>  numPhiOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
@@ -30,10 +29,13 @@ protected:
 
 public:
 	PetscErrorCode initialise();
+	PetscErrorCode finalise();
 	void initialiseBodies();
 
 	TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
 	{
+		bda = PETSC_NULL;
+		ET  = PETSC_NULL;
 	}
 	
 	/**

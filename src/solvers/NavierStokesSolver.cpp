@@ -11,11 +11,13 @@ PetscErrorCode NavierStokesSolver<dim>::initialise()
 
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = createVecs(); CHKERRQ(ierr);
-	ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
-	ierr = createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
+	
 	initialiseMeshSpacings();
 	ierr = initialiseFluxes(); CHKERRQ(ierr);
 	ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
+
+	ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
+	ierr = createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
 
 	ierr = generateDiagonalMatrices(); CHKERRQ(ierr);
 	ierr = generateA(); CHKERRQ(ierr);

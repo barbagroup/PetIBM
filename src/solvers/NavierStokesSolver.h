@@ -80,7 +80,7 @@ protected:
 	
 public:
 	virtual PetscErrorCode initialise();
-	PetscErrorCode finalise();
+	virtual PetscErrorCode finalise();
 	PetscErrorCode stepTime();
 	PetscErrorCode writeData(std::string caseFolder);
 	void writeSimulationInfo(std::string caseFolder);

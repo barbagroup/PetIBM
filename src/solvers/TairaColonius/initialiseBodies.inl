@@ -102,7 +102,6 @@ void TairaColoniusSolver<2>::initialiseBodies()
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 
 	boundaryPointIndices.resize(numProcs);
-	startGlobalIndices.resize(numProcs);
 	numBoundaryPointsOnProcess.resize(numProcs);
 	numPhiOnProcess.resize(numProcs);
 
@@ -214,7 +213,6 @@ void TairaColoniusSolver<3>::initialiseBodies()
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
 
 	boundaryPointIndices.resize(numProcs);
-	startGlobalIndices.resize(numProcs);
 	numBoundaryPointsOnProcess.resize(numProcs);
 	numPhiOnProcess.resize(numProcs);
 

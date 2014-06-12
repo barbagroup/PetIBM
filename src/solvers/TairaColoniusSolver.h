@@ -33,6 +33,8 @@ protected:
 	PetscReal dhRoma(PetscReal x, PetscReal h);
 	PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
 	PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h);
+	bool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *delta);
+	bool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
 
 public:
 	PetscErrorCode initialise();

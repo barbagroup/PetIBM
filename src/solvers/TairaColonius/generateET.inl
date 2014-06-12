@@ -9,6 +9,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 	PetscInt       localIdx;
 	PetscInt       row, col, value;
 	PetscReal      xCoord, yCoord, h;
+	PetscReal      disp[2];
 	Vec            fGlobal;
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
@@ -48,7 +49,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col = globalIndexMapping[*l] - numPhi;
 						(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -76,7 +77,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
 						(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -116,10 +117,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col  = globalIndexMapping[*l] - numPhi;
-						value= h*delta(xCoord-x[*l], yCoord-y[*l], h);
+						value= h*delta(disp[0], disp[1], h);
 						ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
 				}
@@ -144,10 +145,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
-						value= h*delta(xCoord-x[*l], yCoord-y[*l], h);
+						value= h*delta(disp[0], disp[1], h);
 						ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
 				}
@@ -173,6 +174,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 	PetscInt       localIdx;
 	PetscInt       row, col, value;
 	PetscReal      xCoord, yCoord, zCoord, h;
+	PetscReal      disp[3];
 	Vec            fGlobal;
 
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
@@ -215,7 +217,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col = globalIndexMapping[*l] - numPhi;
 							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -247,7 +249,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
 							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -279,7 +281,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col = globalIndexMapping[*l] - numPhi + 2*numBoundaryPointsOnProcess[procIdx];
 							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -323,10 +325,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col  = globalIndexMapping[*l] - numPhi;
-							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
@@ -355,10 +357,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col  = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
-							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
@@ -387,10 +389,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col  = globalIndexMapping[*l] - numPhi + 2*numBoundaryPointsOnProcess[procIdx];
-							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}

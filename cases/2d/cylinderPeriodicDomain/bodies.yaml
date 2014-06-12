@@ -1,4 +1,5 @@
-- type: circle
+- type: points
+  pointsFile: circle.bdy
   centerRotation: [0.0, 0.0]
   initialOffset: [0.0, 0.0]
   angleOfAttack: 0.0

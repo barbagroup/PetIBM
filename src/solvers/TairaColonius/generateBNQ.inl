@@ -10,6 +10,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 	PetscReal      **pGlobalIdx;
 	PetscInt       row, cols[2], col, value;
 	PetscReal      values[2] = {-1.0, 1.0};
+	PetscReal      disp[2];
 	PetscReal      xCoord, yCoord, h;
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
@@ -48,7 +49,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 			{
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col = globalIndexMapping[*l];
 						(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -76,7 +77,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 			{
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
 						(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -118,10 +119,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 			{
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col  = globalIndexMapping[*l];
-						value= h*delta(xCoord-x[*l], yCoord-y[*l], h);
+						value= h*delta(disp[0], disp[1], h);
 						ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
 				}
@@ -148,10 +149,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 			{
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h)
+					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
 						col = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
-						value= h*delta(xCoord-x[*l], yCoord-y[*l], h);
+						value= h*delta(disp[0], disp[1], h);
 						ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
 				}
@@ -182,6 +183,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 	PetscReal      ***pGlobalIdx;
 	PetscInt       row, cols[2], col, value;
 	PetscReal      values[2] = {-1.0, 1.0};
+	PetscReal      disp[3];
 	PetscReal      xCoord, yCoord, zCoord, h;
 	
 	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
@@ -223,7 +225,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 				{
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col = globalIndexMapping[*l];
 							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -255,7 +257,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 				{
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
 							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -287,7 +289,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 				{
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col = globalIndexMapping[*l] + 2*numBoundaryPointsOnProcess[procIdx];
 							(col>=lambdaStart && col<lambdaEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
@@ -333,10 +335,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 				{
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col  = globalIndexMapping[*l];
-							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
@@ -367,10 +369,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 				{
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col  = globalIndexMapping[*l] + numBoundaryPointsOnProcess[procIdx];
-							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}
@@ -401,10 +403,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 				{
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(fabs(xCoord-x[*l]) < 1.5*h  && fabs(yCoord-y[*l]) < 1.5*h && fabs(zCoord-z[*l]) < 1.5*h)
+						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
 							col  = globalIndexMapping[*l] + 2*numBoundaryPointsOnProcess[procIdx];
-							value= h*delta(xCoord-x[*l], yCoord-y[*l], zCoord-z[*l], h);
+							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(BNQ, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
 					}

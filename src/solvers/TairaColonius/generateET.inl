@@ -237,11 +237,11 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 		{
 			h = mesh->dy[j];
 			yCoord = mesh->y[j+1];
-			d_nnz[localIdx] = 0;
-			o_nnz[localIdx] = 0;
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
 				xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+				d_nnz[localIdx] = 0;
+				o_nnz[localIdx] = 0;
 				// ET portion
 				PetscInt numPhi = 0;
 				for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)

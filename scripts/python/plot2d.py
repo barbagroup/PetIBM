@@ -33,10 +33,10 @@ if __name__=="__main__":
 
 	parser = argparse.ArgumentParser(description="Converts the PETSc output to VTK format", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-folder", dest="folder", help="Case folder", default="cases/2d/cavityRe100")
-	parser.add_argument("-xmin", type=float, dest="xmin", help="lower x-limit of the plotting region", default=-2)
-	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=4)
-	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=-3)
-	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=3)
+	parser.add_argument("-xmin", type=float, dest="xmin", help="lower x-limit of the plotting region", default=float("-inf"))
+	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=float("inf"))
+	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=float("-inf"))
+	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=float("inf"))
 	CLargs = parser.parse_args()
 
 	folder = CLargs.folder

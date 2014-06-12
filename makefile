@@ -39,7 +39,7 @@ cavityRe1000:
 body2d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cylinder:
+cylinder2d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinderRe40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderPeriodicDomain:
@@ -68,6 +68,9 @@ vortexShedding:
 
 flatPlateRe200:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/flatPlateRe200 -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cylinder3d:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cylinderRe40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
 	@echo CLINKER: ${CLINKER}

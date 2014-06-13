@@ -1,9 +1,10 @@
 template <>
-void TairaColoniusSolver<2>::writeForces()
+PetscErrorCode TairaColoniusSolver<2>::writeForces()
 {
-	PetscInt        rank;
+	PetscErrorCode ierr;
+	PetscInt       rank;
 
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
 	if(rank==0)
 	{
@@ -19,14 +20,17 @@ void TairaColoniusSolver<2>::writeForces()
 		forcesFile << timeStep*simParams->dt << '\t' << force[0] << '\t' << force[1] << std::endl;
 		forcesFile.close();
 	}
+
+	return 0;
 }
 
 template <>
-void TairaColoniusSolver<3>::writeForces()
+PetscErrorCode TairaColoniusSolver<3>::writeForces()
 {
-	PetscInt        rank;
+	PetscErrorCode ierr;
+	PetscInt       rank;
 
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
 	if(rank==0)
 	{
@@ -42,4 +46,6 @@ void TairaColoniusSolver<3>::writeForces()
 		forcesFile << timeStep*simParams->dt << '\t' << force[0] << '\t' << force[1] << '\t' << force[2] << std::endl;
 		forcesFile.close();
 	}
+
+	return 0;
 }

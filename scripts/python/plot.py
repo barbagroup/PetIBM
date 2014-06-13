@@ -164,7 +164,7 @@ if __name__=="__main__":
 			U[j,:] = U[j,:]/dy[j]
 		
 		X, Y = np.meshgrid(xu,yu)
-		CS = plt.contour(X, Y, U, levels=np.linspace(-0.5, 1, 16))
+		CS = plt.contour(X, Y, U, levels=np.linspace(-1, 1, 21))
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
 		plt.gca().set_aspect('equal', adjustable='box')
@@ -178,7 +178,7 @@ if __name__=="__main__":
 			V[:,i] = V[:,i]/dx[i]
 				
 		X, Y = np.meshgrid(xv,yv)
-		CS = plt.contour(X, Y, V, levels=np.linspace(-0.5, 0.5, 11))
+		CS = plt.contour(X, Y, V, levels=np.linspace(-1, 1, 21))
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
 		plt.gca().set_aspect('equal', adjustable='box')

@@ -1,11 +1,18 @@
 template <>
-PetscErrorCode TairaColoniusSolver<2>::createDMs()
+PetscErrorCode TairaColoniusSolver<2>::generateBodyInfo()
 {
-	NavierStokesSolver<2>::createDMs();
-
 	PetscErrorCode ierr;
 	PetscInt       m, n;
 	const PetscInt *lxp, *lyp;
+	PetscInt       numProcs;
+
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+
+	boundaryPointIndices.resize(numProcs);
+	numBoundaryPointsOnProcess.resize(numProcs);
+	numPhiOnProcess.resize(numProcs);
+
+	globalIndexMapping.resize(x.size());
 
 	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRQ(ierr);
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
@@ -36,20 +43,24 @@ PetscErrorCode TairaColoniusSolver<2>::createDMs()
 		yStart = yEnd;
 	}
 
-	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 2, 0, &numBoundaryPointsOnProcess.front(), &bda);
-	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRQ(ierr);
-
 	return 0;
 }
 
 template <>
-PetscErrorCode TairaColoniusSolver<3>::createDMs()
+PetscErrorCode TairaColoniusSolver<3>::generateBodyInfo()
 {
-	NavierStokesSolver<3>::createDMs();
-
 	PetscErrorCode ierr;
 	PetscInt       m, n, p;
 	const PetscInt *lxp, *lyp, *lzp;
+	PetscInt       numProcs;
+	
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+
+	boundaryPointIndices.resize(numProcs);
+	numBoundaryPointsOnProcess.resize(numProcs);
+	numPhiOnProcess.resize(numProcs);
+
+	globalIndexMapping.resize(x.size());
 
 	ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRQ(ierr);
 	ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
@@ -85,9 +96,6 @@ PetscErrorCode TairaColoniusSolver<3>::createDMs()
 		}
 		zStart = zEnd;
 	}
-	
-	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), 3, 0, &numBoundaryPointsOnProcess.front(), &bda);
-	ierr = DMCompositeAddDM(lambdaPack, bda); CHKERRQ(ierr);
 
 	return 0;
 }

@@ -1,32 +1,16 @@
 #include "TairaColoniusSolver.h"
-#include <petscsys.h>
 #include <petscdmcomposite.h>
-#include <iostream>
-#include <string>
 
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialise()
 {
 	PetscErrorCode ierr;
 
-	initialiseBodies();
+	ierr = initialiseBodies(); CHKERRQ(ierr);
 	ierr = createDMs(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::createVecs(); CHKERRQ(ierr);
-	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
-
-	NavierStokesSolver<dim>::initialiseMeshSpacings();
-	ierr = NavierStokesSolver<dim>::initialiseFluxes(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::updateBoundaryGhosts(); CHKERRQ(ierr);
-
 	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
-
-	ierr = NavierStokesSolver<dim>::generateDiagonalMatrices(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::generateA(); CHKERRQ(ierr);
-	ierr = generateBNQ(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::generateQTBNQ(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::createKSPs(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::initialiseCommon(); CHKERRQ(ierr);
+	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
 	ierr = generateET(); CHKERRQ(ierr);
 
 	return 0;
@@ -45,6 +29,18 @@ PetscErrorCode TairaColoniusSolver<dim>::finalise()
 	if(ET!=PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
 	// Vecs
 	if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRQ(ierr);}
+
+	return 0;
+}
+
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::createDMs()
+{
+	PetscErrorCode ierr;
+	ierr = NavierStokesSolver<dim>::createDMs(); CHKERRQ(ierr);	
+	ierr = generateBodyInfo(); CHKERRQ(ierr);
+	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), dim, 0, &numBoundaryPointsOnProcess.front(), &bda); CHKERRQ(ierr);
+	ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -80,7 +76,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 	return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
 }
 
-#include "TairaColonius/createDMs.inl"
+#include "TairaColonius/generateBodyInfo.inl"
 #include "TairaColonius/generateBNQ.inl"
 #include "TairaColonius/generateET.inl"
 #include "TairaColonius/generateR2.inl"

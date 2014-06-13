@@ -21,14 +21,15 @@ protected:
 	std::vector<PetscInt>  numPhiOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
-	void initialiseBodies();
+	PetscErrorCode initialiseBodies();
+	PetscErrorCode generateBodyInfo();
 	PetscErrorCode createDMs();
 	PetscErrorCode generateBNQ();
 	PetscErrorCode generateET();
 	PetscErrorCode generateR2();
 	PetscErrorCode createGlobalMappingBodies();
 	PetscErrorCode calculateForce();
-	void writeForces();
+	PetscErrorCode writeForces();
 	PetscErrorCode writePhi();
 
 	PetscReal dhRoma(PetscReal x, PetscReal h);

@@ -56,6 +56,7 @@ protected:
 	KSP ksp1, ksp2;
 	PC  pc2;
 
+	PetscErrorCode initialiseCommon();
 	virtual PetscErrorCode createDMs();
 	PetscErrorCode createVecs();
 	PetscErrorCode createKSPs();
@@ -85,8 +86,8 @@ public:
 	virtual PetscErrorCode finalise();
 	PetscErrorCode stepTime();
 	virtual PetscErrorCode writeData();
-	void writeSimulationInfo();
-	void writeGrid();
+	PetscErrorCode writeSimulationInfo();
+	PetscErrorCode writeGrid();
 	bool savePoint();
 	bool finished();
 	

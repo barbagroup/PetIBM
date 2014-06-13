@@ -1,11 +1,12 @@
 #include <fstream>
 
 template <>
-void NavierStokesSolver<2>::writeGrid()
+PetscErrorCode NavierStokesSolver<2>::writeGrid()
 {
-	PetscInt    rank;
+	PetscErrorCode ierr;
+	PetscInt       rank;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 	
 	if(rank==0)
 	{
@@ -16,14 +17,17 @@ void NavierStokesSolver<2>::writeGrid()
 			f << *i << '\n';
 		f.close();
 	}
+
+	return 0;
 }
 
 template <>
-void NavierStokesSolver<3>::writeGrid()
+PetscErrorCode NavierStokesSolver<3>::writeGrid()
 {
-	PetscInt    rank;
+	PetscErrorCode ierr;
+	PetscInt       rank;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 	
 	if(rank==0)
 	{
@@ -36,4 +40,6 @@ void NavierStokesSolver<3>::writeGrid()
 			f << *i << '\n';
 		f.close();
 	}
+
+	return 0;
 }

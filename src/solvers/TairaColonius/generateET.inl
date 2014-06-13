@@ -12,7 +12,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 	PetscReal      disp[2];
 	Vec            fGlobal;
 	
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
 	// ownership range of q
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
@@ -177,7 +177,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 	PetscReal      disp[3];
 	Vec            fGlobal;
 
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
 	// ownership range of q
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);

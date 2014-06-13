@@ -31,16 +31,16 @@ memcheck2d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/2d/memtest
 
 cavityRe100:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cavityRe1000:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cavityRe1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/lidDrivenCavity/Re1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 body2d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cylinder2d:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinderRe40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cylinderRe40:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe550:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinder/Re550 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1

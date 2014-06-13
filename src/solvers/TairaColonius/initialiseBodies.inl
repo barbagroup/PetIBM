@@ -2,12 +2,13 @@
 #include <fstream>
 
 template <>
-void TairaColoniusSolver<2>::initialiseBodies()
+PetscErrorCode TairaColoniusSolver<2>::initialiseBodies()
 {
-	PetscInt rank;
-	PetscInt totalPoints;
+	PetscErrorCode ierr;
+	PetscInt       rank;
+	PetscInt       totalPoints;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
 	if(rank==0)
 	{
@@ -87,37 +88,31 @@ void TairaColoniusSolver<2>::initialiseBodies()
 	}
 
 	// broadcast total number of body points to all processes
-	MPI_Bcast(&totalPoints, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	ierr = MPI_Bcast(&totalPoints, 1, MPIU_INT, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 
-	MPI_Barrier(PETSC_COMM_WORLD);
+	ierr = MPI_Barrier(PETSC_COMM_WORLD); CHKERRQ(ierr);
 
 	// allocate memory
 	x.resize(totalPoints);
 	y.resize(totalPoints);
 
 	// broadcast vectors to all processes
-	MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
-	MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	ierr = MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
+	ierr = MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 
-	PetscInt numProcs;
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size()); CHKERRQ(ierr);
 
-	boundaryPointIndices.resize(numProcs);
-	numBoundaryPointsOnProcess.resize(numProcs);
-	numPhiOnProcess.resize(numProcs);
-
-	globalIndexMapping.resize(x.size());
-
-	PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
+	return 0;
 }
 
 template <>
-void TairaColoniusSolver<3>::initialiseBodies()
+PetscErrorCode TairaColoniusSolver<3>::initialiseBodies()
 {
-	PetscInt rank;
-	PetscInt totalPoints;
+	PetscErrorCode ierr;
+	PetscInt       rank;
+	PetscInt       totalPoints;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
 	if(rank==0)
 	{
@@ -196,9 +191,9 @@ void TairaColoniusSolver<3>::initialiseBodies()
 	}
 
 	// broadcast total number of body points to all processes
-	MPI_Bcast(&totalPoints, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	ierr = MPI_Bcast(&totalPoints, 1, MPIU_INT, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 
-	MPI_Barrier(PETSC_COMM_WORLD);
+	ierr = MPI_Barrier(PETSC_COMM_WORLD); CHKERRQ(ierr);
 
 	// allocate memory
 	x.resize(totalPoints);
@@ -206,18 +201,11 @@ void TairaColoniusSolver<3>::initialiseBodies()
 	z.resize(totalPoints);
 
 	// broadcast vectors to all processes
-	MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
-	MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
-	MPI_Bcast(&z.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	ierr = MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
+	ierr = MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
+	ierr = MPI_Bcast(&z.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 
-	PetscInt numProcs;
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size()); CHKERRQ(ierr);
 
-	boundaryPointIndices.resize(numProcs);
-	numBoundaryPointsOnProcess.resize(numProcs);
-	numPhiOnProcess.resize(numProcs);
-
-	globalIndexMapping.resize(x.size());
-
-	PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size());
+	return 0;
 }

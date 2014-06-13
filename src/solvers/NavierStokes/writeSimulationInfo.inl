@@ -1,11 +1,12 @@
 #include <fstream>
 
 template <>
-void NavierStokesSolver<2>::writeSimulationInfo()
+PetscErrorCode NavierStokesSolver<2>::writeSimulationInfo()
 {
-	PetscInt    rank;
+	PetscErrorCode ierr;
+	PetscInt       rank;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 	
 	if(rank==0)
 	{
@@ -18,14 +19,17 @@ void NavierStokesSolver<2>::writeSimulationInfo()
 		(flowDesc->bc[0][YPLUS].type==PERIODIC)? f << "-yperiodic\tTrue\n" : f << "-yperiodic\tFalse\n";
 		f.close();
 	}
+
+	return 0;
 }
 
 template <>
-void NavierStokesSolver<3>::writeSimulationInfo()
+PetscErrorCode NavierStokesSolver<3>::writeSimulationInfo()
 {
-	PetscInt    rank;
+	PetscErrorCode ierr;
+	PetscInt       rank;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 	
 	if(rank==0)
 	{
@@ -40,4 +44,6 @@ void NavierStokesSolver<3>::writeSimulationInfo()
 		(flowDesc->bc[0][ZPLUS].type==PERIODIC)? f << "-zperiodic\tTrue\n" : f << "-zperiodic\tFalse\n";
 		f.close();
 	}
+
+	return 0;
 }

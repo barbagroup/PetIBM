@@ -7,7 +7,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 	PetscErrorCode  ierr;
 	PetscInt        rank;
 
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
 	if(rank==0)
 	{

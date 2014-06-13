@@ -13,7 +13,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 	PetscReal      disp[2];
 	PetscReal      xCoord, yCoord, h;
 	
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 	
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
 	qLocalSize = qEnd-qStart;
@@ -186,7 +186,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 	PetscReal      disp[3];
 	PetscReal      xCoord, yCoord, zCoord, h;
 	
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 	
 	ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
 	qLocalSize = qEnd-qStart;

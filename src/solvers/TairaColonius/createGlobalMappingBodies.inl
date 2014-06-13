@@ -1,10 +1,11 @@
 template <>
 PetscErrorCode TairaColoniusSolver<2>::createGlobalMappingBodies()
 {
+	PetscErrorCode ierr;
 	PetscInt       numProcs;
 	PetscInt       globalIndex;
 
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
 	globalIndex = 0;
 	for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)
@@ -24,10 +25,11 @@ PetscErrorCode TairaColoniusSolver<2>::createGlobalMappingBodies()
 template <>
 PetscErrorCode TairaColoniusSolver<3>::createGlobalMappingBodies()
 {
+	PetscErrorCode ierr;
 	PetscInt       numProcs;
 	PetscInt       globalIndex;
 
-	MPI_Comm_size(PETSC_COMM_WORLD, &numProcs);
+	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
 	globalIndex = 0;
 	for(PetscInt procIdx=0; procIdx<numProcs; procIdx++)

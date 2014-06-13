@@ -40,7 +40,7 @@ PetscErrorCode TairaColoniusSolver<2>::calculateForce()
 	ierr = DMCompositeRestoreAccess(qPack, temp, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
 	ierr = DMCompositeRestoreAccess(lambdaPack, lambda, NULL, &fGlobal); CHKERRQ(ierr);
 
-	MPI_Reduce(forceOnProcess, force, 2, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD);
+	ierr = MPI_Reduce(forceOnProcess, force, 2, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -109,7 +109,7 @@ PetscErrorCode TairaColoniusSolver<3>::calculateForce()
 	ierr = DMCompositeRestoreAccess(qPack, temp, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
 	ierr = DMCompositeRestoreAccess(lambdaPack, lambda, NULL, &fGlobal); CHKERRQ(ierr);
 
-	MPI_Reduce(forceOnProcess, force, 3, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD);
+	ierr = MPI_Reduce(forceOnProcess, force, 3, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
 
 	return 0;
 }

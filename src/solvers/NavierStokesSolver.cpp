@@ -11,6 +11,15 @@ PetscErrorCode NavierStokesSolver<dim>::initialise()
 	PetscErrorCode ierr;
 
 	ierr = createDMs(); CHKERRQ(ierr);
+	ierr = initialiseCommon(); CHKERRQ(ierr);
+	return 0;
+}
+
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::initialiseCommon()
+{
+	PetscErrorCode ierr;
+	
 	ierr = createVecs(); CHKERRQ(ierr);
 	
 	initialiseMeshSpacings();

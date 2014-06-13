@@ -77,6 +77,8 @@ protected:
 	PetscErrorCode solveIntermediateVelocity();
 	PetscErrorCode solvePoissonSystem();
 	PetscErrorCode projectionStep();
+	PetscErrorCode writeFluxes();
+	virtual PetscErrorCode writePhi();
 	
 public:
 	virtual PetscErrorCode initialise();

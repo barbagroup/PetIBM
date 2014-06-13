@@ -37,7 +37,8 @@ if __name__=="__main__":
 	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=float("inf"))
 	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=float("-inf"))
 	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=float("inf"))
-	parser.add_argument("-vlim", type=float, dest="vlim", help="saturation limit for vorticity in the plot", default=7)
+	parser.add_argument("-vortlim", type=float, dest="vortlim", help="largest absolute value among contour lines displayed", default=3)
+	parser.add_argument("-numlevels", type=float, dest="numlevels", help="number of vortex contour line levels (choose an even number)", default=14)
 	CLargs = parser.parse_args()
 
 	folder = CLargs.folder
@@ -97,7 +98,59 @@ if __name__=="__main__":
 	yo = np.zeros(ny-1)
 	xo[0:nx-1] = x[1:nx]
 	yo[0:ny-1] = y[1:ny]
-	Omg = np.zeros((ny-1, nx-1))
+
+	Ostartx, Ostarty = 0, 0
+	Oendx, Oendy = nx-1, ny-1
+	
+	for i in xrange(nx-1):
+		if xmin < xo[i]:
+			break
+		Ostartx += 1
+
+	for i in reversed(xrange(nx-1)):
+		if xmax > xo[i]:
+			break
+		Oendx -= 1
+
+	for j in xrange(ny-1):
+		if ymin < yo[j]:
+			break
+		Ostarty += 1
+
+	for j in reversed(xrange(ny-1)):
+		if ymax > yo[j]:
+			break
+		Oendy -= 1
+
+	Omg = np.zeros((Oendy-Ostarty, Oendx-Ostartx))
+
+	xp = np.zeros(nx)
+	yp = np.zeros(ny)
+	xp[0:nx] = 0.5*(x[0:nx]+x[1:nx+1])
+	yp[0:ny] = 0.5*(y[0:ny]+y[1:ny+1])
+
+	Pstartx, Pstarty = 0, 0
+	Pendx, Pendy = nx, ny
+	
+	for i in xrange(nx):
+		if xmin < xp[i]:
+			break
+		Pstartx += 1
+
+	for i in reversed(xrange(nx)):
+		if xmax > xp[i]:
+			break
+		Pendx -= 1
+
+	for j in xrange(ny):
+		if ymin < yp[j]:
+			break
+		Pstarty += 1
+
+	for j in reversed(xrange(ny)):
+		if ymax > yp[j]:
+			break
+		Pendy -= 1
 
 	mkdir(folder+"/output")
 	plt.ioff()
@@ -114,6 +167,7 @@ if __name__=="__main__":
 		CS = plt.contour(X, Y, U, levels=np.linspace(-0.5, 1, 16))
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
+		plt.gca().set_aspect('equal', adjustable='box')
 		plt.savefig('%s/output/U%07d.png' % (folder,n))
 		plt.clf()
 
@@ -127,25 +181,40 @@ if __name__=="__main__":
 		CS = plt.contour(X, Y, V, levels=np.linspace(-0.5, 0.5, 11))
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
+		plt.gca().set_aspect('equal', adjustable='box')
 		plt.savefig('%s/output/V%07d.png' %(folder,n))
 		plt.clf()
 
 		# Vorticity
-		X, Y = np.meshgrid(xo,yo)
-		for j in xrange(ny-1):
-			for i in xrange(nx-1):
-				Omg[j, i] = (V[j, i+1]-V[j, i])/(0.5*(dx[i]+dx[i+1])) - (U[j+1, i]-U[j, i])/(0.5*(dy[j]+dy[j+1]))
+		X, Y = np.meshgrid(xo[Ostartx:Oendx],yo[Ostarty:Oendy])
+		for j in xrange(Ostarty,Oendy):
+			for i in xrange(Ostartx,Oendx):
+				Omg[j-Ostarty, i-Ostartx] = (V[j, i+1]-V[j, i])/(0.5*(dx[i]+dx[i+1])) - (U[j+1, i]-U[j, i])/(0.5*(dy[j]+dy[j+1]))
 		
-		CS = plt.contour(X, Y, Omg, levels=np.linspace(-3, 3, 10))
+		CS = plt.contour(X, Y, Omg, levels=np.linspace(-CLargs.vortlim, CLargs.vortlim, CLargs.numlevels))
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
+		plt.gca().set_aspect('equal', adjustable='box')
 		plt.savefig('%s/output/O%07d.png' %(folder,n))
 		plt.clf()
 
-		CS = plt.pcolor(X, Y, Omg, cmap='RdBu', vmin=-CLargs.vlim, vmax=CLargs.vlim)
+		#CS = plt.pcolor(X, Y, Omg, cmap='RdBu', vmin=-CLargs.vlim, vmax=CLargs.vlim)
+		#plt.colorbar(CS)
+		#plt.axis([xmin, xmax, ymin, ymax])
+		#plt.gca().set_aspect('equal', adjustable='box')
+		#plt.savefig('%s/output/R%07d.png' %(folder,n))
+		#plt.clf()
+
+		# Pressure
+		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/phi.dat' % (folder,n))[1:]
+		P = petscObjs.reshape((ny, nx))
+
+		X, Y = np.meshgrid(xp[Pstartx:Pendx],yp[Pstarty:Pendy])
+		CS = plt.contour(X, Y, P[Pstarty:Pendy,Pstartx:Pendx], levels=np.linspace(-1.0, 1.0, 21))
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
-		plt.savefig('%s/output/R%07d.png' %(folder,n))
+		plt.gca().set_aspect('equal', adjustable='box')
+		plt.savefig('%s/output/P%07d.png' %(folder,n))
 		plt.clf()
 		
 		print 'Plots generated for timestep %d.' % n

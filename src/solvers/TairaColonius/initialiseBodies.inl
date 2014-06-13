@@ -1,5 +1,6 @@
 #include "yaml-cpp/yaml.h"
 #include <fstream>
+
 template <>
 void TairaColoniusSolver<2>::initialiseBodies()
 {

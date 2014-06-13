@@ -29,6 +29,7 @@ protected:
 	PetscErrorCode createGlobalMappingBodies();
 	PetscErrorCode calculateForce();
 	void writeForces();
+	PetscErrorCode writePhi();
 
 	PetscReal dhRoma(PetscReal x, PetscReal h);
 	PetscReal delta(PetscReal x, PetscReal y, PetscReal h);

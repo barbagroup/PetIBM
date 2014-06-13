@@ -3,6 +3,7 @@
 #include <petscdmcomposite.h>
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initialise()
@@ -203,9 +204,11 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "NavierStokes/generateBC1.inl"
 #include "NavierStokes/generateBNQ.inl"
 #include "NavierStokes/generateR2.inl"
-#include "NavierStokes/writeData.inl"
 #include "NavierStokes/writeSimulationInfo.inl"
 #include "NavierStokes/writeGrid.inl"
+#include "NavierStokes/writeFluxes.inl"
+#include "NavierStokes/writePhi.inl"
+#include "NavierStokes/writeData.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

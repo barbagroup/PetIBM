@@ -4,32 +4,21 @@
 
 TimeSteppingScheme timeSchemeFromString(std::string &s)
 {
-  if (s == "EULER_EXPLICIT")
-    return EULER_EXPLICIT;
-  else if (s == "EULER_IMPLICIT")
-    return EULER_IMPLICIT;
-  else if (s == "ADAMS_BASHFORTH_2")
-    return ADAMS_BASHFORTH_2;
-  else if (s == "RUNGE_KUTTA_3")
-    return RUNGE_KUTTA_3;
-  else if (s == "CRANK_NICOLSON")
-    return CRANK_NICOLSON;
-  else
-    return EULER_EXPLICIT;
+	if (s == "EULER_EXPLICIT") return EULER_EXPLICIT;
+	if (s == "EULER_IMPLICIT") return EULER_IMPLICIT;
+	if (s == "ADAMS_BASHFORTH_2") return ADAMS_BASHFORTH_2;
+	if (s == "RUNGE_KUTTA_3") return RUNGE_KUTTA_3;
+	if (s == "CRANK_NICOLSON") return CRANK_NICOLSON;
+	return EULER_EXPLICIT;
 }
 
 SolverType solverTypeFromString(std::string &s)
 {
-	if (s == "NAVIER_STOKES")
-		return NAVIER_STOKES;
-	else if (s == "SAIKI_BIRINGEN")
-		return SAIKI_BIRINGEN;
-	else if (s == "FADLUN_ET_AL")
-		return FADLUN_ET_AL;
-	else if (s == "TAIRA_COLONIUS")
-		return TAIRA_COLONIUS;
-	else
-		return NAVIER_STOKES;
+	if (s == "NAVIER_STOKES") return NAVIER_STOKES;
+	if (s == "SAIKI_BIRINGEN") return SAIKI_BIRINGEN;
+	if (s == "FADLUN_ET_AL") return FADLUN_ET_AL;
+	if (s == "TAIRA_COLONIUS") return TAIRA_COLONIUS;
+	return NAVIER_STOKES;
 }
 
 SimulationParameters::SimulationParameters(std::string fileName)

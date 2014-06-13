@@ -37,23 +37,17 @@ CartesianMesh::CartesianMesh(std::string fileName)
 			doc[i]["direction"] >> direction;
 			doc[i]["start"] >> start;
 				
-			if(direction == "x")
-				nx = 0;
-			else if(direction == "y")
-				ny = 0;
-			else if(direction == "z")
-				nz = 0;
+			if(direction == "x") nx = 0;
+			else if(direction == "y") ny = 0;
+			else if(direction == "z") nz = 0;
 			
 			const YAML::Node &subDomains = doc[i]["subDomains"];
 			for (size_t j=0; j<subDomains.size(); j++)
 			{
 				subDomains[j]["cells"] >> numCells;
-				if (direction == "x")
-					nx += numCells;
-				else if(direction == "y")
-					ny += numCells;
-				else if(direction == "z")
-					nz += numCells;
+				if (direction == "x") nx += numCells;
+				else if(direction == "y") ny += numCells;
+				else if(direction == "z") nz += numCells;
 			}
 		}
 	}
@@ -98,12 +92,9 @@ CartesianMesh::CartesianMesh(std::string fileName)
 			const YAML::Node &subDomains = doc[i]["subDomains"];
 			
 			first = 0;
-			if(direction=="x")
-				x[first] = start;
-			else if(direction=="y")
-				y[first] = start;
-			else if(direction=="z")
-				z[first] = start;
+			if(direction=="x") x[first] = start;
+			else if(direction=="y") y[first] = start;
+			else if(direction=="z") z[first] = start;
 			
 			for (size_t i=0; i<subDomains.size(); i++)
 			{

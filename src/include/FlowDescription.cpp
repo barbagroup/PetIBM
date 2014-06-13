@@ -5,42 +5,27 @@
 
 Boundary boundaryFromString(std::string &s)
 {
-	if (s == "xMinus")
-		return XMINUS;
-	else if (s == "xPlus")
-		return XPLUS;
-	else if (s == "yMinus")
-		return YMINUS;
-	else if (s == "yPlus")
-		return YPLUS;
-	else if (s == "zMinus")
-		return ZMINUS;
-	else if (s == "zPlus")
-		return ZPLUS;
-	else
-	{
-		std::cout << "Error: Invalid boundary location!\n";
-		exit(0);
-	}
+	if (s == "xMinus") return XMINUS;
+	if (s == "xPlus") return XPLUS;
+	if (s == "yMinus") return YMINUS;
+	if (s == "yPlus") return YPLUS;
+	if (s == "zMinus") return ZMINUS;
+	if (s == "zPlus") return ZPLUS;
+	
+	std::cout << "Error: Invalid boundary location!\n";
+	exit(0);
 }
 
 BCType bcTypeFromString(std::string &s)
 {
-	if (s == "DIRICHLET")
-		return DIRICHLET;
-	else if (s == "NEUMANN")
-		return NEUMANN;
-	else if (s == "CONVECTIVE")
-		return CONVECTIVE;
-	else if (s == "PERIODIC")
-		return PERIODIC;
-	else if (s == "SPECIAL")
-		return SPECIAL;
-	else
-	{
-		std::cout << "Error: Invalid boundary condition type!\n";
-		exit(0);
-	}
+	if (s == "DIRICHLET") return DIRICHLET;
+	if (s == "NEUMANN") return NEUMANN;
+	if (s == "CONVECTIVE") return CONVECTIVE;
+	if (s == "PERIODIC") return PERIODIC;
+	if (s == "SPECIAL") return SPECIAL;
+	
+	std::cout << "Error: Invalid boundary condition type!\n";
+	exit(0);
 }
 
 FlowDescription::FlowDescription(std::string fileName)

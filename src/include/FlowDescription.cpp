@@ -31,8 +31,6 @@ BCType bcTypeFromString(std::string &s)
 FlowDescription::FlowDescription(std::string fileName)
 {
 	PetscInt    rank;
-	std::string loc, typ;
-	Boundary    location;
 	
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	
@@ -41,6 +39,8 @@ FlowDescription::FlowDescription(std::string fileName)
 		std::ifstream file(fileName.c_str());
 		YAML::Parser  parser(file);
 		YAML::Node    doc;
+		std::string   loc, typ;
+		Boundary      location;
 		
 		parser.GetNextDocument(doc);
 		

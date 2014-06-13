@@ -2,7 +2,7 @@
 #include <sstream>
 
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::writePhi()
+PetscErrorCode NavierStokesSolver<dim>::writeLambda()
 {
 	PetscErrorCode  ierr;
 	Vec             phi;

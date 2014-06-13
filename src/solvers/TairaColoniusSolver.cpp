@@ -76,6 +76,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 	return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
 }
 
+#include "TairaColonius/initialiseLambda.inl"
 #include "TairaColonius/generateBodyInfo.inl"
 #include "TairaColonius/generateBNQ.inl"
 #include "TairaColonius/generateET.inl"
@@ -83,7 +84,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 #include "TairaColonius/initialiseBodies.inl"
 #include "TairaColonius/createGlobalMappingBodies.inl"
 #include "TairaColonius/isInfluenced.inl"
-#include "TairaColonius/writePhi.inl"
+#include "TairaColonius/writeLambda.inl"
 #include "TairaColonius/calculateForce.inl"
 #include "TairaColonius/writeForces.inl"
 

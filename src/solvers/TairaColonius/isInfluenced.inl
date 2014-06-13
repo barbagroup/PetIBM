@@ -1,5 +1,5 @@
 template <PetscInt dim>
-bool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *disp)
+PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *disp)
 {
 	PetscReal width[2];
 	PetscReal nx = NavierStokesSolver<dim>::mesh->nx,
@@ -17,11 +17,11 @@ bool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, Pe
 	if(NavierStokesSolver<dim>::flowDesc->bc[0][XPLUS].type==PERIODIC && disp[0]>width[0]-disp[0]) disp[0] = width[0] - disp[0];
 	if(NavierStokesSolver<dim>::flowDesc->bc[0][YPLUS].type==PERIODIC && disp[1]>width[1]-disp[1]) disp[1] = width[1] - disp[1];
 
-	return (disp[0] < radius && disp[1] < radius);
+	return (disp[0] < radius && disp[1] < radius)? PETSC_TRUE : PETSC_FALSE;
 }
 
 template <PetscInt dim>
-bool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *disp)
+PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *disp)
 {
 	PetscReal width[3];
 	PetscReal nx = NavierStokesSolver<dim>::mesh->nx,
@@ -44,5 +44,5 @@ bool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, Pe
 	if(NavierStokesSolver<dim>::flowDesc->bc[0][YPLUS].type==PERIODIC && disp[1]>width[1]-disp[1]) disp[1] = width[1] - disp[1];
 	if(NavierStokesSolver<dim>::flowDesc->bc[0][ZPLUS].type==PERIODIC && disp[2]>width[2]-disp[2]) disp[2] = width[2] - disp[2];
 
-	return (disp[0] < radius && disp[1] < radius && disp[2] < radius);
+	return (disp[0] < radius && disp[1] < radius && disp[2] < radius)? PETSC_TRUE : PETSC_FALSE;
 }

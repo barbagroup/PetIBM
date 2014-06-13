@@ -19,11 +19,12 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initialiseCommon()
 {
 	PetscErrorCode ierr;
-	
+
 	ierr = createVecs(); CHKERRQ(ierr);
 	
 	initialiseMeshSpacings();
 	ierr = initialiseFluxes(); CHKERRQ(ierr);
+	ierr = initialiseLambda(); CHKERRQ(ierr);
 	ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
 	ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
@@ -158,15 +159,15 @@ PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 }
 
 template <PetscInt dim>
-bool NavierStokesSolver<dim>::savePoint()
+PetscBool NavierStokesSolver<dim>::savePoint()
 {
-	return (timeStep%simParams->nsave == 0);
+	return (timeStep%simParams->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
 }
 
 template <PetscInt dim>
-bool NavierStokesSolver<dim>::finished()
+PetscBool NavierStokesSolver<dim>::finished()
 {
-	return (timeStep < simParams->nt)? false : true;
+	return (timeStep >= simParams->nt)? PETSC_TRUE : PETSC_FALSE;
 }
 
 template <PetscInt dim>
@@ -206,6 +207,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "NavierStokes/createLocalToGlobalMappingsLambda.inl"
 #include "NavierStokes/initialiseMeshSpacings.inl"
 #include "NavierStokes/initialiseFluxes.inl"
+#include "NavierStokes/initialiseLambda.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
 #include "NavierStokes/calculateExplicitTerms.inl"
 #include "NavierStokes/generateDiagonalMatrices.inl"
@@ -216,7 +218,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "NavierStokes/writeSimulationInfo.inl"
 #include "NavierStokes/writeGrid.inl"
 #include "NavierStokes/writeFluxes.inl"
-#include "NavierStokes/writePhi.inl"
+#include "NavierStokes/writeLambda.inl"
 #include "NavierStokes/writeData.inl"
 
 template class NavierStokesSolver<2>;

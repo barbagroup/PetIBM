@@ -39,6 +39,9 @@ if __name__=="__main__":
 	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=float("inf"))
 	parser.add_argument("-vortlim", type=float, dest="vortlim", help="largest absolute value among contour lines displayed", default=3)
 	parser.add_argument("-numlevels", type=float, dest="numlevels", help="number of vortex contour line levels (choose an even number)", default=14)
+	parser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
+	parser.add_argument("-nsave", type=int, dest="nsave", help="nsave", default=-1)
+	parser.add_argument("-nt", type=int, dest="nt", help="nsave", default=-1)
 	CLargs = parser.parse_args()
 
 	folder = CLargs.folder
@@ -54,11 +57,16 @@ if __name__=="__main__":
 	fileParser = argparse.ArgumentParser()
 	fileParser.add_argument("-nx", type=int, dest="nx", help="number of cells in x-direction", default=32)
 	fileParser.add_argument("-ny", type=int, dest="ny", help="number of cells in y-direction", default=32)
-	fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=200)
-	fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=100)
+	fileParser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
+	fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=-1)
+	fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=-1)
 	fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="False")
 	fileParser.add_argument("-yperiodic", dest="yperiodic", help="periodicity in y-direction", default="False")
 	args = fileParser.parse_args(args_list)
+
+	startStep = CLargs.startStep if CLargs.startStep > -1 else args.startStep
+	nsave = CLargs.nsave if CLargs.nsave > -1 else args.nsave
+	nt = CLargs.nt if CLargs.nt > -1 else args.nt
 	
 	nx = args.nx
 	ny = args.ny
@@ -155,7 +163,7 @@ if __name__=="__main__":
 	mkdir(folder+"/output")
 	plt.ioff()
 	
-	for n in xrange(args.nsave, args.nt+args.nsave, args.nsave):
+	for n in xrange(startStep+nsave, nt+nsave, nsave):
 		
 		# U
 		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qx.dat' % (folder,n))[1:]

@@ -79,7 +79,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				{
 					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
-						col = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
+						col = globalIndexMapping[*l] - numPhi + 1;
 						(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 					}
 				}
@@ -147,7 +147,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				{
 					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
 					{
-						col = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
+						col = globalIndexMapping[*l] - numPhi + 1;
 						value= h*delta(disp[0], disp[1], h);
 						ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 					}
@@ -251,7 +251,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					{
 						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
-							col = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
+							col = globalIndexMapping[*l] - numPhi + 1;
 							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 						}
 					}
@@ -283,7 +283,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					{
 						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
-							col = globalIndexMapping[*l] - numPhi + 2*numBoundaryPointsOnProcess[procIdx];
+							col = globalIndexMapping[*l] - numPhi + 2;
 							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
 						}
 					}
@@ -359,7 +359,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					{
 						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
-							col  = globalIndexMapping[*l] - numPhi + numBoundaryPointsOnProcess[procIdx];
+							col  = globalIndexMapping[*l] - numPhi + 1;
 							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}
@@ -391,7 +391,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					{
 						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
 						{
-							col  = globalIndexMapping[*l] - numPhi + 2*numBoundaryPointsOnProcess[procIdx];
+							col  = globalIndexMapping[*l] - numPhi + 2;
 							value= h*delta(disp[0], disp[1], disp[2], h);
 							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
 						}

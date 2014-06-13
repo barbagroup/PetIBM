@@ -14,9 +14,8 @@ PetscErrorCode TairaColoniusSolver<2>::createGlobalMappingBodies()
 		for(auto i=boundaryPointIndices[procIdx].begin(); i!=boundaryPointIndices[procIdx].end(); i++)
 		{
 			globalIndexMapping[*i] = globalIndex;
-			globalIndex++;
+			globalIndex+=2;
 		}
-		globalIndex += boundaryPointIndices[procIdx].size();
 	}
 
 	return 0;
@@ -38,9 +37,8 @@ PetscErrorCode TairaColoniusSolver<3>::createGlobalMappingBodies()
 		for(auto i=boundaryPointIndices[procIdx].begin(); i!=boundaryPointIndices[procIdx].end(); i++)
 		{
 			globalIndexMapping[*i] = globalIndex;
-			globalIndex++;
+			globalIndex+=3;
 		}
-		globalIndex += 2*boundaryPointIndices[procIdx].size();
 	}
 
 	return 0;

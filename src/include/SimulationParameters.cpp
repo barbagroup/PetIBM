@@ -24,8 +24,6 @@ SolverType solverTypeFromString(std::string &s)
 SimulationParameters::SimulationParameters(std::string fileName)
 {
 	PetscInt    rank;
-	std::string solver;
-	std::string convSch, diffSch;
 	
 	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 	
@@ -34,12 +32,35 @@ SimulationParameters::SimulationParameters(std::string fileName)
 		std::ifstream file(fileName.c_str());
 		YAML::Parser  parser(file);
 		YAML::Node    doc;
+		std::string   solver;
+		std::string   convSch, diffSch;
+		std::string   restartOption = "no";
 		
 		parser.GetNextDocument(doc);
 				
 		doc[0]["dt"] >> dt;
 		doc[0]["nt"] >> nt;
 		doc[0]["nsave"] >> nsave;
+		restart = PETSC_FALSE;
+		startStep = 0;
+		try
+		{
+			doc[0]["restart"] >> restartOption;
+		}
+		catch(...)
+		{
+		}
+		if(restartOption == "yes" || restartOption == "true") restart = PETSC_TRUE;
+		if(restart)
+		{
+			try
+			{
+				doc[0]["startStep"] >> startStep;
+			}
+			catch(...)
+			{
+			}
+		}
 		doc[0]["ibmScheme"] >> solver;
 		doc[0]["timeScheme"][0] >> convSch;
 		doc[0]["timeScheme"][1] >> diffSch;
@@ -87,6 +108,8 @@ SimulationParameters::SimulationParameters(std::string fileName)
 	MPI_Bcast(&dt, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&nt, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&restart, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&startStep, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&gamma, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&zeta, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&alphaExplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);

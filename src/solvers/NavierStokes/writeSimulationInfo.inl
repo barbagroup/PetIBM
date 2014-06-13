@@ -13,6 +13,7 @@ PetscErrorCode NavierStokesSolver<2>::writeSimulationInfo()
 		std::ofstream f(caseFolder+"/simulationInfo.txt");
 		f << "-nx\t" << mesh->nx << '\n';
 		f << "-ny\t" << mesh->ny << '\n';
+		f << "-startStep\t" << simParams->startStep << '\n';
 		f << "-nt\t" << simParams->nt << '\n';
 		f << "-nsave\t" << simParams->nsave << '\n';
 		(flowDesc->bc[0][XPLUS].type==PERIODIC)? f << "-xperiodic\tTrue\n" : f << "-xperiodic\tFalse\n";

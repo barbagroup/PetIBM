@@ -62,6 +62,7 @@ protected:
 	PetscErrorCode createKSPs();
 	void initialiseMeshSpacings();
 	PetscErrorCode initialiseFluxes();
+	virtual PetscErrorCode initialiseLambda();
 	PetscErrorCode createLocalToGlobalMappingsFluxes();
 	PetscErrorCode createLocalToGlobalMappingsLambda();
 	PetscErrorCode updateBoundaryGhosts();
@@ -79,7 +80,7 @@ protected:
 	PetscErrorCode solvePoissonSystem();
 	PetscErrorCode projectionStep();
 	PetscErrorCode writeFluxes();
-	virtual PetscErrorCode writePhi();
+	virtual PetscErrorCode writeLambda();
 	
 public:
 	virtual PetscErrorCode initialise();
@@ -88,8 +89,8 @@ public:
 	virtual PetscErrorCode writeData();
 	PetscErrorCode writeSimulationInfo();
 	PetscErrorCode writeGrid();
-	bool savePoint();
-	bool finished();
+	PetscBool savePoint();
+	PetscBool finished();
 	
 	/**
 	* @brief Give the name of the current solver 
@@ -102,12 +103,12 @@ public:
 	
 	NavierStokesSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
 	{
-		timeStep = 0;
-		caseFolder = folder;
 		// classes
+		caseFolder= folder;
 		flowDesc  = FD;
 		simParams = SP;
 		mesh      = CM;
+		timeStep  = simParams->startStep;
 		// DMs
 		pda = PETSC_NULL;
 		uda = PETSC_NULL;

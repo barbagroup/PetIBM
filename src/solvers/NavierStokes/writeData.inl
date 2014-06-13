@@ -30,7 +30,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 	if(timeStep%simParams->nsave == 0)
 	{
 		ierr = writeFluxes(); CHKERRQ(ierr);
-		ierr = writePhi(); CHKERRQ(ierr);
+		ierr = writeLambda(); CHKERRQ(ierr);
 	}
 	
 	return 0;

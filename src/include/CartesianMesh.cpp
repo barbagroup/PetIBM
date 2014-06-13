@@ -2,13 +2,6 @@
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 
-CartesianMesh::CartesianMesh()
-{
-	nx = 0;
-	ny = 0;
-	nz = 0;
-}
-
 CartesianMesh::CartesianMesh(std::string fileName)
 {
 	PetscInt rank;

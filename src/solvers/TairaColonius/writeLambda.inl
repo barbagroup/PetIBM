@@ -1,7 +1,3 @@
-#include <sys/stat.h>
-#include <sstream>
-#include <iomanip>
-
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
 {

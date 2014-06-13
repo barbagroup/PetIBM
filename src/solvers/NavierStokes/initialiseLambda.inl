@@ -1,5 +1,3 @@
-#include <sstream>
-
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initialiseLambda()
 {

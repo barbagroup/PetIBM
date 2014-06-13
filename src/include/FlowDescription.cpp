@@ -22,7 +22,6 @@ BCType bcTypeFromString(std::string &s)
 	if (s == "NEUMANN") return NEUMANN;
 	if (s == "CONVECTIVE") return CONVECTIVE;
 	if (s == "PERIODIC") return PERIODIC;
-	if (s == "SPECIAL") return SPECIAL;
 	
 	std::cout << "Error: Invalid boundary condition type!\n";
 	exit(0);

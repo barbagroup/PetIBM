@@ -1,6 +1,3 @@
-#include <sys/stat.h>
-#include <sstream>
-
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::writeData()
 {

@@ -2,7 +2,7 @@
 #define TYPES_H
 
 /**
-* @enum  bcType
+* @enum  BCType
 * @brief Specifies the type of boundary condition
 */
 enum BCType
@@ -10,8 +10,7 @@ enum BCType
 	DIRICHLET,  ///< Dirichlet boundary condition
 	NEUMANN,    ///< Neumann boundary condition
 	CONVECTIVE, ///< Convective boundary condition
-	PERIODIC,   ///< Periodic boundary condition
-	SPECIAL
+	PERIODIC    ///< Periodic boundary condition
 };
 
 /**

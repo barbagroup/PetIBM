@@ -1,5 +1,3 @@
-#include <sstream>
-
 template <>
 PetscErrorCode NavierStokesSolver<2>::initialiseFluxes()
 {

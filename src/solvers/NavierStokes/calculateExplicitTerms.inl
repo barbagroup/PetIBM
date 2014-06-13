@@ -1,5 +1,3 @@
-#include <petscdmcomposite.h>
-
 inline PetscReal du2dx2(PetscReal uMinus, PetscReal uCenter, PetscReal uPlus, PetscReal dxMinus, PetscReal dxPlus)
 {
 	return (dxPlus*uMinus + dxMinus*uPlus - (dxPlus+dxMinus)*uCenter)*2.0/dxMinus/dxPlus/(dxMinus+dxPlus);

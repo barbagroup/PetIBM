@@ -1,5 +1,3 @@
-#include <petscdmcomposite.h>
-
 template <>
 PetscErrorCode NavierStokesSolver<2>::createVecs()
 {

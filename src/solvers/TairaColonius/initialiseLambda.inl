@@ -1,6 +1,3 @@
-#include <sstream>
-#include <iomanip>
-
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialiseLambda()
 {

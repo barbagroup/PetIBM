@@ -1,5 +1,3 @@
-#include <fstream>
-
 template <>
 PetscErrorCode NavierStokesSolver<2>::writeGrid()
 {

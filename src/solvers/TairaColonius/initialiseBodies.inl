@@ -1,6 +1,3 @@
-#include "yaml-cpp/yaml.h"
-#include <fstream>
-
 template <>
 PetscErrorCode TairaColoniusSolver<2>::initialiseBodies()
 {

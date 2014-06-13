@@ -1,5 +1,11 @@
 #include "TairaColoniusSolver.h"
+#include "yaml-cpp/yaml.h"
 #include <petscdmcomposite.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <iomanip>
+#include <sys/stat.h>
 
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialise()

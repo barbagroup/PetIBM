@@ -1,6 +1,3 @@
-#include <sys/stat.h>
-#include <sstream>
-
 template <>
 PetscErrorCode NavierStokesSolver<2>::writeFluxes()
 {

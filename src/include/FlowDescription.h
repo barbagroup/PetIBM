@@ -11,6 +11,7 @@ public:
 	PetscInt  dimensions;
 	PetscReal nu;
 	PetscReal initialVelocity[3];
+	PetscReal initialPerturbation[3];
 	BoundaryCondition bc[3][6];
 	
 	FlowDescription(std::string fileName);

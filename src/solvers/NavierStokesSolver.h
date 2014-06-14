@@ -62,6 +62,7 @@ protected:
 	PetscErrorCode createKSPs();
 	void initialiseMeshSpacings();
 	PetscErrorCode initialiseFluxes();
+	PetscErrorCode readFluxes(Vec qxGlobal, Vec qyGlobal, Vec qzGlobal=PETSC_NULL);
 	virtual PetscErrorCode initialiseLambda();
 	PetscErrorCode createLocalToGlobalMappingsFluxes();
 	PetscErrorCode createLocalToGlobalMappingsLambda();

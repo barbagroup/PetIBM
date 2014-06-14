@@ -48,10 +48,23 @@ FlowDescription::FlowDescription(std::string fileName)
 		
 		doc[0]["initialVelocity"][0] >> initialVelocity[0];
 		doc[0]["initialVelocity"][1] >> initialVelocity[1];
-		if(dimensions>2)
+		if(dimensions==3)
 			doc[0]["initialVelocity"][2] >> initialVelocity[2];
 		else
 			initialVelocity[2] = 0.0;
+		
+		try
+		{
+			doc[0]["initialPerturbation"][0] >> initialPerturbation[0];
+			doc[0]["initialPerturbation"][1] >> initialPerturbation[1];
+			if(dimensions==3)
+				doc[0]["initialPerturbation"][2] >> initialPerturbation[2];
+			else
+				initialVelocity[2] = 0.0;
+		}
+		catch(...)
+		{
+		}
 		
 		const YAML::Node &BCs = doc[0]["boundaryConditions"];
 		

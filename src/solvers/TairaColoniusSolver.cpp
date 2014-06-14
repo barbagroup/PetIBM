@@ -13,6 +13,7 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 	PetscErrorCode ierr;
 
 	ierr = initialiseBodies(); CHKERRQ(ierr);
+	ierr = calculateCellIndices(); CHKERRQ(ierr);
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::initialiseCommon(); CHKERRQ(ierr);
@@ -82,6 +83,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 	return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
 }
 
+#include "TairaColonius/calculateCellIndices.inl"
 #include "TairaColonius/initialiseLambda.inl"
 #include "TairaColonius/generateBodyInfo.inl"
 #include "TairaColonius/generateBNQ.inl"

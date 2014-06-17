@@ -31,8 +31,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[0][XMINUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1x[j][0] += coeffMinus*qx[j][-1]/mesh->dy[j]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1x[j][0] += coeffMinus*qx[j][-1]/mesh->dy[j]; break;
 					default        : break;
 				}
 			}
@@ -41,8 +41,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{			
 				switch(flowDesc->bc[0][XPLUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1x[j][M-1] += coeffPlus*qx[j][M]/mesh->dy[j]; break;
+					case CONVECTIVE:
+					case DIRICHLET: bc1x[j][M-1] += coeffPlus*qx[j][M]/mesh->dy[j]; break;
 					default        : break;
 				}
 			}
@@ -61,8 +61,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[0][YMINUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1x[0][i] += coeffMinus*qx[-1][i]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1x[0][i] += coeffMinus*qx[-1][i]; break;
 					default        : break;
 				}
 			}
@@ -71,8 +71,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[0][YPLUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1x[N-1][i] += coeffPlus*qx[N][i]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1x[N-1][i] += coeffPlus*qx[N][i]; break;
 					default        : break;
 				}
 			}
@@ -99,8 +99,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[1][XMINUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1y[j][0] += coeffMinus*qy[j][-1]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1y[j][0] += coeffMinus*qy[j][-1]; break;
 					default        : break;
 				}
 			}
@@ -109,8 +109,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[1][XPLUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1y[j][M-1] += coeffPlus*qy[j][M]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1y[j][M-1] += coeffPlus*qy[j][M]; break;
 					default        : break;
 				}
 			}
@@ -129,8 +129,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[1][YMINUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1y[0][i] += coeffMinus*qy[-1][i]/mesh->dx[i]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1y[0][i] += coeffMinus*qy[-1][i]/mesh->dx[i]; break;
 					default        : break;
 				}
 			}
@@ -139,8 +139,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 			{
 				switch(flowDesc->bc[1][YPLUS].type)
 				{
-					case DIRICHLET :
-					case CONVECTIVE: bc1y[N-1][i] += coeffPlus*qy[N][i]/mesh->dx[i]; break;
+					case CONVECTIVE:
+					case DIRICHLET : bc1y[N-1][i] += coeffPlus*qy[N][i]/mesh->dx[i]; break;
 					default        : break;
 				}
 			}

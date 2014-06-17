@@ -100,6 +100,7 @@ FlowDescription::FlowDescription(std::string fileName)
 	MPI_Bcast(&dimensions, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&nu, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(initialVelocity, 3, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(initialPerturbation, 3, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	
 	// create custom MPI type to broadcast BC information
 	MPI_Datatype bcInfoType, types[2];

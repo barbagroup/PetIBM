@@ -5,38 +5,18 @@ PetscErrorCode NavierStokesSolver<2>::initialiseFluxes()
 	Vec            qxGlobal, qyGlobal;
 	
 	ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
-
+	
 	if(simParams->restart)
 	{
-		PetscViewer       viewer;
-		std::stringstream ss;
-		std::string       savePointDir, fileName;
-
-		PetscPrintf(PETSC_COMM_WORLD, "Restarting from time step %d.\n", timeStep);
-
-		ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
-		savePointDir = ss.str();
-
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/qx.dat";
-		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-		ierr = VecLoad(qxGlobal, viewer); CHKERRQ(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/qy.dat";
-		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-		ierr = VecLoad(qyGlobal, viewer); CHKERRQ(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+		ierr = readFluxes(qxGlobal, qyGlobal); CHKERRQ(ierr);
 	}
 	else
 	{
-		PetscInt       mstart, nstart, m, n;
-		PetscReal      **qx, **qy;
+		PetscInt  mstart, nstart, m, n;
+		PetscReal **qx, **qy;
+		PetscReal initVel[2]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1]};
+		PetscReal initPert[2] = {flowDesc->initialPerturbation[0], flowDesc->initialPerturbation[1]};
+		PetscReal width[2]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
 
 		// U-FLUXES
 		ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -46,7 +26,10 @@ PetscErrorCode NavierStokesSolver<2>::initialiseFluxes()
 		{
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
-				qx[j][i] = flowDesc->initialVelocity[0] * mesh->dy[j];
+				PetscReal x = -PETSC_PI + 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
+				          y = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
+				
+				qx[j][i] = (initVel[0] + initPert[0]*cos(0.5*x)*sin(y))*mesh->dy[j];
 			}
 		}
 		ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -59,13 +42,17 @@ PetscErrorCode NavierStokesSolver<2>::initialiseFluxes()
 		{
 			for(PetscInt i=mstart; i<mstart+m; i++)
 			{
-				qy[j][i] = flowDesc->initialVelocity[1] * mesh->dx[i];
+				PetscReal x = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+				          y = -PETSC_PI + 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1];
+				
+				qy[j][i] = (initVel[1] + initPert[1]*sin(x)*cos(0.5*y))*mesh->dx[i];
 			}
 		}
 		ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
 	}
 	
 	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+	
 	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
 
 	return 0;
@@ -81,43 +68,15 @@ PetscErrorCode NavierStokesSolver<3>::initialiseFluxes()
 
 	if(simParams->restart)
 	{
-		PetscViewer       viewer;
-		std::stringstream ss;
-		std::string       savePointDir, fileName;
-
-		PetscPrintf(PETSC_COMM_WORLD, "Restarting from time step %d.\n", timeStep);
-
-		ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
-		savePointDir = ss.str();
-
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/qx.dat";
-		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-		ierr = VecLoad(qxGlobal, viewer); CHKERRQ(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/qy.dat";
-		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-		ierr = VecLoad(qyGlobal, viewer); CHKERRQ(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/qz.dat";
-		fileName = ss.str();
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-		ierr = VecLoad(qzGlobal, viewer); CHKERRQ(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+		ierr = readFluxes(qxGlobal, qyGlobal, qzGlobal); CHKERRQ(ierr);
 	}
 	else
 	{
-		PetscInt       mstart, nstart, pstart, m, n, p;
-		PetscReal      ***qx, ***qy, ***qz;
+		PetscInt  mstart, nstart, pstart, m, n, p;
+		PetscReal ***qx, ***qy, ***qz;
+		PetscReal initVel[3]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1], flowDesc->initialVelocity[2]};
+		PetscReal initPert[3] = {flowDesc->initialPerturbation[0], flowDesc->initialPerturbation[1], flowDesc->initialPerturbation[2]};
+		PetscReal width[3]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0], mesh->z[mesh->nz] - mesh->z[0]};
 		
 		// U-FLUXES
 		ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -129,7 +88,11 @@ PetscErrorCode NavierStokesSolver<3>::initialiseFluxes()
 			{
 				for(PetscInt i=mstart; i<mstart+m; i++)
 				{
-					qx[k][j][i] = flowDesc->initialVelocity[0] * (mesh->dy[j]*mesh->dz[k]);
+					PetscReal x = -PETSC_PI + 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
+				              y = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
+					          z = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
+					
+					qx[k][j][i] = (initVel[0] + initPert[0]*cos(0.5*x)*sin(y)*sin(z))*(mesh->dy[j]*mesh->dz[k]);
 				}
 			}
 		}
@@ -145,7 +108,11 @@ PetscErrorCode NavierStokesSolver<3>::initialiseFluxes()
 			{
 				for(PetscInt i=mstart; i<mstart+m; i++)
 				{
-					qy[k][j][i] = flowDesc->initialVelocity[1] * (mesh->dx[i]*mesh->dz[k]);
+					PetscReal x = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+				              y = -PETSC_PI + 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1],
+				              z = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
+				
+					qy[k][j][i] = (initVel[1] + initPert[1]*sin(x)*cos(0.5*y)*sin(z))*(mesh->dx[i]*mesh->dz[k]);
 				}
 			}
 		}
@@ -161,7 +128,11 @@ PetscErrorCode NavierStokesSolver<3>::initialiseFluxes()
 			{
 				for(PetscInt i=mstart; i<mstart+m; i++)
 				{
-					qz[k][j][i] = flowDesc->initialVelocity[2] * (mesh->dx[i]*mesh->dy[j]);
+					PetscReal x = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+					          y = -PETSC_PI + 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
+					          z = -PETSC_PI + 2*PETSC_PI*(mesh->z[k+1] - mesh->z[0])/width[2];
+					
+					qz[k][j][i] = (initVel[2] + initPert[2]*sin(x)*sin(y)*cos(0.5*z))*(mesh->dx[i]*mesh->dy[j]);
 				}
 			}
 		}
@@ -169,6 +140,7 @@ PetscErrorCode NavierStokesSolver<3>::initialiseFluxes()
 	}
 	
 	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
+	
 	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
 	return 0;

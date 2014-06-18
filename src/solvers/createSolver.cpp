@@ -4,6 +4,11 @@
 template <PetscInt dim>
 std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
 {
+	if(FD->dimensions!=dim)
+	{
+		PetscPrintf(PETSC_COMM_WORLD, "ERROR: Check the number of dimensions in the input files.\n");
+		exit(0);
+	}
 	PetscPrintf(PETSC_COMM_WORLD, "gamma: %f, zeta: %f, alphaExplicit: %f, alphaImplicit: %f\n", SP->gamma, SP->zeta, SP->alphaExplicit, SP->alphaImplicit);
 	PetscPrintf(PETSC_COMM_WORLD, "Solver type selected: ");
 	switch(SP->solverType)

@@ -42,6 +42,9 @@ body2d:
 cylinderRe40:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
+cylinderRe150:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinder/Re150 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
 cylinderRe550:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinder/Re550 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
@@ -77,6 +80,9 @@ flatPlateRe200:
 
 cylinder3d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cylinderRe40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cylinderRe200:
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
 	@echo CLINKER: ${CLINKER}

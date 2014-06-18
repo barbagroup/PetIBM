@@ -59,7 +59,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
 				switch(flowDesc->bc[0][YMINUS].type)
 				{
 					case DIRICHLET : qx[-1][i] = flowDesc->bc[0][YMINUS].value; break;
-					case CONVECTIVE: beta = flowDesc->bc[0][YMINUS].value*dt/dyU[0];
+					case CONVECTIVE: beta = flowDesc->bc[1][YMINUS].value*dt/dyU[0];
 					                 qx[-1][i] = (1.0-beta)*qx[-1][i] + beta*qx[0][i]/mesh->dy[0];
 					                 if(timeStep==simParams->startStep) qx[-1][i] = qx[0][i]/mesh->dy[0];
 					                 break;
@@ -73,7 +73,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
 				switch(flowDesc->bc[0][YPLUS].type)
 				{
 					case DIRICHLET : qx[N][i] = flowDesc->bc[0][YPLUS].value; break;
-					case CONVECTIVE: beta = flowDesc->bc[0][YPLUS].value*dt/dyU[N];
+					case CONVECTIVE: beta = flowDesc->bc[1][YPLUS].value*dt/dyU[N];
 					                 qx[N][i] = (1.0-beta)*qx[N][i] + beta*qx[N-1][i]/mesh->dy[N-1];
 					                 if(timeStep==simParams->startStep) qx[N][i] = qx[N-1][i]/mesh->dy[N-1];
 					                 break;
@@ -102,7 +102,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
 				switch(flowDesc->bc[1][XMINUS].type)
 				{
 					case DIRICHLET : qy[j][-1] = flowDesc->bc[1][XMINUS].value; break;
-					case CONVECTIVE: beta = flowDesc->bc[1][XMINUS].value*dt/dxV[0];
+					case CONVECTIVE: beta = flowDesc->bc[0][XMINUS].value*dt/dxV[0];
 					                 qy[j][-1] = (1.0-beta)*qy[j][-1] + beta*qy[j][0]/mesh->dx[0];
 					                 if(timeStep==simParams->startStep) qy[j][-1] = qy[j][0]/mesh->dx[0];
 					                 break;
@@ -116,7 +116,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
 				switch(flowDesc->bc[1][XPLUS].type)
 				{
 					case DIRICHLET : qy[j][M] = flowDesc->bc[1][XPLUS].value; break;
-					case CONVECTIVE: beta = flowDesc->bc[1][XPLUS].value*dt/dxV[M];
+					case CONVECTIVE: beta = flowDesc->bc[0][XPLUS].value*dt/dxV[M];
 					                 qy[j][M] = (1.0-beta)*qy[j][M] + beta*qy[j][M-1]/mesh->dx[M-1];
 					                 if(timeStep==simParams->startStep) qy[j][M] = qy[j][M-1]/mesh->dx[M-1];
 					                 break;
@@ -233,7 +233,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[0][YMINUS].type)
 					{
 						case DIRICHLET : qx[k][-1][i] = flowDesc->bc[0][YMINUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[0][YMINUS].value*dt/dyU[0];
+						case CONVECTIVE: beta = flowDesc->bc[1][YMINUS].value*dt/dyU[0];
 						                 qx[k][-1][i] = (1.0-beta)*qx[k][-1][i] + beta*qx[k][0][i]/(mesh->dy[0]*mesh->dz[k]);
 						                 if(timeStep==simParams->startStep) qx[k][-1][i] = qx[k][0][i]/(mesh->dy[0]*mesh->dz[k]);
 						                 break;
@@ -247,7 +247,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[0][YPLUS].type)
 					{
 						case DIRICHLET : qx[k][N][i] = flowDesc->bc[0][YPLUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[0][YPLUS].value*dt/dyU[N];
+						case CONVECTIVE: beta = flowDesc->bc[1][YPLUS].value*dt/dyU[N];
 						                 qx[k][N][i] = (1.0-beta)*qx[k][N][i] + beta*qx[k][N-1][i]/(mesh->dy[N-1]*mesh->dz[k]);
 						                 if(timeStep==simParams->startStep) qx[k][N][i] = qx[k][N-1][i]/(mesh->dy[N-1]*mesh->dz[k]);
 						                 break;
@@ -272,7 +272,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[0][ZMINUS].type)
 					{
 						case DIRICHLET : qx[-1][j][i] = flowDesc->bc[0][ZMINUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[0][ZMINUS].value*dt/dzU[0];
+						case CONVECTIVE: beta = flowDesc->bc[2][ZMINUS].value*dt/dzU[0];
 						                 qx[-1][j][i] = (1.0-beta)*qx[-1][j][i] + beta*qx[0][j][i]/(mesh->dy[j]*mesh->dz[0]);
 						                 if(timeStep==simParams->startStep) qx[-1][j][i] = qx[0][j][i]/(mesh->dy[j]*mesh->dz[0]);
 						                 break;
@@ -286,7 +286,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[0][ZPLUS].type)
 					{
 						case DIRICHLET : qx[P][j][i] = flowDesc->bc[0][ZPLUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[0][ZPLUS].value*dt/dzU[P];
+						case CONVECTIVE: beta = flowDesc->bc[2][ZPLUS].value*dt/dzU[P];
 						                 qx[P][j][i] = (1.0-beta)*qx[P][j][i] + beta*qx[P-1][j][i]/(mesh->dy[j]*mesh->dz[P-1]);
 						                 if(timeStep==simParams->startStep) qx[P][j][i] = qx[P-1][j][i]/(mesh->dy[j]*mesh->dz[P-1]);
 						                 break;
@@ -317,7 +317,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[1][XMINUS].type)
 					{
 						case DIRICHLET : qy[k][j][-1] = flowDesc->bc[1][XMINUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[1][XMINUS].value*dt/dxV[0];
+						case CONVECTIVE: beta = flowDesc->bc[0][XMINUS].value*dt/dxV[0];
 						                 qy[k][j][-1] = (1.0-beta)*qy[k][j][-1] + beta*qy[k][j][0]/(mesh->dx[0]*mesh->dz[k]);
 						                 if(timeStep==simParams->startStep) qy[k][j][-1] = qy[k][j][0]/(mesh->dx[0]*mesh->dz[k]);
 						                 break;
@@ -331,7 +331,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[1][XPLUS].type)
 					{
 						case DIRICHLET : qy[k][j][M] = flowDesc->bc[1][XPLUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[1][XPLUS].value*dt/dxV[M];
+						case CONVECTIVE: beta = flowDesc->bc[0][XPLUS].value*dt/dxV[M];
 						                 qy[k][j][M] = (1.0-beta)*qy[k][j][M] + beta*qy[k][j][M-1]/(mesh->dx[M-1]*mesh->dz[k]);
 						                 if(timeStep==simParams->startStep) qy[k][j][M] = qy[k][j][M-1]/(mesh->dx[M-1]*mesh->dz[k]);
 						                 break;
@@ -395,7 +395,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[1][ZMINUS].type)
 					{
 						case DIRICHLET : qy[-1][j][i] = flowDesc->bc[1][ZMINUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[1][ZMINUS].value*dt/dzV[0];
+						case CONVECTIVE: beta = flowDesc->bc[2][ZMINUS].value*dt/dzV[0];
 						                 qy[-1][j][i] = (1.0-beta)*qy[-1][j][i] + beta*qy[0][j][i]/(mesh->dx[i]*mesh->dz[0]);
 						                 if(timeStep==simParams->startStep) qy[-1][j][i] = qy[0][j][i]/(mesh->dx[i]*mesh->dz[0]);
 						                 break;
@@ -409,7 +409,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 					switch(flowDesc->bc[1][ZPLUS].type)
 					{
 						case DIRICHLET : qy[P][j][i] = flowDesc->bc[1][ZPLUS].value; break;
-						case CONVECTIVE: beta = flowDesc->bc[1][ZPLUS].value*dt/dzV[P];
+						case CONVECTIVE: beta = flowDesc->bc[2][ZPLUS].value*dt/dzV[P];
 						                 qy[P][j][i] = (1.0-beta)*qy[P][j][i] + beta*qy[P-1][j][i]/(mesh->dx[i]*mesh->dz[P-1]);
 						                 if(timeStep==simParams->startStep) qy[P][j][i] = qy[P-1][j][i]/(mesh->dx[i]*mesh->dz[P-1]);
 						                 break;
@@ -439,7 +439,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 				{
 					switch(flowDesc->bc[2][XMINUS].type)
 					{
-						case DIRICHLET : qz[k][j][-1] = flowDesc->bc[2][XMINUS].value; break;
+						case DIRICHLET : qz[k][j][-1] = flowDesc->bc[0][XMINUS].value; break;
 						case CONVECTIVE: beta = flowDesc->bc[2][XMINUS].value*dt/dxW[0];
 						                 qz[k][j][-1] = (1.0-beta)*qz[k][j][-1] + beta*qz[k][j][0]/(mesh->dx[0]*mesh->dy[j]);
 						                 if(timeStep==simParams->startStep) qz[k][j][-1] = qz[k][j][0]/(mesh->dx[0]*mesh->dy[j]);
@@ -453,7 +453,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 				{
 					switch(flowDesc->bc[2][XPLUS].type)
 					{
-						case DIRICHLET : qz[k][j][M] = flowDesc->bc[2][XPLUS].value; break;
+						case DIRICHLET : qz[k][j][M] = flowDesc->bc[0][XPLUS].value; break;
 						case CONVECTIVE: beta = flowDesc->bc[2][XPLUS].value*dt/dxW[M];
 						                 qz[k][j][M] = (1.0-beta)*qz[k][j][M] + beta*qz[k][j][M-1]/(mesh->dx[M-1]*mesh->dy[j]);
 						                 if(timeStep==simParams->startStep) qz[k][j][M] = qz[k][j][M-1]/(mesh->dx[M-1]*mesh->dy[j]);
@@ -478,7 +478,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 				{
 					switch(flowDesc->bc[2][YMINUS].type)
 					{
-						case DIRICHLET : qz[k][-1][i] = flowDesc->bc[2][YMINUS].value; break;
+						case DIRICHLET : qz[k][-1][i] = flowDesc->bc[1][YMINUS].value; break;
 						case CONVECTIVE: beta = flowDesc->bc[2][YMINUS].value*dt/dyW[0];
 						                 qz[k][-1][i] = (1.0-beta)*qz[k][-1][i] + beta*qz[k][0][i]/(mesh->dx[i]*mesh->dy[0]);
 						                 if(timeStep==simParams->startStep) qz[k][-1][i] = qz[k][0][i]/(mesh->dx[i]*mesh->dy[0]);
@@ -492,7 +492,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 				{
 					switch(flowDesc->bc[2][YPLUS].type)
 					{
-						case DIRICHLET : qz[k][N][i] = flowDesc->bc[2][YPLUS].value; break;
+						case DIRICHLET : qz[k][N][i] = flowDesc->bc[1][YPLUS].value; break;
 						case CONVECTIVE: beta = flowDesc->bc[2][YPLUS].value*dt/dyW[N];
 						                 qz[k][N][i] = (1.0-beta)*qz[k][N][i] + beta*qz[k][N-1][i]/(mesh->dx[i]*mesh->dy[N-1]);
 						                 if(timeStep==simParams->startStep) qz[k][N][i] = qz[k][N-1][i]/(mesh->dx[i]*mesh->dy[N-1]);

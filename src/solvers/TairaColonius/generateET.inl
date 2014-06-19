@@ -11,6 +11,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 	PetscReal      xCoord, yCoord, h;
 	PetscReal      disp[2];
 	Vec            fGlobal;
+	PetscLogEvent  GENERATE_ET;
+	
+	ierr = PetscLogEventRegister("generateET", 0, &GENERATE_ET); CHKERRQ(ierr);
+	ierr = PetscLogEventBegin(GENERATE_ET, 0, 0, 0, 0); CHKERRQ(ierr);
 	
 	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
@@ -159,6 +163,8 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 
 	ierr = MatAssemblyBegin(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	ierr = MatAssemblyEnd(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	
+	ierr = PetscLogEventEnd(GENERATE_ET, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -176,6 +182,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 	PetscReal      xCoord, yCoord, zCoord, h;
 	PetscReal      disp[3];
 	Vec            fGlobal;
+	PetscLogEvent  GENERATE_ET;
+	
+	ierr = PetscLogEventRegister("generateET", 0, &GENERATE_ET); CHKERRQ(ierr);
+	ierr = PetscLogEventBegin(GENERATE_ET, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
@@ -404,6 +414,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 
 	ierr = MatAssemblyBegin(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	ierr = MatAssemblyEnd(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	
+	ierr = PetscLogEventEnd(GENERATE_ET, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;
 }

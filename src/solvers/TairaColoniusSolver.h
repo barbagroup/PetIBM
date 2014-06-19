@@ -16,6 +16,7 @@ protected:
 	std::ofstream forcesFile;
 
 	std::vector<PetscReal> x, y, z;
+	std::vector<PetscInt>  I, J, K;
 	std::vector<PetscInt>  globalIndexMapping;
 	std::vector<PetscInt>  numBoundaryPointsOnProcess;
 	std::vector<PetscInt>  numPhiOnProcess;
@@ -24,6 +25,7 @@ protected:
 	PetscErrorCode initialiseLambda();
 	PetscErrorCode initialiseBodies();
 	PetscErrorCode generateBodyInfo();
+	PetscErrorCode calculateCellIndices();
 	PetscErrorCode createDMs();
 	PetscErrorCode generateBNQ();
 	PetscErrorCode generateET();

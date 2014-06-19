@@ -176,6 +176,10 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 {
 	PetscErrorCode ierr;
 	PetscInt       pStart;
+	PetscLogEvent  GENERATE_QTBNQ;
+	
+	ierr = PetscLogEventRegister("generateQTBNQ", 0, &GENERATE_QTBNQ); CHKERRQ(ierr);
+	ierr = PetscLogEventBegin(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRQ(ierr);
 	
@@ -186,6 +190,8 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 	}
 	ierr = MatAssemblyBegin(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	ierr = MatAssemblyEnd(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	
+	ierr = PetscLogEventEnd(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;
 }

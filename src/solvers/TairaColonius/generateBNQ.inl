@@ -12,6 +12,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 	PetscReal      values[2] = {-1.0, 1.0};
 	PetscReal      disp[2];
 	PetscReal      xCoord, yCoord, h;
+	PetscLogEvent  GENERATE_BNQ;
+	
+	ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
+	ierr = PetscLogEventBegin(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 	
 	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 	
@@ -179,6 +183,8 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 
 	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
 	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+	
+	ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -197,6 +203,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 	PetscReal      values[2] = {-1.0, 1.0};
 	PetscReal      disp[3];
 	PetscReal      xCoord, yCoord, zCoord, h;
+	PetscLogEvent  GENERATE_BNQ;
+	
+	ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
+	ierr = PetscLogEventBegin(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 	
 	ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 	
@@ -452,6 +462,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 
 	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
 	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+	
+	ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;
 }

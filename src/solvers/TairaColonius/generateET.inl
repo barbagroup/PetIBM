@@ -53,10 +53,13 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+					if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2)
 					{
-						col = globalIndexMapping[*l] - numPhi;
-						(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+						{
+							col = globalIndexMapping[*l] - numPhi;
+							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						}
 					}
 				}
 			}
@@ -81,10 +84,13 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+					if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2)
 					{
-						col = globalIndexMapping[*l] - numPhi + 1;
-						(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+						{
+							col = globalIndexMapping[*l] - numPhi + 1;
+							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+						}
 					}
 				}
 			}
@@ -121,11 +127,14 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+					if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2)
 					{
-						col  = globalIndexMapping[*l] - numPhi;
-						value= h*delta(disp[0], disp[1], h);
-						ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+						if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+						{
+							col  = globalIndexMapping[*l] - numPhi;
+							value= h*delta(disp[0], disp[1], h);
+							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+						}
 					}
 				}
 			}
@@ -149,11 +158,14 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 				numPhi += numPhiOnProcess[procIdx];
 				for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 				{
-					if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+					if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2)
 					{
-						col = globalIndexMapping[*l] - numPhi + 1;
-						value= h*delta(disp[0], disp[1], h);
-						ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+						if(isInfluenced(xCoord, yCoord, x[*l], y[*l], 1.5*h, disp))
+						{
+							col = globalIndexMapping[*l] - numPhi + 1;
+							value= h*delta(disp[0], disp[1], h);
+							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+						}
 					}
 				}
 			}
@@ -163,6 +175,8 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 
 	ierr = MatAssemblyBegin(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	ierr = MatAssemblyEnd(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated ET!\n");
 	
 	ierr = PetscLogEventEnd(GENERATE_ET, 0, 0, 0, 0); CHKERRQ(ierr);
 
@@ -227,10 +241,13 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+						if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2 && k>=K[*l]-2 && k<=K[*l]+2)
 						{
-							col = globalIndexMapping[*l] - numPhi;
-							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+							if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+							{
+								col = globalIndexMapping[*l] - numPhi;
+								(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+							}
 						}
 					}
 				}
@@ -259,10 +276,13 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+						if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2 && k>=K[*l]-2 && k<=K[*l]+2)
 						{
-							col = globalIndexMapping[*l] - numPhi + 1;
-							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+							if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+							{
+								col = globalIndexMapping[*l] - numPhi + 1;
+								(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+							}
 						}
 					}
 				}
@@ -291,10 +311,13 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+						if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2 && k>=K[*l]-2 && k<=K[*l]+2)
 						{
-							col = globalIndexMapping[*l] - numPhi + 2;
-							(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+							if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+							{
+								col = globalIndexMapping[*l] - numPhi + 2;
+								(col>=fStart && col<fEnd)? d_nnz[localIdx]++ : o_nnz[localIdx]++;
+							}
 						}
 					}
 				}
@@ -335,11 +358,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+						if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2 && k>=K[*l]-2 && k<=K[*l]+2)
 						{
-							col  = globalIndexMapping[*l] - numPhi;
-							value= h*delta(disp[0], disp[1], disp[2], h);
-							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+							if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+							{
+								col  = globalIndexMapping[*l] - numPhi;
+								value= h*delta(disp[0], disp[1], disp[2], h);
+								ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+							}
 						}
 					}
 				}
@@ -367,11 +393,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+						if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2 && k>=K[*l]-2 && k<=K[*l]+2)
 						{
-							col  = globalIndexMapping[*l] - numPhi + 1;
-							value= h*delta(disp[0], disp[1], disp[2], h);
-							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+							if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+							{
+								col  = globalIndexMapping[*l] - numPhi + 1;
+								value= h*delta(disp[0], disp[1], disp[2], h);
+								ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+							}
 						}
 					}
 				}
@@ -399,11 +428,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 					numPhi += numPhiOnProcess[procIdx];
 					for(auto l=boundaryPointIndices[procIdx].begin(); l!=boundaryPointIndices[procIdx].end(); l++)
 					{
-						if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+						if(i>=I[*l]-2 && i<=I[*l]+2 && j>=J[*l]-2 && j<=J[*l]+2 && k>=K[*l]-2 && k<=K[*l]+2)
 						{
-							col  = globalIndexMapping[*l] - numPhi + 2;
-							value= h*delta(disp[0], disp[1], disp[2], h);
-							ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+							if(isInfluenced(xCoord, yCoord, zCoord, x[*l], y[*l], z[*l], 1.5*h, disp))
+							{
+								col  = globalIndexMapping[*l] - numPhi + 2;
+								value= h*delta(disp[0], disp[1], disp[2], h);
+								ierr = MatSetValue(ET, row, col, value, INSERT_VALUES); CHKERRQ(ierr);
+							}
 						}
 					}
 				}
@@ -414,6 +446,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 
 	ierr = MatAssemblyBegin(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	ierr = MatAssemblyEnd(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+	
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated ET!\n");
 	
 	ierr = PetscLogEventEnd(GENERATE_ET, 0, 0, 0, 0); CHKERRQ(ierr);
 

@@ -191,6 +191,8 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 	ierr = MatAssemblyBegin(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	ierr = MatAssemblyEnd(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated QTBNQ!\n");
+	
 	ierr = PetscLogEventEnd(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;

@@ -184,6 +184,8 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
 	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
 	
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated BNQ!\n");
+	
 	ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;
@@ -462,6 +464,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 
 	ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
 	ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+	
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated BNQ!\n");
 	
 	ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 

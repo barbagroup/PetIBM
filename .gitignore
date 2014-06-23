@@ -3,3 +3,9 @@
 *.d
 bin/*
 ._*
+iterationCount.txt
+forces.txt
+simulationInfo.txt
+0*
+grid.txt
+output

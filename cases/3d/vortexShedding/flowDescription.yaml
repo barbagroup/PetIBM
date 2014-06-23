@@ -5,13 +5,13 @@
   initialPerturbation: [0.0, 0.0, 0.0]
   boundaryConditions:
     - location: xMinus
-      u: [PERIODIC, 0.0]
-      v: [PERIODIC, 0.0]
-      w: [PERIODIC, 0.0]
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
     - location: xPlus
-      u: [PERIODIC, 0.0]
-      v: [PERIODIC, 0.0]
-      w: [PERIODIC, 0.0]
+      u: [CONVECTIVE, 1.0]
+      v: [CONVECTIVE, 0.0]
+      w: [CONVECTIVE, 0.0]
     - location: yMinus
       u: [DIRICHLET, 1.0]
       v: [DIRICHLET, 0.0]
@@ -21,10 +21,10 @@
       v: [DIRICHLET, 0.0]
       w: [DIRICHLET, 0.0]
     - location: zMinus
-      u: [PERIODIC, 0.0]
+      u: [PERIODIC, 1.0]
       v: [PERIODIC, 0.0]
       w: [PERIODIC, 0.0]
     - location: zPlus
-      u: [PERIODIC, 0.0]
+      u: [PERIODIC, 1.0]
       v: [PERIODIC, 0.0]
       w: [PERIODIC, 0.0]

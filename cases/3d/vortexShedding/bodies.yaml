@@ -1,5 +1,5 @@
 - type: quad
-  quadOptions: [25, 25]
+  quadOptions: [40, 40]
   bottomLeft: [0.3535534, -0.3535534, 0.5]
   bottomRight: [0.3535534, -0.3535534, -0.5]
   topRight: [-0.3535534, 0.3535534, -0.5]

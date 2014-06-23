@@ -4,8 +4,6 @@ matplotlib.use('Agg')
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import array
-import h5py
 import argparse
 import os
 import errno
@@ -31,7 +29,7 @@ def mkdir(path, overwrite=False):
 		
 if __name__=="__main__":
 
-	parser = argparse.ArgumentParser(description="Converts the PETSc output to VTK format", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser = argparse.ArgumentParser(description="Plots contours for flow variables", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-folder", dest="folder", help="Case folder", default="cases/2d/cylinderRe40")
 	parser.add_argument("-xmin", type=float, dest="xmin", help="lower x-limit of the plotting region", default=float("-inf"))
 	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=float("inf"))
@@ -41,7 +39,7 @@ if __name__=="__main__":
 	parser.add_argument("-numlevels", type=float, dest="numlevels", help="number of vortex contour line levels (choose an even number)", default=14)
 	parser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
 	parser.add_argument("-nsave", type=int, dest="nsave", help="nsave", default=-1)
-	parser.add_argument("-nt", type=int, dest="nt", help="nsave", default=-1)
+	parser.add_argument("-nt", type=int, dest="nt", help="nt", default=-1)
 	CLargs = parser.parse_args()
 
 	folder = CLargs.folder
@@ -166,7 +164,7 @@ if __name__=="__main__":
 	for n in xrange(startStep+nsave, nt+nsave, nsave):
 		
 		# U
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qx.dat' % (folder,n))[1:]
+		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' % (folder,n))[0]
 		U = petscObjs.reshape((Uny, Unx))
 		for j in xrange(Uny):
 			U[j,:] = U[j,:]/dy[j]
@@ -180,7 +178,7 @@ if __name__=="__main__":
 		plt.clf()
 
 		# V
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qy.dat' % (folder,n))[1:]
+		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' % (folder,n))[0]
 		V = petscObjs.reshape((Vny, Vnx))
 		for i in xrange(Vnx):
 			V[:,i] = V[:,i]/dx[i]

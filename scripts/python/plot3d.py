@@ -4,8 +4,6 @@ matplotlib.use('Agg')
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import array
-import h5py
 import argparse
 import os
 import errno
@@ -39,6 +37,9 @@ if __name__=="__main__":
 	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=float("inf"))
 	parser.add_argument("-zmin", type=float, dest="zmin", help="lower z-limit of the plotting region", default=float("-inf"))
 	parser.add_argument("-zmax", type=float, dest="zmax", help="upper z-limit of the plotting region", default=float("inf"))
+	parser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
+	parser.add_argument("-nsave", type=int, dest="nsave", help="nsave", default=-1)
+	parser.add_argument("-nt", type=int, dest="nt", help="nt", default=-1)
 	CLargs = parser.parse_args()
 
 	folder = CLargs.folder
@@ -55,12 +56,17 @@ if __name__=="__main__":
 	fileParser.add_argument("-nx", type=int, dest="nx", help="number of cells in x-direction", default=32)
 	fileParser.add_argument("-ny", type=int, dest="ny", help="number of cells in y-direction", default=32)
 	fileParser.add_argument("-nz", type=int, dest="nz", help="number of cells in z-direction", default=32)
+	fileParser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
 	fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=200)
 	fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=100)
 	fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="False")
 	fileParser.add_argument("-yperiodic", dest="yperiodic", help="periodicity in y-direction", default="False")
 	fileParser.add_argument("-zperiodic", dest="zperiodic", help="periodicity in z-direction", default="False")
 	args = fileParser.parse_args(args_list)
+
+	startStep = CLargs.startStep if CLargs.startStep > -1 else args.startStep
+	nsave = CLargs.nsave if CLargs.nsave > -1 else args.nsave
+	nt = CLargs.nt if CLargs.nt > -1 else args.nt
 	
 	nx = args.nx
 	ny = args.ny
@@ -134,15 +140,15 @@ if __name__=="__main__":
 	print startz, endz
 
 	mkdir(folder+"/output")
-	
+
 	for n in xrange(args.nsave, args.nt+args.nsave, args.nsave):
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qx.dat' % (folder,n))[1:]
+		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' % (folder,n))[0]
 		qx = petscObjs.reshape((Unz, Uny, Unx))
 		
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qy.dat' % (folder,n))[1:]
+		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' % (folder,n))[0]
 		qy = petscObjs.reshape((Vnz, Vny, Vnx))
 
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readVec('%s/%07d/qz.dat' % (folder,n))[1:]
+		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' % (folder,n))[0]
 		qz = petscObjs.reshape((Wnz, Wny, Wnx))
 
 		outFile = '%s/output/velocity%07d.vtk' % (folder,n)

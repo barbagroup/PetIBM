@@ -30,13 +30,19 @@ check2d:
 memcheck2d:
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/2d/memtest
 
-cavityRe100:
+cavityRe100Serial:
+	${MPIEXEC} -n 1 bin/PetIBM -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cavityRe100Parallel:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cavityRe1000:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/lidDrivenCavity/Re1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-body2d:
+body2dSerial:
+	${MPIEXEC} -n 1 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+body2dParallel:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe40:
@@ -66,7 +72,10 @@ cavityY:
 cavityZ:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityZ -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-body3d:
+body3dSerial:
+	${MPIEXEC} -n 1 bin/PetIBM -caseFolder cases/3d/bodyTest -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+body3dParallel:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/bodyTest -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 bodyAngle:
@@ -79,7 +88,7 @@ flatPlateRe200:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/flatPlateRe200 -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinder3d:
-	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cylinderRe40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe200:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1

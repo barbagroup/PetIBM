@@ -90,8 +90,9 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
 
 	// create and allocate memory for matrix A
 	ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
-	ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
 	ierr = MatSetSizes(A, qLocalSize, qLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatSetFromOptions(A); CHKERRQ(ierr);
+	ierr = MatSeqAIJSetPreallocation(A, 0, d_nnz); CHKERRQ(ierr);
 	ierr = MatMPIAIJSetPreallocation(A, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz
@@ -214,8 +215,9 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
 
 	// create and allocate memory for matrix A
 	ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
-	ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
 	ierr = MatSetSizes(A, qLocalSize, qLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatSetFromOptions(A); CHKERRQ(ierr);
+	ierr = MatSeqAIJSetPreallocation(A, 0, d_nnz); CHKERRQ(ierr);
 	ierr = MatMPIAIJSetPreallocation(A, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz

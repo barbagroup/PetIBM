@@ -100,8 +100,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateET()
 	
 	// allocate memory for the matrix
 	ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
-	ierr = MatSetType(ET, MATMPIAIJ); CHKERRQ(ierr);
 	ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
+	ierr = MatSeqAIJSetPreallocation(ET, 0, d_nnz); CHKERRQ(ierr);
 	ierr = MatMPIAIJSetPreallocation(ET, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz
@@ -328,8 +329,9 @@ PetscErrorCode TairaColoniusSolver<3>::generateET()
 	
 	// allocate memory for the matrix
 	ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
-	ierr = MatSetType(ET, MATMPIAIJ); CHKERRQ(ierr);
 	ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
+	ierr = MatSeqAIJSetPreallocation(ET, 0, d_nnz); CHKERRQ(ierr);
 	ierr = MatMPIAIJSetPreallocation(ET, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz

@@ -100,8 +100,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 	
 	// allocate memory for the matrix
 	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
-	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRQ(ierr);
 	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
+	ierr = MatSeqAIJSetPreallocation(BNQ, 0, d_nnz); CHKERRQ(ierr);
 	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
 
 	// deallocate d_nnz and o_nnz
@@ -336,10 +337,11 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 	
 	// allocate memory for the matrix
 	ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
-	ierr = MatSetType(BNQ, MATMPIAIJ); CHKERRQ(ierr);
 	ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+	ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
+	ierr = MatSeqAIJSetPreallocation(BNQ, 0, d_nnz); CHKERRQ(ierr);
 	ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
-
+	
 	// deallocate d_nnz and o_nnz
 	ierr = PetscFree(d_nnz); CHKERRQ(ierr);
 	ierr = PetscFree(o_nnz); CHKERRQ(ierr);

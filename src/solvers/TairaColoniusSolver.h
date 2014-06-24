@@ -28,7 +28,6 @@ protected:
 	PetscErrorCode calculateCellIndices();
 	PetscErrorCode createDMs();
 	PetscErrorCode generateBNQ();
-	PetscErrorCode generateET();
 	PetscErrorCode generateR2();
 	PetscErrorCode createGlobalMappingBodies();
 	PetscErrorCode calculateForce();

@@ -18,7 +18,6 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::initialiseCommon(); CHKERRQ(ierr);
 	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
-	ierr = generateET(); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -87,7 +86,6 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 #include "TairaColonius/initialiseLambda.inl"
 #include "TairaColonius/generateBodyInfo.inl"
 #include "TairaColonius/generateBNQ.inl"
-#include "TairaColonius/generateET.inl"
 #include "TairaColonius/generateR2.inl"
 #include "TairaColonius/initialiseBodies.inl"
 #include "TairaColonius/createGlobalMappingBodies.inl"

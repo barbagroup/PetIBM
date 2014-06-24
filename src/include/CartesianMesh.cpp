@@ -58,8 +58,11 @@ CartesianMesh::CartesianMesh(std::string fileName)
 	y.resize(ny+1);
 	dy.resize(ny);
 	
-	z.resize(nz+1);	
-	dz.resize(nz);
+	if(nz > 0)
+	{
+		z.resize(nz+1);
+		dz.resize(nz);
+	}
 	
 	// second pass
 	if(rank == 0)
@@ -153,6 +156,9 @@ CartesianMesh::CartesianMesh(std::string fileName)
 	MPI_Bcast(&y.front(), ny+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&dy.front(), ny, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	
-	MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-	MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	if(nz > 0)
+	{
+		MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+		MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, PETSC_COMM_WORLD);
+	}
 }

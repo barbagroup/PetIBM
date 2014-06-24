@@ -34,8 +34,15 @@ PetscErrorCode TairaColoniusSolver<2>::generateBodyInfo()
 			{
 				if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd])
 				{
-					boundaryPointIndices[procIdx].push_back(l);
 					numBoundaryPointsOnProcess[procIdx]++;
+				}
+			}
+			boundaryPointIndices[procIdx].reserve(numBoundaryPointsOnProcess[procIdx]);
+			for(size_t l=0; l<x.size(); l++)
+			{
+				if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd])
+				{
+					boundaryPointIndices[procIdx].push_back(l);
 				}
 			}
 			xStart = xEnd;
@@ -86,8 +93,15 @@ PetscErrorCode TairaColoniusSolver<3>::generateBodyInfo()
 				{
 					if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd] && z[l]>=mesh->z[zStart] && z[l]<mesh->z[zEnd])
 					{
-						boundaryPointIndices[procIdx].push_back(l);
 						numBoundaryPointsOnProcess[procIdx]++;
+					}
+				}
+				boundaryPointIndices[procIdx].reserve(numBoundaryPointsOnProcess[procIdx]);
+				for(size_t l=0; l<x.size(); l++)
+				{
+					if(x[l]>=mesh->x[xStart] && x[l]<mesh->x[xEnd] && y[l]>=mesh->y[yStart] && y[l]<mesh->y[yEnd] && z[l]>=mesh->z[zStart] && z[l]<mesh->z[zEnd])
+					{
+						boundaryPointIndices[procIdx].push_back(l);
 					}
 				}
 				xStart = xEnd;

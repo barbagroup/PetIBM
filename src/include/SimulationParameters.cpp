@@ -115,4 +115,6 @@ SimulationParameters::SimulationParameters(std::string fileName)
 	MPI_Bcast(&alphaExplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&alphaImplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&solverType, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&convectionScheme, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+	MPI_Bcast(&diffusionScheme, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 }

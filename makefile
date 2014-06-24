@@ -27,8 +27,14 @@ lib/libsolvers.a:
 check2d:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/test
 
-memcheck2d:
-	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/2d/memtest
+memcheck2dSerial:
+	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM -caseFolder cases/2d/memtest
+
+memcheck2dParallel:
+	${MPIEXEC} -n 2 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM -caseFolder cases/2d/memtest
+
+memcheck2dBodySerial:
+	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM -caseFolder cases/2d/memtestBody
 
 cavityRe100Serial:
 	${MPIEXEC} -n 1 bin/PetIBM -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
@@ -60,8 +66,11 @@ cylinderRe3000:
 cylinderPeriodicDomain:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/2d/cylinderPeriodicDomain -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-memcheck3d:
-	valgrind --tool=memcheck --leak-check=full --show-reachable=yes bin/PetIBM -caseFolder cases/3d/memtest
+memcheck3dSerial:
+	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM -caseFolder cases/3d/memtest
+
+memcheck3dParallel:
+	${MPIEXEC} -n 2 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM -caseFolder cases/3d/memtest
 
 cavityX:
 	${MPIEXEC} -n 4 bin/PetIBM -caseFolder cases/3d/cavityX -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1

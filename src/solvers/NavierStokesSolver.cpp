@@ -11,8 +11,11 @@ PetscErrorCode NavierStokesSolver<dim>::initialise()
 {
 	PetscErrorCode ierr;
 
+	ierr = PetscLogStagePush(stageInitialise); CHKERRQ(ierr);
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = initialiseCommon(); CHKERRQ(ierr);
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
 	return 0;
 }
 
@@ -89,6 +92,12 @@ PetscErrorCode NavierStokesSolver<dim>::finalise()
 	if(ksp1!=PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRQ(ierr);}
 	if(ksp2!=PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRQ(ierr);}
 
+	// Print performance summary to file
+	PetscViewer viewer;
+	std::string performanceSummaryFileName = caseFolder + "/performanceSummary.txt";
+	ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, performanceSummaryFileName.c_str(), &viewer); CHKERRQ(ierr);
+	ierr = PetscLogView(viewer); CHKERRQ(ierr);
+
 	return 0;
 }
 
@@ -117,15 +126,23 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
 	PetscErrorCode ierr;
 
+	ierr = PetscLogStagePush(stageSolveIntermediateVelocity); CHKERRQ(ierr);
 	ierr = calculateExplicitTerms(); CHKERRQ(ierr);
 	ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 	ierr = generateBC1(); CHKERRQ(ierr);
 	ierr = generateRHS1(); CHKERRQ(ierr);
 	ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+	ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
 	ierr = generateR2(); CHKERRQ(ierr);
 	ierr = generateRHS2(); CHKERRQ(ierr);
 	ierr = solvePoissonSystem(); CHKERRQ(ierr);
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+	ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
 	ierr = projectionStep(); CHKERRQ(ierr);
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 	timeStep++;
 
 	return 0;

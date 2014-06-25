@@ -6,6 +6,7 @@ bin/*
 iterationCount.txt
 forces.txt
 simulationInfo.txt
+performanceSummary.txt
 0*
 grid.txt
 output

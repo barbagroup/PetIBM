@@ -12,12 +12,14 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 {
 	PetscErrorCode ierr;
 
+	ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialise); CHKERRQ(ierr);
 	ierr = initialiseBodies(); CHKERRQ(ierr);
 	ierr = calculateCellIndices(); CHKERRQ(ierr);
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::initialiseCommon(); CHKERRQ(ierr);
 	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
 	return 0;
 }

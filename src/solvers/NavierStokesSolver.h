@@ -56,6 +56,11 @@ protected:
 	KSP ksp1, ksp2;
 	PC  pc2;
 
+	PetscLogStage stageInitialise,
+	              stageSolveIntermediateVelocity,
+	              stageSolvePoissonSystem,
+	              stageProjectionStep;
+
 	PetscErrorCode initialiseCommon();
 	virtual PetscErrorCode createDMs();
 	PetscErrorCode createVecs();
@@ -147,6 +152,11 @@ public:
 		ksp2 = PETSC_NULL;
 		// PCs
 		pc2 = PETSC_NULL;
+		// PetscLogStages
+		PetscLogStageRegister("initialise", &stageInitialise);
+		PetscLogStageRegister("solveIntVel", &stageSolveIntermediateVelocity);
+		PetscLogStageRegister("solvePoissSys", &stageSolvePoissonSystem);
+		PetscLogStageRegister("projectionStep", &stageProjectionStep);
 	}
 };
 

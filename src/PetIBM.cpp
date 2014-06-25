@@ -1,13 +1,17 @@
 #include "createSolver.h"
 
+#ifndef DIMENSIONS
+#define DIMENSIONS 2
+#endif
+
 int main(int argc,char **argv)
 {
 	PetscErrorCode ierr;
-	const PetscInt dim = 2;
+	const PetscInt dim = DIMENSIONS;
 	char           caseFolder[PETSC_MAX_PATH_LEN];
 	
 	ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
-	
+
 	ierr = PetscOptionsGetString(NULL, "-caseFolder", caseFolder, sizeof(caseFolder), NULL); CHKERRQ(ierr);
 
 	std::string          folder(caseFolder);

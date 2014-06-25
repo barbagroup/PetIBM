@@ -1,5 +1,5 @@
 template<>
-void NavierStokesSolver<2>::initialiseMeshSpacings()
+void NavierStokesSolver<2>::initializeMeshSpacings()
 {
 	PetscInt       numX, numY;
 	PetscReal      dxMinus, dxPlus, dyMinus, dyPlus;
@@ -52,7 +52,7 @@ void NavierStokesSolver<2>::initialiseMeshSpacings()
 }
 
 template<>
-void NavierStokesSolver<3>::initialiseMeshSpacings()
+void NavierStokesSolver<3>::initializeMeshSpacings()
 {
 	PetscInt       numX, numY, numZ;
 	PetscReal      dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus;

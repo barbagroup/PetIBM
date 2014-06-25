@@ -7,28 +7,28 @@
 #include <sys/stat.h>
 
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::initialise()
+PetscErrorCode NavierStokesSolver<dim>::initialize()
 {
 	PetscErrorCode ierr;
 
-	ierr = PetscLogStagePush(stageInitialise); CHKERRQ(ierr);
+	ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
 	ierr = createDMs(); CHKERRQ(ierr);
-	ierr = initialiseCommon(); CHKERRQ(ierr);
+	ierr = initializeCommon(); CHKERRQ(ierr);
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
 	return 0;
 }
 
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::initialiseCommon()
+PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 {
 	PetscErrorCode ierr;
 
 	ierr = createVecs(); CHKERRQ(ierr);
 	
-	initialiseMeshSpacings();
-	ierr = initialiseFluxes(); CHKERRQ(ierr);
-	ierr = initialiseLambda(); CHKERRQ(ierr);
+	initializeMeshSpacings();
+	ierr = initializeFluxes(); CHKERRQ(ierr);
+	ierr = initializeLambda(); CHKERRQ(ierr);
 	ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
 	ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
@@ -44,7 +44,7 @@ PetscErrorCode NavierStokesSolver<dim>::initialiseCommon()
 }
 
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::finalise()
+PetscErrorCode NavierStokesSolver<dim>::finalize()
 {
 	PetscErrorCode ierr;
 	
@@ -231,10 +231,10 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "NavierStokes/createKSPs.inl"
 #include "NavierStokes/createLocalToGlobalMappingsFluxes.inl"
 #include "NavierStokes/createLocalToGlobalMappingsLambda.inl"
-#include "NavierStokes/initialiseMeshSpacings.inl"
-#include "NavierStokes/initialiseFluxes.inl"
+#include "NavierStokes/initializeMeshSpacings.inl"
+#include "NavierStokes/initializeFluxes.inl"
 #include "NavierStokes/readFluxes.inl"
-#include "NavierStokes/initialiseLambda.inl"
+#include "NavierStokes/initializeLambda.inl"
 #include "NavierStokes/updateBoundaryGhosts.inl"
 #include "NavierStokes/calculateExplicitTerms.inl"
 #include "NavierStokes/generateDiagonalMatrices.inl"

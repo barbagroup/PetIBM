@@ -18,7 +18,7 @@ std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string folder, Flow
 			return std::unique_ptr< TairaColoniusSolver<dim> >(new TairaColoniusSolver<dim>(folder, FD, SP, CM));
 			break;
 		default:
-			PetscPrintf(PETSC_COMM_WORLD, "Unrecognised solver!\n");
+			PetscPrintf(PETSC_COMM_WORLD, "Unrecognized solver!\n");
 			return NULL;
 	}
 }

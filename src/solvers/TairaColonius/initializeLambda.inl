@@ -1,5 +1,5 @@
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::initialiseLambda()
+PetscErrorCode TairaColoniusSolver<dim>::initializeLambda()
 {
 	PetscErrorCode ierr;
 	Vec            phi, fTilde;

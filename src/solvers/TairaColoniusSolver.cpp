@@ -8,16 +8,16 @@
 #include <sys/stat.h>
 
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::initialise()
+PetscErrorCode TairaColoniusSolver<dim>::initialize()
 {
 	PetscErrorCode ierr;
 
-	ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialise); CHKERRQ(ierr);
-	ierr = initialiseBodies(); CHKERRQ(ierr);
+	ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialize); CHKERRQ(ierr);
+	ierr = initializeBodies(); CHKERRQ(ierr);
 	ierr = calculateCellIndices(); CHKERRQ(ierr);
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
-	ierr = NavierStokesSolver<dim>::initialiseCommon(); CHKERRQ(ierr);
+	ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
 	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -25,11 +25,11 @@ PetscErrorCode TairaColoniusSolver<dim>::initialise()
 }
 
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::finalise()
+PetscErrorCode TairaColoniusSolver<dim>::finalize()
 {
 	PetscErrorCode ierr;
 
-	ierr = NavierStokesSolver<dim>::finalise();
+	ierr = NavierStokesSolver<dim>::finalize();
 
 	// DMs
 	if(bda!=PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
@@ -85,11 +85,11 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 }
 
 #include "TairaColonius/calculateCellIndices.inl"
-#include "TairaColonius/initialiseLambda.inl"
+#include "TairaColonius/initializeLambda.inl"
 #include "TairaColonius/generateBodyInfo.inl"
 #include "TairaColonius/generateBNQ.inl"
 #include "TairaColonius/generateR2.inl"
-#include "TairaColonius/initialiseBodies.inl"
+#include "TairaColonius/initializeBodies.inl"
 #include "TairaColonius/createGlobalMappingBodies.inl"
 #include "TairaColonius/isInfluenced.inl"
 #include "TairaColonius/writeLambda.inl"

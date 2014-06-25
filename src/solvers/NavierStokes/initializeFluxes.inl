@@ -1,5 +1,5 @@
 template <>
-PetscErrorCode NavierStokesSolver<2>::initialiseFluxes()
+PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
 {
 	PetscErrorCode ierr;
 	Vec            qxGlobal, qyGlobal;
@@ -59,7 +59,7 @@ PetscErrorCode NavierStokesSolver<2>::initialiseFluxes()
 }
 
 template <>
-PetscErrorCode NavierStokesSolver<3>::initialiseFluxes()
+PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
 {
 	PetscErrorCode ierr;
 	Vec            qxGlobal, qyGlobal, qzGlobal;

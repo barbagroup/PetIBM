@@ -35,7 +35,7 @@ public:
 	PetscBool          restart; ///< Flag to indicate whether the simulation was restarted from saved data
 	
 	/***********************************************************************//**
-	* \brief Reads an input file and initialises the simulation parameters
+	* \brief Reads an input file and initializes the simulation parameters
 	*/
 	SimulationParameters(std::string fileName);
 };

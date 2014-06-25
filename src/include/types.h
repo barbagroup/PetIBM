@@ -31,7 +31,7 @@ enum Boundary
 };
 
 /***************************************************************************//**
-* \brief Numerical scheme used to discretise the time derivative
+* \brief Numerical scheme used to discretize the time derivative
 *
 * A time-dependent differential equation of the form
 * \f[ \frac{du}{dt} = f(u) \f]

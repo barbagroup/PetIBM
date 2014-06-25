@@ -56,19 +56,19 @@ protected:
 	KSP ksp1, ksp2;
 	PC  pc2;
 
-	PetscLogStage stageInitialise,
+	PetscLogStage stageInitialize,
 	              stageSolveIntermediateVelocity,
 	              stageSolvePoissonSystem,
 	              stageProjectionStep;
 
-	PetscErrorCode initialiseCommon();
+	PetscErrorCode initializeCommon();
 	virtual PetscErrorCode createDMs();
 	PetscErrorCode createVecs();
 	PetscErrorCode createKSPs();
-	void initialiseMeshSpacings();
-	PetscErrorCode initialiseFluxes();
+	void initializeMeshSpacings();
+	PetscErrorCode initializeFluxes();
 	PetscErrorCode readFluxes(Vec qxGlobal, Vec qyGlobal, Vec qzGlobal=PETSC_NULL);
-	virtual PetscErrorCode initialiseLambda();
+	virtual PetscErrorCode initializeLambda();
 	PetscErrorCode createLocalToGlobalMappingsFluxes();
 	PetscErrorCode createLocalToGlobalMappingsLambda();
 	PetscErrorCode updateBoundaryGhosts();
@@ -89,8 +89,8 @@ protected:
 	virtual PetscErrorCode writeLambda();
 	
 public:
-	virtual PetscErrorCode initialise();
-	virtual PetscErrorCode finalise();
+	virtual PetscErrorCode initialize();
+	virtual PetscErrorCode finalize();
 	PetscErrorCode stepTime();
 	virtual PetscErrorCode writeData();
 	PetscErrorCode writeSimulationInfo();
@@ -153,7 +153,7 @@ public:
 		// PCs
 		pc2 = PETSC_NULL;
 		// PetscLogStages
-		PetscLogStageRegister("initialise", &stageInitialise);
+		PetscLogStageRegister("initialize", &stageInitialize);
 		PetscLogStageRegister("solveIntVel", &stageSolveIntermediateVelocity);
 		PetscLogStageRegister("solvePoissSys", &stageSolvePoissonSystem);
 		PetscLogStageRegister("projectionStep", &stageProjectionStep);

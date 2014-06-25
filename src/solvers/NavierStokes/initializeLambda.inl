@@ -1,5 +1,5 @@
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::initialiseLambda()
+PetscErrorCode NavierStokesSolver<dim>::initializeLambda()
 {
 	PetscErrorCode ierr;
 	Vec            phi;

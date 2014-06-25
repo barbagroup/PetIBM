@@ -18,7 +18,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeSimulationInfo()
 	{
 		case NAVIER_STOKES : ierr = PetscPrintf(PETSC_COMM_WORLD, "Navier-Stokes\n"); CHKERRQ(ierr); break;
 		case TAIRA_COLONIUS: ierr = PetscPrintf(PETSC_COMM_WORLD, "Taira & Colonius (2007)\n"); CHKERRQ(ierr); break;
-		default: ierr = PetscPrintf(PETSC_COMM_WORLD, "Unrecognised solver!\n"); CHKERRQ(ierr); break;
+		default: ierr = PetscPrintf(PETSC_COMM_WORLD, "Unrecognized solver!\n"); CHKERRQ(ierr); break;
 	}
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "nu: %f\n", flowDesc->nu); CHKERRQ(ierr);
 	

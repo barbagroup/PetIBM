@@ -22,8 +22,8 @@ protected:
 	std::vector<PetscInt>  numPhiOnProcess;
 	std::vector< std::vector<PetscInt> > boundaryPointIndices;
 	
-	PetscErrorCode initialiseLambda();
-	PetscErrorCode initialiseBodies();
+	PetscErrorCode initializeLambda();
+	PetscErrorCode initializeBodies();
 	PetscErrorCode generateBodyInfo();
 	PetscErrorCode calculateCellIndices();
 	PetscErrorCode createDMs();
@@ -41,8 +41,8 @@ protected:
 	PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
 
 public:
-	PetscErrorCode initialise();
-	PetscErrorCode finalise();
+	PetscErrorCode initialize();
+	PetscErrorCode finalize();
 	PetscErrorCode writeData();
 
 	TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)

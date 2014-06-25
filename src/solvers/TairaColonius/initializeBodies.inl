@@ -1,5 +1,5 @@
 template <>
-PetscErrorCode TairaColoniusSolver<2>::initialiseBodies()
+PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
 {
 	PetscErrorCode ierr;
 	PetscInt       rank;
@@ -66,7 +66,7 @@ PetscErrorCode TairaColoniusSolver<2>::initialiseBodies()
 			node["segmentOptions"][2] >> startY;
 			node["segmentOptions"][3] >> endY;
 			node["segmentOptions"][4] >> numPoints;
-			// initialise line segment
+			// initialize line segment
 			x.reserve(numPoints);
 			y.reserve(numPoints);
 			for(PetscInt i=0; i<numPoints; i++)
@@ -103,7 +103,7 @@ PetscErrorCode TairaColoniusSolver<2>::initialiseBodies()
 }
 
 template <>
-PetscErrorCode TairaColoniusSolver<3>::initialiseBodies()
+PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
 {
 	PetscErrorCode ierr;
 	PetscInt       rank;
@@ -164,7 +164,7 @@ PetscErrorCode TairaColoniusSolver<3>::initialiseBodies()
 			node["pointsFile"] >> fname;
 			fname = caseFolder + "/" + fname;
 			std::cout << "Reading body data from file: " << fname << std::endl;
-			// initialise points
+			// initialize points
 			std::ifstream file(fname.c_str());
 			file >> numPoints;
 			x.reserve(numPoints);

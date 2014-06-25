@@ -141,7 +141,7 @@ if __name__=="__main__":
 
 	mkdir(folder+"/output")
 
-	for n in xrange(args.nsave, args.nt+args.nsave, args.nsave):
+	for n in xrange(startStep+nsave, nt+nsave, nsave):
 		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' % (folder,n))[0]
 		qx = petscObjs.reshape((Unz, Uny, Unx))
 		

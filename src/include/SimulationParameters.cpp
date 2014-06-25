@@ -1,71 +1,100 @@
+/***************************************************************************//**
+* \file
+* \brief Source file to define member functions of SimulationParameters
+*/
+
 #include "SimulationParameters.h"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 
+/***************************************************************************//**
+* \brief Converts \c std::string to \c TimeSteppingScheme
+*/
 TimeSteppingScheme timeSchemeFromString(std::string &s)
 {
 	if (s == "EULER_EXPLICIT") return EULER_EXPLICIT;
 	if (s == "EULER_IMPLICIT") return EULER_IMPLICIT;
 	if (s == "ADAMS_BASHFORTH_2") return ADAMS_BASHFORTH_2;
-	if (s == "RUNGE_KUTTA_3") return RUNGE_KUTTA_3;
 	if (s == "CRANK_NICOLSON") return CRANK_NICOLSON;
 	return EULER_EXPLICIT;
 }
 
+/***************************************************************************//**
+* \brief Converts \c std::string to \c SolverType.
+*/
 SolverType solverTypeFromString(std::string &s)
 {
 	if (s == "NAVIER_STOKES") return NAVIER_STOKES;
-	if (s == "SAIKI_BIRINGEN") return SAIKI_BIRINGEN;
-	if (s == "FADLUN_ET_AL") return FADLUN_ET_AL;
 	if (s == "TAIRA_COLONIUS") return TAIRA_COLONIUS;
 	return NAVIER_STOKES;
 }
 
+/***************************************************************************//**
+* \param fileName Input file path
+*
+* This is the constructor for the class SimulationParameters. A case folder with
+* the input files is supplied to the flow solver, and this function reads the
+* file \c simulationParameters.yaml in the folder. The parameters are listed in
+* the file using the YAML format.
+*/
 SimulationParameters::SimulationParameters(std::string fileName)
 {
 	PetscInt    rank;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of current process
 	
-	if(rank==0)
+	if(rank==0) // read the input file only on process 0
 	{
-		std::ifstream file(fileName.c_str());
-		YAML::Parser  parser(file);
-		YAML::Node    doc;
-		std::string   solver;
-		std::string   convSch, diffSch;
-		std::string   restartOption = "no";
+		std::ifstream inputFile(fileName.c_str());
+		YAML::Parser  parser(inputFile);
+		YAML::Node    document;
+		std::string   solverString;
+		std::string   convSchString, diffSchString;
+		std::string   restartString = "no";
 		
-		parser.GetNextDocument(doc);
-				
-		doc[0]["dt"] >> dt;
-		doc[0]["nt"] >> nt;
-		doc[0]["nsave"] >> nsave;
-		restart = PETSC_FALSE;
-		startStep = 0;
+		parser.GetNextDocument(document);
+
+		document[0]["dt"] >> dt;       // read the time step size
+		document[0]["nt"] >> nt;       // read the number of time steps
+		document[0]["nsave"] >> nsave; // read the save interval
+		
+		restart = PETSC_FALSE;         // assume no restart by default
+		startStep = 0;                 // the simulation starts from time step 0
+
+		// read restartString from the input file
+		// this input is optional, and hence is inside a try block
+		// the default value of restartString (set above) is "no"
 		try
 		{
-			doc[0]["restart"] >> restartOption;
+			document[0]["restart"] >> restartString;
 		}
 		catch(...)
 		{
 		}
-		if(restartOption == "yes" || restartOption == "true") restart = PETSC_TRUE;
+		// set restart depending on the value of restartString
+		if(restartString=="yes" || restartString=="true") restart = PETSC_TRUE;
 		if(restart)
 		{
+			// read the starting time step for the restarted simulation
 			try
 			{
-				doc[0]["startStep"] >> startStep;
+				document[0]["startStep"] >> startStep;
 			}
 			catch(...)
 			{
 			}
 		}
-		doc[0]["ibmScheme"] >> solver;
-		doc[0]["timeScheme"][0] >> convSch;
-		doc[0]["timeScheme"][1] >> diffSch;
-		convectionScheme = timeSchemeFromString(convSch);
-		diffusionScheme  = timeSchemeFromString(diffSch);
+		document[0]["ibmScheme"] >> solverString;      // read the type of flow solver
+		document[0]["timeScheme"][0] >> convSchString; // read the time-stepping scheme for convection
+		document[0]["timeScheme"][1] >> diffSchString; // read the time-stepping scheme for diffusion
+		
+		// set the solver type and time-stepping schemes
+		// from the strings read from the input file
+		solverType       = solverTypeFromString(solverString);
+		convectionScheme = timeSchemeFromString(convSchString);
+		diffusionScheme  = timeSchemeFromString(diffSchString);
+		
+		// set the time-stepping coefficients for the different schemes
 		switch(convectionScheme)
 		{
 			case EULER_EXPLICIT:
@@ -100,7 +129,7 @@ SimulationParameters::SimulationParameters(std::string fileName)
 				alphaImplicit = 0.0;
 				break;
 		}
-		solverType = solverTypeFromString(solver);
+		inputFile.close();
 	}
 	MPI_Barrier(PETSC_COMM_WORLD);
 	

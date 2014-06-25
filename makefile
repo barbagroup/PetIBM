@@ -10,7 +10,7 @@ include ${PETSC_DIR}/conf/variables
 include ${PETSC_DIR}/conf/rules
 
 PETSC_CC_INCLUDES += -I./src/include -I./src/solvers
-PCC_FLAGS += -std=c++0x -Wextra -pedantic
+PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic
 
 src/PetIBM2d.o:
 	${PCC} -o src/PetIBM2d.o -D DIMENSIONS=2 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
@@ -142,8 +142,12 @@ cleanoutput:
 	find ./cases -name '*.txt' -exec rm -rf {} \;
 	find ./cases -name '0*' -prune -exec rm -rf {} \;
 	find ./cases -name 'output' -prune -exec rm -rf {} \;
+	find . -name '._*' -exec rm -rf {} \;
 
 cleanall: clean cleanoutput
 	${RM} ${YAMLOBJ}
 
-.PHONY: ${LIBS} check4 memcheck vars cleanall
+doxygen:
+	doxygen Doxyfile
+
+.PHONY: ${LIBS} check4 memcheck vars cleanall doxygen

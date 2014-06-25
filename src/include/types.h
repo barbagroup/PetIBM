@@ -1,63 +1,65 @@
+/***************************************************************************//**
+* \file
+* \brief Defines some enumerated types.
+*/
+
 #if !defined(TYPES_H)
 #define TYPES_H
 
-/**
-* @enum  BCType
-* @brief Specifies the type of boundary condition
+/***************************************************************************//**
+* \brief Type of boundary condition
 */
 enum BCType
 {
-	DIRICHLET,  ///< Dirichlet boundary condition
-	NEUMANN,    ///< Neumann boundary condition
-	CONVECTIVE, ///< Convective boundary condition
-	PERIODIC    ///< Periodic boundary condition
+	DIRICHLET,  ///< Dirichlet
+	NEUMANN,    ///< Neumann
+	CONVECTIVE, ///< Convective
+	PERIODIC    ///< Periodic
 };
 
-/**
-* @enum  boundary
-* @brief Specifies the boundary of concern
+/***************************************************************************//**
+* \brief The boundary of concern
 */
 enum Boundary
 {
-	XMINUS,
-	XPLUS,
-	YMINUS,
-	YPLUS,
-	ZMINUS,
-	ZPLUS
+	XMINUS, ///< The -X boundary of the domain
+	XPLUS,  ///< The +X boundary of the domain
+	YMINUS, ///< The -Y boundary of the domain
+	YPLUS,  ///< The +Y boundary of the domain
+	ZMINUS, ///< The -Z boundary of the domain
+	ZPLUS   ///< The +Z boundary of the domain
 };
 
-/**
-* @enum  timeScheme
-* @brief Numerical scheme used to discretise the time derivative
+/***************************************************************************//**
+* \brief Numerical scheme used to discretise the time derivative
+*
+* A time-dependent differential equation of the form
+* \f[ \frac{du}{dt} = f(u) \f]
+* can be solved numerically using any of the schemes listed below. In the
+* following, the size of the time step is represented by \f$ \Delta t \f$, the
+* value of \f$ u \f$ at the current time step is represented by \f$ u^n \f$, 
+* and the value at the next time step (which we want to determine) is
+* \f$ u^{n+1} \f$. \f$ u^{n-1} \f$ is the value at the previous time step.
 */
 enum TimeSteppingScheme
 {
-	EULER_EXPLICIT,    ///< Explicit Euler method (first order)
-	EULER_IMPLICIT,    ///< Implicit Euler method (first order)
+	EULER_EXPLICIT,    ///< Explicit Euler method
+	EULER_IMPLICIT,    ///< Implicit Euler method
 	ADAMS_BASHFORTH_2, ///< Second-order Adams-Bashforth scheme
-	RUNGE_KUTTA_3,     ///< Third-order low storage Runge-Kutta method
-	CRANK_NICOLSON     ///< Crank-Nicolson scheme (second order)
+	CRANK_NICOLSON     ///< Crank-Nicolson scheme
 };
 
-/**
-* @enum  ibmScheme
-* @brief The immersed boundary method used to solve for the flow.
+/***************************************************************************//**
+* \brief The immersed boundary method used to solve the flow.
 */
 enum SolverType
 {
-	NAVIER_STOKES,  ///< No immersed bodies. Perot (1993)
-	SAIKI_BIRINGEN, ///< Saiki & Biringen (1996)
-	FADLUN_ET_AL,   ///< Fadlun et al (2000)
-	TAIRA_COLONIUS, ///< Taira & Colonius (2007)
-	SLL0,           ///< SLL0
-	SLL1,           ///< SLL1
-	SLL2            ///< SLL2
+	NAVIER_STOKES,  ///< No immersed bodies
+	TAIRA_COLONIUS  ///< Immersed boundary projection method
 };
 
-/**
-* @enum  preconditionerType
-* @brief Specify the type of preconditioner
+/***************************************************************************//**
+* \brief Type of preconditioner
 */
 enum PreconditionerType
 {
@@ -67,3 +69,47 @@ enum PreconditionerType
 };
 
 #endif
+
+/***************************************************************************//**
+* \class PetscInt
+* \brief PETSc type that represents an integer.
+* \sa    http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscInt.html
+*/
+
+/***************************************************************************//**
+* \class PetscReal
+* \brief PETSc type that represents a real number.
+* \sa    http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscReal.html
+*/
+
+/***************************************************************************//**
+* \class PetscBool
+* \brief PETSc type that represents a logical variable.
+* \sa    http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBool.html
+*/
+
+/***************************************************************************//**
+* \class PetscErrorCode
+* \brief PETSc type used to return the error code from a function.
+* \sa    http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscErrorCode.html
+*/
+
+/***************************************************************************//**
+* \var EULER_EXPLICIT
+* \f[ \frac{u^{n+1}-u^n}{\Delta t} = f(u^n) \f]
+*/
+
+/***************************************************************************//**
+* \var EULER_IMPLICIT
+* \f[ \frac{u^{n+1}-u^n}{\Delta t} = f(u^{n+1}) \f]
+*/
+
+/***************************************************************************//**
+* \var ADAMS_BASHFORTH_2
+* \f[ \frac{u^{n+1}-u^n}{\Delta t} = \frac{3}{2}f(u^n) - \frac{1}{2}f(u^{n-1}) \f]
+*/
+
+/***************************************************************************//**
+* \var CRANK_NICOLSON
+* \f[ \frac{u^{n+1}-u^n}{\Delta t} = \frac{1}{2}\left(f(u^{n+1}) + f(u^n)\right) \f]
+*/

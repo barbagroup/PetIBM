@@ -1,40 +1,55 @@
+/***************************************************************************//**
+* \file
+* \brief Source file to define member functions of CartesianMesh
+*/
+
 #include "CartesianMesh.h"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 
+/***************************************************************************//**
+* \param fileName Input file path
+*
+* This is the constructor for the class CartesianMesh. A case folder with
+* the input files is supplied to the flow solver, and this function reads the
+* file \c cartesianMesh.yaml in the folder. The mesh is described in the file
+* using the YAML format.
+*/
 CartesianMesh::CartesianMesh(std::string fileName)
 {
 	PetscInt rank;
 	
-	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+	MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of the current process
 	
 	nx = 0;
 	ny = 0;
 	nz = 0;
 	
-	// first pass
+	// first pass of the input file
+	// do this to figure out the number of cells in each direction
 	if(rank==0)
 	{
-		PetscReal     start;
 		PetscInt      numCells;
 		std::string   direction;
-		std::ifstream file(fileName.c_str());
-		YAML::Parser  parser(file);
-		YAML::Node    doc;
+		std::ifstream inputFile(fileName.c_str());
+		YAML::Parser  parser(inputFile);
+		YAML::Node    document;
 		
-		parser.GetNextDocument(doc);
+		parser.GetNextDocument(document);
 				
 		// cycle through each direction
-		for (size_t i=0; i<doc.size(); i++)
+		for (size_t i=0; i<document.size(); i++)
 		{			
-			doc[i]["direction"] >> direction;
-			doc[i]["start"] >> start;
-				
+			document[i]["direction"] >> direction; // read the direction ("x", "y" or "z")
+			
+			// initialize the number of cells to zero
 			if(direction == "x") nx = 0;
 			else if(direction == "y") ny = 0;
 			else if(direction == "z") nz = 0;
 			
-			const YAML::Node &subDomains = doc[i]["subDomains"];
+			// read the number of cells in each subdomain
+			// and add it to the total number of cells
+			const YAML::Node &subDomains = document[i]["subDomains"];
 			for (size_t j=0; j<subDomains.size(); j++)
 			{
 				subDomains[j]["cells"] >> numCells;
@@ -46,60 +61,64 @@ CartesianMesh::CartesianMesh(std::string fileName)
 	}
 	MPI_Barrier(PETSC_COMM_WORLD);
 	
-	// broadcast vector sizes to all processes
+	// broadcast number of cells to all processes
 	MPI_Bcast(&nx, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&ny, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&nz, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 	
 	// allocate memory
+	// number of nodes will be 1 greater than the number of cells
 	x.resize(nx+1);
 	dx.resize(nx);
-	
 	y.resize(ny+1);
 	dy.resize(ny);
-	
 	if(nz > 0)
 	{
 		z.resize(nz+1);
 		dz.resize(nz);
 	}
 	
-	// second pass
+	// second pass of the input file
+	// to calculate the coordinates of the nodes, and the cell widths
 	if(rank == 0)
 	{
-		size_t        numCells, first;
+		size_t        numCells,
+		              first;
 		std::string   direction;
-		std::ifstream file(fileName.c_str());
-		YAML::Parser  parser(file);
-		YAML::Node    doc;
+		std::ifstream inputFile(fileName.c_str());
+		YAML::Parser  parser(inputFile);
+		YAML::Node    document;
 		PetscReal     start,
 		              end,
 			          stretchRatio,
 			          h;
 		
-		parser.GetNextDocument(doc);
+		parser.GetNextDocument(document);
 				
 		// cycle through each direction
-		for (size_t i=0; i<doc.size(); i++)
+		for (size_t i=0; i<document.size(); i++)
 		{
-			doc[i]["direction"] >> direction;
-			doc[i]["start"] >> start;
+			document[i]["direction"] >> direction; // read the direction
+			document[i]["start"] >> start;         // coordinate of the first node in the subdomain
 			
-			const YAML::Node &subDomains = doc[i]["subDomains"];
+			const YAML::Node &subDomains = document[i]["subDomains"];
 			
+			// set the coordinate of the first node in the first subdomain
 			first = 0;
 			if(direction=="x") x[first] = start;
 			else if(direction=="y") y[first] = start;
 			else if(direction=="z") z[first] = start;
 			
+			// cycle through the subdomains
 			for (size_t i=0; i<subDomains.size(); i++)
 			{
-				subDomains[i]["end"] >> end;
-				subDomains[i]["cells"] >> numCells;
-				subDomains[i]["stretchRatio"] >> stretchRatio;
+				subDomains[i]["end"] >> end; // read the coordinate of the last node in the subdomain
+				subDomains[i]["cells"] >> numCells; // read the number of cells in the subdomain
+				subDomains[i]["stretchRatio"] >> stretchRatio; // read the stretching ratio of the cells in subdomain
 				
-				if(fabs(stretchRatio-1.0) < 1.0e-6)
+				if(fabs(stretchRatio-1.0) < 1.0e-6) // if the stretching ratio is 1
 				{
+					// the cells are of uniform width h
 					h = (end - start)/numCells;
 					for(size_t j=first; j<first+numCells; j++)
 					{
@@ -120,11 +139,14 @@ CartesianMesh::CartesianMesh(std::string fileName)
 						}
 					}
 				}
-				else
+				else // if the stretching ratio is different from 1
 				{
+					// width of the first cell in the subdomain
 					h = (end - start)*(stretchRatio-1)/(pow(stretchRatio, numCells)-1);
 					for(size_t j=first; j<first+numCells; j++)
 					{
+						// obtain the widths of subsequent cells by
+						// multiplying by the stretching ratio
 						if(direction=="x")
 						{
 							dx[j]  = h*pow(stretchRatio, j-first);
@@ -142,6 +164,7 @@ CartesianMesh::CartesianMesh(std::string fileName)
 						}
 					}
 				}
+				// the first node in the next subdomain is the last node in the current subdomain
 				first += numCells;
 				start = end;
 			}
@@ -152,10 +175,8 @@ CartesianMesh::CartesianMesh(std::string fileName)
 	// broadcast vectors to all processes
 	MPI_Bcast(&x.front(), nx+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&dx.front(), nx, MPIU_REAL, 0, PETSC_COMM_WORLD);
-	
 	MPI_Bcast(&y.front(), ny+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
 	MPI_Bcast(&dy.front(), ny, MPIU_REAL, 0, PETSC_COMM_WORLD);
-	
 	if(nz > 0)
 	{
 		MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, PETSC_COMM_WORLD);

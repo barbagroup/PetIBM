@@ -36,7 +36,7 @@ if __name__=="__main__":
 	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=float("-inf"))
 	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=float("inf"))
 	parser.add_argument("-vortlim", type=float, dest="vortlim", help="largest absolute value among contour lines displayed", default=3)
-	parser.add_argument("-numlevels", type=float, dest="numlevels", help="number of vortex contour line levels (choose an even number)", default=14)
+	parser.add_argument("-numlevels", type=float, dest="numlevels", help="number of vortex contour line levels (choose an even number)", default=16)
 	parser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
 	parser.add_argument("-nsave", type=int, dest="nsave", help="nsave", default=-1)
 	parser.add_argument("-nt", type=int, dest="nt", help="nt", default=-1)

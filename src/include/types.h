@@ -113,3 +113,18 @@ enum PreconditionerType
 * \var CRANK_NICOLSON
 * \f[ \frac{u^{n+1}-u^n}{\Delta t} = \frac{1}{2}\left(f(u^{n+1}) + f(u^n)\right) \f]
 */
+
+/***************************************************************************//**
+* \var NAVIER_STOKES
+* Solve the incompressible Navier-Stokes equations in the domain without the
+* presence of any immersed boundaries. The method used is the fractional step
+* method as formulated in the paper by Blair Perot
+* <a href="http://dx.doi.org/10.1006/jcph.1993.1162">(J. Comput. Phys, 108.1, 1993)</a>
+*/
+
+/***************************************************************************//**
+* \var TAIRA_COLONIUS
+* Solve the flow using the immersed boundary projection method proposed by
+* Taira and Colonius
+* <a href="http://dx.doi.org/10.1016/j.jcp.2007.03.005">(J. Comput. Phys, 225.2, 2007)</a>
+*/

@@ -61,7 +61,7 @@ body2dParallel:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe40:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 2 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe150:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re150 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1

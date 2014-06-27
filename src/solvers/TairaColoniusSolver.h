@@ -11,7 +11,7 @@ protected:
 	DM        bda;
 	Mat       ET;
 	PetscReal force[3];
-	Vec       temp;
+	Vec       nullSpaceVec,temp;
 
 	std::ofstream forcesFile;
 
@@ -27,6 +27,8 @@ protected:
 	PetscErrorCode generateBodyInfo();
 	PetscErrorCode calculateCellIndices();
 	PetscErrorCode createDMs();
+	PetscErrorCode createVecs();
+	PetscErrorCode setNullSpace();
 	PetscErrorCode generateBNQ();
 	PetscErrorCode generateR2();
 	PetscErrorCode createGlobalMappingBodies();

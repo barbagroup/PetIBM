@@ -55,7 +55,6 @@ protected:
 	Vec q, qStar, lambda;
 	KSP ksp1, ksp2;
 	PC  pc2;
-	MatNullSpace nsp;
 
 	PetscLogStage stageInitialize,
 	              stageSolveIntermediateVelocity,
@@ -64,7 +63,7 @@ protected:
 
 	PetscErrorCode initializeCommon();
 	virtual PetscErrorCode createDMs();
-	PetscErrorCode createVecs();
+	virtual PetscErrorCode createVecs();
 	PetscErrorCode createKSPs();
 	void initializeMeshSpacings();
 	PetscErrorCode initializeFluxes();
@@ -154,8 +153,6 @@ public:
 		ksp2 = PETSC_NULL;
 		// PCs
 		pc2 = PETSC_NULL;
-		// nullspaces
-		nsp = PETSC_NULL;
 		// PetscLogStages
 		PetscLogStageRegister("initialize", &stageInitialize);
 		PetscLogStageRegister("solveIntVel", &stageSolveIntermediateVelocity);

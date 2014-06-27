@@ -35,7 +35,7 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
 	// Mats
 	if(ET!=PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
 	// Vecs
-	if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRQ(ierr);}
+	if(regularizedForce!=PETSC_NULL){ierr = VecDestroy(&regularizedForce); CHKERRQ(ierr);}
 	if(nullSpaceVec!=PETSC_NULL){ierr = VecDestroy(&nullSpaceVec); CHKERRQ(ierr);}
 
 	return 0;
@@ -59,7 +59,7 @@ PetscErrorCode TairaColoniusSolver<dim>::createVecs()
 	PetscErrorCode ierr;
 
 	ierr = NavierStokesSolver<dim>::createVecs();
-	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
+	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &regularizedForce); CHKERRQ(ierr);
 	ierr = VecDuplicate(NavierStokesSolver<dim>::lambda, &nullSpaceVec); CHKERRQ(ierr);
 
 	return 0;

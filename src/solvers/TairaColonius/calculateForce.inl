@@ -7,9 +7,9 @@ PetscErrorCode TairaColoniusSolver<2>::calculateForce()
 	PetscReal      **fx, **fy, forceOnProcess[2];
 
 	ierr = DMCompositeGetAccess(lambdaPack, lambda, NULL, &fGlobal); CHKERRQ(ierr);
-	ierr = MatMult(ET, fGlobal, temp);
+	ierr = MatMult(ET, fGlobal, regularizedForce);
 
-	ierr = DMCompositeGetAccess(qPack, temp, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeGetAccess(qPack, regularizedForce, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
 
 	// x-direction
 	ierr = DMDAVecGetArray(uda, fxGlobal, &fx); CHKERRQ(ierr);
@@ -37,7 +37,7 @@ PetscErrorCode TairaColoniusSolver<2>::calculateForce()
 	}
 	ierr = DMDAVecRestoreArray(vda, fyGlobal, &fy); CHKERRQ(ierr);
 
-	ierr = DMCompositeRestoreAccess(qPack, temp, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, regularizedForce, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
 	ierr = DMCompositeRestoreAccess(lambdaPack, lambda, NULL, &fGlobal); CHKERRQ(ierr);
 
 	ierr = MPI_Reduce(forceOnProcess, force, 2, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
@@ -54,9 +54,9 @@ PetscErrorCode TairaColoniusSolver<3>::calculateForce()
 	PetscReal      ***fx, ***fy, ***fz, forceOnProcess[3];
 
 	ierr = DMCompositeGetAccess(lambdaPack, lambda, NULL, &fGlobal); CHKERRQ(ierr);
-	ierr = MatMult(ET, fGlobal, temp);
+	ierr = MatMult(ET, fGlobal, regularizedForce);
 
-	ierr = DMCompositeGetAccess(qPack, temp, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeGetAccess(qPack, regularizedForce, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
 	
 	// x-direction
 	ierr = DMDAVecGetArray(uda, fxGlobal, &fx); CHKERRQ(ierr);
@@ -106,7 +106,7 @@ PetscErrorCode TairaColoniusSolver<3>::calculateForce()
 	}
 	ierr = DMDAVecRestoreArray(wda, fzGlobal, &fz); CHKERRQ(ierr);
 
-	ierr = DMCompositeRestoreAccess(qPack, temp, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
+	ierr = DMCompositeRestoreAccess(qPack, regularizedForce, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
 	ierr = DMCompositeRestoreAccess(lambdaPack, lambda, NULL, &fGlobal); CHKERRQ(ierr);
 
 	ierr = MPI_Reduce(forceOnProcess, force, 3, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);

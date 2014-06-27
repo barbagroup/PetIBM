@@ -11,7 +11,7 @@ protected:
 	DM        bda;
 	Mat       ET;
 	PetscReal force[3];
-	Vec       nullSpaceVec,temp;
+	Vec       nullSpaceVec, regularizedForce;
 
 	std::ofstream forcesFile;
 
@@ -51,7 +51,8 @@ public:
 	{
 		bda = PETSC_NULL;
 		ET  = PETSC_NULL;
-		temp= PETSC_NULL;
+		nullSpaceVec     = PETSC_NULL;
+		regularizedForce = PETSC_NULL;
 	}
 	
 	/**

@@ -98,6 +98,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 	std::string performanceSummaryFileName = caseFolder + "/performanceSummary.txt";
 	ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, performanceSummaryFileName.c_str(), &viewer); CHKERRQ(ierr);
 	ierr = PetscLogView(viewer); CHKERRQ(ierr);
+	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
 	return 0;
 }

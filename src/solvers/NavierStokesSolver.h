@@ -63,7 +63,7 @@ protected:
 
 	PetscErrorCode initializeCommon();
 	virtual PetscErrorCode createDMs();
-	PetscErrorCode createVecs();
+	virtual PetscErrorCode createVecs();
 	PetscErrorCode createKSPs();
 	void initializeMeshSpacings();
 	PetscErrorCode initializeFluxes();
@@ -82,6 +82,7 @@ protected:
 	PetscErrorCode generateRHS2();
 	virtual PetscErrorCode generateBNQ();
 	PetscErrorCode generateQTBNQ();
+	virtual PetscErrorCode setNullSpace();
 	PetscErrorCode solveIntermediateVelocity();
 	PetscErrorCode solvePoissonSystem();
 	PetscErrorCode projectionStep();

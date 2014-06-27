@@ -18,7 +18,6 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
 	ierr = createDMs(); CHKERRQ(ierr);
 	ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
 	ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
-	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
 	return 0;
@@ -37,6 +36,7 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
 	if(ET!=PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
 	// Vecs
 	if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRQ(ierr);}
+	if(nullSpaceVec!=PETSC_NULL){ierr = VecDestroy(&nullSpaceVec); CHKERRQ(ierr);}
 
 	return 0;
 }
@@ -49,6 +49,18 @@ PetscErrorCode TairaColoniusSolver<dim>::createDMs()
 	ierr = generateBodyInfo(); CHKERRQ(ierr);
 	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), dim, 0, &numBoundaryPointsOnProcess.front(), &bda); CHKERRQ(ierr);
 	ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
+
+	return 0;
+}
+
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::createVecs()
+{
+	PetscErrorCode ierr;
+
+	ierr = NavierStokesSolver<dim>::createVecs();
+	ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
+	ierr = VecDuplicate(NavierStokesSolver<dim>::lambda, &nullSpaceVec); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -84,6 +96,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 	return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
 }
 
+#include "TairaColonius/setNullSpace.inl"
 #include "TairaColonius/calculateCellIndices.inl"
 #include "TairaColonius/initializeLambda.inl"
 #include "TairaColonius/generateBodyInfo.inl"

@@ -77,6 +77,11 @@ FlowDescription::FlowDescription(std::string fileName)
 			initialVelocity[2] = 0.0; // set the z-component of initial velocity to 0 for 2-D flows
 		}
 		
+		// set default values for initialPerturbation
+		initialPerturbation[0] = 0.0;
+		initialPerturbation[1] = 0.0;
+		initialPerturbation[2] = 0.0;
+		
 		// specifying the initial perturbation is optional
 		// hence it is inside a try block
 		try

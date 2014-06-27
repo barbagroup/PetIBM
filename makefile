@@ -12,10 +12,10 @@ include ${PETSC_DIR}/conf/rules
 PETSC_CC_INCLUDES += -I./src/include -I./src/solvers
 PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic
 
-src/PetIBM2d.o:
+src/PetIBM2d.o: src/PetIBM.cpp
 	${PCC} -o src/PetIBM2d.o -D DIMENSIONS=2 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
 
-src/PetIBM3d.o:
+src/PetIBM3d.o: src/PetIBM.cpp
 	${PCC} -o src/PetIBM3d.o -D DIMENSIONS=3 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
 
 bin/PetIBM2d: src/PetIBM2d.o ${LIBS}

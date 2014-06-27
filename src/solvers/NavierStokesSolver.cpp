@@ -39,6 +39,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 	ierr = generateBNQ(); CHKERRQ(ierr);
 	ierr = generateQTBNQ(); CHKERRQ(ierr);
 	ierr = createKSPs(); CHKERRQ(ierr);
+	ierr = setNullSpace(); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -97,6 +98,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 	std::string performanceSummaryFileName = caseFolder + "/performanceSummary.txt";
 	ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, performanceSummaryFileName.c_str(), &viewer); CHKERRQ(ierr);
 	ierr = PetscLogView(viewer); CHKERRQ(ierr);
+	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -192,21 +194,12 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 {
 	PetscErrorCode ierr;
-	PetscInt       pStart;
 	PetscLogEvent  GENERATE_QTBNQ;
 	
 	ierr = PetscLogEventRegister("generateQTBNQ", 0, &GENERATE_QTBNQ); CHKERRQ(ierr);
 	ierr = PetscLogEventBegin(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRQ(ierr);
-	
-	ierr = VecGetOwnershipRange(lambda, &pStart, NULL); CHKERRQ(ierr);
-	if(pStart==0)
-	{
-		ierr = MatSetValue(QTBNQ, 0, 0, 1.0, ADD_VALUES); CHKERRQ(ierr);
-	}
-	ierr = MatAssemblyBegin(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-	ierr = MatAssemblyEnd(QTBNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 	
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated QTBNQ!\n");
 	
@@ -229,6 +222,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "NavierStokes/createDMs.inl"
 #include "NavierStokes/createVecs.inl"
 #include "NavierStokes/createKSPs.inl"
+#include "NavierStokes/setNullSpace.inl"
 #include "NavierStokes/createLocalToGlobalMappingsFluxes.inl"
 #include "NavierStokes/createLocalToGlobalMappingsLambda.inl"
 #include "NavierStokes/initializeMeshSpacings.inl"

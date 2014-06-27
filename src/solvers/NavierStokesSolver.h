@@ -55,6 +55,7 @@ protected:
 	Vec q, qStar, lambda;
 	KSP ksp1, ksp2;
 	PC  pc2;
+	MatNullSpace nsp;
 
 	PetscLogStage stageInitialize,
 	              stageSolveIntermediateVelocity,
@@ -82,6 +83,7 @@ protected:
 	PetscErrorCode generateRHS2();
 	virtual PetscErrorCode generateBNQ();
 	PetscErrorCode generateQTBNQ();
+	virtual PetscErrorCode setNullSpace();
 	PetscErrorCode solveIntermediateVelocity();
 	PetscErrorCode solvePoissonSystem();
 	PetscErrorCode projectionStep();
@@ -152,6 +154,8 @@ public:
 		ksp2 = PETSC_NULL;
 		// PCs
 		pc2 = PETSC_NULL;
+		// nullspaces
+		nsp = PETSC_NULL;
 		// PetscLogStages
 		PetscLogStageRegister("initialize", &stageInitialize);
 		PetscLogStageRegister("solveIntVel", &stageSolveIntermediateVelocity);

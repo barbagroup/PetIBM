@@ -7,15 +7,24 @@
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 
+CartesianMesh::CartesianMesh()
+{
+}
+
+CartesianMesh::CartesianMesh(std::string fileName)
+{
+	initialize(fileName);
+}
+
 /***************************************************************************//**
 * \param fileName Input file path
 *
-* This is the constructor for the class CartesianMesh. A case folder with
+* This function initializes an object of type CartesianMesh. A case folder with
 * the input files is supplied to the flow solver, and this function reads the
 * file \c cartesianMesh.yaml in the folder. The mesh is described in the file
 * using the YAML format.
 */
-CartesianMesh::CartesianMesh(std::string fileName)
+void CartesianMesh::initialize(std::string fileName)
 {
 	PetscInt rank;
 	
@@ -41,7 +50,7 @@ CartesianMesh::CartesianMesh(std::string fileName)
 		for (size_t i=0; i<document.size(); i++)
 		{			
 			document[i]["direction"] >> direction; // read the direction ("x", "y" or "z")
-			
+
 			// initialize the number of cells to zero
 			if(direction == "x") nx = 0;
 			else if(direction == "y") ny = 0;

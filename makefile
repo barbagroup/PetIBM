@@ -1,16 +1,20 @@
 ALL: bin/PetIBM2d bin/PetIBM3d
-DIRS       = src src/include src/solvers
+DIRS       = src src/include src/solvers tests
 YAMLOBJ    = external/yaml-cpp/src/*.o external/yaml-cpp/src/contrib/*.o
-LIBS       = lib/libclasses.a lib/libyaml.a lib/libsolvers.a
+GTESTOBJ   = external/gtest-1.7.0/*.o
+LIB        = lib/libclasses.a lib/libyaml.a lib/libsolvers.a lib/libgtest.a
 SRC        = ${wildcard src/*.cpp}
 OBJ        = ${SRC:.cpp=.o}
-CLEANFILES = ${LIBS} ${addsuffix /*.o, ${DIRS}} ${wildcard bin/*}
+TESTS_SRC  = ${wildcard tests/*.cpp}
+TESTS_BIN  = ${TESTS_SRC:.cpp=}
+CLEANFILES = ${LIB} ${addsuffix /*.o, ${DIRS}} ${wildcard bin/*} ${TESTS_BIN}
 
 include ${PETSC_DIR}/conf/variables
 include ${PETSC_DIR}/conf/rules
 
-PETSC_CC_INCLUDES += -I./src/include -I./src/solvers
+PETSC_CC_INCLUDES += -I./src/include -I./src/solvers -I./external/gtest-1.7.0/include
 PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic
+PCC_LINKER_FLAGS += -I./external/gtest-1.7.0/include
 
 src/PetIBM2d.o: src/PetIBM.cpp
 	${PCC} -o src/PetIBM2d.o -D DIMENSIONS=2 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
@@ -18,10 +22,10 @@ src/PetIBM2d.o: src/PetIBM.cpp
 src/PetIBM3d.o: src/PetIBM.cpp
 	${PCC} -o src/PetIBM3d.o -D DIMENSIONS=3 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
 
-bin/PetIBM2d: src/PetIBM2d.o ${LIBS}
+bin/PetIBM2d: src/PetIBM2d.o ${LIB}
 	${CLINKER} $^ -o $@ ${PETSC_SYS_LIB}
 
-bin/PetIBM3d: src/PetIBM3d.o ${LIBS}
+bin/PetIBM3d: src/PetIBM3d.o ${LIB}
 	${CLINKER} $^ -o $@ ${PETSC_SYS_LIB}
 
 lib/libclasses.a:
@@ -30,8 +34,19 @@ lib/libclasses.a:
 lib/libyaml.a:
 	cd external/yaml-cpp; ${MAKE}
 
+lib/libgtest.a:
+	cd external/gtest-1.7.0; ${MAKE}
+
 lib/libsolvers.a:
 	cd src/solvers; ${MAKE}
+
+tests: ${TESTS_BIN}
+
+runtests:
+	tests/CartesianMeshTest
+
+tests/CartesianMeshTest: tests/CartesianMeshTest.cpp ${LIB}
+	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
 
 check2d:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/test
@@ -112,6 +127,7 @@ cylinderRe200:
 	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
+	@echo PETSC_COMPILE_SINGLE: ${PETSC_COMPILE_SINGLE}
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}
 	@echo PCC: ${PCC}
@@ -146,8 +162,9 @@ cleanoutput:
 
 cleanall: clean cleanoutput
 	${RM} ${YAMLOBJ}
+	${RM} ${GTESTOBJ}
 
 doxygen:
 	doxygen Doxyfile
 
-.PHONY: ${LIBS} check4 memcheck vars cleanall doxygen
+.PHONY: ${LIBS} check4 memcheck vars cleanall doxygen runtests

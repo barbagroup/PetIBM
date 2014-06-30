@@ -32,6 +32,8 @@ public:
 	* \brief Reads an input file and initializes the cartesian mesh
 	*/
 	CartesianMesh(std::string fileName);
+	CartesianMesh();
+	void initialize(std::string fileName);
 };
 
 #endif

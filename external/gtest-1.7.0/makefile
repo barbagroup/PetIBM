@@ -7,7 +7,7 @@ CLEANFILES = ${GTEST_OBJS}
 include ${PETSC_DIR}/conf/variables
 include ${PETSC_DIR}/conf/rules
 
-PETSC_CC_INCLUDES += -isystem ./include
+PETSC_CC_INCLUDES += -I ./include -I ./
 
 libgtest.a: ${GTEST_OBJS}
 	${AR} ${ARFLAGS} $@ $^

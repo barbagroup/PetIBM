@@ -1,10 +1,20 @@
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::readFluxes(Vec qxGlobal, Vec qyGlobal, Vec qzGlobal)
+PetscErrorCode NavierStokesSolver<dim>::readFluxes()
 {
 	PetscErrorCode    ierr;
 	PetscViewer       viewer;
 	std::stringstream ss;
 	std::string       savePointDir, fileName;
+	Vec               qxGlobal, qyGlobal, qzGlobal;
+
+	if(dim==2)
+	{
+		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+	}
+	else if(dim==3)
+	{
+		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
+	}
 
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Restarting from time step %d.\n", timeStep); CHKERRQ(ierr);
 
@@ -36,6 +46,15 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes(Vec qxGlobal, Vec qyGlobal, V
 		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
 		ierr = VecLoad(qzGlobal, viewer); CHKERRQ(ierr);
 		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+	}
+
+	if(dim==2)
+	{
+		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+	}
+	else if(dim==3)
+	{
+		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 	}
 	
 	return 0;

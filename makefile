@@ -140,6 +140,7 @@ vars:
 	@echo CPP_FLAGS: ${CPP_FLAGS}
 	@echo CCPPFLAGS: ${CCPPFLAGS}
 	@echo PETSC_CC_INCLUDES: ${PETSC_CC_INCLUDES}
+	@echo MPIEXEC: ${MPIEXEC}
 	@echo RM: ${RM}
 	@echo MV: ${MV}
 	@echo MAKE: ${MAKE}

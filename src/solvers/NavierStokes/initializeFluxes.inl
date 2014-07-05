@@ -2,21 +2,21 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
 {
 	PetscErrorCode ierr;
-	Vec            qxGlobal, qyGlobal;
-	
-	ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 	
 	if(simParams->restart)
 	{
-		ierr = readFluxes(qxGlobal, qyGlobal); CHKERRQ(ierr);
+		ierr = readFluxes(); CHKERRQ(ierr);
 	}
 	else
 	{
 		PetscInt  mstart, nstart, m, n;
 		PetscReal **qx, **qy;
+		Vec       qxGlobal, qyGlobal;
 		PetscReal initVel[2]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1]};
 		PetscReal initPert[2] = {flowDesc->initialPerturbation[0], flowDesc->initialPerturbation[1]};
 		PetscReal width[2]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
+
+		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
 		// U-FLUXES
 		ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -49,9 +49,9 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
 			}
 		}
 		ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
+
+		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 	}
-	
-	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 	
 	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
 
@@ -62,21 +62,21 @@ template <>
 PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
 {
 	PetscErrorCode ierr;
-	Vec            qxGlobal, qyGlobal, qzGlobal;
-	
-	ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 
 	if(simParams->restart)
 	{
-		ierr = readFluxes(qxGlobal, qyGlobal, qzGlobal); CHKERRQ(ierr);
+		ierr = readFluxes(); CHKERRQ(ierr);
 	}
 	else
 	{
 		PetscInt  mstart, nstart, pstart, m, n, p;
 		PetscReal ***qx, ***qy, ***qz;
+		Vec       qxGlobal, qyGlobal, qzGlobal;
 		PetscReal initVel[3]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1], flowDesc->initialVelocity[2]};
 		PetscReal initPert[3] = {flowDesc->initialPerturbation[0], flowDesc->initialPerturbation[1], flowDesc->initialPerturbation[2]};
 		PetscReal width[3]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0], mesh->z[mesh->nz] - mesh->z[0]};
+
+		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 		
 		// U-FLUXES
 		ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -137,9 +137,9 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
 			}
 		}
 		ierr = DMDAVecRestoreArray(wda, qzGlobal, &qz); CHKERRQ(ierr);
+
+		ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 	}
-	
-	ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 	
 	ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 

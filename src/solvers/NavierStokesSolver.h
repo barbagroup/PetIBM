@@ -94,7 +94,7 @@ protected:
 	/**
 	* \brief Read the fluxes from previously saved data
 	*/
-	PetscErrorCode readFluxes(Vec qxGlobal, Vec qyGlobal, Vec qzGlobal=PETSC_NULL);
+	PetscErrorCode readFluxes();
 
 	/**
 	* \brief Initialize lamba with previously saved data

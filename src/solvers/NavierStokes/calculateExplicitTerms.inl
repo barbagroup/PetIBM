@@ -1,9 +1,30 @@
+/***************************************************************************//**
+* \brief Calculates the second derivative on a non-uniform grid using a central
+*        difference scheme.
+*/
 inline PetscReal du2dx2(PetscReal uMinus, PetscReal uCenter, PetscReal uPlus, PetscReal dxMinus, PetscReal dxPlus)
 {
 	return (dxPlus*uMinus + dxMinus*uPlus - (dxPlus+dxMinus)*uCenter)*2.0/dxMinus/dxPlus/(dxMinus+dxPlus);
 }
 
-template<>
+/***************************************************************************//**
+* Calculate the explicit terms in the discretized Navier-Stokes equations. 
+* This includes the convection term, and the explicit portion of the diffusion
+* term. The velocity value at the previous time step that appears in the time 
+* discretization is also added to the explicit terms.
+*
+* The discretization scheme used to calculate the convection term is the
+* second-order conservative scheme proposed by Morinishi et al. (1998).
+*
+* A central difference scheme on a non-uniform grid is used to calculate the
+* diffusion term.
+*/
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::calculateExplicitTerms()
+{
+}
+
+template <>
 PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
 {
 	PetscErrorCode ierr;
@@ -126,7 +147,7 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
 	return 0;
 }
 
-template<>
+template <>
 PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
 {
 	PetscErrorCode ierr;

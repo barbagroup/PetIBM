@@ -12,13 +12,12 @@ PetscErrorCode NavierStokesSolver<dim>::initializeLambda()
 		std::stringstream ss;
 		std::string       savePointDir, fileName;
 
+		// the name of the folder is the time step at which data is saved
+		// 7 characters long, with leading zeros
 		ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
 		savePointDir = ss.str();
 
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/phi.dat";
-		fileName = ss.str();
+		fileName = savePointDir + "/phi.dat";
 		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
 		ierr = VecLoad(phi, viewer); CHKERRQ(ierr);
 		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

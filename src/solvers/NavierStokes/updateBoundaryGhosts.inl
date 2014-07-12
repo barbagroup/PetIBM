@@ -1,3 +1,32 @@
+/***************************************************************************//**
+* This function updates the values of the velocity on the domain boundaries.
+* These values are stored in the ghost cells of the local vectors of the flux, 
+* but refer to the values at the locations of the boundaries. The following are 
+* the update rules for different boundary conditions:
+*
+* * **Dirichlet:** The values in the ghost cells are set to be the values of 
+*   the velocity at the boundary. Note that the velocity values are stored and 
+*   not the fluxes.
+* * **Neumann:** The values in the ghost cells are set to be the values of the 
+*   velocity at the grid points nearest to the boundary. Note that the velocity 
+*   values are stored and not the fluxes.
+* * **Convective:** The velocities near the boundary are convected outside 
+*   using the advection equation \f$ \frac{\partial u}{\partial t} + 
+*   u_\infty\frac{\partial u}{\partial x}=0 \f$. Using the discretized form of
+*   this equation, we can calculate the value of the velocity at the boundary.
+*   Note that the velocity values are stored and not the fluxes.
+* * **Periodic:** The values at the ghost cells are the fluxes from the points 
+*   nearest to the opposite edge of the domain. Here, the values do not 
+*   coincide with the periodic boundary, but instead are at the location of the
+*   grid point in a wrapped domain. This is handled automatically
+*   by PETSc when `DMCompositeScatter` is called, and so nothing explicit is
+*   done in this function.
+*/
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::updateBoundaryGhosts()
+{
+}
+
 template <>
 PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
 {

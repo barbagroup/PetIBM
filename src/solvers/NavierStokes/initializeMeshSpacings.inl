@@ -1,4 +1,22 @@
-template<>
+/***************************************************************************//**
+* The cell widths stored in the CartesianMesh object `mesh` refer to the 
+* widths of the cells of the grid used to discretize the domain. But we require
+* the distance between consecutive velocity flux locations for certain 
+* functions (e.g. when we assemble the matrix `A`, or update the ghost cells on 
+* the domain boundary.) This function calculates the spacings between the 
+* points where the velocity fluxes are computed. 
+*
+* At locations near the domain boundaries, the distance from the velocity flux
+* to the boundary is calculated. In the case of periodic domains, the distance 
+* between the velocity fluxes at the opposite edges are calculated, assuming
+* that the domain has been wrapped around.
+*/
+template <PetscInt dim>
+void NavierStokesSolver<dim>::initializeMeshSpacings()
+{
+}
+
+template <>
 void NavierStokesSolver<2>::initializeMeshSpacings()
 {
 	PetscInt       numX, numY;
@@ -51,7 +69,7 @@ void NavierStokesSolver<2>::initializeMeshSpacings()
 	}
 }
 
-template<>
+template <>
 void NavierStokesSolver<3>::initializeMeshSpacings()
 {
 	PetscInt       numX, numY, numZ;

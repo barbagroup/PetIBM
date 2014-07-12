@@ -1,3 +1,16 @@
+/***************************************************************************//**
+* Vectors stored as distributed arrays can be accessed using multi-dimensional 
+* arrays on every process, with each index referring to the numbering along 
+* each cartesian direction. The elements of the vector also have a global
+* ordering. This function generates the map from the local multi-dimensional
+* indexing pf the pressure variables to the global indices of the vector 
+* \f$ \lambda \f$.
+*/
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda()
+{
+}
+
 template <>
 PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsLambda()
 {

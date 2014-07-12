@@ -1,3 +1,16 @@
+/***************************************************************************//**
+* Vectors stored as distributed arrays can be accessed using multi-dimensional 
+* arrays on every process, with each index referring to the numbering along 
+* each cartesian direction. The elements of the vector also have a global
+* ordering. This function generates the map from the multi-dimensional
+* indexing of each of the local flux vectors `qx`, `qy` and `qz`, to the global 
+* indices of the composite flux vector `q`.
+*/
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes()
+{
+}
+
 template <>
 PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 {

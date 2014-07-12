@@ -1,3 +1,8 @@
+/***************************************************************************//**
+* \file
+* \brief Header to define class NavierStokesSolver.
+*/
+
 #if !defined(NAVIER_STOKES_SOLVER_H)
 #define NAVIER_STOKES_SOLVER_H
 
@@ -8,6 +13,10 @@
 #include <petscksp.h>
 #include <fstream>
 
+/***************************************************************************//**
+* \brief Solve the incompressible Navier-Stokes equations in a rectangular or
+*        cuboidal domain.
+*/
 template <PetscInt dim>
 class NavierStokesSolver
 {
@@ -62,7 +71,7 @@ protected:
 	              stageProjectionStep;
 
 	/**
-	* \brief Initialise data common to NavierStokesSolver and derived classes
+	* \brief Initialize data common to NavierStokesSolver and derived classes
 	*/
 	PetscErrorCode initializeCommon();
 
@@ -76,13 +85,13 @@ protected:
 	*/
 	virtual PetscErrorCode createVecs();
 
-	/*
+	/**
 	* \brief Set up the Kyrlov solvers used to solve the linear systems
 	*/
 	PetscErrorCode createKSPs();
 
 	/**
-	* \brief Initialise the spaces between adjacent velocity nodes
+	* \brief Initialize the spaces between adjacent velocity nodes
 	*/
 	void initializeMeshSpacings();
 
@@ -102,12 +111,14 @@ protected:
 	virtual PetscErrorCode initializeLambda();
 
 	/**
-	* \brief Create the mappings from the local flux variables to the global flux vector
+	* \brief Create the mappings from the local flux variables to the global 
+	*        flux vector
 	*/
 	PetscErrorCode createLocalToGlobalMappingsFluxes();
 
 	/**
-	* \brief Create the mapping from the local pressure variables to the global lambda vector
+	* \brief Create the mapping from the local pressure variables to the global 
+	*        lambda vector
 	*/
 	PetscErrorCode createLocalToGlobalMappingsLambda();
 
@@ -122,7 +133,8 @@ protected:
 	PetscErrorCode generateDiagonalMatrices();
 
 	/**
-	* \brief Count the number of non-zeros in the diagonal and off-diagonal portions of the parallel matrices
+	* \brief Count the number of non-zeros in the diagonal and off-diagonal 
+	*        portions of the parallel matrices
 	*/
 	void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz);
 
@@ -137,7 +149,8 @@ protected:
 	PetscErrorCode calculateExplicitTerms();
 
 	/**
-	* \brief Assemble the vector arising from the boundary conditons in the RHS of the intermediate velocity solve
+	* \brief Assemble the vector arising from the boundary conditons in the RHS 
+	*        of the intermediate velocity solve
 	*/
 	PetscErrorCode generateBC1();
 
@@ -147,7 +160,8 @@ protected:
 	PetscErrorCode generateRHS1();
 
 	/**
-	* \brief Assemble the vector arising from the boundary conditions in the RHS of the pressure-force solve
+	* \brief Assemble the vector arising from the boundary conditions in the 
+	*        RHS of the pressure-force solve
 	*/
 	virtual PetscErrorCode generateR2();
 
@@ -167,7 +181,8 @@ protected:
 	PetscErrorCode generateQTBNQ();
 
 	/**
-	* \brief Calculate and specify to the Krylov solver the null space of the LHS matrix in the pressure-force solve
+	* \brief Calculate and specify to the Krylov solver the null space of the 
+	*        LHS matrix in the pressure-force solve
 	*/
 	virtual PetscErrorCode setNullSpace();
 
@@ -182,7 +197,8 @@ protected:
 	PetscErrorCode solvePoissonSystem();
 
 	/**
-	* \brief Project the pressure and forces on to the velocity field to obtain the velocity at the next time step
+	* \brief Project the pressure and forces on to the velocity field to obtain 
+	*        the velocity at the next time step
 	*/
 	PetscErrorCode projectionStep();
 

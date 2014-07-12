@@ -1,3 +1,18 @@
+/***************************************************************************//**
+* Set the default options for the Kyrlov solvers used in the simulation.
+*
+* `ksp1` is used when solving for the intermediate velocity. The default 
+* solver type is Conjugate Gradient, the relative tolerance for the convergence
+* criterion is \f$ 10^{-5} \f$, and the initial guess for the solution is 
+* obtained from the output vector supplied. Command line arguments to set 
+* options for this solver must have the prefix `sys1_`.
+*
+* `ksp2` is used when solving for the pressure and body forces. The default 
+* solver type is Conjugate Gradient, the relative tolerance for the convergence
+* criterion is \f$ 10^{-5} \f$, and the initial guess for the solution is 
+* obtained from the output vector supplied. Command line arguments to set 
+* options for this solver must have the prefix `sys2_`.
+*/
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 {

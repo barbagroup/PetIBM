@@ -7,6 +7,8 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
 	std::string       savePointDir, fileName;
 	Vec               qxGlobal, qyGlobal, qzGlobal;
 
+	// get access to the individual vectors of the composite vector
+	// depending on whether it is a 2-D or a 3-D flow
 	if(dim==2)
 	{
 		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
@@ -18,31 +20,27 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
 
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Restarting from time step %d.\n", timeStep); CHKERRQ(ierr);
 
+	// the name of the folder is the time step at which data is saved
+	// 7 characters long, with leading zeros
 	ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
 	savePointDir = ss.str();
 
-	ss.str("");
-	ss.clear();
-	ss << savePointDir << "/qx.dat";
-	fileName = ss.str();
+	// save x-component of fluxes
+	fileName = savePointDir + "/qx.dat";
 	ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
 	ierr = VecLoad(qxGlobal, viewer); CHKERRQ(ierr);
 	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-	ss.str("");
-	ss.clear();
-	ss << savePointDir << "/qy.dat";
-	fileName = ss.str();
+	// save y-component of fluxes
+	fileName = savePointDir + "/qy.dat";
 	ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
 	ierr = VecLoad(qyGlobal, viewer); CHKERRQ(ierr);
 	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
+	// save z-component of fluxes if it is a 3-D flow
 	if(dim==3)
 	{
-		ss.str("");
-		ss.clear();
-		ss << savePointDir << "/qz.dat";
-		fileName = ss.str();
+		fileName = savePointDir + "/qz.dat";
 		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
 		ierr = VecLoad(qzGlobal, viewer); CHKERRQ(ierr);
 		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

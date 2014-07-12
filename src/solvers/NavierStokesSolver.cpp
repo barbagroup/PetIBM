@@ -1,3 +1,8 @@
+/***************************************************************************//**
+* \file
+* \brief Source file to define member functions of NavierStokesSolver
+*/
+
 #include "NavierStokesSolver.h"
 #include <petscdmcomposite.h>
 #include <iostream>
@@ -44,6 +49,9 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 	return 0;
 }
 
+/***************************************************************************//**
+* Deallocate memory to avoid memory leaks.
+*/
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::finalize()
 {
@@ -128,6 +136,7 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
 	PetscErrorCode ierr;
 
+	// solve for the intermediate velocity
 	ierr = PetscLogStagePush(stageSolveIntermediateVelocity); CHKERRQ(ierr);
 	ierr = calculateExplicitTerms(); CHKERRQ(ierr);
 	ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
@@ -136,12 +145,16 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 	ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
+	// solve the Poisson system for the pressure
+	// and body forces in the case of TairaColoniusSolver
 	ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
 	ierr = generateR2(); CHKERRQ(ierr);
 	ierr = generateRHS2(); CHKERRQ(ierr);
 	ierr = solvePoissonSystem(); CHKERRQ(ierr);
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
+	// project the pressure field to satisfy continuity
+	// and the body forces to satisfy the no-slip condition
 	ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
 	ierr = projectionStep(); CHKERRQ(ierr);
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
@@ -168,6 +181,9 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
 	return 0;
 }
 
+/***************************************************************************//**
+* \f[ q = q^* - B^N Q \lambda \f]
+*/
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 {
@@ -181,7 +197,7 @@ PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 template <PetscInt dim>
 PetscBool NavierStokesSolver<dim>::savePoint()
 {
-	return (timeStep%simParams->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
+	return (timeStep % simParams->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
 }
 
 template <PetscInt dim>
@@ -208,6 +224,21 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 	return 0;
 }
 
+/***************************************************************************//**
+* \param cols     Array of column indices where non-zeros are present in a 
+                  particular row of a matrix
+* \param numCols  Number of column indices in the given array
+* \param rowStart The start index of the portion of the result vector that 
+                  resides on the current process
+* \param rowEnd   The end index, which is 1 greater than the index of the last 
+                  row of the portion of the result vector that resides on the 
+                  current process
+* \param d_nnz    Number of non-zeros in the diagonal portion of the matrix
+* \param o_nnz    Number of non-zeros in the off-diagonal portion of the matrix
+*
+* `d_nnz` and `o_nnz` are passed by reference, and are the outputs of the 
+* function.
+*/
 template <PetscInt dim>
 void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
 {

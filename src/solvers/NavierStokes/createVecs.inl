@@ -1,9 +1,13 @@
+/***************************************************************************//**
+* Allocate memory for the vectors required in the simulation using the 
+* corresponding distributed array structures.
+*/
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createVecs()
 {
 	PetscErrorCode    ierr;
 	
-	// local velocity fluxes
+	// local vectors to store velocity fluxes
 	ierr = DMCreateLocalVector(uda, &qxLocal); CHKERRQ(ierr);
 	ierr = DMCreateLocalVector(vda, &qyLocal); CHKERRQ(ierr);
 	if(dim==3)
@@ -20,12 +24,12 @@ PetscErrorCode NavierStokesSolver<dim>::createVecs()
 	ierr = VecDuplicate(q, &rhs1);         CHKERRQ(ierr); // right-hand side for the intermediate-velocity solve
 	ierr = VecDuplicate(q, &MHat);         CHKERRQ(ierr); // 
 	ierr = VecDuplicate(q, &RInv);         CHKERRQ(ierr); // 
-	ierr = VecDuplicate(q, &BN);           CHKERRQ(ierr); // 
+	ierr = VecDuplicate(q, &BN);           CHKERRQ(ierr); // approximate inverse of `A`
 	ierr = VecDuplicate(q, &temp);         CHKERRQ(ierr); // 
 
 	ierr = DMCreateGlobalVector(lambdaPack, &lambda); CHKERRQ(ierr); // pressure
 	ierr = VecDuplicate(lambda, &r2);              CHKERRQ(ierr); // 
-	ierr = VecDuplicate(lambda, &rhs2);            CHKERRQ(ierr); // 
+	ierr = VecDuplicate(lambda, &rhs2);            CHKERRQ(ierr); // right-hand size for the Poisson solve
 
 	return 0;
 }

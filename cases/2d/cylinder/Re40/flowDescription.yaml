@@ -1,5 +1,4 @@
-- type: flow
-  dimensions: 2
+- dimensions: 2
   nu: 0.025
   initialVelocity: [1.0, 0.0]
   initialPerturbation: [0.0, 0.0]

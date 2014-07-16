@@ -1,8 +1,8 @@
 - type: simulation
-  dt: 0.01
+  dt: 0.005
   scaleCV: 5.0
-  nt: 8000
-  nsave: 800
+  nt: 20000
+  nsave: 1000
   restart: false
   startStep: 0
   timeScheme: [ADAMS_BASHFORTH_2, CRANK_NICOLSON]

@@ -171,6 +171,7 @@ if __name__=="__main__":
 		
 		X, Y = np.meshgrid(xu,yu)
 		CS = plt.contour(X, Y, U, levels=np.linspace(-1, 1, 21))
+		plt.title("x-component of velocity")
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
 		plt.gca().set_aspect('equal', adjustable='box')
@@ -185,6 +186,7 @@ if __name__=="__main__":
 				
 		X, Y = np.meshgrid(xv,yv)
 		CS = plt.contour(X, Y, V, levels=np.linspace(-1, 1, 21))
+		plt.title("y-component of velocity")
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
 		plt.gca().set_aspect('equal', adjustable='box')
@@ -198,6 +200,7 @@ if __name__=="__main__":
 				Omg[j-Ostarty, i-Ostartx] = (V[j, i+1]-V[j, i])/(0.5*(dx[i]+dx[i+1])) - (U[j+1, i]-U[j, i])/(0.5*(dy[j]+dy[j+1]))
 		
 		CS = plt.contour(X, Y, Omg, levels=np.linspace(-CLargs.vortlim, CLargs.vortlim, CLargs.numlevels))
+		plt.title("Vorticity")
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
 		plt.gca().set_aspect('equal', adjustable='box')
@@ -217,6 +220,7 @@ if __name__=="__main__":
 
 		X, Y = np.meshgrid(xp[Pstartx:Pendx],yp[Pstarty:Pendy])
 		CS = plt.contour(X, Y, P[Pstarty:Pendy,Pstartx:Pendx], levels=np.linspace(-1.0, 1.0, 21))
+		plt.title("Pressure")
 		plt.colorbar(CS)
 		plt.axis([xmin, xmax, ymin, ymax])
 		plt.gca().set_aspect('equal', adjustable='box')

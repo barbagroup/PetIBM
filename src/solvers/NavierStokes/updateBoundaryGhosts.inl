@@ -25,6 +25,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::updateBoundaryGhosts()
 {
+	return 0;
 }
 
 template <>

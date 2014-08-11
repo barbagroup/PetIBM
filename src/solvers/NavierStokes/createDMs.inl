@@ -20,6 +20,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createDMs()
 {
+	return 0;
 }
 
 template <>

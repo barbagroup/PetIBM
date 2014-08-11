@@ -9,6 +9,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes()
 {
+	return 0;
 }
 
 template <>

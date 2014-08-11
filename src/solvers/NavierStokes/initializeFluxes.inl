@@ -30,6 +30,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeFluxes()
 {
+	return 0;
 }
 
 template <>

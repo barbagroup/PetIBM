@@ -20,6 +20,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createDMs()
 {
+	return 0;
 }
 
 template <>
@@ -30,11 +31,11 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
 	const PetscInt    *lxp, *lyp;
 	PetscInt          *lxu, *lyu, *lxv, *lyv;
 	PetscInt          numX, numY;
-	DMDABoundaryType  bx, by;
+	DMBoundaryType    bx, by;
 	
 	// set boundary types
-	bx = (flowDesc->bc[0][XPLUS].type == PERIODIC)? DMDA_BOUNDARY_PERIODIC : DMDA_BOUNDARY_GHOSTED;
-	by = (flowDesc->bc[0][YPLUS].type == PERIODIC)? DMDA_BOUNDARY_PERIODIC : DMDA_BOUNDARY_GHOSTED;	
+	bx = (flowDesc->bc[0][XPLUS].type == PERIODIC)? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+	by = (flowDesc->bc[0][YPLUS].type == PERIODIC)? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;	
 	
 	// Create distributed array data structures
 	// pressure
@@ -97,12 +98,12 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
 	PetscInt          *lxv, *lyv, *lzv;
 	PetscInt          *lxw, *lyw, *lzw;
 	PetscInt          numX, numY, numZ;
-	DMDABoundaryType  bx, by, bz;
+	DMBoundaryType    bx, by, bz;
 	
 	// set boundary types
-	bx = (flowDesc->bc[0][XPLUS].type == PERIODIC)? DMDA_BOUNDARY_PERIODIC : DMDA_BOUNDARY_GHOSTED;
-	by = (flowDesc->bc[0][YPLUS].type == PERIODIC)? DMDA_BOUNDARY_PERIODIC : DMDA_BOUNDARY_GHOSTED;
-	bz = (flowDesc->bc[0][ZPLUS].type == PERIODIC)? DMDA_BOUNDARY_PERIODIC : DMDA_BOUNDARY_GHOSTED;
+	bx = (flowDesc->bc[0][XPLUS].type == PERIODIC)? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+	by = (flowDesc->bc[0][YPLUS].type == PERIODIC)? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+	bz = (flowDesc->bc[0][ZPLUS].type == PERIODIC)? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
 	
 	// Create distributed array data structures
 	// pressure

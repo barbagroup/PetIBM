@@ -9,6 +9,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createLocalToGlobalMappingsLambda()
 {
+	return 0;
 }
 
 template <>
@@ -40,8 +41,8 @@ PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsLambda()
 
 	// scatter from local to local to obtain correct values in ghost cells
 	// P
-	ierr = DMDALocalToLocalBegin(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -78,8 +79,8 @@ PetscErrorCode NavierStokesSolver<3>::createLocalToGlobalMappingsLambda()
 
 	// scatter from local to local to obtain correct values in ghost cells
 	// P
-	ierr = DMDALocalToLocalBegin(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
 
 	return 0;
 }

@@ -10,7 +10,7 @@ Ensure that the following dependencies are installed before compiling PetIBM:
 
 * GNU C++ Compiler(`g++`) version 4.4 or above
 * Git distributed version control system (`git`)
-* PETSc version 3.4 (currently does not work with 3.5)
+* PETSc version 3.5.0 or above
 
 PetIBM has been tested and run on Ubuntu 12.04 and Mac OS X 10.9.
 
@@ -40,15 +40,15 @@ You can download and install `git` on OS X from [here](http://git-scm.com/downlo
 
 #### PETSc
 
-Install PETSc-3.4.5 in the optimized mode by running the following:
+Install PETSc-3.5.1 in the optimized mode by running the following:
 
     > cd $HOME
     > mkdir src
     > cd src
-    > wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.4.5.tar.gz
-    > tar -xvzf petsc-lite-3.4.5.tar.gz
-    > cd petsc-3.4.5
-    > ./configure --with-debugging=0 --COPTFLAGS=-O3 --FOPTFLAGS=-O3 --CXXOPTFLAGS=-O3 --download-f-blas-lapack --download-mpich
+    > wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.5.1.tar.gz
+    > tar -xvzf petsc-lite-3.5.1.tar.gz
+    > cd petsc-3.5.1
+    > ./configure --with-debugging=0 --COPTFLAGS=-O3 --FOPTFLAGS=-O3 --CXXOPTFLAGS=-O3 --download-fblaslapack --download-mpich
     > make all test
 
 All production runs must be compiled and run using the optimized mode.
@@ -56,7 +56,7 @@ All production runs must be compiled and run using the optimized mode.
 The debug mode is recommended during development. To install PETSc in debug mode, use the following flags in the 
 configure step:
 
-    > ./configure --download-f-blas-lapack --download-mpich
+    > ./configure --download-fblaslapack --download-mpich
 
 When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to 
 work with the cluster. Hence, **do not use the `--download-mpich` flag**, and instead point to the folder with the MPI 
@@ -76,7 +76,7 @@ Before compiling PetIBM, set the environment variables `PETSC_DIR` and `PETSC_AR
 end of the configure step during PETSc installation**. You can either set them through the command line or insert the 
 following in your `~/.bashrc` or `~/.bash_profile` files:
 
-    > export PETSC_DIR=$HOME/src/petsc-3.4.5
+    > export PETSC_DIR=$HOME/src/petsc-3.5.1
     > export PETSC_ARCH=arch-linux2-c-opt
 
 **Replace the values above with the version and mode specific to your installation**. Use the `setenv` command to do 

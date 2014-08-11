@@ -22,6 +22,7 @@ inline PetscReal du2dx2(PetscReal uMinus, PetscReal uCenter, PetscReal uPlus, Pe
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::calculateExplicitTerms()
 {
+	return 0;
 }
 
 template <>

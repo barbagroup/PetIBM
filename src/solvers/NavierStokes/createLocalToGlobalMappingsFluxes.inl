@@ -9,6 +9,7 @@
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createLocalToGlobalMappingsFluxes()
 {
+	return 0;
 }
 
 template <>
@@ -62,11 +63,11 @@ PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 
 	// scatter from local to local to obtain correct values in ghost cells
 	// U
-	ierr = DMDALocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
 	// V
-	ierr = DMDALocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
 
 	return 0;
 }
@@ -147,14 +148,14 @@ PetscErrorCode NavierStokesSolver<3>::createLocalToGlobalMappingsFluxes()
 
 	// scatter from local to local to obtain correct values in ghost cells
 	// U
-	ierr = DMDALocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(uda, uMapping, INSERT_VALUES, uMapping); CHKERRQ(ierr);
 	// V
-	ierr = DMDALocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(vda, vMapping, INSERT_VALUES, vMapping); CHKERRQ(ierr);
 	// W
-	ierr = DMDALocalToLocalBegin(wda, wMapping, INSERT_VALUES, wMapping); CHKERRQ(ierr);
-	ierr = DMDALocalToLocalEnd(wda, wMapping, INSERT_VALUES, wMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalBegin(wda, wMapping, INSERT_VALUES, wMapping); CHKERRQ(ierr);
+	ierr = DMLocalToLocalEnd(wda, wMapping, INSERT_VALUES, wMapping); CHKERRQ(ierr);
 
 	return 0;
 }

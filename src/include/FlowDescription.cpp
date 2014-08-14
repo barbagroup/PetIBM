@@ -38,6 +38,15 @@ BCType bcTypeFromString(std::string &s)
 	exit(0);
 }
 
+FlowDescription::FlowDescription()
+{
+}
+
+FlowDescription::FlowDescription(std::string fileName)
+{
+	initialize(fileName);
+}
+
 /***************************************************************************//**
 * \param fileName Input file path
 *
@@ -46,7 +55,7 @@ BCType bcTypeFromString(std::string &s)
 * file \c flowDescription.yaml in the folder. The parameters are listed in
 * the file using the YAML format.
 */
-FlowDescription::FlowDescription(std::string fileName)
+void FlowDescription::initialize(std::string fileName)
 {
 	PetscInt    rank;
 	

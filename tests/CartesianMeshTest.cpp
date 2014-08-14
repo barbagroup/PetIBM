@@ -3,8 +3,7 @@
 
 class CartesianMeshTest : public ::testing::Test
 {
-protected:
-
+public:
 	CartesianMesh UniformMesh2d,
 	              UniformMesh3d,
 	              StretchedMesh3d;

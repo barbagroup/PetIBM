@@ -26,6 +26,8 @@ public:
 	* \brief Reads the flow description from an input file
 	*/
 	FlowDescription(std::string fileName);
+	FlowDescription();
+	void initialize(std::string fileName);
 };
 
 #endif

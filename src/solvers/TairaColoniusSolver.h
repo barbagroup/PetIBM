@@ -6,7 +6,7 @@
 template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
-protected:
+public:
 	PetscInt  startGlobalIndex;
 	DM        bda;
 	Mat       ET;

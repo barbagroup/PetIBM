@@ -217,8 +217,6 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 
 	ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRQ(ierr);
 	
-	ierr = PetscPrintf(PETSC_COMM_WORLD, "Generated QTBNQ!\n");
-	
 	ierr = PetscLogEventEnd(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
 	return 0;

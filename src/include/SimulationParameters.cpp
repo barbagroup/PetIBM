@@ -29,6 +29,15 @@ SolverType solverTypeFromString(std::string &s)
 	return NAVIER_STOKES;
 }
 
+SimulationParameters::SimulationParameters()
+{
+}
+
+SimulationParameters::SimulationParameters(std::string fileName)
+{
+	initialize(fileName);
+}
+
 /***************************************************************************//**
 * \param fileName Input file path
 *
@@ -37,7 +46,7 @@ SolverType solverTypeFromString(std::string &s)
 * file \c simulationParameters.yaml in the folder. The parameters are listed in
 * the file using the YAML format.
 */
-SimulationParameters::SimulationParameters(std::string fileName)
+void SimulationParameters::initialize(std::string fileName)
 {
 	PetscInt    rank;
 	

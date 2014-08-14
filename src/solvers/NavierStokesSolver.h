@@ -20,7 +20,7 @@
 template <PetscInt dim>
 class NavierStokesSolver
 {
-protected:
+public:
 	std::string caseFolder;
 
 	FlowDescription      *flowDesc;

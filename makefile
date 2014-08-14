@@ -45,8 +45,12 @@ tests: ${TESTS_BIN}
 
 runtests:
 	tests/CartesianMeshTest
+	tests/NavierStokesTest -caseFolder tests/NavierStokes
 
 tests/CartesianMeshTest: tests/CartesianMeshTest.cpp ${LIB}
+	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
+
+tests/NavierStokesTest: tests/NavierStokesTest.cpp ${LIB}
 	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
 
 check2d:

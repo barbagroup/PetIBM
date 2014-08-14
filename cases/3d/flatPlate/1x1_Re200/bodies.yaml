@@ -1,5 +1,5 @@
 - type: quad
-  quadOptions: [40, 40]
+  quadOptions: [50, 50]
   bottomLeft: [0.3535534, -0.3535534, 0.5]
   bottomRight: [0.3535534, -0.3535534, -0.5]
   topRight: [-0.3535534, 0.3535534, -0.5]
@@ -13,4 +13,3 @@
   xOscillation: [0.0, 0.0, 0.0]
   yOscillation: [0.0, 0.0, 0.0]
   pitchOscillation: [0.0, 0.0, 0.0]
-  circleOptions: [0.5, 0.5, 0.25, 51]

@@ -38,6 +38,8 @@ public:
 	* \brief Reads an input file and initializes the simulation parameters
 	*/
 	SimulationParameters(std::string fileName);
+	SimulationParameters();
+	void initialize(std::string fileName);
 };
 
 #endif

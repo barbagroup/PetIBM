@@ -45,6 +45,7 @@ public:
 	{
 		solver->finalize();
 		if(lambdaGold!=PETSC_NULL) VecDestroy(&lambdaGold);
+		if(error!=PETSC_NULL) VecDestroy(&error);
 	}
 };
 
@@ -57,7 +58,6 @@ TEST_F(NavierStokesTest, ComparePhi)
 	// create vector to store the gold data and the error
 	VecDuplicate(solver->lambda, &lambdaGold);
 	VecDuplicate(solver->lambda, &error);
-	DMCreateGlobalVector(solver->lambdaPack, &lambdaGold);
 
 	// read the gold data from file
 	DMCompositeGetAccess(solver->lambdaPack, lambdaGold, &phi);
@@ -71,7 +71,6 @@ TEST_F(NavierStokesTest, ComparePhi)
 	VecWAXPY(error, -1, solver->lambda, lambdaGold);
 	VecNorm(error, NORM_2, &errorNorm);
 	VecNorm(lambdaGold, NORM_2, &goldNorm);
-	//PetscPrintf(PETSC_COMM_WORLD, "%f\n", errorNorm/goldNorm);
 
 	EXPECT_LT(errorNorm/goldNorm, 5e-4);
 }

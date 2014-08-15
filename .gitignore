@@ -12,3 +12,4 @@ grid.txt
 output
 doxygen/*
 tests/*Test
+*.dSYM

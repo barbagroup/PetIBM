@@ -10,6 +10,7 @@ include ${PETSC_DIR}/conf/rules
 
 PETSC_CC_INCLUDES += -I../../external/yaml-cpp/include -I../include
 PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic -MMD
+CXX_FLAGS += -std=c++0x -Wall -Wextra -pedantic -MMD
 
 libsolvers.a: ${OBJ}
 	${AR} ${ARFLAGS} $@ $^

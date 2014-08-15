@@ -41,10 +41,8 @@ lib/libsolvers.a:
 	cd src/solvers; ${MAKE}
 
 tests: ${TESTS_BIN}
-
-runtests:
 	tests/CartesianMeshTest
-	tests/NavierStokesTest -caseFolder tests/NavierStokes
+	tests/NavierStokesTest -caseFolder tests/NavierStokes	
 
 tests/CartesianMeshTest: tests/CartesianMeshTest.cpp ${LIB}
 	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}

@@ -42,12 +42,16 @@ lib/libsolvers.a:
 
 tests: ${TESTS_BIN}
 	tests/CartesianMeshTest
-	tests/NavierStokesTest -caseFolder tests/NavierStokes	
+	tests/NavierStokesTest -caseFolder tests/NavierStokes -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	tests/TairaColoniusTest -caseFolder tests/TairaColonius -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 tests/CartesianMeshTest: tests/CartesianMeshTest.cpp ${LIB}
 	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
 
 tests/NavierStokesTest: tests/NavierStokesTest.cpp ${LIB}
+	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
+
+tests/TairaColoniusTest: tests/TairaColoniusTest.cpp ${LIB}
 	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
 
 check2d:

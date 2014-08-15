@@ -97,8 +97,6 @@ PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
 	ierr = MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 	ierr = MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 
-	ierr = PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size()); CHKERRQ(ierr);
-
 	return 0;
 }
 
@@ -201,8 +199,6 @@ PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
 	ierr = MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 	ierr = MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 	ierr = MPI_Bcast(&z.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
-
-	ierr = PetscPrintf(PETSC_COMM_WORLD, "Number of body points: %d\n", x.size()); CHKERRQ(ierr);
 
 	return 0;
 }

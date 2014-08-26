@@ -75,6 +75,9 @@ cavityRe100Parallel:
 cavityRe1000:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
+cavityRe3000:
+	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re3000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
 cavityRe3200:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re3200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 

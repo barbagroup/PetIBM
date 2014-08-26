@@ -18,7 +18,7 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
 		ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 	}
 
-	ierr = PetscPrintf(PETSC_COMM_WORLD, "Restarting from time step %d.\n", timeStep); CHKERRQ(ierr);
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "\nRestarting from time step %d.\n", timeStep); CHKERRQ(ierr);
 
 	// the name of the folder is the time step at which data is saved
 	// 7 characters long, with leading zeros

@@ -18,15 +18,21 @@ Re = args.Re
 
 if Re=='100':
 	uCol           = 1
-	vCol           = 6
+	vCol           = 7
 elif Re=='1000':
 	uCol           = 2
-	vCol           = 7
-elif Re=='10000':
-	uCol           = 4
+	vCol           = 8
+elif Re=='3200':
+	uCol           = 3
 	vCol           = 9
+elif Re=='5000':
+	uCol           = 4
+	vCol           = 10
+elif Re=='10000':
+	uCol           = 5
+	vCol           = 11
 else:
-	print "Unavailable option for Reynolds number. Choose 100, 1000 or 10000."
+	print "Unavailable option for Reynolds number. Choose 100, 1000, 3200, 5000 or 10000."
 	sys.exit()
 
 dataFile = 'scripts/validation/data/cavity-GGS82.txt'
@@ -37,7 +43,7 @@ reader = csv.reader(f, delimiter='\t')
 for column in zip(*reader):
 	columns.append(column)
 
-folder = 'cases/2d/cavityRe' + Re
+folder = 'cases/2d/lidDrivenCavity/Re' + Re
 
 infoFile = folder + "/simulationInfo.txt"
 	
@@ -48,6 +54,7 @@ f.close()
 fileParser = argparse.ArgumentParser()
 fileParser.add_argument("-nx", type=int, dest="nx", help="number of cells in x-direction", default=32)
 fileParser.add_argument("-ny", type=int, dest="ny", help="number of cells in y-direction", default=32)
+fileParser.add_argument("-startStep", type=int, dest="startStep", help="number of time steps", default=0)
 fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=200)
 fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=100)
 fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="False")
@@ -100,7 +107,7 @@ plt.title('Lid-driven cavity at Re=%s' % Re)
 plt.savefig("scripts/validation/uRe%s.png" % Re)
 plt.clf()
 
-plt.plot(columns[5], columns[vCol], 'o')
+plt.plot(columns[6], columns[vCol], 'o')
 plt.plot(xv, V[ny/2-1,:], '-')
 plt.axis((0,1,-0.7,1.3))
 plt.xlabel('x-coordinate')

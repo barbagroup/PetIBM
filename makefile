@@ -142,6 +142,8 @@ cylinderRe200:
 	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
+	@echo PETSC_DIR: ${PETSC_DIR}
+	@echo PETSC_ARCH: ${PETSC_ARCH}
 	@echo PETSC_COMPILE_SINGLE: ${PETSC_COMPILE_SINGLE}
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}

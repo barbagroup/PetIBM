@@ -2,6 +2,7 @@
 #define CREATE_SOLVER_H
 
 #include "NavierStokesSolver.h"
+#include "TairaColoniusSolver.h"
 #include <memory>
 
 template <PetscInt dim>

@@ -93,6 +93,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeSimulationInfo()
 		f << "-startStep\t" << simParams->startStep << '\n';
 		f << "-nt\t" << simParams->nt << '\n';
 		f << "-nsave\t" << simParams->nsave << '\n';
+		f << "-dt\t" << simParams->dt << '\n';
 		(flowDesc->bc[0][XPLUS].type==PERIODIC)? f << "-xperiodic\tTrue\n" : f << "-xperiodic\tFalse\n";
 		(flowDesc->bc[0][YPLUS].type==PERIODIC)? f << "-yperiodic\tTrue\n" : f << "-yperiodic\tFalse\n";
 		if(dim == 3)

@@ -58,6 +58,7 @@ if __name__=="__main__":
 	fileParser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
 	fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=-1)
 	fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=-1)
+	fileParser.add_argument("-dt", type=float, dest="dt", help="time increment", default=0.01)
 	fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="False")
 	fileParser.add_argument("-yperiodic", dest="yperiodic", help="periodicity in y-direction", default="False")
 	args = fileParser.parse_args(args_list)

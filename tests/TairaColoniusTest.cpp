@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include <petscdmcomposite.h>
 
-class NavierStokesTest : public ::testing::Test
+class TairaColoniusTest : public ::testing::Test
 {
 public:
 	std::string           folder;
@@ -12,7 +12,7 @@ public:
 	std::unique_ptr< NavierStokesSolver<2> > solver;
 	Vec                   lambdaGold, error;
 
-	NavierStokesTest()
+	TairaColoniusTest()
 	{
 		char           caseFolder[PETSC_MAX_PATH_LEN];
 
@@ -49,10 +49,10 @@ public:
 	}
 };
 
-TEST_F(NavierStokesTest, ComparePhi)
+TEST_F(TairaColoniusTest, ComparePhi)
 {
 	PetscViewer viewer;
-	Vec         phi;
+	Vec         phi, fTilde;
 	PetscReal   errorNorm, goldNorm;
 
 	// create vector to store the gold data and the error
@@ -60,12 +60,16 @@ TEST_F(NavierStokesTest, ComparePhi)
 	VecDuplicate(solver->lambda, &error);
 
 	// read the gold data from file
-	DMCompositeGetAccess(solver->lambdaPack, lambdaGold, &phi);
+	DMCompositeGetAccess(solver->lambdaPack, lambdaGold, &phi, &fTilde);
 	std::string fileName = folder + "/phi.dat";
 	PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer);
 	VecLoad(phi, viewer);
 	PetscViewerDestroy(&viewer);
-	DMCompositeRestoreAccess(solver->lambdaPack, lambdaGold, &phi);
+	fileName = folder + "/fTilde.dat";
+	PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer);
+	VecLoad(fTilde, viewer);
+	PetscViewerDestroy(&viewer);
+	DMCompositeRestoreAccess(solver->lambdaPack, lambdaGold, &phi, &fTilde);
 
 	// check the difference
 	VecWAXPY(error, -1, solver->lambda, lambdaGold);

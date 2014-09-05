@@ -43,12 +43,16 @@ lib/libsolvers.a:
 
 tests: ${TESTS_BIN}
 	tests/CartesianMeshTest
-	tests/NavierStokesTest -caseFolder tests/NavierStokes	
+	tests/NavierStokesTest -caseFolder tests/NavierStokes -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	tests/TairaColoniusTest -caseFolder tests/TairaColonius -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 tests/CartesianMeshTest: tests/CartesianMeshTest.cpp ${LIB}
 	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
 
 tests/NavierStokesTest: tests/NavierStokesTest.cpp ${LIB}
+	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
+
+tests/TairaColoniusTest: tests/TairaColoniusTest.cpp ${LIB}
 	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
 
 check2d:
@@ -72,6 +76,15 @@ cavityRe100Parallel:
 cavityRe1000:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
+cavityRe3000:
+	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re3000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cavityRe3200:
+	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re3200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+
+cavityRe5000:
+	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re5000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	
 body2dSerial:
 	${MPIEXEC} -n 1 bin/PetIBM2d -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
@@ -130,6 +143,8 @@ cylinderRe200:
 	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 vars:
+	@echo PETSC_DIR: ${PETSC_DIR}
+	@echo PETSC_ARCH: ${PETSC_ARCH}
 	@echo PETSC_COMPILE_SINGLE: ${PETSC_COMPILE_SINGLE}
 	@echo CLINKER: ${CLINKER}
 	@echo CXX: ${CXX}

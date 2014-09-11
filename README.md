@@ -8,7 +8,7 @@ Installation instructions
 
 Ensure that the following dependencies are installed before compiling PetIBM:
 
-* GNU C++ Compiler(`g++`) version 4.4 or above
+* GNU C++ Compiler(`g++`) version 4.6 or above
 * Git distributed version control system (`git`)
 * PETSc version 3.4 (currently does not work with 3.5)
 

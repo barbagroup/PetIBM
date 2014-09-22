@@ -14,6 +14,7 @@ include ${PETSC_DIR}/conf/rules
 
 PETSC_CC_INCLUDES += -I./src/include -I./src/solvers -I./external/gtest-1.7.0/include
 PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic
+CXX_FLAGS += -std=c++0x -Wall -Wextra -pedantic
 PCC_LINKER_FLAGS += -I./external/gtest-1.7.0/include
 
 src/PetIBM2d.o: src/PetIBM.cpp

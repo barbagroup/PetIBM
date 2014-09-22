@@ -47,7 +47,7 @@ PetscErrorCode TairaColoniusSolver<dim>::createDMs()
 	PetscErrorCode ierr;
 	ierr = NavierStokesSolver<dim>::createDMs(); CHKERRQ(ierr);	
 	ierr = generateBodyInfo(); CHKERRQ(ierr);
-	ierr = DMDACreate1d(PETSC_COMM_WORLD, DMDA_BOUNDARY_NONE, x.size(), dim, 0, &numBoundaryPointsOnProcess.front(), &bda); CHKERRQ(ierr);
+	ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE, x.size(), dim, 0, &numBoundaryPointsOnProcess.front(), &bda); CHKERRQ(ierr);
 	ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
 
 	return 0;

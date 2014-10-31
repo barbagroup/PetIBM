@@ -20,10 +20,10 @@ def read_inputs():
 						help='x-coordinate of the center of the cylinder')
 	parser.add_argument('-y0', dest='y0', type=float, default=0.0,
 						help='y-coordinate of the center of the cylinder')
-	parser.add_argument('-ds', dest='ds', type=float, default=0.015,
+	parser.add_argument('-ds', dest='ds', type=str, default='0.015',
 						help='mesh spacing')
 	parser.add_argument('-f', '--filename', dest='filename', type=str,
-						default='cylinder_0.015.body',
+						default='',
 						help='name of the file generated')
 	return parser.parse_args()
 
@@ -32,7 +32,11 @@ def main():
 	R = args.R
 	zmax = args.zmax
 	zmin = args.zmin
-	ds = args.ds
+	ds = float(args.ds)
+	if args.filename:
+		filename = args.filename
+	else:
+		filename = 'cylinder_' + args.ds + '.body'
 
 	nz = int(round((zmax-zmin)/ds))
 	if np.abs((zmax-zmin)/ds - nz) > 1e-8:
@@ -41,7 +45,7 @@ def main():
 	
 	nb = int(np.ceil(2*np.pi*R/ds))
 	total = nb*nz
-	f = open(args.filename, 'w')
+	f = open(filename, 'w')
 	f.write("%d\n" % total)
 	for k in range(nz):
 		z = zmin+(k+0.5)*ds

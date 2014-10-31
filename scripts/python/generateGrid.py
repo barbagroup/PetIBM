@@ -11,7 +11,6 @@ def read_inputs():
 	parser = argparse.ArgumentParser(description="Generates a cartesian mesh with a uniform region surrounded by a stretched grid", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	
 	# add arguments to parser
-	parser.add_argument("-output", dest="output", help="name of file generated", default="domain.yaml")
 	parser.add_argument("-input", dest="input", help="name of input file", default="gridOptions")
 
 	return parser.parse_args()
@@ -73,7 +72,7 @@ def calculate_ratios(axis, min, max, u_min, u_max, h, maxAR, g):
 
 	return totalCells
 
-def generate_grid(inFile, outFile):
+def generate_grid(inFile):
 	# read the input file
 	f = open(inFile, 'r')
 	for line in f:
@@ -104,7 +103,7 @@ def generate_grid(inFile, outFile):
 	f.close()
 
 	# write the output file
-	g = open(outFile, 'w')
+	g = open('cartesianMesh.yaml', 'w')
 	nx = calculate_ratios("x", xmin, xmax, u_xmin, u_xmax, h, maxAR, g)
 	ny = calculate_ratios("y", ymin, ymax, u_ymin, u_ymax, h, maxAR, g)
 	try:
@@ -121,7 +120,7 @@ def generate_grid(inFile, outFile):
 
 def main():
 	args = read_inputs()
-	generate_grid(args.input, args.output)
+	generate_grid(args.input)
 
 if __name__ == "__main__":
 	main()

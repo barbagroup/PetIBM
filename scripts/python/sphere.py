@@ -18,10 +18,10 @@ def read_inputs():
 						help='y-coordinate of the center of the sphere')
 	parser.add_argument('-z0', dest='z0', type=float, default=0.0,
 						help='z-coordinate of the center of the sphere')
-	parser.add_argument('-ds', dest='ds', type=float, default=0.015,
+	parser.add_argument('-ds', dest='ds', type=str, default='0.015',
 						help='mesh spacing')
 	parser.add_argument('-f', '--filename', dest='filename', type=str,
-						default='sphere_0.015.body',
+						default='',
 						help='name of the file generated')
 	return parser.parse_args()
 
@@ -33,7 +33,11 @@ def main():
 	# parameters of the sphere
 	R = args.R
 	x0, y0, z0 = args.x0, args.y0, args.z0
-	h = args.ds
+	h = float(args.ds)
+	if args.filename:
+		filename = args.filename
+	else:
+		filename = 'sphere_' + args.ds + '.body'
 
 	# `total` keeps track of the number of points on the body
 	# it is initialized with 2 to count the points on the poles
@@ -49,7 +53,7 @@ def main():
 		total += nCircAzim
 
 	# write body data to file
-	f = open(args.filename, 'w')
+	f = open(filename, 'w')
 	f.write("%d\n" % total)
 	f.write("%f\t%f\t%f\n" % (x0, y0, R+z0))
 	for i in range(1,nCircHalf):

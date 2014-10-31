@@ -1,4 +1,4 @@
-FinestMeshSpacing: 0.016
+FinestMeshSpacing: 0.015
 MaxAspectRatio: 30.0
 
 NumGrids: 1
@@ -9,5 +9,5 @@ YRange: [-15, 15]
 ZRange: [-15, 15]
 
 UniformRegionXRange: [-1, 5]
-UniformRegionYRange: [-1, 1]
-UniformRegionZRange: [-1, 1]
+UniformRegionYRange: [-1.5, 1.5]
+UniformRegionZRange: [-1.5, 1.5]

@@ -111,7 +111,7 @@ def generate_grid(inFile):
 	except:
 		pass
 	g.close()
-	print "Grid written to file " + outFile
+	print "Grid written to file cartesianMesh.yaml."
 	print "Size of mesh: %d x %d" % (nx, ny),
 	try:
 		print "x %d" % nz

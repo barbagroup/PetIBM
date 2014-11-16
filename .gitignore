@@ -13,3 +13,4 @@ output
 doxygen/*
 tests/*Test
 *.dSYM
+scripts/python/cartesianMesh.yaml

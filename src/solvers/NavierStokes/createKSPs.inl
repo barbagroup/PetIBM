@@ -21,7 +21,7 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 	// linear system for the intermediate velocity
 	ierr = KSPCreate(PETSC_COMM_WORLD, &ksp1); CHKERRQ(ierr);
 	ierr = KSPSetOptionsPrefix(ksp1, "sys1_"); CHKERRQ(ierr);
-	ierr = KSPSetTolerances(ksp1, 1e-5, 0.0, PETSC_DEFAULT, PETSC_DEFAULT); CHKERRQ(ierr);
+	ierr = KSPSetTolerances(ksp1, simParams->velocitySolveTolerance, PETSC_DEFAULT, PETSC_DEFAULT, simParams->velocitySolveMaxIts); CHKERRQ(ierr);
 	ierr = KSPSetOperators(ksp1, A, A); CHKERRQ(ierr);
 	ierr = KSPSetInitialGuessNonzero(ksp1, PETSC_TRUE); CHKERRQ(ierr);
 	ierr = KSPSetType(ksp1, KSPCG); CHKERRQ(ierr);
@@ -30,7 +30,7 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 	// linear system for the Poisson solver
 	ierr = KSPCreate(PETSC_COMM_WORLD, &ksp2); CHKERRQ(ierr);
 	ierr = KSPSetOptionsPrefix(ksp2, "sys2_"); CHKERRQ(ierr);
-	ierr = KSPSetTolerances(ksp2, 1e-5, 0.0, PETSC_DEFAULT, PETSC_DEFAULT); CHKERRQ(ierr);
+	ierr = KSPSetTolerances(ksp2, simParams->PoissonSolveTolerance, PETSC_DEFAULT, PETSC_DEFAULT, simParams->PoissonSolveMaxIts); CHKERRQ(ierr);
 	ierr = KSPSetOperators(ksp2, QTBNQ, QTBNQ); CHKERRQ(ierr);
 	ierr = KSPSetInitialGuessNonzero(ksp2, PETSC_TRUE); CHKERRQ(ierr);
 	ierr = KSPSetType(ksp2, KSPCG); CHKERRQ(ierr);

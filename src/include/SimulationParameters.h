@@ -33,6 +33,9 @@ public:
 	                   alphaImplicit; ///< Time-stepping coefficient for the implicit part of the diffusion term
 	
 	PetscBool          restart; ///< Flag to indicate whether the simulation was restarted from saved data
+
+	PetscReal          velocitySolveTolerance, PoissonSolveTolerance;
+	PetscInt           velocitySolveMaxIts, PoissonSolveMaxIts;
 	
 	/***********************************************************************//**
 	* \brief Reads an input file and initializes the simulation parameters

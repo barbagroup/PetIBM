@@ -166,8 +166,17 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 {
-	PetscErrorCode ierr;
+	PetscErrorCode     ierr;
+	KSPConvergedReason reason;
+	
 	ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRQ(ierr);
+
+	ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
+	if(reason < 0)
+	{
+		ierr = PetscPrintf(PETSC_COMM_WORLD,"Velocity solve diverged due to reason: %d\n", reason); CHKERRQ(ierr);
+		exit(0);
+	}
 
 	return 0;
 }
@@ -175,8 +184,17 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
 {
-	PetscErrorCode ierr;
+	PetscErrorCode     ierr;
+	KSPConvergedReason reason;
+	
 	ierr = KSPSolve(ksp2, rhs2, lambda); CHKERRQ(ierr);
+	
+	ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
+	if(reason < 0)
+	{
+		ierr = PetscPrintf(PETSC_COMM_WORLD,"Poisson solve diverged due to reason: %d\n", reason); CHKERRQ(ierr);
+		exit(0);
+	}
 
 	return 0;
 }

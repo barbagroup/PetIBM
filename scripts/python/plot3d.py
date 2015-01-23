@@ -162,48 +162,50 @@ if __name__=="__main__":
 	mkdir(folder+"/output")
 
 	for n in xrange(startStep+nsave, nt+nsave, nsave):
-		# read the fluxes from file and reshape them accordingly
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' % (folder,n))[0]
-		qx = petscObjs.reshape((Unz, Uny, Unx))
-		
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' % (folder,n))[0]
-		qy = petscObjs.reshape((Vnz, Vny, Vnx))
+		try:
+			# read the fluxes from file and reshape them accordingly
+			petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' % (folder,n))[0]
+			qx = petscObjs.reshape((Unz, Uny, Unx))
 
-		petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' % (folder,n))[0]
-		qz = petscObjs.reshape((Wnz, Wny, Wnx))
+			petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' % (folder,n))[0]
+			qy = petscObjs.reshape((Vnz, Vny, Vnx))
 
-		xsize = len(xrange(startx+1, endx+1, stride))
-		ysize = len(xrange(starty+1, endy+1, stride))
-		zsize = len(xrange(startz+1, endz+1, stride))
+			petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' % (folder,n))[0]
+			qz = petscObjs.reshape((Wnz, Wny, Wnx))
 
-		# write the VTK file
-		outFile = '%s/output/velocity%07d.vtk' % (folder,n)
-		g = open(outFile, 'w')
-		g.write('# vtk DataFile Version 3.0\n')
-		g.write('Header\n')
-		g.write('ASCII\n')
-		g.write('DATASET RECTILINEAR_GRID\n')
-		g.write('DIMENSIONS %d %d %d\n' % (xsize, ysize, zsize))
-		g.write('X_COORDINATES %d double\n' % xsize)
-		for i in xrange(startx+1, endx+1, stride):
-			g.write('%f ' % X[i-1])
-		g.write('\n')
-		g.write('Y_COORDINATES %d double\n' % ysize)
-		for j in xrange(starty+1, endy+1, stride):
-			g.write('%f ' % Y[j-1])
-		g.write('\n')
-		g.write('Z_COORDINATES %d double\n' % zsize)
-		for k in xrange(startz+1, endz+1, stride):
-			g.write('%f ' % Z[k-1])
-		g.write('\n')
-	
-		g.write("POINT_DATA %d\n" % (xsize*ysize*zsize))
-		g.write('VECTORS velocity double\n')
-		for k in xrange(startz+1,endz+1, stride):
-			for j in xrange(starty+1,endy+1, stride):
-				for i in xrange(startx+1,endx+1, stride):
-					g.write( "%f\t%f\t%f\n" % ( 0.5*(qx[k][j][i-1]+qx[k][j][i])/(dy[j]*dz[k]), 0.5*(qy[k][j-1][i]+qy[k][j][i])/(dx[i]*dz[k]), 0.5*(qz[k-1][j][i]+qz[k][j][i])/(dx[i]*dy[j]) ) )
-	
-		g.close()
-		
-		print 'Wrote file ' + outFile + '.'
+			xsize = len(xrange(startx+1, endx+1, stride))
+			ysize = len(xrange(starty+1, endy+1, stride))
+			zsize = len(xrange(startz+1, endz+1, stride))
+
+			# write the VTK file
+			outFile = '%s/output/velocity%07d.vtk' % (folder,n)
+			g = open(outFile, 'w')
+			g.write('# vtk DataFile Version 3.0\n')
+			g.write('Header\n')
+			g.write('ASCII\n')
+			g.write('DATASET RECTILINEAR_GRID\n')
+			g.write('DIMENSIONS %d %d %d\n' % (xsize, ysize, zsize))
+			g.write('X_COORDINATES %d double\n' % xsize)
+			for i in xrange(startx+1, endx+1, stride):
+				g.write('%f ' % X[i-1])
+			g.write('\n')
+			g.write('Y_COORDINATES %d double\n' % ysize)
+			for j in xrange(starty+1, endy+1, stride):
+				g.write('%f ' % Y[j-1])
+			g.write('\n')
+			g.write('Z_COORDINATES %d double\n' % zsize)
+			for k in xrange(startz+1, endz+1, stride):
+				g.write('%f ' % Z[k-1])
+			g.write('\n')
+
+			g.write("POINT_DATA %d\n" % (xsize*ysize*zsize))
+			g.write('VECTORS velocity double\n')
+			for k in xrange(startz+1,endz+1, stride):
+				for j in xrange(starty+1,endy+1, stride):
+					for i in xrange(startx+1,endx+1, stride):
+						g.write( "%f\t%f\t%f\n" % ( 0.5*(qx[k][j][i-1]+qx[k][j][i])/(dy[j]*dz[k]), 0.5*(qy[k][j-1][i]+qy[k][j][i])/(dx[i]*dz[k]), 0.5*(qz[k-1][j][i]+qz[k][j][i])/(dx[i]*dy[j]) ) )
+
+			g.close()
+			print 'Wrote file ' + outFile + '.'
+		except:
+			pass

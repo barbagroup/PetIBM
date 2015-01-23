@@ -1,0 +1,39 @@
+- direction: x
+  start: -10.0
+  subDomains:
+    - end: -1.0
+      cells: 51
+      stretchRatio: 0.934579439252
+    - end: 5.0
+      cells: 300
+      stretchRatio: 1.0
+    - end: 20.0
+      cells: 107
+      stretchRatio: 1.03
+
+- direction: y
+  start: -15.0
+  subDomains:
+    - end: -1.5
+      cells: 85
+      stretchRatio: 0.961538461538
+    - end: 1.5
+      cells: 150
+      stretchRatio: 1.0
+    - end: 15.0
+      cells: 85
+      stretchRatio: 1.04
+
+- direction: z
+  start: -15.0
+  subDomains:
+    - end: -2.5
+      cells: 83
+      stretchRatio: 0.961538461538
+    - end: 2.5
+      cells: 250
+      stretchRatio: 1.0
+    - end: 15.0
+      cells: 83
+      stretchRatio: 1.04
+

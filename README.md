@@ -56,7 +56,7 @@ All production runs must be compiled and run using the optimized mode.
 The debug mode is recommended during development. To install PETSc in debug mode, use the following flags in the 
 configure step:
 
-    > ./configure --downloadfblaslapack --download-mpich
+    > ./configure --download-fblaslapack --download-mpich
 
 When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to 
 work with the cluster. Hence, **do not use the `--download-mpich` flag**, and instead point to the folder with the MPI 

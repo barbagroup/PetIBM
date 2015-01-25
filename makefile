@@ -177,6 +177,7 @@ cleanoutput:
 	find ./cases -name '*.txt' -exec rm -rf {} \;
 	find ./cases -name '0*' -prune -exec rm -rf {} \;
 	find ./cases -name 'output' -prune -exec rm -rf {} \;
+	find ./tests -name '*.txt' -exec rm -rf {} \;
 	find . -name '._*' -exec rm -rf {} \;
 	find . -name '.DS_Store' -exec rm -rf {} \;
 

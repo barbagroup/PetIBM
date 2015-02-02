@@ -118,4 +118,4 @@ Contour plots of the x and y components of velocity, the pressure and the vortic
 Contact
 -------
 
-Please e-mail [Anush Krishnan](mailto:k.anush@gmail.com) if you have any questions, suggestions or feedback.
+Please e-mail [Anush Krishnan](mailto:k.anush@gmail.com), [Olivier Mesnard](mailto:mesnardo@gwu.edu) if you have any questions, suggestions or feedback.

@@ -74,7 +74,6 @@ def compute_ratio(direction, database):
   database -- contains all grid parameters
   """
   def compute_stretched_ratio():
-    print l
     precision = 2
     current_precision = 1
     next_ratio = 2.0

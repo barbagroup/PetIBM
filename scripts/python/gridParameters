@@ -1,0 +1,9 @@
+# direction: [lower-limit, 
+#             lower-limit of the uniform region, 
+#             upper-limit of the uniform region, 
+#             upper-limit, 
+#             grid-spacing in the uniform region, 
+#             maximum aspect-ratio]
+x: [-10.0, -1.0, 5.0, 20.0, 0.02, 15.0]
+y: [-10.0, -1.0, 1.0, 10.0, 0.02, 15.0]
+z: [-10.0, -1.0, 1.0, 10.0, 0.02, 15.0]

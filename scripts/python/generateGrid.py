@@ -1,126 +1,148 @@
 #!/usr/bin/env python
 
+# file: generateGrid.py
+# author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+# description: Generates the cartesianMesh.yaml file for stretched grids.
+
+
 import argparse
-import numpy as np
 import sys
 import os
 import re
+import math
+
 
 def read_inputs():
-	# create parser
-	parser = argparse.ArgumentParser(description="Generates a cartesian mesh with a uniform region surrounded by a stretched grid", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	
-	# add arguments to parser
-	parser.add_argument("-input", dest="input", help="name of input file", default="gridOptions")
+  """Parses the command-line."""
+  # create parser
+  parser = argparse.ArgumentParser(description='Generates cartesianMesh.yaml '
+                                               'file for a uniform region '
+                                               'surrounded by a stretched grid',
+                                   formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  # fill parser with arguments
+  parser.add_argument('--parameters', dest='parameters_path', type=str, 
+                      default=os.path.dirname(os.path.realpath(__file__))+'/gridParameters',
+                      help='path of the file containing grid parameters')
+  parser.add_argument('--case', dest='case_directory', type=str,
+                      default=os.getcwd(),
+                      help='directory of the simulation')
+  return parser.parse_args()
 
-	return parser.parse_args()
+def read_parameters_file(args):
+  """Creates a database with all grid parameters read from file.
 
-def calculate_ratios(axis, min, max, u_min, u_max, h, maxAR, g):
-	precision = 2
-	totalCells = 0
+  Arguments
+  ---------
+  args -- paths of file and case directory
+  """
+  database = {'file_path': args.parameters_path,
+              'case_directory': args.case_directory}
+  with open(database['file_path'], 'r') as infile:
+    lines = filter(None, (line.rstrip() for line in infile if not line.startswith('#')))
+    for line in lines:
+      line = filter(None, re.split('\[|\]|\n|:|,|\s+', line))
+      direction, values = line[0], [float(value) for value in line[1:]]
+      database[direction] = {'min': values[0],
+                             'min uniform': values[1],
+                             'max uniform': values[2],
+                             'max': values[3],
+                             'spacing': values[4],
+                             'aspect ratio': values[5]}
+  return database
 
-	g.write("- direction: %s\n" % axis)
-	g.write("  start: %s\n" % str(min))
-	g.write("  subDomains:\n")
+def get_ratios(database):
+  """Computes stretching ratio and number of cells 
+  in each direction for each subdomain.
 
-	L = u_min - min
-	current_precision = 1
-	next_ratio = 2.
-	while current_precision <= precision:
-		ratio = next_ratio 
-		n = int(round(np.log(L*(ratio-1)/h + 1.)/np.log(ratio)))
-		AR = ratio**(n-1)
-		if AR < maxAR:
-			next_ratio += (0.1)**current_precision
-			current_precision+=1
-		else:
-			next_ratio -= (0.1)**current_precision
-	totalCells += n
+  Arguments
+  ---------
+  database -- dictionary containing the grid parameters
+  """
+  compute_ratio('x', database)
+  compute_ratio('y', database)
+  try:
+    compute_ratio('z', database)
+  except:
+    pass
 
-	g.write("    - end: %s\n" % str(u_min))
-	g.write("      cells: %d\n" % n)
-	g.write("      stretchRatio: %s\n" % str(1.0/ratio))
+def compute_ratio(direction, database):
+  """Computes the aspect ratio for each sub-domain.
 
-	n = int(round((u_max-u_min)/h))
-	if np.abs((u_max-u_min)/h - n) > 1e-8:
-		print "Choose a mesh spacing such that the uniform region is an integral multiple of it!"
-		print "%s-direction: %s/%s = %s" % (axis, str(u_max-u_min), str(h), str((u_max-u_min)/h))
-		sys.exit()
-	totalCells += n
+  Arguments
+  ---------
+  direction -- direction name
+  database -- contains all grid parameters
+  """
+  def compute_stretched_ratio():
+    print l
+    precision = 2
+    current_precision = 1
+    next_ratio = 2.0
+    while current_precision <= precision:
+      r = next_ratio
+      n = int(round(math.log(1.0 - l/h*(1.0-r))/math.log(r)))
+      ar = r**(n-1)
+      if ar < max_ar:
+        next_ratio += (0.1)**current_precision
+        current_precision += 1
+      else:
+        next_ratio -= (0.1)**current_precision
+    return r, n
+  
+  max_ar = database[direction]['aspect ratio']
+  h = database[direction]['spacing']
 
-	g.write("    - end: %s\n" % str(u_max))
-	g.write("      cells: %d\n" % n)
-	g.write("      stretchRatio: 1.0\n")
+  # before uniform region
+  l = database[direction]['min uniform'] - database[direction]['min']
+  r, n = compute_stretched_ratio()
+  database[direction]['stretch1'] = {'end': database[direction]['min uniform'], 
+                                     'stretching ratio': 1.0/r, 
+                                     'number cells': n}
 
-	L = max - u_max
-	current_precision = 1
-	next_ratio = 2.
-	while current_precision <= precision:
-		ratio = next_ratio 
-		n = int(round(np.log(L*(ratio-1)/h + 1.)/np.log(ratio)))
-		AR = ratio**(n-1)
-		if AR < maxAR:
-			next_ratio += (0.1)**current_precision
-			current_precision+=1
-		else:
-			next_ratio -= (0.1)**current_precision
-	totalCells += n
-	
-	g.write("    - end: %s\n" % str(max))
-	g.write("      cells: %d\n" % n)
-	g.write("      stretchRatio: %s\n\n" % str(ratio))
+  # uniform region
+  l = database[direction]['max uniform']-database[direction]['min uniform']
+  n = int(round(l/h))
+  if abs(n-l/h) > 1.0E-08:
+    print ('Choose a mesh spacing such that the uniform region is an '
+           'integral multiple of it')
+    print ('%s-direction: length l=%g \t spacing h=%g \t l/h=%g' % (l, h, l/h))
+    sys.exit()
+  database[direction]['uniform'] = {'end': database[direction]['max uniform'], 
+                                    'stretching ratio': 1.0, 
+                                    'number cells': n}
 
-	return totalCells
+  # after uniform region
+  l = database[direction]['max'] - database[direction]['max uniform']
+  r, n = compute_stretched_ratio()
+  database[direction]['stretch2'] = {'end': database[direction]['max'], 
+                                     'stretching ratio': r, 
+                                     'number cells': n}
 
-def generate_grid(inFile):
-	# read the input file
-	f = open(inFile, 'r')
-	for line in f:
-		b = filter(None, re.split('\[|\]|\n|:|,| ', line))
-		if b != []:
-			if b[0] == 'FinestMeshSpacing':
-				h = float(b[1])
-			elif b[0] == 'MaxAspectRatio':
-				maxAR = float(b[1])
-			elif b[0] == 'XRange':
-				xmin = float(b[1])
-				xmax = float(b[2])
-			elif b[0] == 'YRange':
-				ymin = float(b[1])
-				ymax = float(b[2])
-			elif b[0] == 'ZRange':
-				zmin = float(b[1])
-				zmax = float(b[2])
-			elif b[0] == 'UniformRegionXRange':
-				u_xmin = float(b[1])
-				u_xmax = float(b[2])
-			elif b[0] == 'UniformRegionYRange':
-				u_ymin = float(b[1])
-				u_ymax = float(b[2])
-			elif b[0] == 'UniformRegionZRange':
-				u_zmin = float(b[1])
-				u_zmax = float(b[2])
-	f.close()
+def write_yaml_file(database):
+  """Writes cartesianMesh.yaml into the case directory.
 
-	# write the output file
-	g = open('cartesianMesh.yaml', 'w')
-	nx = calculate_ratios("x", xmin, xmax, u_xmin, u_xmax, h, maxAR, g)
-	ny = calculate_ratios("y", ymin, ymax, u_ymin, u_ymax, h, maxAR, g)
-	try:
-		nz = calculate_ratios("z", zmin, zmax, u_zmin, u_zmax, h, maxAR, g)
-	except:
-		pass
-	g.close()
-	print "Grid written to file cartesianMesh.yaml."
-	print "Size of mesh: %d x %d" % (nx, ny),
-	try:
-		print "x %d" % nz
-	except:
-		print " "
+  Arguments
+  ---------
+  database -- contains all grid parameters
+  """
+  with open(database['case_directory']+'/cartesianMesh.yaml', 'w') as outfile:
+    directions = [d for d in ['x', 'y', 'z'] if d in list(database.keys())]
+    for direction in directions:
+      outfile.write('- direction: %s\n' % direction)
+      outfile.write('  start: %g\n' % database[direction]['min'])
+      outfile.write('  subDomains:\n')
+      for region in ['stretch1', 'uniform', 'stretch2']: 
+        outfile.write('    - end: %g\n' % database[direction][region]['end'])
+        outfile.write('      cells: %d\n' % database[direction][region]['number cells'])
+        outfile.write('      stretchRatio: %g\n' % database[direction][region]['stretching ratio'])
+      outfile.write('\n')
 
 def main():
-	args = read_inputs()
-	generate_grid(args.input)
+  """Creates cartesianMesh.yaml file for stretched grid."""
+  args = read_inputs()
+  database = read_parameters_file(args)
+  get_ratios(database)
+  write_yaml_file(database)
 
 if __name__ == "__main__":
-	main()
+  main()

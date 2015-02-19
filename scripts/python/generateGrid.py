@@ -47,7 +47,7 @@ def read_parameters_file(args):
                              'max uniform': values[2],
                              'max': values[3],
                              'spacing': values[4],
-                             'aspect ratio': values[5]}
+                             'aspect ratio': [values[5], values[6]]}
   return database
 
 def get_ratios(database):
@@ -88,11 +88,11 @@ def compute_ratio(direction, database):
         next_ratio -= (0.1)**current_precision
     return r, n
   
-  max_ar = database[direction]['aspect ratio']
   h = database[direction]['spacing']
 
   # before uniform region
   l = database[direction]['min uniform'] - database[direction]['min']
+  max_ar = database[direction]['aspect ratio'][0]
   r, n = compute_stretched_ratio()
   database[direction]['stretch1'] = {'end': database[direction]['min uniform'], 
                                      'stretching ratio': 1.0/r, 
@@ -112,6 +112,7 @@ def compute_ratio(direction, database):
 
   # after uniform region
   l = database[direction]['max'] - database[direction]['max uniform']
+  max_ar = database[direction]['aspect ratio'][1]
   r, n = compute_stretched_ratio()
   database[direction]['stretch2'] = {'end': database[direction]['max'], 
                                      'stretching ratio': r, 
@@ -135,6 +136,7 @@ def write_yaml_file(database):
         outfile.write('      cells: %d\n' % database[direction][region]['number cells'])
         outfile.write('      stretchRatio: %g\n' % database[direction][region]['stretching ratio'])
       outfile.write('\n')
+  print ('cartesianMesh.yaml written into %s' % database['case_directory'])
 
 def main():
   """Creates cartesianMesh.yaml file for stretched grid."""

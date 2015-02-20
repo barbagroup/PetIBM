@@ -39,9 +39,10 @@ def main():
   # parse command-line
   args = read_inputs()
   
+  # parameters
   R = args.radius
-  zmin = args.limits[0]
-  zmax = args.limits[1]
+  xc, yc = args.center
+  zmin, zmax = args.limits
   ds = args.ds
   
   length = zmax-zmin
@@ -61,7 +62,7 @@ def main():
   with open(args.save_dir+'/'+args.file_name, 'w') as outfile:
     outfile.write('%d\n' % (nc*nz))
     i = numpy.arange(nc)
-    x, y = R*numpy.cos(2.0*numpy.pi*i/nc), R*numpy.sin(2.0*numpy.pi*i/nc)
+    x, y = xc+R*numpy.cos(2.0*numpy.pi*i/nc), yc+R*numpy.sin(2.0*numpy.pi*i/nc)
     for k in xrange(nz):
       z = zmin + (k+0.5)*ds * numpy.ones(nc)
       numpy.savetxt(outfile, numpy.c_[x, y, z], fmt='%.6f', delimiter='\t')

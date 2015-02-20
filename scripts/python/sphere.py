@@ -47,8 +47,20 @@ def main():
 
   n_phi = int(math.ceil(math.pi*R/h))
   phi = numpy.linspace(0.0, math.pi, n_phi)[1:-1]
-  n_theta = int(math.ceil(2.0*math.pi*R/h))
-  theta = numpy.linspace(0.0, 2.0*math.pi, n_theta)[1:-1]
+
+  x, y, z = xc, yc, R+zc
+  for phi in phi:
+    n_theta = int(math.ceil(2.0*math.pi*R*math.sin(phi)/h))
+    theta = numpy.linspace(0.0, 2.0*math.pi, n_theta)
+    x = numpy.append(x, xc + R*math.sin(phi)*numpy.cos(theta))
+    y = numpy.append(y, yc + R*math.sin(phi)*numpy.sin(theta))
+    z = numpy.append(z, zc + R*math.cos(phi)*numpy.ones(theta.size))
+  x = numpy.append(x, xc)
+  y = numpy.append(y, yc)
+  z = numpy.append(z, -R+zc)
+
+  '''n_theta = int(math.ceil(2.0*math.pi*R/h))
+  theta = numpy.linspace(0.0, 2.0*math.pi, n_theta)[:-1]
 
   x = xc + R*numpy.outer(numpy.sin(phi), numpy.cos(theta)).flatten()
   x = numpy.insert(x, 0, xc)
@@ -60,7 +72,9 @@ def main():
   z = zc + R*numpy.outer(numpy.cos(phi), numpy.ones(theta.size)).flatten()
   #z = numpy.ravel(zc + R*numpy.outer(numpy.cos(phi), numpy.ones(theta.size)))
   z = numpy.insert(z, 0, R+zc)
-  z = numpy.insert(z, -1, -R+zc)
+  z = numpy.insert(z, -1, -R+zc)'''
+
+  print x.size
 
   with open('%s/%s.body' % (args.save_dir, args.file_name), 'w') as outfile:
     outfile.write('%d\n' % x.size)

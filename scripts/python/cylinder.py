@@ -57,9 +57,9 @@ def main():
   nc = int(numpy.ceil(2.0*numpy.pi*R/ds))
 
   if not args.file_name:
-    args.file_name = 'cylinder_%g.body' % args.ds
+    args.file_name = 'cylinder_%g' % args.ds
 
-  with open(args.save_dir+'/'+args.file_name, 'w') as outfile:
+  with open('%s/%s.body' % (args.save_dir, args.file_name), 'w') as outfile:
     outfile.write('%d\n' % (nc*nz))
     i = numpy.arange(nc)
     x, y = xc+R*numpy.cos(2.0*numpy.pi*i/nc), yc+R*numpy.sin(2.0*numpy.pi*i/nc)

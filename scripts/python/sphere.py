@@ -7,6 +7,7 @@
 
 import argparse
 import os
+import math
 
 import numpy
 
@@ -19,7 +20,7 @@ def read_inputs():
   # add arguments to parser
   parser.add_argument('--radius', '-r', dest='radius', type=float, default=0.5,
             help='radius of the sphere')
-  parser.add_argument('--center', '-c', dest=center, type=float, nargs='+',
+  parser.add_argument('--center', '-c', dest='center', type=float, nargs='+',
                       default=[0.0, 0.0, 0.0],
                       help='coordinates of the center of the sphere')
   parser.add_argument('-ds', dest='ds', type=float, default='0.015',
@@ -41,36 +42,29 @@ def main():
   xc, yc, zc = args.center
   h = args.ds
 
-  # `total` keeps track of the number of points on the body
-  # it is initialized with 2 to count the points on the poles
-  total = 2
+  if not args.file_name:
+    args.file_name = 'sphere_%g' % args.ds
 
-  # calculate angle increments in altitude and azimuth
-  nCircHalf = int(np.pi*R/h)+1
-  dPhi = np.pi/nCircHalf
-  for i in range(1,nCircHalf):
-    phi = i*dPhi
-    r = R*np.sin(phi)
-    nCircAzim = int(2*np.pi*r/h)+1
-    total += nCircAzim
+  n_phi = int(math.ceil(math.pi*R/h))
+  phi = numpy.linspace(0.0, math.pi, n_phi)[1:-1]
+  n_theta = int(math.ceil(2.0*math.pi*R/h))
+  theta = numpy.linspace(0.0, 2.0*math.pi, n_theta)[1:-1]
 
-  # write body data to file
-  f = open(filename, 'w')
-  f.write("%d\n" % total)
-  f.write("%f\t%f\t%f\n" % (x0, y0, R+z0))
-  for i in range(1,nCircHalf):
-    phi = i*dPhi
-    z = R*np.cos(phi)
-    r = R*np.sin(phi)
-    nCircAzim = int(2*np.pi*r/h)+1
-    dTheta = 2*np.pi/nCircAzim
-    for j in range(nCircAzim):
-      theta = j*dTheta
-      x = r*np.cos(theta)
-      y = r*np.sin(theta)
-      f.write("%f\t%f\t%f\n" % (x+x0, y+y0, z+z0))
-  f.write("%f\t%f\t%f\n" % (x0, y0, -R+z0))
-  f.close()
+  x = xc + R*numpy.outer(numpy.sin(phi), numpy.cos(theta)).flatten()
+  x = numpy.insert(x, 0, xc)
+  x = numpy.insert(x, -1, xc)
+  y = yc + R*numpy.outer(numpy.sin(phi), numpy.sin(theta)).flatten()
+  #y = numpy.ravel(yc + R*numpy.outer(numpy.sin(phi), numpy.sin(theta)))
+  y = numpy.insert(y, 0, yc)
+  y = numpy.insert(y, -1, yc)
+  z = zc + R*numpy.outer(numpy.cos(phi), numpy.ones(theta.size)).flatten()
+  #z = numpy.ravel(zc + R*numpy.outer(numpy.cos(phi), numpy.ones(theta.size)))
+  z = numpy.insert(z, 0, R+zc)
+  z = numpy.insert(z, -1, -R+zc)
+
+  with open('%s/%s.body' % (args.save_dir, args.file_name), 'w') as outfile:
+    outfile.write('%d\n' % x.size)
+    numpy.savetxt(outfile, numpy.c_[x, y, z], fmt='%.6f', delimiter='\t')
 
 
 if __name__=="__main__":

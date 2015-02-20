@@ -10,6 +10,7 @@ performanceSummary.txt
 0*
 grid.txt
 output
+vtk_files
 doxygen/*
 tests/*Test
 *.dSYM

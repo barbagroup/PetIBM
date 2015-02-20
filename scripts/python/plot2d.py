@@ -27,7 +27,7 @@ def read_inputs():
                       nargs='+', default=[float('-inf'), float('-inf')],
                       help='coordinates of the bottom-left corner')
   parser.add_argument('--top-right', '-tr', dest='top_right', type=float,
-                      nargs='+', default=[float('-inf'), float('-inf')],
+                      nargs='+', default=[float('inf'), float('inf')],
                       help='coordinates of the top-right corner')
   parser.add_argument('--time-steps', '-t', dest='time_steps', type=float,
                       nargs='+', default=[None, None, None])
@@ -49,19 +49,23 @@ def main():
     grid = numpy.loadtxt(infile, dtype=float)
   
   x, y = grid[:nx+1], grid[nx+1:]
-  mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0], 
-                                         x <= args.top_right[0]))
-  mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1], 
-                                         y <= args.top_right[1]))
+  
 
-  dx, dy = x[1:]-x[:-1], y[1:]-y[:-1]
+  dx, dy = x[2:-1]-x[1:-2], y[2:-1]-y[1:-2]
 
   nxu, nyu = (nx if 'x' in args.periodic else nx-1), ny
   nxv, nyv = nx, (ny if 'y' in args.periodic else ny-1)
 
   # calculate cell-centered coordinates
-  x = (0.5*(x[:-1]+x[1:]))
-  y = (0.5*(y[:-1]+y[1:]))
+  x = (0.5*(x[1:-2]+x[2:-1]))
+  y = (0.5*(y[1:-2]+y[2:-1]))
+
+  mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0], 
+                                         x <= args.top_right[0]))[0][::args.stride]
+  mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1], 
+                                         y <= args.top_right[1]))[0][::args.stride]
+  x = x[mask_x]
+  y = y[mask_y]
 
   # get time-steps to write .vtk files
   if any(args.time_steps):
@@ -74,7 +78,7 @@ def main():
   
   # create directory where .vtk files will be saved
   vtk_directory = '%s/vtk_files' % args.case_directory
-  print ('[vtk directory] %s' % vtk_directory)
+  print ('[vtk-directory] %s' % vtk_directory)
   if not os.path.isdir(vtk_directory):
     os.makedirs(vtk_directory)
 
@@ -83,12 +87,19 @@ def main():
                                                       % (args.case_directory,
                                                          time_step))[0]
     qx = qx.reshape((nyu, nxu))
-    u = 0.5*(qx[:, :-1]+qx[:, 1:])/numpy.outer(dy, numpy.ones(nxu-1))
+    print qx.shape
+    u = 0.5*(qx[1:-1, :-1]+qx[1:-1, 1:])/numpy.outer(dy, numpy.ones(nxu-1))
+    u = u[mask_y][mask_x]
+    print u.shape
+    print x.shape
+    print y.shape
     qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
     qy = qy.reshape((nyv, nxv))
-    v = 0.5*(qy[:-1, :]+qy[1:, :])/dx
+    v = 0.5*(qy[:-1, 1:-1]+qy[1:, 1:-1])/dx
+    v = v[mask_y][mask_x]
+    print v.shape
 
     print ('writing vtk file at time-step %d ...' % time_step)
     vtk_path = '%s/velocity%07d.vtk' % (vtk_directory, time_step)
@@ -105,6 +116,9 @@ def main():
       outfile.write('Z_COORDINATES 1 double\n0.0\n')
       outfile.write('POINT_DATA %d\n' % (x.size*y.size))
       outfile.write('VECTORS velocity double\n')
+      numpy.savetxt(outfile, 
+                    numpy.c_[u.flatten(), v.flatten(), numpy.zeros(u.size)],
+                    fmt='%.6f', delimiter='\t')
 
 
 if __name__ == "__main__":

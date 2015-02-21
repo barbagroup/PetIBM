@@ -48,22 +48,26 @@ def main():
     nx, ny = [int(v) for v in infile.readline().strip().split()]
     grid = numpy.loadtxt(infile, dtype=float)
   
+  # compute cell-vertex coordinates
   x, y = grid[:nx+1], grid[nx+1:]
-  
+  # compute cell-widths
+  dx, dy = x[1:]-x[:-1], y[1:]-y[:-1]
 
-  dx, dy = x[2:-1]-x[1:-2], y[2:-1]-y[1:-2]
-
+  # number of velocity nodes in each direction (depends on type of bc)
   nxu, nyu = (nx if 'x' in args.periodic else nx-1), ny
   nxv, nyv = nx, (ny if 'y' in args.periodic else ny-1)
 
-  # calculate cell-centered coordinates
-  x = (0.5*(x[1:-2]+x[2:-1]))
-  y = (0.5*(y[1:-2]+y[2:-1]))
+  # calculate cell-center coordinates
+  x = (0.5*(x[1:nxu]+x[2:nxu+1]))
+  y = (0.5*(y[1:nyv]+y[2:nyv+1]))
 
+  # get mask incorporating boundary-limits and stride
   mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0], 
                                          x <= args.top_right[0]))[0][::args.stride]
   mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1], 
                                          y <= args.top_right[1]))[0][::args.stride]
+  
+  # apply mask on cell-center coordinates
   x = x[mask_x]
   y = y[mask_y]
 
@@ -83,23 +87,26 @@ def main():
     os.makedirs(vtk_directory)
 
   for time_step in time_steps:
+    # read fluxes in x-direction
     qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
     qx = qx.reshape((nyu, nxu))
-    print qx.shape
-    u = 0.5*(qx[1:-1, :-1]+qx[1:-1, 1:])/numpy.outer(dy, numpy.ones(nxu-1))
-    u = u[mask_y][mask_x]
-    print u.shape
-    print x.shape
-    print y.shape
+    # compute u-velocity at cell-centers
+    u = 0.5*(qx[1:nyv, :nxu-1]+qx[1:nyv, 1:nxu])/numpy.outer(dy[1:nyv], 
+                                                             numpy.ones(nxu-1)) 
+    # apply mask for boundary limits and stride
+    u = numpy.array([u[i][mask_x] for i in mask_y])
+    # read fluxes in y-direction
     qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
     qy = qy.reshape((nyv, nxv))
-    v = 0.5*(qy[:-1, 1:-1]+qy[1:, 1:-1])/dx
-    v = v[mask_y][mask_x]
-    print v.shape
+    # compute v-velocity at cell-centers
+    v = 0.5*(qy[:nyv-1, 1:nxu]+qy[1:nyv, 1:nxu])/numpy.outer(numpy.ones(nyv-1), 
+                                                             dx[1:nxu])
+    # apply mask for boundary limits and stride
+    v = numpy.array([v[i][mask_x] for i in mask_y])
 
     print ('writing vtk file at time-step %d ...' % time_step)
     vtk_path = '%s/velocity%07d.vtk' % (vtk_directory, time_step)

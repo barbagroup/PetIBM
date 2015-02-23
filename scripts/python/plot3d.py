@@ -123,7 +123,7 @@ def main():
                                                          time_step))[0]
     qz = qz.reshape((nzw, nyw, nxw))
     # compute w-velocity at cell-centers
-    w = ( 0.5 * (qy[:nzw-1, 1:nyv, 1:nxu] + qy[1:nzw, 1:nyv, 1:nxu])
+    w = ( 0.5 * (qz[:nzw-1, 1:nyv, 1:nxu] + qz[1:nzw, 1:nyv, 1:nxu])
               / reduce(numpy.multiply, 
                        numpy.ix_(*[numpy.ones(nzw-1), dy[1:nyv], dx[1:nxu]])) )
     # apply mask for boundary limits and stride

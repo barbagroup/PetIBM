@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# file: generate3DVTKFile.py
+# file: generateVTKFile3d.py
 # author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
 # description: Converts PETSc output to VTK format for 3D cases.
 

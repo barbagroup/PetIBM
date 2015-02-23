@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# file: generate2dVTKFile.py
+# file: generateVTKFile2d.py
 # author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
 # description: Converts PETSc output to VTK format for 2D case.
 

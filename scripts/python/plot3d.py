@@ -1,211 +1,154 @@
 #!/usr/bin/env python
-import matplotlib
-matplotlib.use('Agg')
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
-import argparse
+
+# file: generate3DVTKFile.py
+# author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+# description: Converts PETSc output to VTK format for 3D cases.
+
+
 import os
-import errno
-sys.path.append(os.path.join(os.environ['PETSC_DIR'],'bin','pythonscripts'))
+import sys
+import argparse
+
+import numpy
+sys.path.append(os.path.join(os.environ['PETSC_DIR'], 'bin', 'pythonscripts'))
 import PetscBinaryIO
 
-def isNumber(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-        
-def mkdir(path, overwrite=False):
-	try:
-		os.makedirs(path)
-	except OSError as exception:
-		if exception.errno == errno.EEXIST:
-			if not overwrite:
-				#print "Path '%s' already exists" % path
-				return
-		else: raise
 
-if __name__=="__main__":
+def read_inputs():
+  """Parses the command-line."""
+  # create parser
+  parser = argparse.ArgumentParser(description='Converts PETSc output to VTK '
+                                               'format for 2D case',
+                        formatter_class= argparse.ArgumentDefaultsHelpFormatter)
+  # fill parser with arguments
+  parser.add_argument('--case', dest='case_directory', type=str, 
+                      default=os.getcwd(), help='directory of the simulation')
+  parser.add_argument('--bottom-left', '-bl', dest='bottom_left', type=float,
+                      nargs='+', 
+                      default=[float('-inf'), float('-inf'), float('-inf')],
+                      help='coordinates of the bottom-left corner')
+  parser.add_argument('--top-right', '-tr', dest='top_right', type=float,
+                      nargs='+', 
+                      default=[float('inf'), float('inf'), float('inf')],
+                      help='coordinates of the top-right corner')
+  parser.add_argument('--time-steps', '-t', dest='time_steps', type=float,
+                      nargs='+', default=[None, None, None],
+                      help='time-steps to convert (start, end, increment)')
+  parser.add_argument('--stride', '-s', dest='stride', type=int, default=1,
+                      help='stride at which vector are written')
+  parser.add_argument('--periodic', '-p', dest='periodic', type=str, nargs='+',
+                      default=[], help='direction(s) (x and/or y and/or z) '
+                                       'with periodic boundary conditions')
+  return parser.parse_args()
 
-	# command line arguments
-	# read the case folder, the extent of the plotting region, the stride, and the time steps to plot
-	parser = argparse.ArgumentParser(description="Converts the PETSc output to VTK format", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument("-folder", dest="folder", help="Case folder", default="cases/3d/cavityX")
-	parser.add_argument("-xmin", type=float, dest="xmin", help="lower x-limit of the plotting region", default=float("-inf"))
-	parser.add_argument("-xmax", type=float, dest="xmax", help="upper x-limit of the plotting region", default=float("inf"))
-	parser.add_argument("-ymin", type=float, dest="ymin", help="lower y-limit of the plotting region", default=float("-inf"))
-	parser.add_argument("-ymax", type=float, dest="ymax", help="upper y-limit of the plotting region", default=float("inf"))
-	parser.add_argument("-zmin", type=float, dest="zmin", help="lower z-limit of the plotting region", default=float("-inf"))
-	parser.add_argument("-zmax", type=float, dest="zmax", help="upper z-limit of the plotting region", default=float("inf"))
-	parser.add_argument("-stride", type=int, dest="stride", help="output only the nodes separated by a certain interval", default=1)
-	parser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
-	parser.add_argument("-nsave", type=int, dest="nsave", help="nsave", default=-1)
-	parser.add_argument("-nt", type=int, dest="nt", help="nt", default=-1)
-	CLargs = parser.parse_args()
+def main():
+  """Converts PETSc output to VTK format for 2D case."""
+  # parse the command-line
+  args = read_inputs()
+  print ('[case-directory] %s' % args.case_directory)
 
-	folder = CLargs.folder
-	stride = CLargs.stride
-	
-	print "Case folder:", folder
-	
-	infoFile = folder + "/simulationInfo.txt"
-	f = open(infoFile, "r")
-	args_list = f.read().split()
-	f.close()
+  with open('%s/grid2.txt' % args.case_directory, 'r') as infile:
+    nx, ny, nz = [int(v) for v in infile.readline().strip().split()]
+    grid = numpy.loadtxt(infile, dtype=float)
 
-	# read information from the file simulationInfo.txt
-	fileParser = argparse.ArgumentParser()
-	fileParser.add_argument("-nx", type=int, dest="nx", help="number of cells in x-direction", default=32)
-	fileParser.add_argument("-ny", type=int, dest="ny", help="number of cells in y-direction", default=32)
-	fileParser.add_argument("-nz", type=int, dest="nz", help="number of cells in z-direction", default=32)
-	fileParser.add_argument("-startStep", type=int, dest="startStep", help="start step", default=-1)
-	fileParser.add_argument("-nt", type=int, dest="nt", help="number of time steps", default=200)
-	fileParser.add_argument("-nsave", type=int, dest="nsave", help="data save stride", default=100)
-	fileParser.add_argument("-dt", type=float, dest="dt", help="time increment", default=0.01)
-	fileParser.add_argument("-xperiodic", dest="xperiodic", help="periodicity in x-direction", default="False")
-	fileParser.add_argument("-yperiodic", dest="yperiodic", help="periodicity in y-direction", default="False")
-	fileParser.add_argument("-zperiodic", dest="zperiodic", help="periodicity in z-direction", default="False")
-	args = fileParser.parse_args(args_list)
+  # compute cell-vertex coordinates
+  x, y, z = grid[:nx+1], grid[nx+1:nx+1+ny+1], grid[nx+1+ny+1:]
+  # compute cell-widths
+  dx, dy, dz = x[1:]-x[:-1], y[1:]-y[:-1], z[1:]-z[:-1]
 
-	# if the command line arguments are missing, set the values from the file
-	startStep = CLargs.startStep if CLargs.startStep > -1 else args.startStep
-	nsave = CLargs.nsave if CLargs.nsave > -1 else args.nsave
-	nt = CLargs.nt if CLargs.nt > -1 else args.nt
-	
-	# number of cells in the mesh in each direction
-	nx = args.nx
-	ny = args.ny
-	nz = args.nz
-	xperiodic = True if args.xperiodic.lower()=='true' else False
-	yperiodic = True if args.yperiodic.lower()=='true' else False
-	zperiodic = True if args.zperiodic.lower()=='true' else False
+  # number of velocity nodes in each direction (depends on type of bc)
+  nxu, nyu, nzu = (nx if 'x' in args.periodic else nx-1), ny, nz
+  nxv, nyv, nzv = nx, (ny if 'y' in args.periodic else ny-1), nz
+  nxw, nyw, nzw = nx, ny, (nz if 'z' in args.periodic else nz-1)
 
-	# number of u, v, w variables in each direction
-	# this depends on whether the domain in a particular direction is periodic
-	Unx, Uny, Unz = nx if xperiodic else nx-1, ny, nz
-	Vnx, Vny, Vnz = nx, ny if yperiodic else ny-1, nz
-	Wnx, Wny, Wnz = nx, ny, nz if zperiodic else nz-1
-	
-	print "Size of U-array: %d x %d x %d" % (Unx, Uny, Unz)
-	print "Size of V-array: %d x %d x %d" % (Vnx, Vny, Vnz)
-	print "Size of W-array: %d x %d x %d" % (Wnx, Wny, Wnz)
-	
-	# read the coordinates of the nodes of the grid
-	grid = np.loadtxt(folder+"/grid.txt")
-	x = grid[:nx+1]
-	y = grid[nx+1:nx+1+ny+1]
-	z = grid[nx+1+ny+1:]
-	
-	# create arrays to store the values of the cell widths
-	dx = np.zeros(nx)
-	dy = np.zeros(ny)
-	dz = np.zeros(nz)
-	
-	# calculate the cell widths
-	dx[0:nx] = x[1:nx+1]-x[0:nx]
-	dy[0:ny] = y[1:ny+1]-y[0:ny]
-	dz[0:nz] = z[1:nz+1]-z[0:nz]
-	
-	# create arrays to store the coordinates of the locations of velocities
-	# these are the locations at which the VTK file stores velocities
-	# and they correspond to the centers of the cells of the mesh
-	X = np.zeros(Unx-1)
-	Y = np.zeros(Vny-1)
-	Z = np.zeros(Wnz-1)
-	X[0:Unx-1] = 0.5*(x[1:Unx]+x[2:Unx+1])
-	Y[0:Vny-1] = 0.5*(y[1:Vny]+y[2:Vny+1])
-	Z[0:Wnz-1] = 0.5*(z[1:Wnz]+z[2:Wnz+1])
+  # calculate cell-center coordinates
+  x = 0.5*(x[1:nxu]+x[2:nxu+1])
+  y = 0.5*(y[1:nyv]+y[2:nyv+1])
+  z = 0.5*(z[1:nzw]+z[2:nzw+1])
 
-	# indices to store the start and end locations of the plotting region
-	startx, starty, startz = 0, 0, 0
-	endx, endy, endz = Unx-1, Vny-1, Wnz-1
-	
-	# calculate the above indices using the command line options
-	# both the start and the end index points are inside the plotting region
-	for i in xrange(Unx-1):
-		if CLargs.xmin < X[i]:
-			break
-		startx += 1
+  # get masks to account for boundary-limits and stride
+  mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0], 
+                                         x <= args.top_right[0]))[0][::args.stride]
+  mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1], 
+                                         y <= args.top_right[1]))[0][::args.stride]
+  mask_z = numpy.where(numpy.logical_and(z >= args.bottom_left[2], 
+                                         z <= args.top_right[2]))[0][::args.stride]
+  
+  # apply mask on cell-center coordinates
+  x = x[mask_x]
+  y = y[mask_y]
+  z = z[mask_z]
 
-	for i in reversed(xrange(Unx-1)):
-		if CLargs.xmax > X[i]:
-			break
-		endx -= 1
+  # get time-steps to write .vtk files
+  if any(args.time_steps):
+    time_steps = range(args.time_steps[0], 
+                       args.time_steps[1]+1, 
+                       args.time_steps[2])
+  else:
+    time_steps = sorted(int(folder) for folder in os.listdir(args.case_directory)
+                                    if folder[0] == '0')
 
-	for j in xrange(Vny-1):
-		if CLargs.ymin < Y[j]:
-			break
-		starty += 1
+  # create directory where .vtk files will be saved
+  vtk_directory = '%s/vtk_files' % args.case_directory
+  print ('[vtk-directory] %s' % vtk_directory)
+  if not os.path.isdir(vtk_directory):
+    os.makedirs(vtk_directory)
 
-	for j in reversed(xrange(Vny-1)):
-		if CLargs.ymax > Y[j]:
-			break
-		endy -= 1
+  for time_step in time_steps:
+    # read fluxes in x-direction
+    qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
+                                                      % (args.case_directory,
+                                                         time_step))[0]
+    qx = qx.reshape((nzu, nyu, nxu))
+    # compute u-velocity at cell-centers
+    u = ( 0.5 * (qx[1:nzw, 1:nyv, :nxu-1] + qx[1:nzw, 1:nyv, 1:nxu])
+              / reduce(numpy.multiply, 
+                       numpy.ix_(*[dz[1:nzw], dy[1:nyv], numpy.ones(nxu-1)])) )
+    # apply mask for boundary limits and stride
+    u = numpy.array([[u[k][j][mask_x] for j in mask_y] for k in mask_z])
+    # read fluxes in y-direction
+    qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
+                                                      % (args.case_directory,
+                                                         time_step))[0]
+    qy = qy.reshape((nzv, nyv, nxv))
+    # compute v-velocity at cell-centers
+    v = ( 0.5 * (qy[1:nzw, :nyv-1, 1:nxu] + qy[1:nzw, 1:nyv, 1:nxu])
+              / reduce(numpy.multiply, 
+                       numpy.ix_(*[dz[1:nzw], numpy.ones(nyv-1), dx[1:nxu]])) )
+    # apply mask for boundary limits and stride
+    v = numpy.array([[v[k][j][mask_x] for j in mask_y] for k in mask_z])
+    # read fluxes in z-direction
+    qz = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' 
+                                                      % (args.case_directory,
+                                                         time_step))[0]
+    qz = qz.reshape((nzw, nyw, nxw))
+    # compute w-velocity at cell-centers
+    w = ( 0.5 * (qy[:nzw-1, 1:nyv, 1:nxu] + qy[1:nzw, 1:nyv, 1:nxu])
+              / reduce(numpy.multiply, 
+                       numpy.ix_(*[numpy.ones(nzw-1), dy[1:nyv], dx[1:nxu]])) )
+    # apply mask for boundary limits and stride
+    w = numpy.array([[w[k][j][mask_x] for j in mask_y] for k in mask_z])
 
-	for k in xrange(Wnz-1):
-		if CLargs.zmin < Z[k]:
-			break
-		startz += 1
+    print ('writing vtk file at time-step %d ...' % time_step)
+    vtk_file_path = '%s/velocity%07d.vtk' % (vtk_directory, time_step)
+    with open(vtk_file_path, 'w') as outfile:
+      outfile.write('# vtk DataFile Version 3.0\n')
+      outfile.write('Header\n')
+      outfile.write('ASCII\n')
+      outfile.write('DATASET RECTILINEAR_GRID\n')
+      outfile.write('DIMENSIONS %d %d %d\n' % (x.size, y.size, z.size))
+      outfile.write('X_COORDINATES %d double\n' % x.size)
+      numpy.savetxt(outfile, x, fmt='%f')
+      outfile.write('Y_COORDINATES %d double\n' % y.size)
+      numpy.savetxt(outfile, y, fmt='%f')
+      outfile.write('Z_COORDINATES %d double\n' % z.size)
+      numpy.savetxt(outfile, z, fmt='%f')
+      outfile.write('POINT_DATA %d\n' % (x.size*y.size*z.size))
+      outfile.write('VECTORS velocity double\n')
+      numpy.savetxt(outfile, 
+                    numpy.c_[u.flatten(), v.flatten(), w.flatten],
+                    fmt='%.6f', delimiter='\t')
 
-	for k in reversed(xrange(Wnz-1)):
-		if CLargs.zmax > Z[k]:
-			break
-		endz -= 1
 
-	print startx, endx
-	print starty, endy
-	print startz, endz
-	print stride
-
-	mkdir(folder+"/output")
-
-	for n in xrange(startStep+nsave, nt+nsave, nsave):
-		try:
-			# read the fluxes from file and reshape them accordingly
-			petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' % (folder,n))[0]
-			qx = petscObjs.reshape((Unz, Uny, Unx))
-
-			petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' % (folder,n))[0]
-			qy = petscObjs.reshape((Vnz, Vny, Vnx))
-
-			petscObjs = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' % (folder,n))[0]
-			qz = petscObjs.reshape((Wnz, Wny, Wnx))
-
-			xsize = len(xrange(startx+1, endx+1, stride))
-			ysize = len(xrange(starty+1, endy+1, stride))
-			zsize = len(xrange(startz+1, endz+1, stride))
-
-			# write the VTK file
-			outFile = '%s/output/velocity%07d.vtk' % (folder,n)
-			g = open(outFile, 'w')
-			g.write('# vtk DataFile Version 3.0\n')
-			g.write('Header\n')
-			g.write('ASCII\n')
-			g.write('DATASET RECTILINEAR_GRID\n')
-			g.write('DIMENSIONS %d %d %d\n' % (xsize, ysize, zsize))
-			g.write('X_COORDINATES %d double\n' % xsize)
-			for i in xrange(startx+1, endx+1, stride):
-				g.write('%f ' % X[i-1])
-			g.write('\n')
-			g.write('Y_COORDINATES %d double\n' % ysize)
-			for j in xrange(starty+1, endy+1, stride):
-				g.write('%f ' % Y[j-1])
-			g.write('\n')
-			g.write('Z_COORDINATES %d double\n' % zsize)
-			for k in xrange(startz+1, endz+1, stride):
-				g.write('%f ' % Z[k-1])
-			g.write('\n')
-
-			g.write("POINT_DATA %d\n" % (xsize*ysize*zsize))
-			g.write('VECTORS velocity double\n')
-			for k in xrange(startz+1,endz+1, stride):
-				for j in xrange(starty+1,endy+1, stride):
-					for i in xrange(startx+1,endx+1, stride):
-						g.write( "%f\t%f\t%f\n" % ( 0.5*(qx[k][j][i-1]+qx[k][j][i])/(dy[j]*dz[k]), 0.5*(qy[k][j-1][i]+qy[k][j][i])/(dx[i]*dz[k]), 0.5*(qz[k-1][j][i]+qz[k][j][i])/(dx[i]*dy[j]) ) )
-
-			g.close()
-			print 'Wrote file ' + outFile + '.'
-		except:
-			pass
+if __name__ == "__main__":
+  main()

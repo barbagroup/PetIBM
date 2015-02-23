@@ -47,7 +47,7 @@ def main():
   args = read_inputs()
   print ('[case-directory] %s' % args.case_directory)
 
-  with open('%s/grid2.txt' % args.case_directory, 'r') as infile:
+  with open('%s/grid.txt' % args.case_directory, 'r') as infile:
     nx, ny, nz = [int(v) for v in infile.readline().strip().split()]
     grid = numpy.loadtxt(infile, dtype=float)
 
@@ -146,7 +146,7 @@ def main():
       outfile.write('POINT_DATA %d\n' % (x.size*y.size*z.size))
       outfile.write('VECTORS velocity double\n')
       numpy.savetxt(outfile, 
-                    numpy.c_[u.flatten(), v.flatten(), w.flatten],
+                    numpy.c_[u.flatten(), v.flatten(), w.flatten()],
                     fmt='%.6f', delimiter='\t')
 
 

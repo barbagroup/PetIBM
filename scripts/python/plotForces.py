@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# file: plot_forces.py
+# file: plotForces.py
 # author: Olivier Mesnard (mesnardo@gwu.edu)
 # description: Plot the instantaneous forces.
 

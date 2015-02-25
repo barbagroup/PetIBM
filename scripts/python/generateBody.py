@@ -1,4 +1,6 @@
-# file: geometry_discretization.py
+#!/usr/bin/env python
+
+# file: generateBody.py
 # author: Olivier Mesnard (mesnardo@gwu.edu)
 # description: Generates a body file.
 

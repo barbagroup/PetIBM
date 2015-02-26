@@ -1,15 +1,27 @@
-ALL: libgtest.a
-GTEST_HEADERS = include/gtest/*.h include/gtest/internal/*.h
-GTEST_SRCS = src/*.cc src/*.h $(GTEST_HEADERS)
-GTEST_OBJS = src/gtest-all.o
-CLEANFILES = ${GTEST_OBJS}
+# file: makefile
+# author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+# description: Generates static library for gtest-1.7.0.
 
-include ${PETSC_DIR}/conf/variables
-include ${PETSC_DIR}/conf/rules
 
-PETSC_CC_INCLUDES += -I ./include -I ./
+TARGET = libgtest.a
 
-libgtest.a: ${GTEST_OBJS}
-	${AR} ${ARFLAGS} $@ $^
-	${RANLIB} $@
-	${MV} $@ ../../lib/
+SUFFIX = .cc
+SRC_DIR = src
+SRCS = $(wildcard $(SRC_DIR)/*$(SUFFIX))
+OBJ = $(SRC_DIR)/gtest-all.o
+LIB_DIR = $(PETIBM_DIR)/lib
+CLEANFILES = $(OBJ)
+
+ALL: $(TARGET)
+
+include $(PETSC_DIR)/conf/variables
+include $(PETSC_DIR)/conf/rules
+
+PETSC_CC_INCLUDES += -I./
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $^
+	$(RANLIB) $@
+	$(MV) $@ $(LIB_DIR)
+
+.PHONY: ALL $(TARGET)

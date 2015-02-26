@@ -17,7 +17,7 @@ ALL: $(TARGET)
 include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
-PETSC_CC_INCLUDES += -I./
+PETSC_CC_INCLUDES += -I./include -I./
 
 $(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^

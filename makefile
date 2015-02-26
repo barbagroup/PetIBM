@@ -6,7 +6,7 @@
 SRC_DIR = $(PETIBM_DIR)/src
 SUFFIX = .cpp
 SRCS = $(shell find $(SRC_DIR) -type f -name *$(SUFFIX))
-OBJ = $(addsuffix .o, $(basename $(SRCS)))
+OBJ = $(addsuffix .o, $(basename $(SRCS))) $(SRC_DIR)/PetIBM*d.o
 
 BIN_DIR = $(PETIBM_DIR)/bin
 
@@ -18,12 +18,7 @@ EXT_DIR = $(PETIBM_DIR)/external
 YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp -type f -name *.o)
 GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
 
-TESTS_DIR = $(PETIBM_DIR)/tests
-TESTS_SRCS = $(shell find $(TESTS_DIR) -type f -name *$(SUFFIX))
-TESTS_OBJS = $(addsuffix .o, $(basename $(TESTS_SRCS)))
-TESTS_BIN = $(TESTS_SRCS:$(SUFFIX)=)
-
-################################################################################
+CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
 
 .PHONY: ALL
 
@@ -47,25 +42,34 @@ src/PetIBM2d.o: src/PetIBM.cpp
 src/PetIBM3d.o: src/PetIBM.cpp
 	$(PETSC_COMPILE) -D DIMENSIONS=3 $^ -o $@
 
-bin/PetIBM2d: src/PetIBM2d.o $(LIB) $(EXT_LIBS)
+bin/PetIBM2d: src/PetIBM2d.o $(LIBS) $(EXT_LIBS)
 	@echo "\n$@ - Linking ..."
 	@mkdir -p $(BIN_DIR)
 	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
 
-bin/PetIBM3d: src/PetIBM3d.o $(LIB) $(EXT_LIBS)
+bin/PetIBM3d: src/PetIBM3d.o $(LIBS) $(EXT_LIBS)
 	@echo "\n$@ - Linking ..."
 	@mkdir -p $(BIN_DIR)
 	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
 
 $(LIBS):
-	cd src/include; ${MAKE}
-	cd src/solvers; ${MAKE}
+	@echo "\nGenerating static libraries ..."
+	@mkdir -p $(LIB_DIR)
+	cd src/include; $(MAKE)
+	cd src/solvers; $(MAKE)
 
 $(EXT_LIBS):
+	@echo "\nGenerating external static libraries ..."
+	@mkdir -p $(LIB_DIR)
 	cd external/yaml-cpp; $(MAKE)
 	cd external/gtest-1.7.0; $(MAKE)
 
 ################################################################################
+
+TESTS_DIR = $(PETIBM_DIR)/tests
+TESTS_SRCS = $(shell find $(TESTS_DIR) -type f -name *$(SUFFIX))
+TESTS_OBJS = $(addsuffix .o, $(basename $(TESTS_SRCS)))
+TESTS_BIN = $(TESTS_SRCS:$(SUFFIX)=)
 
 .PHONY: tests
 
@@ -89,10 +93,10 @@ $(TESTS_DIR)/TairaColoniusTest: $(TESTS_DIR)/TairaColoniusTest.cpp $(LIBS) $(EXT
 
 ################################################################################
 
-.PHONY: doc
-
 DOC_DIR = $(PETIBM_DIR)/doc
 DOXYGEN = doxygen
+
+.PHONY: doc
 
 doc:
 	@echo "\nGenerating Doxygen documentation ..."
@@ -100,11 +104,11 @@ doc:
 
 ################################################################################
 
-.PHONY: clean cleantests cleandoc cleanall
+.PHONY: clean cleanpetibm cleantests cleandoc cleanoutput cleanall
 
-CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
+cleanall: clean cleanpetibm cleantests cleandoc cleanoutput
 
-clean:
+cleanpetibm:
 	@echo "\nCleaning PetIBM ..."
 	$(RM) -rf $(BIN_DIR) $(LIB_DIR)
 
@@ -117,7 +121,15 @@ cleandoc:
 	find $(DOC_DIR) ! -name 'Doxyfile' -type f -delete
 	find $(DOC_DIR)/* ! -name 'Doxyfile' -type d -delete
 
-cleanall: clean cleantests cleandoc
+cleanoutput:
+	@echo "\nCleaning outputs ..."
+	find . -name '*.d' -exec rm -rf {} \;
+	find ./cases -name '*.txt' -exec rm -rf {} \;
+	find ./cases -name '0*' -prune -exec rm -rf {} \;
+	find ./cases -name 'output' -prune -exec rm -rf {} \;
+	find ./tests -name '*.txt' -exec rm -rf {} \;
+	find . -name '._*' -exec rm -rf {} \;
+	find . -name '.DS_Store' -exec rm -rf {} \;
 
 ################################################################################
 
@@ -149,7 +161,7 @@ variables:
 	@echo AR: ${AR}
 	@echo ARFLAGS: ${ARFLAGS}
 	@echo RANLIB: ${RANLIB}
-	@echo SRC: ${SRC}
+	@echo SRCS: ${SRCS}
 	@echo OBJ: ${OBJ}
 	@echo CLEANFILES: ${CLEANFILES}
 	@echo FIND: ${FIND}
@@ -242,56 +254,3 @@ cylinder3d:
 
 cylinderRe200:
 	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-################################################################################
-
-.PHONY: variables
-
-variables:
-	@echo PETSC_DIR: ${PETSC_DIR}
-	@echo PETSC_ARCH: ${PETSC_ARCH}
-	@echo PETSC_COMPILE_SINGLE: ${PETSC_COMPILE_SINGLE}
-	@echo CLINKER: ${CLINKER}
-	@echo CXX: ${CXX}
-	@echo PCC: ${PCC}
-	@echo PCC_LINKER: ${PCC_LINKER}
-	@echo PCC_LINKER_FLAGS: ${PCC_LINKER_FLAGS}
-	@echo CFLAGS: ${CFLAGS}
-	@echo CC_FLAGS: ${CC_FLAGS}
-	@echo PCC_FLAGS: ${PCC_FLAGS}
-	@echo CXX_FLAGS: ${CXX_FLAGS}
-	@echo CPPFLAGS: ${CPPFLAGS}
-	@echo CPP_FLAGS: ${CPP_FLAGS}
-	@echo CCPPFLAGS: ${CCPPFLAGS}
-	@echo PETSC_CC_INCLUDES: ${PETSC_CC_INCLUDES}
-	@echo MPIEXEC: ${MPIEXEC}
-	@echo RM: ${RM}
-	@echo MV: ${MV}
-	@echo MAKE: ${MAKE}
-	@echo MFLAGS: ${MFLAGS}
-	@echo OMAKE: ${OMAKE}
-	@echo AR: ${AR}
-	@echo ARFLAGS: ${ARFLAGS}
-	@echo RANLIB: ${RANLIB}
-	@echo SRC: ${SRC}
-	@echo OBJ: ${OBJ}
-	@echo CLEANFILES: ${CLEANFILES}
-	@echo FIND: ${FIND}
-
-cleanoutput:
-	find . -name '*.d' -exec rm -rf {} \;
-	find ./cases -name '*.txt' -exec rm -rf {} \;
-	find ./cases -name '0*' -prune -exec rm -rf {} \;
-	find ./cases -name 'output' -prune -exec rm -rf {} \;
-	find ./tests -name '*.txt' -exec rm -rf {} \;
-	find . -name '._*' -exec rm -rf {} \;
-	find . -name '.DS_Store' -exec rm -rf {} \;
-
-cleanall: clean cleanoutput
-	${RM} ${YAMLOBJ}
-	${RM} ${GTESTOBJ}
-
-doxygen:
-	doxygen Doxyfile
-
-.PHONY: ${LIBS} check4 memcheck vars cleanall doxygen tests

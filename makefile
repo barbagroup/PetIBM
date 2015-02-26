@@ -9,6 +9,8 @@ SRCS = $(shell find $(SRC_DIR) -type f -name *$(SUFFIX))
 OBJ = $(addsuffix .o, $(basename $(SRCS))) $(SRC_DIR)/PetIBM*d.o
 
 BIN_DIR = $(PETIBM_DIR)/bin
+PETIBM2D = $(BIN_DIR)/PetIBM2d
+PETIBM3D = $(BIN_DIR)/PetIBM3d
 
 LIB_DIR = $(PETIBM_DIR)/lib
 LIBS = $(addprefix $(LIB_DIR)/, libclasses.a libsolvers.a)
@@ -18,14 +20,12 @@ EXT_DIR = $(PETIBM_DIR)/external
 YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp -type f -name *.o)
 GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
 
-CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
-
 .PHONY: ALL
 
-ALL: bin/PetIBM2d bin/PetIBM3d
+ALL: $(PETIBM2D) $(PETIBM3D)
 
-include ${PETSC_DIR}/conf/variables
-include ${PETSC_DIR}/conf/rules
+include $(PETSC_DIR)/conf/variables
+include $(PETSC_DIR)/conf/rules
 
 # locations of include files
 PETSC_CC_INCLUDES += -I./src/include \
@@ -36,18 +36,18 @@ PCC_FLAGS += -std=c++0x -Wextra -pedantic
 CXX_FLAGS += -std=c++0x -Wextra -pedantic
 PCC_LINKER_FLAGS += -I./external/gtest-1.7.0/include
 
-src/PetIBM2d.o: src/PetIBM.cpp
+$(SRC_DIR)/PetIBM2d.o: $(SRC_DIR)/PetIBM.cpp
 	$(PETSC_COMPILE) -D DIMENSIONS=2 $^ -o $@
 
-src/PetIBM3d.o: src/PetIBM.cpp
+$(SRC_DIR)/PetIBM3d.o: $(SRC_DIR)/PetIBM.cpp
 	$(PETSC_COMPILE) -D DIMENSIONS=3 $^ -o $@
 
-bin/PetIBM2d: src/PetIBM2d.o $(LIBS) $(EXT_LIBS)
+$(PETIBM2D): $(SRC_DIR)/PetIBM2d.o $(LIBS) $(EXT_LIBS)
 	@echo "\n$@ - Linking ..."
 	@mkdir -p $(BIN_DIR)
 	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
 
-bin/PetIBM3d: src/PetIBM3d.o $(LIBS) $(EXT_LIBS)
+$(PETIBM3D): $(SRC_DIR)/PetIBM3d.o $(LIBS) $(EXT_LIBS)
 	@echo "\n$@ - Linking ..."
 	@mkdir -p $(BIN_DIR)
 	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
@@ -104,6 +104,8 @@ doc:
 
 ################################################################################
 
+CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
+
 .PHONY: clean cleanpetibm cleantests cleandoc cleanoutput cleanall
 
 cleanall: clean cleanpetibm cleantests cleandoc cleanoutput
@@ -136,36 +138,41 @@ cleanoutput:
 .PHONY: variables
 
 variables:
-	@echo PETSC_DIR: ${PETSC_DIR}
-	@echo PETSC_ARCH: ${PETSC_ARCH}
-	@echo PETSC_COMPILE_SINGLE: ${PETSC_COMPILE_SINGLE}
-	@echo CLINKER: ${CLINKER}
-	@echo CXX: ${CXX}
-	@echo PCC: ${PCC}
-	@echo PCC_LINKER: ${PCC_LINKER}
-	@echo PCC_LINKER_FLAGS: ${PCC_LINKER_FLAGS}
-	@echo CFLAGS: ${CFLAGS}
-	@echo CC_FLAGS: ${CC_FLAGS}
-	@echo PCC_FLAGS: ${PCC_FLAGS}
-	@echo CXX_FLAGS: ${CXX_FLAGS}
-	@echo CPPFLAGS: ${CPPFLAGS}
-	@echo CPP_FLAGS: ${CPP_FLAGS}
-	@echo CCPPFLAGS: ${CCPPFLAGS}
-	@echo PETSC_CC_INCLUDES: ${PETSC_CC_INCLUDES}
-	@echo MPIEXEC: ${MPIEXEC}
-	@echo RM: ${RM}
-	@echo MV: ${MV}
-	@echo MAKE: ${MAKE}
-	@echo MFLAGS: ${MFLAGS}
-	@echo OMAKE: ${OMAKE}
-	@echo AR: ${AR}
-	@echo ARFLAGS: ${ARFLAGS}
-	@echo RANLIB: ${RANLIB}
-	@echo SRCS: ${SRCS}
-	@echo OBJ: ${OBJ}
-	@echo CLEANFILES: ${CLEANFILES}
-	@echo FIND: ${FIND}
-
+	@echo "\n-> PetIBM:"
+	@echo SRCS: $(SRCS)
+	@echo OBJ: $(OBJ)
+	@echo CLEANFILES: $(CLEANFILES)
+	@echo "\n-> PETSc variables:"
+	@echo PETSC_DIR: $(PETSC_DIR)
+	@echo PETSC_ARCH: $(PETSC_ARCH)
+	@echo PETSC_COMPILE_SINGLE: $(PETSC_COMPILE_SINGLE)
+	@echo PETSC_CC_INCLUDES: $(PETSC_CC_INCLUDES)
+	@echo "\n-> Compilers:"
+	@echo CXX: $(CXX)
+	@echo PCC: $(PCC)
+	@echo MPIEXEC: $(MPIEXEC)
+	@echo "\n-> Linkers:"
+	@echo CLINKER: $(CLINKER)
+	@echo PCC_LINKER: $(PCC_LINKER)
+	@echo "\n-> Flags:"
+	@echo PCC_LINKER_FLAGS: $(PCC_LINKER_FLAGS)
+	@echo CFLAGS: $(CFLAGS)
+	@echo CC_FLAGS: $(CC_FLAGS)
+	@echo PCC_FLAGS: $(PCC_FLAGS)
+	@echo CXX_FLAGS: $(CXX_FLAGS)
+	@echo CPPFLAGS: $(CPPFLAGS)
+	@echo CPP_FLAGS: $(CPP_FLAGS)
+	@echo CCPPFLAGS: $(CCPPFLAGS)
+	@echo "\n-> Commands:"
+	@echo RM: $(RM)
+	@echo MV: $(MV)
+	@echo MAKE: $(MAKE)
+	@echo MFLAGS: $(MFLAGS)
+	@echo OMAKE: $(OMAKE)
+	@echo AR: $(AR)
+	@echo ARFLAGS: $(ARFLAGS)
+	@echo RANLIB: $(RANLIB)
+	
 ################################################################################
 
 check2d:

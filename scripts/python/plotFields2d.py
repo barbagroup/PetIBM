@@ -65,52 +65,25 @@ def plotField(X, Y, variable, variable_range, variable_name,
   pyplot.figure()
   pyplot.xlabel(r'$x$', fontsize=18)
   pyplot.ylabel(r'$y$', fontsize=18)
-  cont = pyplot.contour(X, Y, variable, levels=numpy.arange(variable_range[0],
-                                                            variable_range[1],
-                                                            variable_range[2]))
+  levels = numpy.arange(variable_range[0], 
+                        variable_range[1]+variable_range[2], 
+                        variable_range[2])
+  if variable_name == 'vorticity':
+    # remove iso-surface where vorticity is ~zero
+    levels = numpy.delete(levels, numpy.where(numpy.abs(levels) < 1.0E-06)[0])
+  cont = pyplot.contour(X, Y, variable, levels=levels)
   cont_bar = pyplot.colorbar(cont)
   cont_bar.set_label(variable_name)
   pyplot.axis([bottom_left[0], top_right[0], bottom_left[1], top_right[1]])
   pyplot.savefig(image_path)
   pyplot.clf()
+  pyplot.close()
 
 def main():
   """Plots the 2D vorticity fields at certain time-steps."""
   # parse the command-line
   args = read_inputs()
   print '[case directory] %s' % args.case_directory
-
-  with open('%s/grid.txt' % args.case_directory, 'r') as infile:
-    nx, ny = [int(v) for v in infile.readline().strip().split()]
-    grid = numpy.loadtxt(infile, dtype=float)
-
-  x, y = grid[:nx+1], grid[nx+1:]
-  dx, dy = x[1:]-x[:-1], y[1:]-y[:-1]
-
-  args.bottom_left = max(args.bottom_left, [x[0], y[0]])
-  args.top_right = min(args.top_right, [x[-1], y[-1]])
-
-  # number of velocity nodes in each direction (depends on type of bc)
-  nxu, nyu = (nx if 'x' in args.periodic else nx-1), ny
-  nxv, nyv = nx, (ny if 'y' in args.periodic else ny-1)
-
-  # u-velocity nodes
-  xu = x[1:nxu+1]
-  yu = 0.5*(y[:nyu]+y[1:nyu+1])
-  # v-velocity nodes
-  xv = 0.5*(x[:nxv]+x[1:nxv+1])
-  yv = y[1:nyv+1]
-  # pressure nodes
-  xp = 0.5*(x[:-1]+x[1:])
-  yp = 0.5*(y[:-1]+y[1:])
-  
-  xo, yo = x[1:nx], y[1:ny]
-
-  # get masks to account for boundary-limits and stride
-  mask_x = numpy.where(numpy.logical_and(xo >= args.bottom_left[0], 
-                                         xo <= args.top_right[0]))[0][::args.stride]
-  mask_y = numpy.where(numpy.logical_and(yo >= args.bottom_left[1], 
-                                         yo <= args.top_right[1]))[0][::args.stride]  
 
   # get time-steps to plot
   if any(args.time_steps):
@@ -127,43 +100,79 @@ def main():
   if not os.path.isdir(images_directory):
     os.makedirs(images_directory)
 
+  # read the grid nodes
+  with open('%s/grid.txt' % args.case_directory, 'r') as infile:
+    nx, ny = [int(v) for v in infile.readline().strip().split()]
+    grid = numpy.loadtxt(infile, dtype=float)
+  x, y = grid[:nx+1], grid[nx+1:]
+
+  # update limits of the plot
+  args.bottom_left = max(args.bottom_left, [x[0], y[0]])
+  args.top_right = min(args.top_right, [x[-1], y[-1]])
+
+  # mask coordinates outside the plot limits
+  x = numpy.ma.masked_outside(x, args.bottom_left[0], args.top_right[0])
+  y = numpy.ma.masked_outside(y, args.bottom_left[1], args.top_right[1])
+  mask_x, mask_y = numpy.ma.getmaskarray(x), numpy.ma.getmaskarray(y)
+
+  # calculate cell-widths
+  dx, dy = x[1:]-x[:-1], y[1:]-y[:-1]
+
+  # coordinates of velocities, vorticity and pressure nodes
+  xu, yu = x[1:-1], 0.5*(y[:-1]+y[1:])
+  xv, yv = 0.5*(y[:-1]+y[1:]), y[1:-1]
+  xw, yw = x[1:-1], y[1:-1]
+  xp, yp = 0.5*(x[:-1]+x[1:]), 0.5*(y[:-1]+y[1:])
+
+  # number of velocity nodes in each direction (depends on type of bc)
+  nxu, nyu = (nx if 'x' in args.periodic else nx-1), ny
+  nxv, nyv = nx, (ny if 'y' in args.periodic else ny-1)
+
   for time_step in time_steps:
     print 'generating plots at time-step %d ...' % time_step
+    
     # u-velocity field
     qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
-    u = qx.reshape((nyu, nxu))/numpy.outer(dy, numpy.ones(nxu))
+    print qx.nbytes
+    mask_u = [j+mask_x[:-2] for j in mask_y[:-1]]
+    u = ( numpy.ma.masked_array(qx.reshape((nyu, nxu))[:ny, :nx-1], mask=mask_u)
+          / numpy.outer(dy, numpy.ones(dx.size-1)) )
+    print u.nbytes
     X, Y = numpy.meshgrid(xu, yu)
     image_path = '{}/uVelocity{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, u, args.velocity_limits, 'u-velocity', 
               args.bottom_left, args.top_right, image_path)
-
+    
     # v-velocity field
     qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
-    v = qy.reshape((nyv, nxv))/numpy.outer(numpy.ones(nyv), dx)
+    mask_v = [j+mask_x[:-1] for j in mask_y[:-2]]
+    v = ( numpy.ma.masked_array(qy.reshape((nyv, nxv))[:ny-1, :nx], mask=mask_v)
+          / numpy.outer(numpy.ones(dy.size-1), dx) )
     X, Y = numpy.meshgrid(xv, yv)
     image_path = '{}/vVelocity{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, v, args.velocity_limits, 'v-velocity', 
               args.bottom_left, args.top_right, image_path)
-
+    
     # vorticity field
     w = ( (v[:ny-1,1:nx]-v[:ny-1,:nx-1])
            / numpy.outer(numpy.ones(ny-1), 0.5*(dx[:-1]+dx[1:])) 
         - (u[1:ny,:nx-1]-u[:ny-1,:nx-1])
            / numpy.outer(0.5*(dy[:-1]+dy[1:]), numpy.ones(nx-1)) )
-    X, Y = numpy.meshgrid(x[1:-1], y[1:-1])
+    X, Y = numpy.meshgrid(xw, yw)
     image_path = '{}/vorticity{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, w, args.vorticity_limits, 'vorticity', 
               args.bottom_left, args.top_right, image_path)
-
+    
     # pressure field
     p = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/phi.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
-    p = p.reshape((ny, nx))
+    p = numpy.ma.masked_array(p.reshape((ny, nx)), 
+                              mask=[j+mask_x[:-1] for j in mask_y[:-1]])
     X, Y = numpy.meshgrid(xp, yp)
     image_path = '{}/pressure{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, p, args.pressure_limits, 'pressure', 

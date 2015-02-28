@@ -11,15 +11,15 @@ bin/*
 ._*
 
 # ignore numerical solution in a case
-iterationCount.txt
-forces.txt
-simulationInfo.txt
-performanceSummary.txt
-0*
-grid.txt
-output
-vtk_files
-images
+cases/**/iterationCount.txt
+cases/**/forces.txt
+cases/**/simulationInfo.txt
+cases/**/performanceSummary.txt
+cases/**/0*
+cases/**/grid.txt
+cases/**/vtk_files
+cases/**/images
+cases/**/data
 
 # ignore doxygen documentation folder
 doxygen/*

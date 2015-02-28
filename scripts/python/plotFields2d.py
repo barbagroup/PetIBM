@@ -105,6 +105,8 @@ def main():
   x, y = grid[:nx+1], grid[nx+1:]
 
   # mask coordinates outside the plot limits
+  args.bottom_left = max(args.bottom_left, [x[0], y[0]])
+  args.top_right = min(args.top_right, [x[-1], y[-1]])
   mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0],
                                          x <= args.top_right[0]))[0]
   mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1],

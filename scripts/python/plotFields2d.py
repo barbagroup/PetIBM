@@ -39,11 +39,9 @@ def read_inputs():
   parser.add_argument('--top-right', '-tr', dest='top_right', type=float,
                       nargs='+', default=[float('inf'), float('inf')],
                       help='coordinates of the top-right corner')
-  parser.add_argument('--time-steps', '-t', dest='time_steps', type=float,
+  parser.add_argument('--time-steps', '-t', dest='time_steps', type=int,
                       nargs='+', default=[None, None, None],
                       help='time-steps to plot (initial, final, increment)')
-  parser.add_argument('--stride', '-s', dest='stride', type=int, default=1,
-                      help='stride at which vector are plotted')
   parser.add_argument('--periodic', dest='periodic', type=str, nargs='+',
                       default=[], help='direction(s) (x and/or y) with '
                                        'periodic boundary conditions')
@@ -106,14 +104,12 @@ def main():
     grid = numpy.loadtxt(infile, dtype=float)
   x, y = grid[:nx+1], grid[nx+1:]
 
-  # update limits of the plot
-  args.bottom_left = max(args.bottom_left, [x[0], y[0]])
-  args.top_right = min(args.top_right, [x[-1], y[-1]])
-
   # mask coordinates outside the plot limits
-  x = numpy.ma.masked_outside(x, args.bottom_left[0], args.top_right[0])
-  y = numpy.ma.masked_outside(y, args.bottom_left[1], args.top_right[1])
-  mask_x, mask_y = numpy.ma.getmaskarray(x), numpy.ma.getmaskarray(y)
+  mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0],
+                                         x <= args.top_right[0]))[0]
+  mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1],
+                                         y <= args.top_right[1]))[0]
+  x, y = x[mask_x], y[mask_y]
 
   # calculate cell-widths
   dx, dy = x[1:]-x[:-1], y[1:]-y[:-1]
@@ -131,48 +127,50 @@ def main():
   for time_step in time_steps:
     print 'generating plots at time-step %d ...' % time_step
     
-    # u-velocity field
+    # calculate u-velocity field
     qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
-    print qx.nbytes
-    mask_u = [j+mask_x[:-2] for j in mask_y[:-1]]
-    u = ( numpy.ma.masked_array(qx.reshape((nyu, nxu))[:ny, :nx-1], mask=mask_u)
-          / numpy.outer(dy, numpy.ones(dx.size-1)) )
-    print u.nbytes
+    qx = qx.reshape((nyu, nxu))
+    qx = numpy.array([qx[j][mask_x[:-2]] for j in mask_y[:-1]])
+    u = qx / numpy.outer(dy, numpy.ones(dx.size-1))
+    # generate u-velocity plot
     X, Y = numpy.meshgrid(xu, yu)
     image_path = '{}/uVelocity{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, u, args.velocity_limits, 'u-velocity', 
               args.bottom_left, args.top_right, image_path)
     
-    # v-velocity field
+    # calculate v-velocity field
     qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
-    mask_v = [j+mask_x[:-1] for j in mask_y[:-2]]
-    v = ( numpy.ma.masked_array(qy.reshape((nyv, nxv))[:ny-1, :nx], mask=mask_v)
-          / numpy.outer(numpy.ones(dy.size-1), dx) )
+    qy = qy.reshape((nyv, nxv))
+    qy = numpy.array([qy[j][mask_x[:-1]] for j in mask_y[:-2]])
+    v = qy / numpy.outer(numpy.ones(dy.size-1), dx)
+    # generate v-velocity plot
     X, Y = numpy.meshgrid(xv, yv)
     image_path = '{}/vVelocity{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, v, args.velocity_limits, 'v-velocity', 
               args.bottom_left, args.top_right, image_path)
-    
-    # vorticity field
-    w = ( (v[:ny-1,1:nx]-v[:ny-1,:nx-1])
-           / numpy.outer(numpy.ones(ny-1), 0.5*(dx[:-1]+dx[1:])) 
-        - (u[1:ny,:nx-1]-u[:ny-1,:nx-1])
-           / numpy.outer(0.5*(dy[:-1]+dy[1:]), numpy.ones(nx-1)) )
+
+    # calculate vorticity field
+    w = ( (v[:,1:]-v[:,:-1]) 
+        / numpy.outer(numpy.ones(dy.size-1), 0.5*(dx[:-1]+dx[1:])) 
+        - (u[1:,:]-u[:-1,:]) 
+        / numpy.outer(0.5*(dy[:-1]+dy[1:]), numpy.ones(dx.size-1)) )
+    # generate vorticity plot
     X, Y = numpy.meshgrid(xw, yw)
     image_path = '{}/vorticity{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, w, args.vorticity_limits, 'vorticity', 
               args.bottom_left, args.top_right, image_path)
-    
-    # pressure field
+
+    # calculate pressure field
     p = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/phi.dat' 
                                                       % (args.case_directory,
                                                          time_step))[0]
-    p = numpy.ma.masked_array(p.reshape((ny, nx)), 
-                              mask=[j+mask_x[:-1] for j in mask_y[:-1]])
+    p = p.reshape((ny, nx))
+    p = numpy.array([p[j][mask_x[:-1]] for j in mask_y[:-1]])
+    # generate pressure plot
     X, Y = numpy.meshgrid(xp, yp)
     image_path = '{}/pressure{:0>7}.png'.format(images_directory, time_step)
     plotField(X, Y, p, args.pressure_limits, 'pressure', 

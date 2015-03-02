@@ -17,7 +17,7 @@ LIBS = $(addprefix $(LIB_DIR)/, libclasses.a libsolvers.a)
 EXT_LIBS = $(addprefix $(LIB_DIR)/, libyaml.a libgtest.a)
 
 EXT_DIR = $(PETIBM_DIR)/external
-YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp -type f -name *.o)
+YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp-0.5.1 -type f -name *.o)
 GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
 
 .PHONY: ALL

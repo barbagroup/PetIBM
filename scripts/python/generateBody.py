@@ -25,6 +25,8 @@ def read_inputs():
                       help='path of the coordinates file')
   parser.add_argument('--circle', dest='circle', type=float, nargs='+',
                       help='radius and center-coordinates of the circle')
+  parser.add_argument('--line', '-l', dest='line', type=float, nargs='+',
+                      help='length and starting-point of the line')
   parser.add_argument('--sphere', dest='sphere', type=float, nargs='+',
                       help='radius and center-coordinates of the sphere')
   # discretization arguments
@@ -42,7 +44,7 @@ def read_inputs():
   parser.add_argument('--scale', '-s', dest='scale', type=float, default=1.0,
                       help='scaling factor for 2D geometry')
   parser.add_argument('--extrusion', '-e', dest='extrusion', type=float, 
-                      nargs='+', default=[-1.0, 1.0],
+                      nargs='+',
                       help='z-limits of the 3D cylinder')
   # output arguments
   parser.add_argument('--save-name', dest='save_name', type=str, 
@@ -109,18 +111,19 @@ class Geometry:
     self.x_cm = numpy.mean(self.x)
     self.y_cm = numpy.mean(self.y)
 
-  def rotation(self, angle, center=[None, None]):
+  def rotation(self, parameters=[0.0, None, None]):
     """Rotates the geometry.
     
     Arguments
     ---------
-    angle -- angle in degrees
-    center -- x- and y- coordinates of the center (default: None, None)
+    parameters -- angle (degrees) and center of rotation (default: 0.0, None, None)
     """
-    angle *= math.pi/180.
-    x_rot, y_rot = center[1], center[2]
-    if not (x_rot and y_rot):
+    angle = -parameters[0]*math.pi/180.
+    if len(parameters) == 1 or not(parameters[1:]):
+      self.get_mass_center()
       x_rot, y_rot = self.x_cm, self.y_cm
+    else:
+      x_rot, y_rot = parameters[1:]
     x_tmp = x_rot + (self.x-x_rot)*math.cos(angle) - (self.y-y_rot)*math.sin(angle)
     y_tmp = y_rot + (self.x-x_rot)*math.sin(angle) + (self.y-y_rot)*math.cos(angle)
     self.x, self.y = x_tmp, y_tmp
@@ -155,10 +158,11 @@ class Geometry:
     z_limits -- z-limits of the cylinder
     """
     z_start, z_end = z_limits[0], z_limits[1]
-    if not ds:
-      ds = self.get_perimeter()/self.x.size
-    n = int(math.ceil((z_end-z_start)/ds))
-    self.z = numpy.linspace(z_start+0.5*ds, z_end-0.5*ds, n)
+    if not self.ds:
+      print 'no ds'
+      self.ds = self.get_perimeter()/self.x.size
+    n = int(math.ceil((z_end-z_start)/self.ds))
+    self.z = numpy.linspace(z_start+0.5*self.ds, z_end-0.5*self.ds, n)
 
   def discretization(self, n=None, ds=None):
     """Discretizes the geometry 
@@ -332,7 +336,7 @@ class Circle(Geometry):
     Arguments
     ---------
     parameters -- radius and center of the circle (default 0.5, 0.0, 0.0)
-    n -- number of segment on the circle (default 100)
+    n -- number of segments on the circle (default 100)
     ds -- target segment-length (default None)
     """
     self.radius = parameters[0]
@@ -350,6 +354,37 @@ class Circle(Geometry):
       sys.exit(0)
     theta = numpy.linspace(0.0, 2.0*math.pi, self.n+1)[:-1]
     self.x, self.y = self.radius*numpy.cos(theta), self.radius*numpy.sin(theta)
+
+
+class Line(Geometry):
+  """Contains info about a line."""
+  def __init__(self, parameters=[1.0, 0.0, 0.0], n=100, ds=None):
+    """Create the line.
+
+    Arguments
+    ---------
+    parameters -- length and starting-point of the line (default 1.0, 0.0, 0.0)
+    n -- number of segments on the line (default 100)
+    ds -- target segment-legnth (default None)
+    """
+    self.length = parameters[0]
+    self.x_start, self.y_start = parameters[1:]
+    self.n = n
+    self.ds = ds
+    self.create()
+
+  def create(self):
+    """Creates coordinates of the line."""
+    if self.ds and not self.n:
+      self.n = int(math.ceil(self.length/self.ds))
+    elif self.n and not self.ds:
+      self.ds = self.length/self.n
+    elif not (self.ds or self.n):
+      print 'Error: missing number of segments or length of segment'
+      sys.exit(0)
+    self.x = numpy.linspace(self.x_start, self.x_start+self.length, self.n+1)
+    self.y = numpy.zeros_like(self.x)
+    self.x_old, self.y_old = self.x.copy(), self.y.copy()
 
 
 class Sphere(Geometry):
@@ -425,6 +460,16 @@ def main():
     if dimensions == 3:
       print 'Creating cylinder ...'
       body.extrusion(args.extrusion, ds=args.ds)
+    body.write(output_path, dimensions=dimensions)
+  elif args.line:
+    print 'Creating line ...'
+    body = Line(args.line, args.n, args.ds)
+    body.rotation(args.rotation)
+    if dimensions == 3:
+      print 'Creating flat-plate ...'
+      body.extrusion(args.extrusion, ds=args.ds)
+    if args.show:
+      body.plot()
     body.write(output_path, dimensions=dimensions)
   elif args.sphere:
     print 'Creating sphere ...'

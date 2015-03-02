@@ -23,6 +23,9 @@ def read_inputs():
   # fill parser with arguments
   parser.add_argument('--case', dest='case_directory', type=str, 
                       default=os.getcwd(), help='directory of the simulation')
+  parser.add_argument('--variables', '-v', dest='variables', type=str, 
+                      nargs='+', default=['velocity', 'pressure'],
+                      help='list of variables to generate (velocity, pressure)')
   parser.add_argument('--bottom-left', '-bl', dest='bottom_left', type=float,
                       nargs='+', 
                       default=[float('-inf'), float('-inf'), float('-inf')],
@@ -46,6 +49,7 @@ def main():
   # parse the command-line
   args = read_inputs()
   print ('[case-directory] %s' % args.case_directory)
+  print ('[variables] %s' % args.variables)
 
   with open('%s/grid.txt' % args.case_directory, 'r') as infile:
     nx, ny, nz = [int(v) for v in infile.readline().strip().split()]
@@ -95,42 +99,51 @@ def main():
     os.makedirs(vtk_directory)
 
   for time_step in time_steps:
-    # read fluxes in x-direction
-    qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
-                                                      % (args.case_directory,
-                                                         time_step))[0]
-    qx = qx.reshape((nzu, nyu, nxu))
-    # compute u-velocity at cell-centers
-    u = ( 0.5 * (qx[1:nzw, 1:nyv, :nxu-1] + qx[1:nzw, 1:nyv, 1:nxu])
-              / reduce(numpy.multiply, 
-                       numpy.ix_(*[dz[1:nzw], dy[1:nyv], numpy.ones(nxu-1)])) )
-    # apply mask for boundary limits and stride
-    u = numpy.array([[u[k][j][mask_x] for j in mask_y] for k in mask_z])
-    # read fluxes in y-direction
-    qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
-                                                      % (args.case_directory,
-                                                         time_step))[0]
-    qy = qy.reshape((nzv, nyv, nxv))
-    # compute v-velocity at cell-centers
-    v = ( 0.5 * (qy[1:nzw, :nyv-1, 1:nxu] + qy[1:nzw, 1:nyv, 1:nxu])
-              / reduce(numpy.multiply, 
-                       numpy.ix_(*[dz[1:nzw], numpy.ones(nyv-1), dx[1:nxu]])) )
-    # apply mask for boundary limits and stride
-    v = numpy.array([[v[k][j][mask_x] for j in mask_y] for k in mask_z])
-    # read fluxes in z-direction
-    qz = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' 
-                                                      % (args.case_directory,
-                                                         time_step))[0]
-    qz = qz.reshape((nzw, nyw, nxw))
-    # compute w-velocity at cell-centers
-    w = ( 0.5 * (qz[:nzw-1, 1:nyv, 1:nxu] + qz[1:nzw, 1:nyv, 1:nxu])
-              / reduce(numpy.multiply, 
-                       numpy.ix_(*[numpy.ones(nzw-1), dy[1:nyv], dx[1:nxu]])) )
-    # apply mask for boundary limits and stride
-    w = numpy.array([[w[k][j][mask_x] for j in mask_y] for k in mask_z])
+    if 'velocity' in args.variables:
+      # read fluxes in x-direction
+      qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
+                                                        % (args.case_directory,
+                                                           time_step))[0]
+      qx = qx.reshape((nzu, nyu, nxu))
+      # compute u-velocity at cell-centers
+      u = ( 0.5 * (qx[1:nzw, 1:nyv, :nxu-1] + qx[1:nzw, 1:nyv, 1:nxu])
+                / reduce(numpy.multiply, 
+                         numpy.ix_(*[dz[1:nzw], dy[1:nyv], numpy.ones(nxu-1)])) )
+      # apply mask for boundary limits and stride
+      u = numpy.array([[u[k][j][mask_x] for j in mask_y] for k in mask_z])
+      # read fluxes in y-direction
+      qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
+                                                        % (args.case_directory,
+                                                           time_step))[0]
+      qy = qy.reshape((nzv, nyv, nxv))
+      # compute v-velocity at cell-centers
+      v = ( 0.5 * (qy[1:nzw, :nyv-1, 1:nxu] + qy[1:nzw, 1:nyv, 1:nxu])
+                / reduce(numpy.multiply, 
+                         numpy.ix_(*[dz[1:nzw], numpy.ones(nyv-1), dx[1:nxu]])) )
+      # apply mask for boundary limits and stride
+      v = numpy.array([[v[k][j][mask_x] for j in mask_y] for k in mask_z])
+      # read fluxes in z-direction
+      qz = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qz.dat' 
+                                                        % (args.case_directory,
+                                                           time_step))[0]
+      qz = qz.reshape((nzw, nyw, nxw))
+      # compute w-velocity at cell-centers
+      w = ( 0.5 * (qz[:nzw-1, 1:nyv, 1:nxu] + qz[1:nzw, 1:nyv, 1:nxu])
+                / reduce(numpy.multiply, 
+                         numpy.ix_(*[numpy.ones(nzw-1), dy[1:nyv], dx[1:nxu]])) )
+      # apply mask for boundary limits and stride
+      w = numpy.array([[w[k][j][mask_x] for j in mask_y] for k in mask_z])
+    if 'pressure' in args.variables:
+      # read pressure field
+      p = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/phi.dat' 
+                                                        % (args.case_directory,
+                                                           time_step))[0]
+      p = p.reshape((nz, ny, nx))
+      # apply mask for boundary limits and stride
+      p = numpy.array([[p[k][j][mask_x] for j in mask_y] for k in mask_z])
 
     print ('writing vtk file at time-step %d ...' % time_step)
-    vtk_file_path = '%s/velocity%07d.vtk' % (vtk_directory, time_step)
+    vtk_file_path = '%s/fields%07d.vtk' % (vtk_directory, time_step)
     with open(vtk_file_path, 'w') as outfile:
       outfile.write('# vtk DataFile Version 3.0\n')
       outfile.write('Header\n')
@@ -144,10 +157,14 @@ def main():
       outfile.write('Z_COORDINATES %d double\n' % z.size)
       numpy.savetxt(outfile, z, fmt='%f')
       outfile.write('POINT_DATA %d\n' % (x.size*y.size*z.size))
-      outfile.write('VECTORS velocity double\n')
-      numpy.savetxt(outfile, 
-                    numpy.c_[u.flatten(), v.flatten(), w.flatten()],
-                    fmt='%.6f', delimiter='\t')
+      if 'velocity' in args.variables:
+        outfile.write('\nVECTORS velocity double\n')
+        numpy.savetxt(outfile, 
+                      numpy.c_[u.flatten(), v.flatten(), w.flatten()],
+                      fmt='%.6f', delimiter='\t')
+      if 'pressure' in args.variables:
+        outfile.write('\nSCALARS pressure double 1\nLOOKUP_TABLE default\n')
+        numpy.savetxt(outfile, p.flatten(), fmt='%.6f', delimiter='\t')
 
 
 if __name__ == "__main__":

@@ -1,59 +1,179 @@
-ALL: bin/PetIBM2d bin/PetIBM3d
-DIRS       = src src/include src/solvers tests
-YAMLOBJ    = external/yaml-cpp/src/*.o external/yaml-cpp/src/contrib/*.o
-GTESTOBJ   = external/gtest-1.7.0/*.o
-LIB        = lib/libclasses.a lib/libyaml.a lib/libsolvers.a lib/libgtest.a
-SRC        = ${wildcard src/*.cpp}
-OBJ        = ${SRC:.cpp=.o}
-TESTS_SRC  = ${wildcard tests/*.cpp}
-TESTS_BIN  = ${TESTS_SRC:.cpp=}
-CLEANFILES = ${LIB} ${addsuffix /*.o, ${DIRS}} ${wildcard bin/*} ${TESTS_BIN}
+# file: makefile
+# author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+# description: Compiles and link PetIBM using PETSc.
 
-include ${PETSC_DIR}/conf/variables
-include ${PETSC_DIR}/conf/rules
 
-PETSC_CC_INCLUDES += -I./src/include -I./src/solvers -I./external/gtest-1.7.0/include
-PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic
-CXX_FLAGS += -std=c++0x -Wall -Wextra -pedantic
+SRC_DIR = $(PETIBM_DIR)/src
+SUFFIX = .cpp
+SRCS = $(shell find $(SRC_DIR) -type f -name *$(SUFFIX))
+OBJ = $(addsuffix .o, $(basename $(SRCS))) $(SRC_DIR)/PetIBM*d.o
+
+BIN_DIR = $(PETIBM_DIR)/bin
+PETIBM2D = $(BIN_DIR)/PetIBM2d
+PETIBM3D = $(BIN_DIR)/PetIBM3d
+
+LIB_DIR = $(PETIBM_DIR)/lib
+LIBS = $(addprefix $(LIB_DIR)/, libclasses.a libsolvers.a)
+EXT_LIBS = $(addprefix $(LIB_DIR)/, libyaml.a libgtest.a)
+
+EXT_DIR = $(PETIBM_DIR)/external
+YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp -type f -name *.o)
+GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
+
+.PHONY: ALL
+
+ALL: $(PETIBM2D) $(PETIBM3D)
+
+include $(PETSC_DIR)/conf/variables
+include $(PETSC_DIR)/conf/rules
+
+# locations of include files
+PETSC_CC_INCLUDES += -I./src/include \
+										 -I./src/solvers \
+										 -I./external/gtest-1.7.0/include
+
+PCC_FLAGS += -std=c++0x -Wextra -pedantic
+CXX_FLAGS += -std=c++0x -Wextra -pedantic
 PCC_LINKER_FLAGS += -I./external/gtest-1.7.0/include
 
-src/PetIBM2d.o: src/PetIBM.cpp
-	${PCC} -o src/PetIBM2d.o -D DIMENSIONS=2 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
+$(SRC_DIR)/PetIBM2d.o: $(SRC_DIR)/PetIBM.cpp
+	$(PETSC_COMPILE) -D DIMENSIONS=2 $^ -o $@
 
-src/PetIBM3d.o: src/PetIBM.cpp
-	${PCC} -o src/PetIBM3d.o -D DIMENSIONS=3 -c ${PCC_FLAGS} ${CFLAGS} ${CCPPFLAGS} src/PetIBM.cpp
+$(SRC_DIR)/PetIBM3d.o: $(SRC_DIR)/PetIBM.cpp
+	$(PETSC_COMPILE) -D DIMENSIONS=3 $^ -o $@
 
-bin/PetIBM2d: src/PetIBM2d.o ${LIB}
-	${CLINKER} $^ -o $@ ${PETSC_SYS_LIB}
+$(PETIBM2D): $(SRC_DIR)/PetIBM2d.o $(LIBS) $(EXT_LIBS)
+	@echo "\n$@ - Linking ..."
+	@mkdir -p $(BIN_DIR)
+	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
 
-bin/PetIBM3d: src/PetIBM3d.o ${LIB}
-	${CLINKER} $^ -o $@ ${PETSC_SYS_LIB}
+$(PETIBM3D): $(SRC_DIR)/PetIBM3d.o $(LIBS) $(EXT_LIBS)
+	@echo "\n$@ - Linking ..."
+	@mkdir -p $(BIN_DIR)
+	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
 
-lib/libclasses.a:
-	cd src/include; ${MAKE}
+$(LIBS):
+	@echo "\nGenerating static libraries ..."
+	@mkdir -p $(LIB_DIR)
+	cd src/include; $(MAKE)
+	cd src/solvers; $(MAKE)
 
-lib/libyaml.a:
-	cd external/yaml-cpp; ${MAKE}
+$(EXT_LIBS):
+	@echo "\nGenerating external static libraries ..."
+	@mkdir -p $(LIB_DIR)
+	cd external/yaml-cpp; $(MAKE)
+	cd external/gtest-1.7.0; $(MAKE)
 
-lib/libgtest.a:
-	cd external/gtest-1.7.0; ${MAKE}
+################################################################################
 
-lib/libsolvers.a:
-	cd src/solvers; ${MAKE}
+TESTS_DIR = $(PETIBM_DIR)/tests
+TESTS_SRCS = $(shell find $(TESTS_DIR) -type f -name *$(SUFFIX))
+TESTS_OBJS = $(addsuffix .o, $(basename $(TESTS_SRCS)))
+TESTS_BIN = $(TESTS_SRCS:$(SUFFIX)=)
 
-tests: ${TESTS_BIN}
-	tests/CartesianMeshTest
-	tests/NavierStokesTest -caseFolder tests/NavierStokes -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	tests/TairaColoniusTest -caseFolder tests/TairaColonius -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+.PHONY: tests
 
-tests/CartesianMeshTest: tests/CartesianMeshTest.cpp ${LIB}
-	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
+tests: $(TESTS_BIN)
+	$(TESTS_DIR)/CartesianMeshTest
+	$(TESTS_DIR)/NavierStokesTest -caseFolder tests/NavierStokes \
+												 				-sys2_pc_type gamg -sys2_pc_gamg_type agg \
+												 				-sys2_pc_gamg_agg_nsmooths 1
+	$(TESTS_DIR)/TairaColoniusTest -caseFolder tests/TairaColonius \
+																 -sys2_pc_type gamg -sys2_pc_gamg_type agg \
+																 -sys2_pc_gamg_agg_nsmooths 1
 
-tests/NavierStokesTest: tests/NavierStokesTest.cpp ${LIB}
-	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
+$(TESTS_DIR)/CartesianMeshTest: $(TESTS_DIR)/CartesianMeshTest.cpp $(LIBS) $(EXT_LIBS)
+	$(CXX) $(PETSC_CC_INCLUDES) -std=c++0x -pthread $^ -o $@ $(PETSC_SYS_LIB)
 
-tests/TairaColoniusTest: tests/TairaColoniusTest.cpp ${LIB}
-	${CXX} ${PETSC_CC_INCLUDES} -std=c++0x -pthread $^ -o $@ ${PETSC_SYS_LIB}
+$(TESTS_DIR)/NavierStokesTest: $(TESTS_DIR)/NavierStokesTest.cpp $(LIBS) $(EXT_LIBS)
+	$(CXX) $(PETSC_CC_INCLUDES) -std=c++0x -pthread $^ -o $@ $(PETSC_SYS_LIB)
+
+$(TESTS_DIR)/TairaColoniusTest: $(TESTS_DIR)/TairaColoniusTest.cpp $(LIBS) $(EXT_LIBS)
+	$(CXX) $(PETSC_CC_INCLUDES) -std=c++0x -pthread $^ -o $@ $(PETSC_SYS_LIB)
+
+################################################################################
+
+DOC_DIR = $(PETIBM_DIR)/doc
+DOXYGEN = doxygen
+
+.PHONY: doc
+
+doc:
+	@echo "\nGenerating Doxygen documentation ..."
+	cd $(DOC_DIR); $(DOXYGEN) Doxyfile
+
+################################################################################
+
+CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
+
+.PHONY: clean cleanpetibm cleantests cleandoc cleanoutput cleanall
+
+cleanall: clean cleanpetibm cleantests cleandoc cleanoutput
+
+cleanpetibm:
+	@echo "\nCleaning PetIBM ..."
+	$(RM) -rf $(BIN_DIR) $(LIB_DIR)
+
+cleantests:
+	@echo "\nCleaning tests ..."
+	$(RM) -f $(TESTS_BIN)
+
+cleandoc:
+	@echo "\nCleaning documentation ..."
+	find $(DOC_DIR) ! -name 'Doxyfile' -type f -delete
+	find $(DOC_DIR)/* ! -name 'Doxyfile' -type d -delete
+
+cleanoutput:
+	@echo "\nCleaning outputs ..."
+	find . -name '*.d' -exec rm -rf {} \;
+	find ./cases -name '*.txt' -exec rm -rf {} \;
+	find ./cases -name '0*' -prune -exec rm -rf {} \;
+	find ./cases -name 'output' -prune -exec rm -rf {} \;
+	find ./tests -name '*.txt' -exec rm -rf {} \;
+	find . -name '._*' -exec rm -rf {} \;
+	find . -name '.DS_Store' -exec rm -rf {} \;
+
+################################################################################
+
+.PHONY: variables
+
+variables:
+	@echo "\n-> PetIBM:"
+	@echo SRCS: $(SRCS)
+	@echo OBJ: $(OBJ)
+	@echo CLEANFILES: $(CLEANFILES)
+	@echo "\n-> PETSc variables:"
+	@echo PETSC_DIR: $(PETSC_DIR)
+	@echo PETSC_ARCH: $(PETSC_ARCH)
+	@echo PETSC_COMPILE_SINGLE: $(PETSC_COMPILE_SINGLE)
+	@echo PETSC_CC_INCLUDES: $(PETSC_CC_INCLUDES)
+	@echo "\n-> Compilers:"
+	@echo CXX: $(CXX)
+	@echo PCC: $(PCC)
+	@echo MPIEXEC: $(MPIEXEC)
+	@echo "\n-> Linkers:"
+	@echo CLINKER: $(CLINKER)
+	@echo PCC_LINKER: $(PCC_LINKER)
+	@echo "\n-> Flags:"
+	@echo PCC_LINKER_FLAGS: $(PCC_LINKER_FLAGS)
+	@echo CFLAGS: $(CFLAGS)
+	@echo CC_FLAGS: $(CC_FLAGS)
+	@echo PCC_FLAGS: $(PCC_FLAGS)
+	@echo CXX_FLAGS: $(CXX_FLAGS)
+	@echo CPPFLAGS: $(CPPFLAGS)
+	@echo CPP_FLAGS: $(CPP_FLAGS)
+	@echo CCPPFLAGS: $(CCPPFLAGS)
+	@echo "\n-> Commands:"
+	@echo RM: $(RM)
+	@echo MV: $(MV)
+	@echo MAKE: $(MAKE)
+	@echo MFLAGS: $(MFLAGS)
+	@echo OMAKE: $(OMAKE)
+	@echo AR: $(AR)
+	@echo ARFLAGS: $(ARFLAGS)
+	@echo RANLIB: $(RANLIB)
+	
+################################################################################
 
 check2d:
 	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/test
@@ -141,51 +261,3 @@ cylinder3d:
 
 cylinderRe200:
 	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-vars:
-	@echo PETSC_DIR: ${PETSC_DIR}
-	@echo PETSC_ARCH: ${PETSC_ARCH}
-	@echo PETSC_COMPILE_SINGLE: ${PETSC_COMPILE_SINGLE}
-	@echo CLINKER: ${CLINKER}
-	@echo CXX: ${CXX}
-	@echo PCC: ${PCC}
-	@echo PCC_LINKER: ${PCC_LINKER}
-	@echo PCC_LINKER_FLAGS: ${PCC_LINKER_FLAGS}
-	@echo CFLAGS: ${CFLAGS}
-	@echo CC_FLAGS: ${CC_FLAGS}
-	@echo PCC_FLAGS: ${PCC_FLAGS}
-	@echo CPPFLAGS: ${CPPFLAGS}
-	@echo CPP_FLAGS: ${CPP_FLAGS}
-	@echo CCPPFLAGS: ${CCPPFLAGS}
-	@echo PETSC_CC_INCLUDES: ${PETSC_CC_INCLUDES}
-	@echo MPIEXEC: ${MPIEXEC}
-	@echo RM: ${RM}
-	@echo MV: ${MV}
-	@echo MAKE: ${MAKE}
-	@echo MFLAGS: ${MFLAGS}
-	@echo OMAKE: ${OMAKE}
-	@echo AR: ${AR}
-	@echo ARFLAGS: ${ARFLAGS}
-	@echo RANLIB: ${RANLIB}
-	@echo SRC: ${SRC}
-	@echo OBJ: ${OBJ}
-	@echo CLEANFILES: ${CLEANFILES}
-	@echo FIND: ${FIND}
-
-cleanoutput:
-	find . -name '*.d' -exec rm -rf {} \;
-	find ./cases -name '*.txt' -exec rm -rf {} \;
-	find ./cases -name '0*' -prune -exec rm -rf {} \;
-	find ./cases -name 'output' -prune -exec rm -rf {} \;
-	find ./tests -name '*.txt' -exec rm -rf {} \;
-	find . -name '._*' -exec rm -rf {} \;
-	find . -name '.DS_Store' -exec rm -rf {} \;
-
-cleanall: clean cleanoutput
-	${RM} ${YAMLOBJ}
-	${RM} ${GTESTOBJ}
-
-doxygen:
-	doxygen Doxyfile
-
-.PHONY: ${LIBS} check4 memcheck vars cleanall doxygen tests

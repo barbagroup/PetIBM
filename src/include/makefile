@@ -1,14 +1,26 @@
-ALL: libclasses.a
-SRC        = ${wildcard *.cpp}
-OBJ        = ${SRC:.cpp=.o}
-CLEANFILES = ${OBJ}
+# file: makefile
+# author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+# description: Generates static library libclasses.a.
 
-include ${PETSC_DIR}/conf/variables
-include ${PETSC_DIR}/conf/rules
+
+TARGET = libclasses.a
+
+SUFFIX = .cpp
+SRCS = $(wildcard *$(SUFFIX))
+OBJ = $(SRCS:$(SUFFIX)=.o)
+LIB_DIR = $(PETIBM_DIR)/lib
+CLEANFILES = $(OBJ)
+
+ALL: $(TARGET)
+
+include $(PETSC_DIR)/conf/variables
+include $(PETSC_DIR)/conf/rules
 
 PETSC_CC_INCLUDES += -I../../external/yaml-cpp/include
 
-libclasses.a: ${OBJ}
-	${AR} ${ARFLAGS} $@ $^
-	${RANLIB} $@
-	${MV} $@ ../../lib/
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $^
+	$(RANLIB) $@
+	$(MV) $@ $(LIB_DIR)
+
+.PHONY: ALL $(TARGET)

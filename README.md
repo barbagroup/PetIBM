@@ -111,6 +111,7 @@ The following case simulates flow over an impulsively started 2-D circular cylin
 Postprocess the results:
 
 The Python script `plotFields2d.py` generates the contour of the velocity components, the pressure and the vorticity at saved time-steps. The following command-line displays the list of options available:
+
     > python scripts/python/plotFields2d.py --help
 
 For example, the contours, for the 2-D circular cylinder at Reynolds number 40, are generated with:

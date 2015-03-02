@@ -9,6 +9,7 @@ PetscErrorCode NavierStokesSolver<2>::writeGrid()
 	if(rank==0)
 	{
 		std::ofstream f(caseFolder+"/grid.txt");
+		f << mesh->nx << '\t' << mesh->ny << '\n';
 		for(std::vector<PetscReal>::const_iterator i=mesh->x.begin(); i!=mesh->x.end(); ++i)
 			f << *i << '\n';
 		for(std::vector<PetscReal>::const_iterator i=mesh->y.begin(); i!=mesh->y.end(); ++i)
@@ -30,6 +31,7 @@ PetscErrorCode NavierStokesSolver<3>::writeGrid()
 	if(rank==0)
 	{
 		std::ofstream f(caseFolder+"/grid.txt");
+		f << mesh->nx << '\t' << mesh->ny << '\t' << mesh->nz << '\n';
 		for(std::vector<PetscReal>::const_iterator i=mesh->x.begin(); i!=mesh->x.end(); ++i)
 			f << *i << '\n';
 		for(std::vector<PetscReal>::const_iterator i=mesh->y.begin(); i!=mesh->y.end(); ++i)

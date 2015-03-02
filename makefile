@@ -61,7 +61,7 @@ $(LIBS):
 $(EXT_LIBS):
 	@echo "\nGenerating external static libraries ..."
 	@mkdir -p $(LIB_DIR)
-	cd external/yaml-cpp; $(MAKE)
+	cd external/yaml-cpp-0.5.1; $(MAKE)
 	cd external/gtest-1.7.0; $(MAKE)
 
 ################################################################################

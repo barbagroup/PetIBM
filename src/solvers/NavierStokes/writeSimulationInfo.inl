@@ -81,27 +81,5 @@ PetscErrorCode NavierStokesSolver<dim>::writeSimulationInfo()
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "Maximum iterations: %d\n", maxits); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
 
-	if(rank==0)
-	{
-		std::ofstream f(caseFolder+"/simulationInfo.txt");
-		f << "-nx\t" << mesh->nx << '\n';
-		f << "-ny\t" << mesh->ny << '\n';
-		if(dim == 3)
-		{
-			f << "-nz\t" << mesh->nz << '\n';
-		}
-		f << "-startStep\t" << simParams->startStep << '\n';
-		f << "-nt\t" << simParams->nt << '\n';
-		f << "-nsave\t" << simParams->nsave << '\n';
-		f << "-dt\t" << simParams->dt << '\n';
-		(flowDesc->bc[0][XPLUS].type==PERIODIC)? f << "-xperiodic\tTrue\n" : f << "-xperiodic\tFalse\n";
-		(flowDesc->bc[0][YPLUS].type==PERIODIC)? f << "-yperiodic\tTrue\n" : f << "-yperiodic\tFalse\n";
-		if(dim == 3)
-		{
-			(flowDesc->bc[0][ZPLUS].type==PERIODIC)? f << "-zperiodic\tTrue\n" : f << "-zperiodic\tFalse\n";
-		}
-		f.close();
-	}
-
 	return 0;
 }

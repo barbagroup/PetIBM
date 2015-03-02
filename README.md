@@ -110,10 +110,15 @@ The following case simulates flow over an impulsively started 2-D circular cylin
 
 Postprocess the results:
 
-    > python scripts/python/plot.py -folder cases/2d/cylinder/Re40 -xmin -2 -xmax 4 -ymin -2 -ymax 2
+The Python script `plotFields2d.py` generates the contour of the velocity components, the pressure and the vorticity at saved time-steps. The following command-line displays the list of options available:
+    > python scripts/python/plotFields2d.py --help
 
-Contour plots of the x and y components of velocity, the pressure and the vorticity will be written to the folder 
-`cases/2d/cylinder/Re40/output`.
+For example, the contours, for the 2-D circular cylinder at Reynolds number 40, are generated with:
+
+    > python scripts/python/plotFields2d.py --case cases/2d/cylinder/Re40 --bottom-left -2.0 -2.0 --top-right 4.0 2.0
+
+To generate .vtk files, readable by open-source visualization tools such as [Paraview](http://www.paraview.org/) or [VisIt](https://wci.llnl.gov/simulation/computer-codes/visit/), use the Python scripts: `generateVTKFiles2d.py` (2-D cases) and `generateVTKFiles3d.py` (3-D cases).
+
 
 Contact
 -------

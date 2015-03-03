@@ -15,7 +15,7 @@
 /**
  * \brief Converts \c std::string to \c TimeSteppingScheme.
  */
-TimeSteppingScheme timeSchemeFromString(std::string &s)
+TimeSteppingScheme timeSchemeFromString(std::string s)
 {
   if (s == "EULER_EXPLICIT")
     return EULER_EXPLICIT;
@@ -31,7 +31,7 @@ TimeSteppingScheme timeSchemeFromString(std::string &s)
 /**
  * \brief Converts \c std::string to \c SolverType.
  */
-SolverType solverTypeFromString(std::string &s)
+SolverType solverTypeFromString(std::string s)
 {
   if (s == "NAVIER_STOKES")
     return NAVIER_STOKES;
@@ -68,16 +68,17 @@ void SimulationParameters::initialize(std::string fileName)
   if (rank == 0) // read the input file only on process 0
   {
     YAML::Node nodes(YAML::LoadFile(fileName));
+    const YAML::Node &node = nodes[0];
 
-    dt = nodes[0]["dt"].as<PetscReal>();
-    startStep = nodes[0]["startStep"].as<PetscInt>(0);
+    dt = node["dt"].as<PetscReal>();
+    startStep = node["startStep"].as<PetscInt>(0);
     restart = (startStep > 0) ? PETSC_TRUE : PETSC_FALSE;
-    nt = nodes[0]["nt"].as<PetscInt>();
-    nsave = nodes[0]["nsave"].as<PetscInt>(nt);
+    nt = node["nt"].as<PetscInt>();
+    nsave = node["nsave"].as<PetscInt>(nt);
 
-    solverType = solverTypeFromString(nodes[0]["ibmScheme"].as<std::string>("NAVIER_STOKES"));
-    convectionScheme = timeSchemeFromString(nodes[0]["timeScheme"][0].as<std::string>("EULER_EXPLICIT"));
-    diffusionScheme  = timeSchemeFromString(nodes[0]["timeScheme"][1].as<std::string>("EULER_IMPLICIT"));
+    solverType = solverTypeFromString(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
+    convectionScheme = timeSchemeFromString(node["timeScheme"][0].as<std::string>("EULER_EXPLICIT"));
+    diffusionScheme  = timeSchemeFromString(node["timeScheme"][1].as<std::string>("EULER_IMPLICIT"));
 
     // set the time-stepping coefficients for the different schemes
     switch (convectionScheme)
@@ -115,7 +116,7 @@ void SimulationParameters::initialize(std::string fileName)
         break;
     }
 
-    const YAML::Node &systems = nodes[0]["linearSystems"];
+    const YAML::Node &systems = node["linearSolvers"];
     std::string name, solver, preconditioner;
     for (unsigned int i=0; i<systems.size(); i++)
     {

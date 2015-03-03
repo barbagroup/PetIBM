@@ -16,7 +16,7 @@
 /**
  * \brief Converts \c std::string to \c Boundary.
  */
-Boundary boundaryFromString(std::string &s)
+Boundary boundaryFromString(std::string s)
 {
   if (s == "xMinus") return XMINUS;
   if (s == "xPlus")  return XPLUS;
@@ -32,7 +32,7 @@ Boundary boundaryFromString(std::string &s)
 /**
  * \brief Converts \c std::string to \c BCType.
  */
-BCType bcTypeFromString(std::string &s)
+BCType bcTypeFromString(std::string s)
 {
   if (s == "DIRICHLET") return DIRICHLET;
   if (s == "NEUMANN") return NEUMANN;
@@ -71,19 +71,20 @@ void FlowDescription::initialize(std::string fileName)
   if (rank == 0) // read the input file only on process 0
   {
     YAML::Node nodes = YAML::LoadFile(fileName);
+    const YAML::Node &node = nodes[0];
 
-    dimensions = nodes[0]["dimensions"].as<PetscInt>();
-    nu = nodes[0]["nu"].as<PetscReal>();
+    dimensions = node["dimensions"].as<PetscInt>();
+    nu = node["nu"].as<PetscReal>();
 
-    initialVelocity[0] = nodes[0]["initialVelocity"][0].as<PetscReal>();
-    initialVelocity[1] = nodes[0]["initialVelocity"][1].as<PetscReal>();
-    initialVelocity[2] = nodes[0]["initialVelocity"][2].as<PetscReal>(0.0);
+    initialVelocity[0] = node["initialVelocity"][0].as<PetscReal>();
+    initialVelocity[1] = node["initialVelocity"][1].as<PetscReal>();
+    initialVelocity[2] = node["initialVelocity"][2].as<PetscReal>(0.0);
 
-    initialPerturbation[0] = nodes[0]["initialPerturbation"][0].as<PetscReal>(0.0);
-    initialPerturbation[1] = nodes[0]["initialPerturbation"][1].as<PetscReal>(0.0);
-    initialPerturbation[2] = nodes[0]["initialPerturbation"][2].as<PetscReal>(0.0);
+    initialPerturbation[0] = node["initialPerturbation"][0].as<PetscReal>(0.0);
+    initialPerturbation[1] = node["initialPerturbation"][1].as<PetscReal>(0.0);
+    initialPerturbation[2] = node["initialPerturbation"][2].as<PetscReal>(0.0);
 
-    const YAML::Node &bcs = nodes[0]["boundaryConditions"];
+    const YAML::Node &bcs = node["boundaryConditions"];
     Boundary location;
     // loop over the boundaries
     for (unsigned int i=0; i<bcs.size(); i++)
@@ -103,7 +104,6 @@ void FlowDescription::initialize(std::string fileName)
     // if the boundary condition on one face is periodic,
     // then it should be periodic on the opposite face too
     // check u on the X and Y faces
-    error = 
     if (bc[0][XMINUS].type == PERIODIC && bc[0][XPLUS].type != PERIODIC) error = PETSC_TRUE;
     if (bc[0][XMINUS].type != PERIODIC && bc[0][XPLUS].type == PERIODIC) error = PETSC_TRUE;
     if (bc[0][YMINUS].type == PERIODIC && bc[0][YPLUS].type != PERIODIC) error = PETSC_TRUE;

@@ -128,7 +128,7 @@ PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
     {
       PetscInt nXi = node["quadOptions"][0].as<PetscInt>(),
                nEta = node["quadOptions"][0].as<PetscInt>();
-      Petscreal corners[4][3];
+      PetscReal corners[4][3];
 
       x.reserve(nXi*nEta);
       y.reserve(nXi*nEta);

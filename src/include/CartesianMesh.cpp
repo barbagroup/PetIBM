@@ -53,12 +53,13 @@ void CartesianMesh::initialize(std::string fileName)
       for (unsigned int j=0; j<subDomains.size(); j++)
         numCells += subDomains[j]["cells"].as<PetscInt>();
       if (direction == "x")
-        nx = numCells;
-      else if (directio == "y")
-        ny = numCells;
-      else if (direction == "z")
         nx += numCells;
+      else if (direction == "y")
+        ny += numCells;
+      else if (direction == "z")
+        nz += numCells;
     }
+  }
 
   MPI_Barrier(PETSC_COMM_WORLD);
   
@@ -89,6 +90,8 @@ void CartesianMesh::initialize(std::string fileName)
               end,
               stretchRatio,
               h;
+    std::string direction;
+    YAML::Node nodes = YAML::LoadFile(fileName);
 
     // loop over each direction
     for (unsigned int k=0; k<nodes.size(); k++)
@@ -110,7 +113,7 @@ void CartesianMesh::initialize(std::string fileName)
         if (fabs(stretchRatio-1.0) < 1.0E-06) // uniform discretization
         {
           h = (end - start)/numCells;
-          for (unsigned int j=first; j<first+numCells; j++)
+          for (int j=first; j<first+numCells; j++)
           {
             if (direction == "x")
             {
@@ -133,7 +136,7 @@ void CartesianMesh::initialize(std::string fileName)
         {
           // width of the first cell in the subdomain
           h = (end - start)*(stretchRatio-1)/(pow(stretchRatio, numCells)-1);
-          for (unsigned int j=first; j<first+numCells; j++)
+          for (int j=first; j<first+numCells; j++)
           {
             // obtain the widths of subsequent cells by
             // multiplying by the stretching ratio

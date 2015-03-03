@@ -1,16 +1,23 @@
 /***************************************************************************//**
-* \file
-* \brief Source file to define member functions of NavierStokesSolver
-*/
+ * \file NavierStokesSolver.cpp
+ * \author Anush Krishnan (anush@bu.edu)
+ * \brief Implementation of the methods of the class \c NavierStokesSolver.
+ */
+
 
 #include "NavierStokesSolver.h"
-#include <petscdmcomposite.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <iomanip>
 #include <sys/stat.h>
 
+#include <petscdmcomposite.h>
+
+/**
+ * \brief Initializes the solver.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initialize()
 {

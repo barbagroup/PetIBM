@@ -31,6 +31,9 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
 	return 0;
 }
 
+/**
+ * \brief Initializes data common to \c NavierStokesSolver and its dereived classes.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 {
@@ -56,9 +59,9 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 	return 0;
 }
 
-/***************************************************************************//**
-* Deallocate memory to avoid memory leaks.
-*/
+/**
+ * \brief Deallocate memory to avoid memory leaks.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::finalize()
 {
@@ -118,6 +121,9 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 	return 0;
 }
 
+/**
+ * \brief Assembles the RHS of the system for the intermediate fluxes.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::generateRHS1()
 {
@@ -128,6 +134,9 @@ PetscErrorCode NavierStokesSolver<dim>::generateRHS1()
 	return 0;
 }
 
+/**
+ * \brief Assembles the RHS of the system for the pressure-forces. 
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::generateRHS2()
 {
@@ -138,6 +147,9 @@ PetscErrorCode NavierStokesSolver<dim>::generateRHS2()
 	return 0;
 }
 
+/**
+ * \brief Adavance in time. Calculates the variables at the next time-step.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
@@ -170,6 +182,9 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 	return 0;
 }
 
+/**
+ * \brief Solves system for the intermediate fluxes.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 {
@@ -188,6 +203,9 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 	return 0;
 }
 
+/**
+ * \brief Solves Poisson system for the pressure-forces.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
 {
@@ -206,9 +224,12 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
 	return 0;
 }
 
-/***************************************************************************//**
-* \f[ q = q^* - B^N Q \lambda \f]
-*/
+/**
+ * \brief Projects the fluxes onto the divergence-free field 
+ *        satisfying the no-slip condition at the immersed boundary.
+ *
+ * \f[ q = q^* - B^N Q \lambda \f]
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 {
@@ -219,18 +240,27 @@ PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 	return 0;
 }
 
+/**
+ * \brief Do the data need to be saved at the current time-step?
+ */
 template <PetscInt dim>
 PetscBool NavierStokesSolver<dim>::savePoint()
 {
 	return (timeStep % simParams->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
 }
 
+/**
+ * \brief Is the simulation completed?
+ */
 template <PetscInt dim>
 PetscBool NavierStokesSolver<dim>::finished()
 {
 	return (timeStep >= simParams->nt)? PETSC_TRUE : PETSC_FALSE;
 }
 
+/**
+ * \brief Computes the matrix \f$ Q^T B^N Q \f$.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 {
@@ -247,21 +277,24 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 	return 0;
 }
 
-/***************************************************************************//**
-* \param cols     Array of column indices where non-zeros are present in a 
-                  particular row of a matrix
-* \param numCols  Number of column indices in the given array
-* \param rowStart The start index of the portion of the result vector that 
-                  resides on the current process
-* \param rowEnd   The end index, which is 1 greater than the index of the last 
-                  row of the portion of the result vector that resides on the 
-                  current process
-* \param d_nnz    Number of non-zeros in the diagonal portion of the matrix
-* \param o_nnz    Number of non-zeros in the off-diagonal portion of the matrix
-*
-* `d_nnz` and `o_nnz` are passed by reference, and are the outputs of the 
-* function.
-*/
+/**
+ * \brief Count the numbers of non-zeros in the diagonal 
+ *        and off-diagonal portions of the parallel matrices.
+ *
+ * \param cols Array of column indices where non-zeros are present in a particular
+ *             row of a matrix
+ * \param numCols Number of column indices in the given array
+ * \param rowStart Starting index of the portion of the result vector 
+ *                 that resides on the current process
+ * \param rowEnd Ending index, which is 1 greater than the index of the last row
+ *               of the portion of the result vector that resides on the current
+ *							 process
+ * \param d_nnz Number of non-zeros on the diagonal portion of the matrix
+ * \param o_nnz Number of non-zeros off-diagonal of the portion of the matrix
+ *
+ * `d_nnz` and `o_nnz` are passed by reference, and are outputs of the function.
+ *
+ */
 template <PetscInt dim>
 void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
 {

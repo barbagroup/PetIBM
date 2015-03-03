@@ -28,11 +28,13 @@ def read_inputs():
                       help='does not remove the numrical solution folders')
   parser.add_argument('--no-forces', dest='forces', action='store_false',
                       help='does not remove the forces data file')
+  parser.add_argument('--no-vtk', dest='vtk_files', action='store_false',
+                      help='does not remove .vtk_files folder')
   parser.add_argument('--no-logs', dest='logs', action='store_false',
                       help='does not remove log files '
                            '(iterationCount, performanceSummary)')
   parser.set_defaults(images=True, data=True, grid=True, solutions=True, 
-                      forces=True, logs=True)
+                      forces=True, vtk_files=True, logs=True)
   return parser.parse_args()
 
 
@@ -53,6 +55,8 @@ def main():
     parts['solutions'] = '%s/0*' % args.case_directory
   if args.forces:
     parts['forces'] = '%s/forces.txt' % args.case_directory
+  if args.vtk_files:
+    parts['vtk_files'] = '%s/vtk_files' % args.case_directory
   if args.logs:
     parts['logs'] = ('%s/iterationCount.txt %s/performanceSummary.txt' 
                      % (args.case_directory, args.case_directory))

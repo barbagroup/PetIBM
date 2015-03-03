@@ -1,4 +1,5 @@
 # simulationParameters.yaml
+
 - type: simulation
   dt: 0.02
   startStep: 0

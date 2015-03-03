@@ -1,3 +1,5 @@
+# flowDescription.yaml
+
 - type: flow
   dimensions: 2
   nu: 0.00181818181818
@@ -16,4 +18,3 @@
     - location: yPlus
       u: [DIRICHLET, 1.0]
       v: [DIRICHLET, 0.0]
-  

@@ -1,4 +1,7 @@
-- dimensions: 2
+# flowDescription.yaml
+
+- type: flow
+  dimensions: 2
   nu: 0.0066666666666
   initialVelocity: [1.0, 0.0]
   initialPerturbation: [0.1, 0.0]

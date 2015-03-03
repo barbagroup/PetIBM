@@ -1,3 +1,5 @@
+# bodies.yaml
+
 - type: points
   pointsFile: circle.bdy
   centerRotation: [0.0, 0.0]

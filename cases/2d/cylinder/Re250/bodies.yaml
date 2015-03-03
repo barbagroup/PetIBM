@@ -1,5 +1,7 @@
+# bodies.yaml
+
 - type: circle
-  pointsFile: cylinder.body
+  circleOptions: [0.0, 0.0, 0.5, 158]
   centerRotation: [0.0, 0.0]
   initialOffset: [0.0, 0.0]
   angleOfAttack: 0.0
@@ -9,4 +11,3 @@
   xOscillation: [0.0, 0.0, 0.0]
   yOscillation: [0.0, 0.0, 0.0]
   pitchOscillation: [0.0, 0.0, 0.0]
-  circleOptions: [0.0, 0.0, 0.5, 158]

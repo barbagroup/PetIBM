@@ -323,7 +323,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "NavierStokes/generateBC1.inl"
 #include "NavierStokes/generateBNQ.inl"
 #include "NavierStokes/generateR2.inl"
-#include "NavierStokes/writeSimulationInfo.inl"
+#include "NavierStokes/printSimulationInfo.inl"
 #include "NavierStokes/writeGrid.inl"
 #include "NavierStokes/writeFluxes.inl"
 #include "NavierStokes/writeLambda.inl"

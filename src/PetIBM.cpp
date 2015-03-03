@@ -1,8 +1,24 @@
+/***************************************************************************//**
+ * \mainpage PetIBM
+ *
+ *                A PETSc-based Immersed Boundary Method code
+ *
+ * \author Anush Krishnan (anush@bu.edu)
+ */
+
+/***************************************************************************//**
+ * \file PetIBM.cpp
+ * \author Anush Krishnan (anush@bu.edu)
+ * \brief Main source-file of \c PetIBM.
+ */
+
+
 #include "createSolver.h"
 
 #ifndef DIMENSIONS
 #define DIMENSIONS 2
 #endif
+
 
 int main(int argc,char **argv)
 {
@@ -22,7 +38,7 @@ int main(int argc,char **argv)
   std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(folder, &FD, &SP, &CM);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
-  solver->writeSimulationInfo();
+  solver->printSimulationInfo();
   solver->writeGrid();
   
   while(!solver->finished())

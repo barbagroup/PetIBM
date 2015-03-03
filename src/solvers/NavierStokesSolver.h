@@ -171,7 +171,7 @@ public:
   virtual PetscErrorCode writeData();
 
   // write simulation parameters into file
-  PetscErrorCode writeSimulationInfo();
+  PetscErrorCode printSimulationInfo();
 
   // write grid coordinates into file
   PetscErrorCode writeGrid();

@@ -1,3 +1,5 @@
+# bodies.yaml
+
 - type: circle
   centerRotation: [0.0, 0.0]
   initialOffset: [0.0, 0.0]

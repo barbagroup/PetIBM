@@ -1,48 +1,54 @@
 /***************************************************************************//**
-* \file
-* \brief Header to define class SimulationParameters
-*/
+ * \file SimulationParameters.h
+ * \author Anush Krishnan (anush@bu.edu)
+ * \brief Definition of the class \c SimulationParameters.
+ */
+
 
 #if !defined(SIMULATION_PARAMETERS_H)
 #define SIMULATION_PARAMETERS_H
 
 #include "types.h"
-#include <petscsys.h>
+
 #include <string>
 
-/***************************************************************************//**
-* \brief Store various parameters used in the simulation
-*/
+#include <petscsys.h>
+
+
+/**
+ * \class SimulationParameters
+ * \brief Stores various parameters used in the simulation
+ */
 class SimulationParameters
 {
 public:
-	PetscReal          dt; ///< Size of time increment
-	
-	PetscInt           nt,        ///< Number of time steps
-	                   nsave,     ///< Intervals at which simulation data is saved
-	                   startStep; ///< The starting time step of the simulation
-	
-	SolverType         solverType; ///< Type of flow solver used
-	
-	TimeSteppingScheme convectionScheme, ///< Time-stepping scheme for the convection term
-	                   diffusionScheme;  ///< Time-stepping scheme for the diffusion term
-	
-	PetscReal          gamma,         ///< Time-stepping coefficient for the convection term in the current time step
-	                   zeta,          ///< Time-stepping coefficient for the convection term in the previous time step
-	                   alphaExplicit, ///< Time-stepping coefficient for the explicit part of the diffusion term
-	                   alphaImplicit; ///< Time-stepping coefficient for the implicit part of the diffusion term
-	
-	PetscBool          restart; ///< Flag to indicate whether the simulation was restarted from saved data
+  PetscReal dt; ///< time-increment
+  
+  PetscInt startStep, ///< initial time-step 
+           nt,        ///< number of time steps
+           nsave;     ///< data-saving interval
+  
+  SolverType solverType;  ///< type of flow solver
+  
+  TimeSteppingScheme convectionScheme, ///< time-scheme for the convection term
+                     diffusionScheme;  ///< time-scheme for the diffusion term
+  
+  PetscReal gamma,         ///< coefficient of the convection term at current time step
+            zeta,          ///< coefficient of the convection term at previous time step
+            alphaExplicit, ///< coefficient of the explicit diffusion term
+            alphaImplicit; ///< coefficient of the implicit diffusion term
+  
+  PetscBool restart; ///< flag to indicate whether the simulation was restarted from saved data
 
-	PetscReal          velocitySolveTolerance, PoissonSolveTolerance;
-	PetscInt           velocitySolveMaxIts, PoissonSolveMaxIts;
-	
-	/***********************************************************************//**
-	* \brief Reads an input file and initializes the simulation parameters
-	*/
-	SimulationParameters(std::string fileName);
-	SimulationParameters();
-	void initialize(std::string fileName);
+  PetscReal velocitySolveTolerance, ///< tolerance (velocity solver)
+            PoissonSolveTolerance;  ///< tolerance (Poisson solver)
+  PetscInt velocitySolveMaxIts, ///< maximum number of iterations (velocity solver)
+           PoissonSolveMaxIts;  ///< maximum number of iterations (Poisson solver)
+  
+  // Parse file and store simulation parameters
+  SimulationParameters(std::string fileName);
+  SimulationParameters();
+  void initialize(std::string fileName);
 };
 
 #endif

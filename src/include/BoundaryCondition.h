@@ -1,23 +1,27 @@
 /***************************************************************************//**
-* \file
-* \brief Header to define class BoundaryCondition
-*/
+ * \file BoundaryCondition.h
+ * \author Anush Krishnan (anush@bu.edu)
+ * \brief Definition of the class \c BoundaryCondition.
+ */
+
 
 #if !defined(BOUNDARY_CONDITION_H)
 #define BOUNDARY_CONDITION_H
 
-#include <petscsys.h>
 #include "types.h"
 
-/***************************************************************************//**
-* \class BoundaryCondition
-* \brief Store the type of boundary condition and the associated value
-*/
+#include <petscsys.h>
+
+
+/**
+ * \class BoundaryCondition
+ * \brief Stores the type of boundary condition and its associated value.
+ */
 class BoundaryCondition
 {
 public:
-	BCType     type;  ///< Type of boundary condition
-	PetscReal  value; ///< Numerical value associated with the boundary condition
+  BCType type;     ///< Type of boundary condition
+  PetscReal value; ///< Numerical value associated with the boundary condition
 };
 
 #endif

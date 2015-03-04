@@ -17,7 +17,7 @@ LIBS = $(addprefix $(LIB_DIR)/, libclasses.a libsolvers.a)
 EXT_LIBS = $(addprefix $(LIB_DIR)/, libyaml.a libgtest.a)
 
 EXT_DIR = $(PETIBM_DIR)/external
-YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp -type f -name *.o)
+YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp-0.5.1 -type f -name *.o)
 GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
 
 .PHONY: ALL
@@ -61,7 +61,7 @@ $(LIBS):
 $(EXT_LIBS):
 	@echo "\nGenerating external static libraries ..."
 	@mkdir -p $(LIB_DIR)
-	cd external/yaml-cpp; $(MAKE)
+	cd external/yaml-cpp-0.5.1; $(MAKE)
 	cd external/gtest-1.7.0; $(MAKE)
 
 ################################################################################
@@ -128,7 +128,9 @@ cleanoutput:
 	find . -name '*.d' -exec rm -rf {} \;
 	find ./cases -name '*.txt' -exec rm -rf {} \;
 	find ./cases -name '0*' -prune -exec rm -rf {} \;
-	find ./cases -name 'output' -prune -exec rm -rf {} \;
+	find ./cases -name 'images' -prune -exec rm -rf {} \;
+	find ./cases -name 'vtk_files' -prune -exec rm -rf {} \;
+	find ./cases -name 'data' -prune -exec rm -rf {} \;
 	find ./tests -name '*.txt' -exec rm -rf {} \;
 	find . -name '._*' -exec rm -rf {} \;
 	find . -name '.DS_Store' -exec rm -rf {} \;
@@ -175,89 +177,69 @@ variables:
 	
 ################################################################################
 
-check2d:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/test
+### Two-dimensional cases ###
 
-memcheck2dSerial:
-	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM2d -caseFolder cases/2d/memtest
+cavity2dRe100Serial:
+	${MPIEXEC} -n 1 $(PETIBM2D) -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-memcheck2dParallel:
-	${MPIEXEC} -n 2 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM2d -caseFolder cases/2d/memtest
+cavity2dRe100Parallel:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-memcheck2dBodySerial:
-	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM2d -caseFolder cases/2d/memtestBody
+cavity2dRe100NonUniform:
+	${MPIEXEC} -n 1 $(PETIBM2D) -caseFolder cases/2d/lidDrivenCavity/Re100NonUniform -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityRe100Serial:
-	${MPIEXEC} -n 1 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cavity2dRe1000:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/lidDrivenCavity/Re1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityRe100Parallel:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cavity2dRe3200:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/lidDrivenCavity/Re3200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityRe1000:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re1000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cavity2dRe5000:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/lidDrivenCavity/Re5000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityRe3000:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re3000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cylinder2dRe40:
+	${MPIEXEC} -n 2 $(PETIBM2D) -caseFolder cases/2d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityRe3200:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re3200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cylinder2dRe40PeriodicDomain:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/cylinder/Re40PeriodicDomain -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityRe5000:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/lidDrivenCavity/Re5000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	
-body2dSerial:
-	${MPIEXEC} -n 1 bin/PetIBM2d -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cylinder2dRe150:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/cylinder/Re150 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-body2dParallel:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/bodyTest -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-cylinderRe40:
-	${MPIEXEC} -n 2 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-cylinderRe150:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re150 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cylinder2dRe250:
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/cylinder/Re250 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe550:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re550 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/cylinder/Re550 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
 cylinderRe3000:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/cylinder/Re3000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	${MPIEXEC} -n 4 $(PETIBM2D) -caseFolder cases/2d/cylinder/Re3000 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cylinderPeriodicDomain:
-	${MPIEXEC} -n 4 bin/PetIBM2d -caseFolder cases/2d/cylinderPeriodicDomain -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+memoryCheck2dSerial:
+	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes $(PETIBM2D) -caseFolder cases/2d/memoryTest
 
-memcheck3dSerial:
-	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM3d -caseFolder cases/3d/memtest
+memoryCheck2dParallel:
+	${MPIEXEC} -n 2 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes $(PETIBM2D) -caseFolder cases/2d/memoryTest
 
-memcheck3dParallel:
-	${MPIEXEC} -n 2 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes bin/PetIBM3d -caseFolder cases/3d/memtest
+memoryCheck2dBodySerial:
+	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes $(PETIBM2D) -caseFolder cases/2d/memoryTestBody
 
-cavityX:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cavityX -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+### Three-dimensional cases ###
 
-cavityY:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cavityY -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cavity3dRe100PeriodicX:
+	${MPIEXEC} -n 4 $(PETIBM3D) -caseFolder cases/3d/lidDrivenCavity/Re100PeriodicX -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-cavityZ:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cavityZ -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cavity3dRe100PeriodicY:
+	${MPIEXEC} -n 4 $(PETIBM3D) -caseFolder cases/3d/lidDrivenCavity/Re100PeriodicY -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-body3dSerial:
-	${MPIEXEC} -n 1 bin/PetIBM3d -caseFolder cases/3d/bodyTest -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cavity3dRe100PeriodicZ:
+	${MPIEXEC} -n 4 $(PETIBM3D) -caseFolder cases/3d/lidDrivenCavity/Re100PeriodicZ -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-body3dParallel:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/bodyTest -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+cylinder3dRe40:
+	${MPIEXEC} -n 4 $(PETIBM3D) -caseFolder cases/3d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
 
-bodyAngle:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/bodyAngle -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+memoryCheck3dSerial:
+	${MPIEXEC} -n 1 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes $(PETIBM3D) -caseFolder cases/3d/memoryTest
 
-vortexShedding:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/vortexShedding -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-flatPlateRe200:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/flatPlateRe200 -sys2_pc_gamg_agg_nsmooths 1 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-cylinder3d:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re40 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-cylinderRe200:
-	${MPIEXEC} -n 4 bin/PetIBM3d -caseFolder cases/3d/cylinder/Re200 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+memoryCheck3dParallel:
+	${MPIEXEC} -n 2 valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes $(PETIBM3D) -caseFolder cases/3d/memoryTest

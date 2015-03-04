@@ -16,7 +16,7 @@ ALL: $(TARGET)
 include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
-PETSC_CC_INCLUDES += -I../../external/yaml-cpp/include
+PETSC_CC_INCLUDES += -I../../external/yaml-cpp-0.5.1/include
 
 $(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^

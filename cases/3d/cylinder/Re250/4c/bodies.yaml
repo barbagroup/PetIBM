@@ -1,3 +1,5 @@
+# bodies.yaml
+
 - type: points
   pointsFile: cylinder.body
   centerRotation: [0.0, 0.0]

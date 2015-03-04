@@ -16,7 +16,7 @@ ALL: $(TARGET)
 include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
-PETSC_CC_INCLUDES += -I../../external/yaml-cpp/include -I../include
+PETSC_CC_INCLUDES += -I../../external/yaml-cpp-0.5.1/include -I../include
 PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic -MMD
 CXX_FLAGS += -std=c++0x -Wall -Wextra -pedantic -MMD
 

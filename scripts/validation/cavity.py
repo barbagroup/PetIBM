@@ -29,7 +29,7 @@ def read_inputs():
   parser.add_argument('--Re', '-Re', dest='Re', type=str, default='100',
                       help='Reynolds number of the flow')
   parser.add_argument('--time-step', '-t', dest='time_step', type=int, 
-                      nargs='+', default=None,
+                      default=None,
                       help='time-step to plot')
   parser.add_argument('--periodic', dest='periodic', type=str, nargs='+',
                       default=[], help='direction(s) (x and/or y) with '
@@ -127,7 +127,7 @@ def main():
       y_exp, u_exp = numpy.loadtxt(infile, dtype=float, 
                                    usecols= (0, cols[Re]['u']), unpack=True)
     pyplot.plot(y_exp, u_exp, label='Ghia et al. (1982)', 
-                color='k', linestyle='--', linewidth=1)
+                color='k', linewidth=0, marker='o', markersize=6)
   pyplot.legend(loc='best', prop={'size': 16})
   pyplot.title('Lid-driven cavity flow at Re=%s (mesh: %dx%d)' % (Re, nx, ny),
                fontsize=16)
@@ -156,7 +156,7 @@ def main():
       x_exp, u_exp = numpy.loadtxt(infile, dtype=float, 
                                    usecols= (6, cols[Re]['v']), unpack=True)
     pyplot.plot(x_exp, u_exp, label='Ghia et al. (1982)', 
-                color='k', linestyle='--', linewidth=1)
+                color='k', linewidth=0, marker='o', markersize=6)
   pyplot.legend(loc='best', prop={'size': 16})
   pyplot.title('Lid-driven cavity flow at Re=%s (mesh: %dx%d)' % (Re, nx, ny),
                fontsize=16)

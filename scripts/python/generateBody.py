@@ -136,6 +136,7 @@ class Geometry:
     ---------
     displacement -- x- and y- displacements
     """
+    self.get_mass_center()
     self.x += displacements[0]
     self.y += displacements[1]
     self.get_mass_center()
@@ -147,6 +148,7 @@ class Geometry:
     ---------
     ratio -- scaling ratio
     """
+    self.get_mass_center()
     self.x = self.x_cm + ratio*(self.x - self.x_cm)
     self.y = self.y_cm + ratio*(self.y - self.y_cm)
 
@@ -324,7 +326,7 @@ class Points(Geometry):
     """
     with open(file_path, 'r') as infile:
       self.x, self.y = numpy.loadtxt(infile, dtype=float, delimiter='\t', 
-                                     unpack=True)
+                                     unpack=True, skiprows=1)
     self.x_old, self.y_old = self.x.copy(), self.y.copy()
 
 

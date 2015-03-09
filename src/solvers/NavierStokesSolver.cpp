@@ -255,7 +255,7 @@ PetscBool NavierStokesSolver<dim>::savePoint()
 template <PetscInt dim>
 PetscBool NavierStokesSolver<dim>::finished()
 {
-  return (timeStep >= simParams->nt)? PETSC_TRUE : PETSC_FALSE;
+  return (timeStep >= simParams->startStep+simParams->nt)? PETSC_TRUE : PETSC_FALSE;
 }
 
 /**

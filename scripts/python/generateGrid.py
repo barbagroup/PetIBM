@@ -104,7 +104,8 @@ def compute_ratio(direction, database):
   if abs(n-l/h) > 1.0E-08:
     print ('Choose a mesh spacing such that the uniform region is an '
            'integral multiple of it')
-    print ('%s-direction: length l=%g \t spacing h=%g \t l/h=%g' % (l, h, l/h))
+    print ('%s-direction: length l=%g \t spacing h=%g \t l/h=%g' % (direction, 
+                                                                    l, h, l/h))
     sys.exit()
   database[direction]['uniform'] = {'end': database[direction]['max uniform'], 
                                     'stretching ratio': 1.0, 

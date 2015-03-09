@@ -26,7 +26,7 @@ def read_inputs():
                       default=os.getcwd(), help='directory of the simulation')
   parser.add_argument('--vorticity-limits', '-w', dest='vorticity_limits', 
                       type=float, nargs='+', default=[-5.0, 5.0, 1.0],
-                      help='upper-limit of zero-symmetric vorticity range')
+                      help='range of vorticity iso-surfaces (min, max, stride)')
   parser.add_argument('--velocity-limits', '-u', dest='velocity_limits', 
                       type=float, nargs='+', default=[-1.0, 1.0, 0.1],
                       help='range of velocity iso-surfaces (min, max, stride)')

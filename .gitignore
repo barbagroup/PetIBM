@@ -21,6 +21,9 @@ cases/**/vtk_files
 cases/**/images
 cases/**/data
 
+# ignore Python compiled files
+*.pyc
+
 # ignore doxygen documentation folder
 doc/*
 

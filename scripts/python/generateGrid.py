@@ -26,17 +26,22 @@ def read_inputs():
   parser.add_argument('--case', dest='case_directory', type=str,
                       default=os.getcwd(),
                       help='directory of the simulation')
+  parser.add_argument('--precision', dest='precision', type=int, default=2,
+                      help='precision of the aspect ratio computed')
+  # parse command-line
   return parser.parse_args()
 
-def read_parameters_file(args):
+
+def read_parameters_file(parameters):
   """Creates a database with all grid parameters read from file.
 
   Arguments
   ---------
-  args -- paths of file and case directory
+  parameters -- database with command-line arguments
   """
-  database = {'file_path': args.parameters_path,
-              'case_directory': args.case_directory}
+  database = {'file_path': parameters.parameters_path,
+              'case_directory': parameters.case_directory,
+              'precision': parameters.precision}
   with open(database['file_path'], 'r') as infile:
     lines = filter(None, (line.rstrip() for line in infile if not line.startswith('#')))
     for line in lines:
@@ -49,6 +54,7 @@ def read_parameters_file(args):
                              'spacing': values[4],
                              'aspect ratio': [values[5], values[6]]}
   return database
+
 
 def get_ratios(database):
   """Computes stretching ratio and number of cells 
@@ -65,6 +71,7 @@ def get_ratios(database):
   except:
     pass
 
+
 def compute_ratio(direction, database):
   """Computes the aspect ratio for each sub-domain.
 
@@ -74,7 +81,7 @@ def compute_ratio(direction, database):
   database -- contains all grid parameters
   """
   def compute_stretched_ratio():
-    precision = 2
+    precision = database['precision']
     current_precision = 1
     next_ratio = 2.0
     while current_precision <= precision:
@@ -102,10 +109,10 @@ def compute_ratio(direction, database):
   l = database[direction]['max uniform']-database[direction]['min uniform']
   n = int(round(l/h))
   if abs(n-l/h) > 1.0E-08:
-    print ('Choose a mesh spacing such that the uniform region is an '
-           'integral multiple of it')
-    print ('%s-direction: length l=%g \t spacing h=%g \t l/h=%g' % (direction, 
-                                                                    l, h, l/h))
+    print('Choose a mesh spacing such that the uniform region is an '
+          'integral multiple of it')
+    print('{}-direction: length l={} \t spacing h={} \t l/h={}'.format(direction, 
+                                                                       l, h, l/h))
     sys.exit()
   database[direction]['uniform'] = {'end': database[direction]['max uniform'], 
                                     'stretching ratio': 1.0, 
@@ -119,6 +126,7 @@ def compute_ratio(direction, database):
                                      'stretching ratio': r, 
                                      'number cells': n}
 
+
 def write_yaml_file(database):
   """Writes cartesianMesh.yaml into the case directory.
 
@@ -126,25 +134,28 @@ def write_yaml_file(database):
   ---------
   database -- contains all grid parameters
   """
-  with open(database['case_directory']+'/cartesianMesh.yaml', 'w') as outfile:
+  file_path = '{}/cartesianMesh.yaml'.format(database['case_directory'])
+  with open(file_path, 'w') as outfile:
     directions = [d for d in ['x', 'y', 'z'] if d in list(database.keys())]
     for direction in directions:
-      outfile.write('- direction: %s\n' % direction)
-      outfile.write('  start: %g\n' % database[direction]['min'])
+      outfile.write('- direction: {}\n'.format(direction))
+      outfile.write('  start: {}\n'.format(database[direction]['min']))
       outfile.write('  subDomains:\n')
       for region in ['stretch1', 'uniform', 'stretch2']: 
-        outfile.write('    - end: %g\n' % database[direction][region]['end'])
-        outfile.write('      cells: %d\n' % database[direction][region]['number cells'])
-        outfile.write('      stretchRatio: %g\n' % database[direction][region]['stretching ratio'])
+        outfile.write('    - end: {}\n'.format(database[direction][region]['end']))
+        outfile.write('      cells: {}\n'.format(database[direction][region]['number cells']))
+        outfile.write('      stretchRatio: {}\n'.format(database[direction][region]['stretching ratio']))
       outfile.write('\n')
-  print ('cartesianMesh.yaml written into %s' % database['case_directory'])
+  print('cartesianMesh.yaml written into {}'.format(database['case_directory']))
+
 
 def main():
   """Creates cartesianMesh.yaml file for stretched grid."""
-  args = read_inputs()
-  database = read_parameters_file(args)
+  parameters = read_inputs()
+  database = read_parameters_file(parameters)
   get_ratios(database)
   write_yaml_file(database)
+
 
 if __name__ == "__main__":
   main()

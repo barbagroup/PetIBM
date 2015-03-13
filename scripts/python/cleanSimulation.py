@@ -40,32 +40,29 @@ def read_inputs():
 
 def main():
   """Cleans a PetIBM simulation."""
-  # parser command-line
-  args = read_inputs()
-
-  # get different parts to clean
-  parts = {}
-  if args.images:
-    parts['images'] = '%s/images' % args.case_directory
-  if args.data:
-    parts['data'] = '%s/data' % args.case_directory
-  if args.grid:
-    parts['grid'] = '%s/grid.txt' % args.case_directory
-  if args.solutions:
-    parts['solutions'] = '%s/0*' % args.case_directory
-  if args.forces:
-    parts['forces'] = '%s/forces.txt' % args.case_directory
-  if args.vtk_files:
-    parts['vtk_files'] = '%s/vtk_files' % args.case_directory
-  if args.logs:
-    parts['logs'] = ('%s/iterationCount.txt %s/performanceSummary.txt' 
-                     % (args.case_directory, args.case_directory))
-
-  # remove appropriate files/folders
-  print '[case-directory] %s' % args.case_directory
-  for key, part in parts.iteritems():
-    print '\t--> removing %s ...' % key
-    os.system('rm -rf %s' % part)
+  # parse command-line
+  parameters = read_inputs()
+  # get different paths to delete
+  paths = {}
+  if parameters.images:
+    paths['images'] = '{}/images'.format(parameters.case_directory)
+  if parameters.data:
+    paths['data'] = '{}/data'.format(parameters.case_directory)
+  if parameters.grid:
+    paths['grid'] = '{}/grid.txt'.format(parameters.case_directory)
+  if parameters.solutions:
+    paths['solutions'] = '{}/0*'.format(parameters.case_directory)
+  if parameters.forces:
+    paths['forces'] = '{}/forces.txt'.format(parameters.case_directory)
+  if parameters.vtk_files:
+    paths['vtk_files'] = '{}/vtk_files'.format(parameters.case_directory)
+  if parameters.logs:
+    paths['logs'] = '{0}/iterationCount.txt {0}/performanceSummary.txt'.format(parameters.case_directory) 
+  # delete appropriate files/folders
+  print('[case-directory] {}'.format(parameters.case_directory))
+  for key, path in paths.iteritems():
+    print('\t-> removing {} ...'.format(key))
+    os.system('rm -rf {}'.format(path))
 
 
 if __name__ == '__main__':

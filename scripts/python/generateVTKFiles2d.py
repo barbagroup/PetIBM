@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 
 # file: generateVTKFiles2d.py
-# author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+# author: Olivier Mesnard (mesnardo@gwu.edu), Anush Krishnan (anush@bu.edu)
 # description: Converts PETSc output to VTK format for 2D case.
 
 
 import os
-import sys
 import argparse
 
 import numpy
-sys.path.append(os.path.join(os.environ['PETSC_DIR'], 'bin', 'pythonscripts'))
-import PetscBinaryIO
+
+import ioPetIBM
 
 
 def read_inputs():
@@ -42,85 +41,40 @@ def read_inputs():
                                        'periodic boundary conditions')
   return parser.parse_args()
 
+
 def main():
   """Converts PETSc output to VTK format for 2D case."""
   # parse the command-line
-  args = read_inputs()
-  print ('[case-directory] %s' % args.case_directory)
-  print ('[variables] %s' % args.variables)
-
-  with open('%s/grid.txt' % args.case_directory, 'r') as infile:
-    nx, ny = [int(v) for v in infile.readline().strip().split()]
-    grid = numpy.loadtxt(infile, dtype=float)
-  
-  # compute cell-vertex coordinates
-  x, y = grid[:nx+1], grid[nx+1:]
-  # compute cell-widths
-  dx, dy = x[1:]-x[:-1], y[1:]-y[:-1]
-
-  # number of velocity nodes in each direction (depends on type of bc)
-  nxu, nyu = (nx if 'x' in args.periodic else nx-1), ny
-  nxv, nyv = nx, (ny if 'y' in args.periodic else ny-1)
-
-  # calculate cell-center coordinates
-  x = 0.5*(x[1:nxu]+x[2:nxu+1])
-  y = 0.5*(y[1:nyv]+y[2:nyv+1])
-
-  # get masks to account for boundary-limits and stride
-  mask_x = numpy.where(numpy.logical_and(x >= args.bottom_left[0], 
-                                         x <= args.top_right[0]))[0][::args.stride]
-  mask_y = numpy.where(numpy.logical_and(y >= args.bottom_left[1], 
-                                         y <= args.top_right[1]))[0][::args.stride]
-  
-  # apply mask on cell-center coordinates
-  x = x[mask_x]
-  y = y[mask_y]
+  parameters = read_inputs()
+  print('[case-directory] {}'.format(args.case_directory))
+  print('[variables] {}'.format(parameters.variables))
 
   # get time-steps to write .vtk files
   if any(args.time_steps):
-    time_steps = range(args.time_steps[0], 
-                       args.time_steps[1]+1, 
-                       args.time_steps[2])
+    time_steps = range(parameters.time_steps[0], 
+                       parameters.time_steps[1]+1, 
+                       parameters.time_steps[2])
   else:
-    time_steps = sorted(int(folder) for folder in os.listdir(args.case_directory)
+    time_steps = sorted(int(folder) for folder 
+                                    in os.listdir(parameters.case_directory)
                                     if folder[0] == '0')
-  
+
   # create directory where .vtk files will be saved
   vtk_directory = '%s/vtk_files' % args.case_directory
-  print ('[vtk-directory] %s' % vtk_directory)
+  print('[vtk-directory] {}'.format(vtk_directory))
   if not os.path.isdir(vtk_directory):
     os.makedirs(vtk_directory)
 
+  # read mesh grid
+  x, y = ioPetIBM.read_grid(parameters.case_directory)
+  x_centers, y_centers = 0.5*(x[:-1]+x[1:]), 0.5*(y[:-1]+y[1:])
+
   for time_step in time_steps:
-    if 'velocity' in args.variables:
-      # read fluxes in x-direction
-      qx = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qx.dat' 
-                                                        % (args.case_directory,
-                                                           time_step))[0]
-      qx = qx.reshape((nyu, nxu))
-      # compute u-velocity at cell-centers
-      u = ( 0.5 * (qx[1:nyv, :nxu-1] + qx[1:nyv, 1:nxu])
-                / numpy.outer(dy[1:nyv], numpy.ones(nxu-1)) )
-      # apply mask for boundary limits and stride
-      u = numpy.array([u[j][mask_x] for j in mask_y])
-      # read fluxes in y-direction
-      qy = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/qy.dat' 
-                                                        % (args.case_directory,
-                                                           time_step))[0]
-      qy = qy.reshape((nyv, nxv))
-      # compute v-velocity at cell-centers
-      v = ( 0.5 * (qy[:nyv-1, 1:nxu] + qy[1:nyv, 1:nxu])
-                / numpy.outer(numpy.ones(nyv-1), dx[1:nxu]) )
-      # apply mask for boundary limits and stride
-      v = numpy.array([v[j][mask_x] for j in mask_y])
-    if 'pressure' in args.variables:
-      # read pressure field
-      p = PetscBinaryIO.PetscBinaryIO().readBinaryFile('%s/%07d/phi.dat'
-                                                       % (args.case_directory,
-                                                          time_step))[0]
-      p = p.reshape((ny, nx))
-      # apply mask for boundary limits and stride
-      p = numpy.array([p[j][mask_x] for j in mask_y])
+    if 'velocity' in parameters.variables:
+      u, v = ioPetIBM.read_velocity(parameters.case_directory, time_step, [x, y],
+                                    periodic=parameters.periodic)
+    if 'pressure' in parameters.variables:
+      p = ioPetIBM.read_pressure(parameters.case_directory, time_step, [x, y])
 
     print ('writing .vtk file at time-step %d ...' % time_step)
     vtk_file_path = '%s/fields%07d.vtk' % (vtk_directory, time_step)

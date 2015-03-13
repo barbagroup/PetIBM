@@ -6,12 +6,10 @@
 
 
 import os
-import sys
 import argparse
 import math
 
 import numpy
-from matplotlib import pyplot
 
 import ioPetIBM
 
@@ -52,28 +50,27 @@ def main():
     print('\n[case] grid-size: {}'.format(case['grid-size']))
     ratio = case['n']/cases[0]['n']
     # read grid nodes
-    [x, y], [dx, dy] = ioPetIBM.readGrid(case['directory'])
-    nx, ny = dx.size, dy.size
-    cases[i]['grid-spacing'] = (x[-1]-x[0])/nx
+    x, y = ioPetIBM.read_grid(case['directory'])
+    cases[i]['grid-spacing'] = (x[-1]-x[0])/(x.size-1)
     # read velocity components
-    u, v = ioPetIBM.readVelocity(case['directory'], parameters.time_step, [dx, dy])
-    cases[i]['u'] = u[ratio-1::ratio, ratio-1::ratio]
-    cases[i]['v'] = v[ratio-1::ratio, ratio-1::ratio]
+    u, v = ioPetIBM.read_velocity(case['directory'], parameters.time_step, [x, y])
+    cases[i]['u'] = u['values'][ratio-1::ratio, ratio-1::ratio]
+    cases[i]['v'] = v['values'][ratio-1::ratio, ratio-1::ratio]
     # pressure
-    p = ioPetIBM.readPressure(case['directory'], parameters.time_step, [nx, ny])
-    cases[i]['p'] = p[ratio-1::ratio, ratio-1::ratio]
+    p = ioPetIBM.read_pressure(case['directory'], parameters.time_step, [x, y])
+    cases[i]['p'] = p['values'][ratio-1::ratio, ratio-1::ratio]
 
   print('Orders of convergence:')
   def compute_alpha(v):
     return ( math.log(numpy.linalg.norm(cases[-2][v]-cases[-3][v])
                       /numpy.linalg.norm(cases[-1][v]-cases[-2][v]))
              /math.log(cases[-1]['n']/cases[-2]['n']) ) 
-  alpha = {'u': compute_alpha('u'),
-           'v': compute_alpha('v'),
-           'p': compute_alpha('p')} 
-  print('\tu: {}'.format(alpha['u']))
-  print('\tv: {}'.format(alpha['v']))
-  print('\tp: {}'.format(alpha['p']))
+  alphas = {'u': compute_alpha('u'),
+            'v': compute_alpha('v'),
+            'p': compute_alpha('p')} 
+  print('\tu: {}'.format(alphas['u']))
+  print('\tv: {}'.format(alphas['v']))
+  print('\tp: {}'.format(alphas['p']))
 
 
 if __name__ == '__main__':

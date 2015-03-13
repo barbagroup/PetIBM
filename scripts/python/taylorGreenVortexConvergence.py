@@ -6,7 +6,6 @@
 
 
 import os
-import sys
 import argparse
 import math
 
@@ -60,7 +59,7 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0, name=None):
   """
   x = math.pi - 2.0*math.pi*(x-x[0])/(x[-1]-x[0])
   y = math.pi - 2.0*math.pi*(y-y[0])/(y[-1]-y[0])
-  X, Y = numpy.meshgrid(x, y, indexing='ij')
+  X, Y = numpy.meshgrid(x, y)
   if name == 'u-velocity':
     return V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time/Re)
   elif name == 'v-velocity':
@@ -91,38 +90,37 @@ def main():
   for i, case in enumerate(cases):
     print('\n[case] grid-size: {}'.format(case['grid-size']))
     ratio = case['n']/cases[0]['n']
-    # read grid nodes
-    [x, y], [dx, dy] = ioPetIBM.readGrid(case['directory'])
-    nx, ny = dx.size, dy.size
-    cases[i]['grid-spacing'] = (x[-1]-x[0])/nx
+    # read mesh grid
+    x, y = ioPetIBM.read_grid(case['directory'])
+    cases[i]['grid-spacing'] = (x[-1]-x[0])/(x.size-1)
     # velocity components
-    u, v = ioPetIBM.readVelocity(case['directory'], parameters.time_step, 
-                                 [dx, dy], periodic=['x', 'y'])
-    u_analytical = taylor_green_vortex(x[1:], 0.5*(y[:-1]+y[1:]), 
+    u, v = ioPetIBM.read_velocity(case['directory'], parameters.time_step, 
+                                  [x, y], periodic=['x', 'y'])
+    u_analytical = taylor_green_vortex(u['x'], u['y'], 
                                        V=parameters.amplitude, 
                                        time=parameters.time , 
                                        Re=parameters.Re, 
                                        name='u-velocity')
-    v_analytical = taylor_green_vortex(0.5*(x[:-1]+x[1:]), y[1:], 
+    v_analytical = taylor_green_vortex(v['x'], v['y'], 
                                        V=parameters.amplitude, 
                                        time=parameters.time , 
                                        Re=parameters.Re, 
                                        name='v-velocity')
-    cases[i]['u'] = u[ratio-1::ratio, ratio-1::ratio]
-    cases[i]['u-error'] = numpy.linalg.norm(u-u_analytical)/u.size
-    cases[i]['v'] = v[ratio-1::ratio, ratio-1::ratio]
-    cases[i]['v-error'] = numpy.linalg.norm(v-v_analytical)/v.size
+    cases[i]['u'] = u['values'][ratio-1::ratio, ratio-1::ratio]
+    cases[i]['u-error'] = numpy.linalg.norm(u['values']-u_analytical)/u['values'].size
+    cases[i]['v'] = v['values'][ratio-1::ratio, ratio-1::ratio]
+    cases[i]['v-error'] = numpy.linalg.norm(v['values']-v_analytical)/v['values'].size
     # pressure
-    p = ioPetIBM.readPressure(case['directory'], parameters.time_step, [nx, ny])
-    p_analytical = taylor_green_vortex(0.5*(x[:-1]+x[1:]), 0.5*(y[:-1]+y[1:]), 
+    p = ioPetIBM.read_pressure(case['directory'], parameters.time_step, [x, y])
+    p_analytical = taylor_green_vortex(p['x'], p['y'], 
                                        V=parameters.amplitude, 
                                        time=parameters.time , 
                                        Re=parameters.Re, 
                                        name='pressure')
-    cases[i]['p'] = p[ratio-1::ratio, ratio-1::ratio]
-    cases[i]['p-error'] = numpy.linalg.norm(p-p_analytical)/p.size
+    cases[i]['p'] = p['values'][ratio-1::ratio, ratio-1::ratio]
+    cases[i]['p-error'] = numpy.linalg.norm(p['values']-p_analytical)/p['values'].size
 
-  print('Orders of convergence:')
+  print('\nOrders of convergence:')
   def compute_alpha(v):
     return ( math.log(numpy.linalg.norm(cases[-2][v]-cases[-3][v])
                       /numpy.linalg.norm(cases[-1][v]-cases[-2][v]))
@@ -135,7 +133,7 @@ def main():
   print('\tp: {}'.format(alpha['p']))
 
   if parameters.save or parameters.show:
-    print('Plotting ...')
+    print('\nPlot the grid convergence ...')
     pyplot.style.use('{}/style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
     pyplot.xlabel('cell-width')
     pyplot.ylabel('$L_2$-norm error')

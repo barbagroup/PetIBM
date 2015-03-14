@@ -168,13 +168,16 @@ class Case(object):
     # plot forces for each immersed body
     for i, body in enumerate(self.bodies):
       if self.parameters.drag:
-        pyplot.plot(self.times, body.fx.values, label='%s - fx' % body.name,
+        pyplot.plot(self.times, body.fx.values, 
+                    label='{} - fx'.format(body.name),
                     color=colors[i], linestyle='-')
       if self.parameters.lift:
-        pyplot.plot(self.times, body.fy.values, label='%s - fy' % body.name,
+        pyplot.plot(self.times, body.fy.values, 
+                    label='{} - fy'.format(body.name),
                     color=colors[i], linestyle='--')
       if self.parameters.dimensions == 3 and self.parameters.sideforce:
-        pyplot.plot(self.times, body.fz.values, label='%s - fz' % body.name,
+        pyplot.plot(self.times, body.fz.values, 
+                    label='{} - fz'.format(body.name),
                     color=colors[i], linestyle=':')
     pyplot.legend()
     # get default plot-limits if not specified

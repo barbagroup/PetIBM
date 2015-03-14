@@ -78,10 +78,13 @@ def vorticity(u, v):
         /numpy.outer(numpy.ones(yw.size), xv[1:]-xv[:-1]) 
       - (u[1:, mask_x]-u[:-1, mask_x])
         /numpy.outer(yu[1:]-yu[:-1], numpy.ones(xw.size)) )
+  # tests
+  assert (yw.size, xw.size) == w.shape
   return {'x': xw, 'y': yw, 'values': w}
 
 
-def plot_contour(variable, variable_name, variable_range, image_path):
+def plot_contour(variable, variable_name, variable_range, image_path, 
+                 view=[[None, None], [None, None]]):
   """Plots and saves the variable field.
 
   Arguments
@@ -103,6 +106,11 @@ def plot_contour(variable, variable_name, variable_range, image_path):
                      levels=levels, extend='both', 
                      cmap=color_map[variable_name])
   cont_bar = fig.colorbar(cont, label=variable_name, fraction=0.046, pad=0.04)
+  x_start = max(view[0][0], variable['x'].min())
+  x_end = min(view[1][0], variable['x'].max())
+  y_start = max(view[0][1], variable['y'].min())
+  y_end = min(view[1][1], variable['y'].max())
+  ax.axis([x_start, x_end, y_start, y_end])
   ax.set_aspect('equal')
   pyplot.savefig(image_path)
   pyplot.close()
@@ -116,15 +124,8 @@ def main():
   parameters = read_inputs()
   print('[case directory] {}'.format(parameters.case_directory))
 
-  # get time-steps to plot
-  if any(parameters.time_steps):
-    time_steps = range(parameters.time_steps[0], 
-                       parameters.time_steps[1]+1, 
-                       parameters.time_steps[2])
-  else:
-    time_steps = sorted(int(folder) 
-                        for folder in os.listdir(parameters.case_directory)
-                        if folder[0] == '0')
+  time_steps = ioPetIBM.get_time_steps(parameters.case_directory, 
+                                       parameters.time_steps)
  
   # create directory where images will be saved
   images_directory = '{}/images'.format(parameters.case_directory)
@@ -133,9 +134,7 @@ def main():
     os.makedirs(images_directory)
 
   # read the grid nodes
-  x, y = ioPetIBM.read_grid(parameters.case_directory,
-                            bottom_left=parameters.bottom_left,
-                            top_right=parameters.top_right)
+  coords = ioPetIBM.read_grid(parameters.case_directory)
 
   # load default style of matplotlib figures
   pyplot.style.use('{}/style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
@@ -143,27 +142,31 @@ def main():
   for time_step in time_steps:
     if parameters.velocity or parameters.vorticity:
       # get velocity fields
-      u, v = ioPetIBM.read_velocity(parameters.case_directory, time_step, [x, y],
+      u, v = ioPetIBM.read_velocity(parameters.case_directory, time_step, coords,
                                     periodic=parameters.periodic)
       if parameters.velocity:
         # plot u-velocity field
         image_path = '{}/uVelocity{:0>7}.png'.format(images_directory, time_step)
-        plot_contour(u, 'u-velocity', parameters.u_range, image_path)
+        plot_contour(u, 'u-velocity', parameters.u_range, image_path,
+                     view=[parameters.bottom_left, parameters.top_right]) 
         # plot v-velocity field
         image_path = '{}/vVelocity{:0>7}.png'.format(images_directory, time_step)
-        plot_contour(v, 'v-velocity', parameters.v_range, image_path)
+        plot_contour(v, 'v-velocity', parameters.v_range, image_path,
+                     view=[parameters.bottom_left, parameters.top_right])
       if parameters.vorticity:
         # compute vorticity field
         w = vorticity(u, v)
         # plot vorticity field
         image_path = '{}/vorticity{:0>7}.png'.format(images_directory, time_step)
-        plot_contour(w, 'vorticity', parameters.vorticity_range, image_path)
+        plot_contour(w, 'vorticity', parameters.vorticity_range, image_path,
+                     view=[parameters.bottom_left, parameters.top_right])
     if parameters.pressure:
       # get pressure field
-      p = ioPetIBM.read_pressure(parameters.case_directory, time_step, [x, y])
+      p = ioPetIBM.read_pressure(parameters.case_directory, time_step, coords)
       # plot pressure field
       image_path = '{}/pressure{:0>7}.png'.format(images_directory, time_step)
-      plot_contour(p, 'pressure', parameters.pressure_range, image_path)
+      plot_contour(p, 'pressure', parameters.pressure_range, image_path,
+                   view=[parameters.bottom_left, parameters.top_right])
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))
 

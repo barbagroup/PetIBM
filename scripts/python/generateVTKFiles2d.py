@@ -42,62 +42,52 @@ def read_inputs():
   return parser.parse_args()
 
 
+def interpolate_cell_centers(u, v):
+  """Interpolates the velocity fields at the cell-centers.
+
+  Arguments
+  ---------
+  u, v -- x- and y- velocity fields on a staggered grid
+  x, y -- coordinates of the mesh grid
+  """
+  u, xu, yu = u['values'], u['x'], u['y']
+  v, xv, yv = v['values'], v['x'], v['y']
+  mask_x = numpy.where(numpy.logical_and(xv > xu[0], xv < xu[-1]))[0]
+  mask_y = numpy.where(numpy.logical_and(yu > yv[0], yu < yv[-1]))[0]
+  x_centers, y_centers = xv[mask_x], yu[mask_y]
+  u, v = 0.5*(u[mask_y, :-1]+u[mask_y, 1:]), 0.5*(v[:-1, mask_x]+v[1:, mask_x])
+  return ( {'x': x_centers, 'y': y_centers, 'values': u}, 
+           {'x': x_centers, 'y': y_centers, 'values': v} )
+
+
 def main():
   """Converts PETSc output to VTK format for 2D case."""
-  # parse the command-line
+  # parse command-line
   parameters = read_inputs()
-  print('[case-directory] {}'.format(args.case_directory))
+  print('[case-directory] {}'.format(parameters.case_directory))
   print('[variables] {}'.format(parameters.variables))
 
-  # get time-steps to write .vtk files
-  if any(args.time_steps):
-    time_steps = range(parameters.time_steps[0], 
-                       parameters.time_steps[1]+1, 
-                       parameters.time_steps[2])
-  else:
-    time_steps = sorted(int(folder) for folder 
-                                    in os.listdir(parameters.case_directory)
-                                    if folder[0] == '0')
-
-  # create directory where .vtk files will be saved
-  vtk_directory = '%s/vtk_files' % args.case_directory
-  print('[vtk-directory] {}'.format(vtk_directory))
-  if not os.path.isdir(vtk_directory):
-    os.makedirs(vtk_directory)
+  # list of time-steps to post-process
+  time_steps = ioPetIBM.get_time_steps(parameters.case_directory, 
+                                       parameters.time_steps)
 
   # read mesh grid
-  x, y = ioPetIBM.read_grid(parameters.case_directory)
-  x_centers, y_centers = 0.5*(x[:-1]+x[1:]), 0.5*(y[:-1]+y[1:])
+  x, y = ioPetIBM.read_grid(parameters.case_directory, 
+                            bottom_left=parameters.bottom_left,
+                            top_right=parameters.top_right)
 
   for time_step in time_steps:
     if 'velocity' in parameters.variables:
       u, v = ioPetIBM.read_velocity(parameters.case_directory, time_step, [x, y],
                                     periodic=parameters.periodic)
+      # need to get values at cell-centers, not staggered arrangement
+      u, v = interpolate_cell_centers(u, v)
+      ioPetIBM.write_velocity_vtk2d(u, v, parameters.case_directory, time_step)
     if 'pressure' in parameters.variables:
       p = ioPetIBM.read_pressure(parameters.case_directory, time_step, [x, y])
+      ioPetIBM.write_pressure_vtk2d(p, parameters.case_directory, time_step)
 
-    print ('writing .vtk file at time-step %d ...' % time_step)
-    vtk_file_path = '%s/fields%07d.vtk' % (vtk_directory, time_step)
-    with open(vtk_file_path, 'w') as outfile:
-      outfile.write('# vtk DataFile Version 3.0\n')
-      outfile.write('contains velocity and pressure fields\n')
-      outfile.write('ASCII\n')
-      outfile.write('DATASET RECTILINEAR_GRID\n')
-      outfile.write('DIMENSIONS %d %d 1\n' % (x.size, y.size))
-      outfile.write('X_COORDINATES %d double\n' % x.size)
-      numpy.savetxt(outfile, x, fmt='%f')
-      outfile.write('Y_COORDINATES %d double\n' % y.size)
-      numpy.savetxt(outfile, y, fmt='%f')
-      outfile.write('Z_COORDINATES 1 double\n0.0\n')
-      outfile.write('POINT_DATA %d\n' % (x.size*y.size))
-      if 'velocity' in args.variables:
-        outfile.write('\nVECTORS velocity double\n')
-        numpy.savetxt(outfile, 
-                      numpy.c_[u.flatten(), v.flatten(), numpy.zeros(u.size)],
-                      fmt='%.6f', delimiter='\t')
-      if 'pressure' in args.variables:
-        outfile.write('\nSCALARS pressure double 1\nLOOKUP_TABLE default\n')
-        numpy.savetxt(outfile, p.flatten(), fmt='%.6f', delimiter='\t')
+  print('\n[{}] DONE'.format(os.path.basename(__file__)))
 
 
 if __name__ == "__main__":

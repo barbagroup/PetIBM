@@ -2,7 +2,7 @@
 
 # file: generateVTKFiles3d.py
 # author: Olivier Mesnard (mesnardo@gwu.edu), Anush Krishnan (anush@bu.edu)
-# description: Converts PETSc output to VTK format for 3D cases.
+# description: Converts PETSc output to .vtk format.
 
 
 import os
@@ -45,34 +45,41 @@ def read_inputs():
   return parser.parse_args()
 
 
-def interpolate_cell_centers(u, v, w, x, y, z):
-  """Interpolates the velocity fields at the cell-centers.
+def interpolate_cell_centers(velocity):
+  """Interpolates the velocity field at the cell-centers.
 
   Arguments
   ---------
-  u, v, w -- x-, y- and z- velocity fields on a staggered grid
-  x, y, z -- coordinates of the mesh grid
+  velocity -- velocity field on a staggered grid
   """
-  u, xu, yu, zu = u['values'], u['x'], u['y'], u['z']
-  v, xv, yv, zv = v['values'], v['x'], v['y'], v['z']
-  w, xw, yw, zw = w['values'], w['x'], w['y'], w['z']
-  mask_x = numpy.where(numpy.logical_and(xv > xu[0], xv < xu[-1]))[0]
-  mask_y = numpy.where(numpy.logical_and(yu > yv[0], yu < yv[-1]))[0]
-  mask_z = numpy.where(numpy.logical_and(zu > zw[0], zu < zw[-1]))[0]
-  x_centers, y_centers, z_centers = xv[mask_x], yu[mask_y], zu[mask_z]
-  u = 0.5*(u[mask_z[0]:mask_z[-1]+1, mask_y[0]:mask_y[-1]+1, :-1] + 
-           u[mask_z[0]:mask_z[-1]+1, mask_y[0]:mask_y[-1]+1, 1:])
-  v = 0.5*(v[mask_z[0]:mask_z[-1]+1, :-1, mask_x[0]:mask_x[-1]+1] + 
-           v[mask_z[0]:mask_z[-1]+1, 1:, mask_x[0]:mask_x[-1]+1])
-  w = 0.5*(w[:-1, mask_y[0]:mask_y[-1]+1, mask_x[0]:mask_x[-1]+1] + 
-           w[1:, mask_y[0]:mask_y[-1]+1, mask_x[0]:mask_x[-1]+1])
-  return ( {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': u}, 
-           {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': v}, 
-           {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': w} )
+  dim3 = (True if len(velocity) == 3 else False)
+  x_centers, y_centers = velocity[1]['x'][1:-1], velocity[0]['y'][1:-1]
+  u, v = velocity[0]['values'], velocity[1]['values']
+  if dim3:
+    z_centers = velocity[0]['z'][1:-1]
+    w = velocity[2]['values']
+    u = 0.5*(u[1:-1, 1:-1, :-1] + u[1:-1, 1:-1, 1:])
+    v = 0.5*(v[1:-1, :-1, 1:-1] + v[1:-1:, 1:, 1:-1])
+    w = 0.5*(w[:-1, 1:-1, 1:-1] + w[1:, 1:-1, 1:-1])
+    # tests
+    assert (z_centers.size, y_centers.size, x_centers.size) == u.shape
+    assert (z_centers.size, y_centers.size, x_centers.size) == v.shape
+    assert (z_centers.size, y_centers.size, x_centers.size) == w.shape
+    return [{'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': u}, 
+            {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': v}, 
+            {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': w}]
+  else:
+    u = 0.5*(u[1:-1, :-1] + u[1:-1, 1:])
+    v = 0.5*(v[:-1, 1:-1] + v[1:, 1:-1])
+    # tests
+    assert (y_centers.size, x_centers.size) == u.shape
+    assert (y_centers.size, x_centers.size) == v.shape
+    return [{'x': x_centers, 'y': y_centers, 'values': u},
+            {'x': x_centers, 'y': y_centers, 'values': v}]
 
 
 def main():
-  """Converts PETSc output to VTK format for 3D case."""
+  """Converts PETSc output to .vtk format."""
   # parse command-line
   parameters = read_inputs()
   print ('[case-directory] %s' % parameters.case_directory)
@@ -83,21 +90,22 @@ def main():
                                        parameters.time_steps)
 
   # read mesh grid
-  x, y, z = ioPetIBM.read_grid(parameters.case_directory, 
-                               bottom_left=parameters.bottom_left,
-                               top_right=parameters.top_right)
+  coordinates = ioPetIBM.read_grid(parameters.case_directory)
 
   for time_step in time_steps:
     if 'velocity' in parameters.variables:
-      u, v, w = ioPetIBM.read_velocity(parameters.case_directory, time_step, [x, y, z],
-                                       periodic=parameters.periodic)
-      # need to get values at cell-centers, not staggered arrangement
-      u, v, w = interpolate_cell_centers(u, v, w, x, y, z)
-      return
-      ioPetIBM.write_velocity_vtk3d(u, v, w, parameters.case_directory, time_step)
+      velocity = ioPetIBM.read_velocity(parameters.case_directory, time_step, 
+                                        coordinates, 
+                                        periodic=parameters.periodic)
+      # need to get velocity at cell-centers, not staggered arrangement
+      velocity = interpolate_cell_centers(velocity)
+      ioPetIBM.write_vtk(velocity, parameters.case_directory, time_step, 
+                         name='velocity')
     if 'pressure' in parameters.variables:
-      p = ioPetIBM.read_pressure(parameters.case_directory, time_step, [x, y, z])
-      ioPetIBM.write_pressure_vtk3d(p, parameters.case_directory, time_step)
+      pressure = ioPetIBM.read_pressure(parameters.case_directory, time_step, 
+                                        coordinates)
+      ioPetIBM.write_vtk(pressure, parameters.case_directory, time_step,
+                         name='pressure')
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))
 

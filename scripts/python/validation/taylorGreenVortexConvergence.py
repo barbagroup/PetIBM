@@ -6,12 +6,14 @@
 
 
 import os
+import sys
 import argparse
 import math
 
 import numpy
 from matplotlib import pyplot
 
+sys.path.append('{}/scripts/python'.format(os.environ['PETIBM_DIR']))
 import ioPetIBM
 
 
@@ -134,7 +136,8 @@ def main():
 
   if parameters.save or parameters.show:
     print('\nPlot the grid convergence ...')
-    pyplot.style.use('{}/style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
+    pyplot.style.use('{}/scripts/python/style/'
+                     'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
     pyplot.xlabel('cell-width')
     pyplot.ylabel('$L_2$-norm error')
     pyplot.plot([case['grid-spacing'] for case in cases], 

@@ -21,13 +21,18 @@ def read_inputs():
                         formatter_class= argparse.ArgumentDefaultsHelpFormatter)
   # fill parser with arguments
   # geometry arguments
+  parser.add_argument('--type', dest='body_type', type=str,
+                      help='type of body (points, circle, line, sphere)')
   parser.add_argument('--file', '-f', dest='file_path', type=str,
                       help='path of the coordinates file')
   parser.add_argument('--circle', dest='circle', type=float, nargs='+',
+                      default=[0.5, 0.0, 0.0],
                       help='radius and center-coordinates of the circle')
   parser.add_argument('--line', '-l', dest='line', type=float, nargs='+',
+                      default=[1.0, 0.0, 0.0],
                       help='length and starting-point of the line')
   parser.add_argument('--sphere', dest='sphere', type=float, nargs='+',
+                      default=[0.5, 0.0, 0.0, 0.0],
                       help='radius and center-coordinates of the sphere')
   # discretization arguments
   parser.add_argument('--n', '-n', dest='n', type=int, default=None,
@@ -45,11 +50,12 @@ def read_inputs():
                       help='scaling factor for 2D geometry')
   parser.add_argument('--extrusion', '-e', dest='extrusion', type=float, 
                       nargs='+',
-                      help='z-limits of the 3D cylinder')
+                      help='limits of the cylinder in the third direction')
   # output arguments
   parser.add_argument('--save-name', dest='save_name', type=str, 
-                      default='new_body', help='name of the new body file')
-  parser.add_argument('--extension', dest='extension', type=str, default='bdy',
+                      default='new_body', 
+                      help='name of the new body file')
+  parser.add_argument('--extension', dest='extension', type=str, default='body',
                       help='extension of the output file')
   parser.add_argument('--save-dir', dest='save_directory', type=str, 
                       default=os.getcwd(),
@@ -64,34 +70,28 @@ class Geometry:
   def __init__(self):
     pass
 
-  def write(self, file_path, dimensions=2, cylinder=True):
+  def write(self, file_path):
     """Write the coordinates of the geometry into a file.
     
     Arguments
     ---------
     file_path -- path of the output file
-    dimensions -- number of dimensions (default 2)
-    cylinder -- is body a cylinder (default True)
     """
-    file_name = os.path.splitext(os.path.basename(file_path))[0]
+    print('\nWrite body coordinates into a file ...')
     with open(file_path, 'w') as outfile:
-      if dimensions == 2:
-        outfile.write('%d\n' % self.x.size)
+      if self.dimension == 2:
+        outfile.write('{}\n'.format(self.x.size))
         numpy.savetxt(outfile, numpy.c_[self.x, self.y],
                       fmt='%.6f', delimiter='\t')
-      elif dimensions == 3:
-        if cylinder:
-          outfile.write('%d\n' % (self.x.size*self.z.size))
-          for z in self.z:
-            numpy.savetxt(outfile, 
-                          numpy.c_[self.x, self.y, z*numpy.ones(self.x.size)],
-                          fmt='%.6f', delimiter='\t')
-        else:
-          outfile.write('%d\n' % self.x.size)
-          numpy.savetxt(outfile, numpy.c_[self.x, self.y, self.z], 
+      elif self.dimension == 3:
+        outfile.write('{}\n'.format(self.x.size*self.z.size))
+        for z in self.z:
+          numpy.savetxt(outfile, 
+                        numpy.c_[self.x, self.y, z*numpy.ones(self.x.size)],
                         fmt='%.6f', delimiter='\t')
+          
 
-  def get_distance(self, x_start, y_start, x_end, y_end):
+  def distance(self, x_start, y_start, x_end, y_end):
     """Returns the distance between two points.
     
     Arguments
@@ -101,7 +101,7 @@ class Geometry:
     """
     return math.sqrt((x_end-x_start)**2 + (y_end-y_start)**2)
 
-  def get_perimeter(self):
+  def perimeter(self):
     """Returns the perimeter of the geometry."""
     x, y = numpy.append(self.x, self.x[0]), numpy.append(self.y, self.y[0])
     return numpy.sum(numpy.sqrt((x[1:]-x[:-1])**2+(y[1:]-y[:-1])**2))
@@ -118,51 +118,57 @@ class Geometry:
     ---------
     parameters -- angle (degrees) and center of rotation (default: 0.0, None, None)
     """
-    angle = -parameters[0]*math.pi/180.
-    if len(parameters) == 1 or not(parameters[1:]):
+    angle, x_rot, y_rot = parameters
+    if angle == 0.0:
+      return
+    angle *= -math.pi/180.
+    if not (x_rot or y_rot):
       self.get_mass_center()
       x_rot, y_rot = self.x_cm, self.y_cm
-    else:
-      x_rot, y_rot = parameters[1:]
     x_tmp = x_rot + (self.x-x_rot)*math.cos(angle) - (self.y-y_rot)*math.sin(angle)
     y_tmp = y_rot + (self.x-x_rot)*math.sin(angle) + (self.y-y_rot)*math.cos(angle)
     self.x, self.y = x_tmp, y_tmp
     self.get_mass_center()
 
-  def translation(self, displacements):
+  def translation(self, displacements=[0.0, 0.0]):
     """Translates the geometry.
     
     Arguments
     ---------
-    displacement -- x- and y- displacements
+    displacement -- x- and y- displacements (default [0.0, 0.0])
     """
-    self.get_mass_center()
+    if displacements == [0.0, 0.0]:
+      return
     self.x += displacements[0]
     self.y += displacements[1]
     self.get_mass_center()
 
-  def scale(self, ratio):
+  def scale(self, ratio=1.0):
     """Scales the geometry.
     
     Arguments
     ---------
     ratio -- scaling ratio
     """
+    if ratio == 1.0:
+      return
     self.get_mass_center()
     self.x = self.x_cm + ratio*(self.x - self.x_cm)
     self.y = self.y_cm + ratio*(self.y - self.y_cm)
 
-  def extrusion(self, z_limits, ds=None):
+  def extrusion(self, limits, ds=None):
     """Creates the third direction.
 
     Arguments
     ---------
-    z_limits -- z-limits of the cylinder
+    limits -- limits of the cylinder
     """
-    z_start, z_end = z_limits[0], z_limits[1]
+    print('\nExtrude the body in the third direction ...')
+    assert (limits[0] < limits[1]), 'Error: check extrusion limits'
+    self.dimension = 3
+    z_start, z_end = limits
     if not self.ds:
-      print 'no ds'
-      self.ds = self.get_perimeter()/self.x.size
+      self.ds = self.perimeter()/self.x.size
     n = int(math.ceil((z_end-z_start)/self.ds))
     self.z = numpy.linspace(z_start+0.5*self.ds, z_end-0.5*self.ds, n)
 
@@ -175,16 +181,14 @@ class Geometry:
     n -- number of points (default None)
     ds -- segment-length (default None)
     """
+    if not (n and ds) or n == self.x.size:
+      return
     # calculate either the number of points or characteristic length
     if n and not ds:
-      ds = self.get_perimeter()/n
+      ds = self.perimeter()/n
     elif ds and not n:
-      n = int(math.ceil(self.get_perimeter()/ds))
-      ds = self.get_perimeter()/n
-    elif not (n and ds):
-      return # keep original discretization
-    if n == self.x.size:
-      return # if same discretization
+      n = int(math.ceil(self.perimeter()/ds))
+      ds = self.perimeter()/n
 
     # copy coordinates and initialize new ones
     x_old = numpy.append(self.x, self.x[0])
@@ -198,7 +202,7 @@ class Geometry:
     for i in xrange(n-1):
       x_start, y_start = x_new[i], y_new[i]
       x_end, y_end = x_old[I+1], y_old[I+1]
-      distance = self.get_distance(x_start, y_start, x_end, y_end)
+      distance = self.distance(x_start, y_start, x_end, y_end)
       if ds-distance <= tol:
         # interpolation method
         x_new[i+1], y_new[i+1] = self.interpolation(x_start, y_start, 
@@ -210,7 +214,7 @@ class Geometry:
           I += 1
           x_tmp, y_tmp = x_end, y_end
           x_end, y_end = x_old[I+1], y_old[I+1]
-          distance = self.get_distance(x_start, y_start, x_end, y_end)
+          distance = self.distance(x_start, y_start, x_end, y_end)
         x_new[i+1], y_new[i+1] = self.projection(x_start, y_start, 
                                                  x_tmp, y_tmp, 
                                                  x_end, y_end, 
@@ -232,7 +236,7 @@ class Geometry:
     -------
     x_target, y_target -- coordinates of the interpolated point
     """
-    length = self.get_distance(x_start, y_start, x_end, y_end)
+    length = self.distance(x_start, y_start, x_end, y_end)
     x_target = x_start + ds/length*(x_end-x_start)
     y_target = y_start + ds/length*(y_end-y_start)
     return x_target, y_target
@@ -289,20 +293,21 @@ class Geometry:
 
   def plot(self):
     """Plots the geometry."""
-    pyplot.figure()
+    print('\nPlot body ...')
+    pyplot.style.use('{}/scripts/python/style/'
+                     'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
     pyplot.grid(True)
-    pyplot.xlabel(r'$x$', fontsize=18)
-    pyplot.ylabel(r'$y$', fontsize=18)
-    pyplot.plot(numpy.append(self.x_old, self.x_old[0]), 
-                numpy.append(self.y_old, self.y_old[0]),
-                label='initial', 
-                color='k', ls='-', lw=2, marker='o', markersize=6)
+    pyplot.xlabel('x')
+    pyplot.ylabel('y')
+    if hasattr(self, 'x_old'):
+      pyplot.plot(numpy.append(self.x_old, self.x_old[0]), 
+                  numpy.append(self.y_old, self.y_old[0]),
+                  label='initial', marker='o')
     pyplot.plot(numpy.append(self.x, self.x[0]), 
                 numpy.append(self.y, self.y[0]),
-                label='current', 
-                color='r', ls='-', lw=2, marker='o', markersize=6)
+                label='current', marker='o')
     pyplot.axis('equal')
-    pyplot.legend(loc='best', prop={'size': 16})
+    pyplot.legend()
     pyplot.show()
 
 
@@ -315,6 +320,8 @@ class Points(Geometry):
     ---------
     file_path -- path of the file with coordinates
     """
+    self.dimension = 2
+    self.type = 'points'
     self.read(file_path)
 
   def read(self, file_path):
@@ -324,6 +331,7 @@ class Points(Geometry):
     ---------
     file_path -- path of the file with 2D coordinates
     """
+    print('\nRead coordinates from file ...')
     with open(file_path, 'r') as infile:
       self.x, self.y = numpy.loadtxt(infile, dtype=float, delimiter='\t', 
                                      unpack=True, skiprows=1)
@@ -332,7 +340,7 @@ class Points(Geometry):
 
 class Circle(Geometry):
   """Contains info about a circle."""
-  def __init__(self, parameters=[0.5, 0.0, 0.0], n=100, ds=None):
+  def __init__(self, parameters=[0.5, 0.0, 0.0], n=None, ds=None):
     """Creates the circular cross-section.
 
     Arguments
@@ -341,26 +349,26 @@ class Circle(Geometry):
     n -- number of segments on the circle (default 100)
     ds -- target segment-length (default None)
     """
-    self.radius = parameters[0]
-    self.xc, self.yc = parameters[1:]
+    self.dimension = 2
+    self.type = 'circle'
+    self.radius, self.xc, self.yc = parameters
     self.n = n
     self.ds = ds
     self.create()
 
   def create(self):
     """Creates coordinates of the circle."""
+    print('\nCreate a circle ...')
+    assert (self.n or self.ds), 'Error: missing number of segments or segment-length'
     if self.ds and not self.n:
       self.n = int(math.ceil(2.*math.pi*self.radius/self.ds))
-    elif not (self.ds or self.n):
-      print 'Error: missing number of segments or length of segment'
-      sys.exit(0)
     theta = numpy.linspace(0.0, 2.0*math.pi, self.n+1)[:-1]
     self.x, self.y = self.radius*numpy.cos(theta), self.radius*numpy.sin(theta)
 
 
 class Line(Geometry):
   """Contains info about a line."""
-  def __init__(self, parameters=[1.0, 0.0, 0.0], n=100, ds=None):
+  def __init__(self, parameters=[1.0, 0.0, 0.0], n=None, ds=None):
     """Create the line.
 
     Arguments
@@ -369,21 +377,21 @@ class Line(Geometry):
     n -- number of segments on the line (default 100)
     ds -- target segment-legnth (default None)
     """
-    self.length = parameters[0]
-    self.x_start, self.y_start = parameters[1:]
+    self.dimension = 2
+    self.type = 'line'
+    self.length, self.x_start, self.y_start = parameters
     self.n = n
     self.ds = ds
     self.create()
 
   def create(self):
     """Creates coordinates of the line."""
+    print('\nCreate a line ...')
+    assert (self.n or self.ds), 'Error: missing number of segments of segment-length'
     if self.ds and not self.n:
       self.n = int(math.ceil(self.length/self.ds))
     elif self.n and not self.ds:
       self.ds = self.length/self.n
-    elif not (self.ds or self.n):
-      print 'Error: missing number of segments or length of segment'
-      sys.exit(0)
     self.x = numpy.linspace(self.x_start, self.x_start+self.length, self.n+1)
     self.y = numpy.zeros_like(self.x)
     self.x_old, self.y_old = self.x.copy(), self.y.copy()
@@ -391,7 +399,7 @@ class Line(Geometry):
 
 class Sphere(Geometry):
   """Contains info about a spherical body."""
-  def __init__(self, parameters=[0.5, 0.0, 0.0, 0.0], n=100, ds=None):
+  def __init__(self, parameters=[0.5, 0.0, 0.0, 0.0], n=None, ds=None):
     """Creates the sperical body.
 
     Arguments
@@ -400,19 +408,19 @@ class Sphere(Geometry):
     n -- number of segments on the great-circle (default 100)
     ds -- target segment-length (default None)
     """
-    self.radius = parameters[0]
-    self.xc, self.yc, self.zc = parameters[1:]
+    self.dimension = 3
+    self.type = 'sphere'
+    self.radius, self.xc, self.yc, self.zc = parameters
     self.n = n
     self.ds = ds
     self.create()
 
   def create(self):
     """Creates coordinates of the sphere."""
+    print('\nCreate a spherical body ...')
+    assert (self.n or self.ds), 'Error: missing number of segments or segment-length'
     if self.n and not self.ds:
       self.ds = 2.0*math.pi*self.radius/self.n
-    elif not (self.ds or self.n):
-      print 'Error: missing number of segments or length of segment'
-      sys.exit(0)
     n_phi = int(math.ceil(math.pi*self.radius/self.ds))+1
     phi = numpy.linspace(0.0, math.pi, n_phi)[1:-1]
     # north pole
@@ -431,54 +439,62 @@ class Sphere(Geometry):
     self.y = numpy.append(self.y, self.yc)
     self.z = numpy.append(self.z, -self.radius+self.zc)
 
+  def write(self, file_path):
+    """Write the spherical coordinates into a file.
+    
+    Arguments
+    ---------
+    file_path -- path of the output file
+    """
+    print('\nWrite spherical coordinates into a file ...')
+    with open(file_path, 'w') as outfile:    
+      outfile.write('{}\n'.format(self.x.size))
+      numpy.savetxt(outfile, numpy.c_[self.x, self.y, self.z], 
+                    fmt='%.6f', delimiter='\t')
+
 
 def main():
   """Generates a file containing the coordinates of a body."""
-  # parse the command-line
-  args = read_inputs()
+  # parse command-line
+  parameters = read_inputs()
 
-  output_path = '%s/%s.%s' % (args.save_directory, args.save_name, 
-                              args.extension)
-
-  dimensions = (3 if args.extrusion else 2)
+  # path of file to be generated
+  output_path = '{}/{}.{}'.format(parameters.save_directory, 
+                                  parameters.save_name, 
+                                  parameters.extension)
 
   # generate the geometry
-  if args.file_path:
-    print 'Reading points from file ...'
-    body = Points(args.file_path)
-    body.scale(args.scale)
-    body.rotation(args.rotation)
-    body.translation(args.translation)
-    body.discretization(n=args.n, ds=args.ds)
-    if dimensions == 3:
-      print 'Creating cylinder ...'
-      body.extrusion(args.extrusion, ds=args.ds)
-    if args.show:
+  if parameters.body_type == 'points':
+    body = Points(parameters.file_path)
+    body.scale(parameters.scale)
+    body.rotation(parameters.rotation)
+    body.translation(parameters.translation)
+    body.discretization(n=parameters.n, ds=parameters.ds)
+    if parameters.extrusion:
+      body.extrusion(parameters.extrusion, ds=parameters.ds)
+    if parameters.show:
       body.plot()
-    body.write(output_path, dimensions=dimensions)
-  elif args.circle:
-    print 'Creating circle ...'
-    body = Circle(args.circle, args.n, args.ds)
-    if dimensions == 3:
-      print 'Creating cylinder ...'
-      body.extrusion(args.extrusion, ds=args.ds)
-    body.write(output_path, dimensions=dimensions)
-  elif args.line:
-    print 'Creating line ...'
-    body = Line(args.line, args.n, args.ds)
-    body.rotation(args.rotation)
-    if dimensions == 3:
-      print 'Creating flat-plate ...'
-      body.extrusion(args.extrusion, ds=args.ds)
-    if args.show:
+    body.write(output_path)
+  elif parameters.body_type == 'circle':
+    body = Circle(parameters.circle, n=parameters.n, ds=parameters.ds)
+    if parameters.extrusion:
+      body.extrusion(parameters.extrusion, ds=parameters.ds)
+    if parameters.show:
       body.plot()
-    body.write(output_path, dimensions=dimensions)
-  elif args.sphere:
-    print 'Creating sphere ...'
-    body = Sphere(args.sphere, args.n, args.ds)
-    body.write(output_path, dimensions=3, cylinder=False)
+    body.write(output_path)
+  elif parameters.body_type == 'line':
+    body = Line(parameters.line, n=parameters.n, ds=parameters.ds)
+    body.rotation(parameters.rotation)
+    if parameters.extrusion:
+      body.extrusion(parameters.extrusion, ds=parameters.ds)
+    if parameters.show:
+      body.plot()
+    body.write(output_path)
+  elif parameters.body_type == 'sphere':
+    body = Sphere(parameters.sphere, n=parameters.n, ds=parameters.ds)
+    body.write(output_path)
 
-  print 'DONE'
+  print('\n[{}] DONE'.format(os.path.basename(__file__)))
 
 
 if __name__ == '__main__':

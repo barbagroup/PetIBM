@@ -6,11 +6,13 @@
 
 
 import os
+import sys
 import argparse
 import math
 
 import numpy
 
+sys.path.append('{}/scripts/python'.format(os.environ['PETIBM_DIR']))
 import ioPetIBM
 
 

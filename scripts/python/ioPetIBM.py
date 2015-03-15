@@ -13,13 +13,13 @@ sys.path.append(os.path.join(os.environ['PETSC_DIR'], 'bin', 'pythonscripts'))
 import PetscBinaryIO
 
 
-def get_time_steps(case_directory, time_steps_range):
+def get_time_steps(case_directory, time_steps_range=[None, None, None]):
   """Returns a list of the time-steps to post-process.
 
   Arguments
   ---------
   case_directory -- directory of the simulation
-  time_steps_range -- initial, final and stride of the time-steps
+  time_steps_range -- initial, final and stride of the time-steps (default None)
   """
   if any(time_steps_range):
     return range(time_steps_range[0],

@@ -14,6 +14,7 @@ axes.facecolor : white
 axes.labelsize : 14
 axes.labelcolor : black
 axes.linewidth : 1
+axes.titlesize : 14
 axes.color_cycle : 1B9E77, D95F02, 7570B3, E7298A
 
 lines.linewidth : 1.0

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# file: generateVTKFiles3d.py
+# file: generateVTKFiles.py
 # author: Olivier Mesnard (mesnardo@gwu.edu), Anush Krishnan (anush@bu.edu)
 # description: Converts PETSc output to .vtk format.
 

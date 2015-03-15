@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# file: cavity.py
+# file: cavityCenterlines.py
 # author: Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
 # description: Plots the centerline velocities for lid-driven cavity flow case
 #              and compare with experimental data from Ghia et al. (1982).

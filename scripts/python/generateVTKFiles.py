@@ -100,12 +100,16 @@ def main():
       # need to get velocity at cell-centers, not staggered arrangement
       velocity = interpolate_cell_centers(velocity)
       ioPetIBM.write_vtk(velocity, parameters.case_directory, time_step, 
-                         name='velocity')
+                         name='velocity',
+                         view=[parameters.bottom_left, parameters.top_right],
+                         stride=parameters.stride)
     if 'pressure' in parameters.variables:
       pressure = ioPetIBM.read_pressure(parameters.case_directory, time_step, 
                                         coordinates)
       ioPetIBM.write_vtk(pressure, parameters.case_directory, time_step,
-                         name='pressure')
+                         name='pressure',
+                         view=[parameters.bottom_left, parameters.top_right],
+                         stride=parameters.stride)
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))
 

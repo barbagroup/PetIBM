@@ -153,7 +153,9 @@ def read_pressure(case_directory, time_step, coords):
     return {'x': xp, 'y': yp, 'values': p}
 
 
-def write_vtk(field, case_directory, time_step, name):
+def write_vtk(field, case_directory, time_step, name, 
+              view=[[float('-inf'), float('-inf')], [float('inf'), float('inf')]],
+              stride=1):
   """Writes the field in a .vtk file.
 
   Arguments
@@ -162,20 +164,33 @@ def write_vtk(field, case_directory, time_step, name):
   case_directory -- directory of the simulation
   time_step -- time-step to write
   name -- name of the field
+  view -- rectangular of the domain to write (default [[-inf, -inf, -inf], 
+                                                       [inf, inf, inf]])
+  stride -- stride at which the field is written (default 1)
   """
   print('Write the {} field into .vtk file ...'.format(name))
   if type(field) is not list:
     field = [field]
   dim3 = (True if 'z' in field[0] else False)
   scalar = (True if len(field) == 1 else False)
+  # get mask for the view
+  mx = numpy.where(numpy.logical_and(field[0]['x'] > view[0][0],
+                                     field[0]['x'] < view[1][0]))[0][::stride]
+  my = numpy.where(numpy.logical_and(field[0]['y'] > view[0][1],
+                                     field[0]['y'] < view[1][1]))[0][::stride]
+  if dim3:
+    mz = numpy.where(numpy.logical_and(field[0]['z'] > view[0][2],
+                                       field[0]['z'] < view[1][2]))[0][::stride]
   # create directory where .vtk file will be saved
   vtk_directory = '{}/vtk_files/{}'.format(case_directory, name)
   if not os.path.isdir(vtk_directory):
     print('Make directory: {}'.format(vtk_directory))
     os.makedirs(vtk_directory)
   vtk_file_path = '{}/{}{:0>7}.vtk'.format(vtk_directory, name, time_step)
-  # get coordinates
-  x, y, z = field[0]['x'], field[0]['y'], (None if not dim3 else field[0]['z'])
+  # get coordinates within the view
+  x = field[0]['x'][mx]
+  y = field[0]['y'][my]
+  z = (None if not dim3 else field[0]['z'][mz])
   nx, ny, nz = x.size, y.size, (1 if not dim3 else z.size)
   # write .vtk file
   with open(vtk_file_path, 'w') as outfile:
@@ -196,19 +211,39 @@ def write_vtk(field, case_directory, time_step, name):
     outfile.write('POINT_DATA {}\n'.format(nx*ny*nz))
     if scalar:
       outfile.write('\nSCALARS {} double 1\nLOOKUP_TABLE default\n'.format(name))
-      numpy.savetxt(outfile, field[0]['values'].flatten(), 
+      if dim3:
+        values = field[0]['values'][mz[0]:mz[-1]+1, 
+                                    my[0]:my[-1]+1, 
+                                    mx[0]:mx[-1]+1]
+      else:
+        values = field[0]['values'][my[0]:my[-1]+1, 
+                                    mx[0]:mx[-1]+1]
+      numpy.savetxt(outfile, values.flatten(), 
                     fmt='%.6f', delimiter='\t')
     else:
       outfile.write('\nVECTORS {} double\n'.format(name))
       if dim3:
+        values_x = field[0]['values'][mz[0]:mz[-1]+1, 
+                                      my[0]:my[-1]+1, 
+                                      mx[0]:mx[-1]+1]
+        values_y = field[1]['values'][mz[0]:mz[-1]+1, 
+                                      my[0]:my[-1]+1, 
+                                      mx[0]:mx[-1]+1]
+        values_z = field[2]['values'][mz[0]:mz[-1]+1, 
+                                      my[0]:my[-1]+1, 
+                                      mx[0]:mx[-1]+1]
         numpy.savetxt(outfile, 
-                      numpy.c_[field[0]['values'].flatten(), 
-                               field[1]['values'].flatten(), 
-                               field[2]['values'].flatten()],
+                      numpy.c_[values_x.flatten(), 
+                               values_y.flatten(), 
+                               values_z.flatten()],
                       fmt='%.6f', delimiter='\t')
       else:
-        numpy.savetxt(outfile, numpy.c_[field[0]['values'].flatten(),
-                                        field[1]['values'].flatten()],
+        values_x = field[0]['values'][my[0]:my[-1]+1, 
+                                      mx[0]:mx[-1]+1]
+        values_y = field[1]['values'][my[0]:my[-1]+1, 
+                                      mx[0]:mx[-1]+1]
+        numpy.savetxt(outfile, numpy.c_[values_x.flatten(),
+                                        values_y.flatten()],
                       fmt='%6f', delimiter='\t')    
 
 

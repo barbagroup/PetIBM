@@ -48,7 +48,7 @@ def read_inputs():
   return parser.parse_args()
 
 
-def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0, name=None):
+def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   """Computes the analytical solution of the 2D Taylor-Green vortex.
 
   Arguments
@@ -57,21 +57,15 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0, name=None):
   V -- amplitude of the sinusoidal velocity field (default 1.0)
   time -- time at which the solution is computed (default 0.0)
   Re -- Reynolds number of the flow (default 100.0)
-  name -- name of the variable to compute (default None)
   """
   x = math.pi - 2.0*math.pi*(x-x[0])/(x[-1]-x[0])
   y = math.pi - 2.0*math.pi*(y-y[0])/(y[-1]-y[0])
   X, Y = numpy.meshgrid(x, y)
-  if name == 'u-velocity':
-    return V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time/Re)
-  elif name == 'v-velocity':
-    return -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
-  elif name == 'vorticity':
-    return 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
-  elif name == 'pressure':
-    return 0.25*(numpy.cos(2.0*X)+numpy.sin(2.0*Y))*math.exp(-4.0*time/Re)
-  else:
-    return 'Error: variable name unknown'
+  u = +V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time/Re)
+  v = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
+  p = 0.25*(numpy.cos(2.0*X)+numpy.sin(2.0*Y))*math.exp(-4.0*time/Re)
+  w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
+  return u, v, p, w
 
 
 def main():
@@ -95,34 +89,34 @@ def main():
     # read mesh grid
     x, y = ioPetIBM.read_grid(case['directory'])
     cases[i]['grid-spacing'] = (x[-1]-x[0])/(x.size-1)
-    # velocity components
+    # read velocity and pressure fields
     u, v = ioPetIBM.read_velocity(case['directory'], parameters.time_step, 
                                   [x, y], periodic=['x', 'y'])
-    u_analytical = taylor_green_vortex(u['x'], u['y'], 
-                                       V=parameters.amplitude, 
-                                       time=parameters.time , 
-                                       Re=parameters.Re, 
-                                       name='u-velocity')
-    v_analytical = taylor_green_vortex(v['x'], v['y'], 
-                                       V=parameters.amplitude, 
-                                       time=parameters.time , 
-                                       Re=parameters.Re, 
-                                       name='v-velocity')
-    cases[i]['u'] = u['values'][ratio-1::ratio, ratio-1::ratio]
-    cases[i]['u-error'] = numpy.linalg.norm(u['values']-u_analytical)/u['values'].size
-    cases[i]['v'] = v['values'][ratio-1::ratio, ratio-1::ratio]
-    cases[i]['v-error'] = numpy.linalg.norm(v['values']-v_analytical)/v['values'].size
-    # pressure
     p = ioPetIBM.read_pressure(case['directory'], parameters.time_step, [x, y])
-    p_analytical = taylor_green_vortex(p['x'], p['y'], 
-                                       V=parameters.amplitude, 
-                                       time=parameters.time , 
-                                       Re=parameters.Re, 
-                                       name='pressure')
-    cases[i]['p'] = p['values'][ratio-1::ratio, ratio-1::ratio]
-    cases[i]['p-error'] = numpy.linalg.norm(p['values']-p_analytical)/p['values'].size
+    # store values
+    cases[i]['u'] = u['values']
+    cases[i]['v'] = v['values']
+    cases[i]['p'] = p['values']
+    # compute analytical solution
+    u_analytical, _, _, _ = taylor_green_vortex(u['x'], u['y'], 
+                                                V=parameters.amplitude, 
+                                                time=parameters.time , 
+                                                Re=parameters.Re)
+    _, v_analytical, _, _ = taylor_green_vortex(v['x'], v['y'], 
+                                                V=parameters.amplitude, 
+                                                time=parameters.time , 
+                                                Re=parameters.Re)
+    _, _, p_analytical, _ = taylor_green_vortex(p['x'], p['y'], 
+                                                V=parameters.amplitude, 
+                                                time=parameters.time , 
+                                                Re=parameters.Re)
+    # compute L2-norm error
+    cases[i]['u-error'] = numpy.linalg.norm(case['u']-u_analytical)/case['u'].size 
+    cases[i]['v-error'] = numpy.linalg.norm(case['v']-v_analytical)/case['v'].size
+    cases[i]['p-error'] = numpy.linalg.norm(case['p']-p_analytical)/case['p'].size
+    cases[i]['p-error'] = numpy.linalg.norm(case['p']-p_analytical)*case['grid-spacing']**3
 
-  print('\nOrders of convergence:')
+  '''print('\nOrders of convergence:')
   def compute_alpha(v):
     return ( math.log(numpy.linalg.norm(cases[-2][v]-cases[-3][v])
                       /numpy.linalg.norm(cases[-1][v]-cases[-2][v]))
@@ -133,7 +127,7 @@ def main():
   print('\tu: {}'.format(alpha['u']))
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))
-
+  '''
   if parameters.save or parameters.show:
     print('\nPlot the grid convergence ...')
     pyplot.style.use('{}/scripts/python/style/'

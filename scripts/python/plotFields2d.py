@@ -137,7 +137,8 @@ def main():
   coords = ioPetIBM.read_grid(parameters.case_directory)
 
   # load default style of matplotlib figures
-  pyplot.style.use('{}/style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
+  pyplot.style.use('{}/scripts/python/style/'
+                   'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
 
   for time_step in time_steps:
     if parameters.velocity or parameters.vorticity:

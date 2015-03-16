@@ -11,8 +11,9 @@ Ensure that the following dependencies are installed before compiling PetIBM:
 * GNU C++ Compiler(`g++`) version 4.6 or above
 * Git distributed version control system (`git`)
 * PETSc version 3.5.0 or above (use branch `petsc-3.4-compatible` to run with PETSc 3.4)
+* [Boost](http://www.boost.org) version 1.55.0 or above
 
-PetIBM has been tested and run on Ubuntu 12.04 and Mac OS X 10.9.
+PetIBM has been tested and run on Ubuntu 12.04, Ubuntu 14.10 and Mac OS X 10.9.
 
 #### GNU C++ Compiler (`g++`)
 
@@ -80,6 +81,10 @@ following lines in your `~/.bashrc` or `~/.bash_profile` files:
 
     > export PETSC_DIR=$HOME/src/petsc-3.5.2
     > export PETSC_ARCH=arch-linux2-c-opt
+
+Set the environment variable `BOOST_INCLUDE` in your `~/.bashrc` or `~/.bash_profile` files:
+
+    > export BOOST_INCLUDE=/path/to/boost/include
 
 **Replace the values above with the version and mode specific to your installation**. Use the `setenv` command to do 
 the same in C shell. Restart the terminal or source the file:

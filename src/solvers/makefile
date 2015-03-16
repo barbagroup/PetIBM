@@ -8,7 +8,6 @@ TARGET = libsolvers.a
 SUFFIX = .cpp
 SRCS = $(wildcard *$(SUFFIX))
 OBJ = $(SRCS:$(SUFFIX)=.o)
-LIB_DIR = $(PETIBM_DIR)/lib
 CLEANFILES = $(OBJ)
 
 ALL: $(TARGET)
@@ -16,7 +15,7 @@ ALL: $(TARGET)
 include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
-PETSC_CC_INCLUDES += -I../../external/yaml-cpp-0.5.1/include -I../include
+PETSC_CC_INCLUDES += -I $(YAML)/include -I ../include -I $(BOOST_INCLUDE)
 PCC_FLAGS += -std=c++0x -Wall -Wextra -pedantic -MMD
 CXX_FLAGS += -std=c++0x -Wall -Wextra -pedantic -MMD
 

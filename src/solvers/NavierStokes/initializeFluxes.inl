@@ -61,8 +61,8 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     {
       for(PetscInt i=mstart; i<mstart+m; i++)
       {
-        PetscReal x = PETSC_PI - 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
-                  y = PETSC_PI - 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
+        PetscReal x = 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
+                  y = 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
         
         qx[j][i] = (initVel[0] + initPert[0]*sin(x)*cos(y))*mesh->dy[j];
       }
@@ -77,8 +77,8 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     {
       for(PetscInt i=mstart; i<mstart+m; i++)
       {
-        PetscReal x = PETSC_PI - 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
-                  y = PETSC_PI - 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1];
+        PetscReal x = 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+                  y = 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1];
         
         qy[j][i] = (initVel[1] + initPert[1]*cos(x)*sin(y))*mesh->dx[i];
       }
@@ -123,9 +123,9 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
       {
         for(PetscInt i=mstart; i<mstart+m; i++)
         {
-          PetscReal x = PETSC_PI - 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
-                    y = PETSC_PI - 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
-                    z = PETSC_PI - 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
+          PetscReal x = 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
+                    y = 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
+                    z = 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
           
           qx[k][j][i] = (initVel[0] + initPert[0]*sin(x)*cos(y)*cos(z))*(mesh->dy[j]*mesh->dz[k]);
         }
@@ -143,9 +143,9 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
       {
         for(PetscInt i=mstart; i<mstart+m; i++)
         {
-          PetscReal x = PETSC_PI - 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
-                    y = PETSC_PI - 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1],
-                    z = PETSC_PI - 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
+          PetscReal x = 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+                    y = 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1],
+                    z = 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
         
           qy[k][j][i] = (initVel[1] + initPert[1]*cos(x)*sin(y)*cos(z))*(mesh->dx[i]*mesh->dz[k]);
         }

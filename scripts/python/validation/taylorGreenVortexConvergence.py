@@ -58,9 +58,12 @@ def compute_order(ratio, coarse, medium, fine):
   coarse, medium, fine -- solutions on three consecutive grids 
                           restricted on the coarsest grid
   """
-  return ( math.log(numpy.linalg.norm(medium-coarse)
-                    /numpy.linalg.norm(fine-medium))
-           /math.log(ratio) )
+  return math.log(l2_norm(medium-coarse)/l2_norm(fine-medium)) / math.log(ratio)
+
+
+def l2_norm(x):
+  """Return the discrete L2 norm of x."""
+  return math.sqrt(numpy.sum(x**2)/x.size)
 
 
 def restriction(fine, coarse):
@@ -141,18 +144,13 @@ def main():
                                                 time=parameters.time , 
                                                 Re=parameters.Re)
     # compute L2-norm error
-    cases[i]['u']['error'] = (numpy.linalg.norm(case['u']['values']-u_analytical)
-                              /numpy.linalg.norm(u_analytical))
-    cases[i]['v']['error'] = (numpy.linalg.norm(case['v']['values']-v_analytical)
-                              /numpy.linalg.norm(v_analytical))
-    cases[i]['p']['error'] = (numpy.linalg.norm(case['p']['values']-p_analytical)
-                              /numpy.linalg.norm(p_analytical))
+    cases[i]['u']['error'] = l2_norm(case['u']['values']-u_analytical)
+    cases[i]['v']['error'] = l2_norm(case['v']['values']-v_analytical)
+    cases[i]['p']['error'] = l2_norm(case['p']['values']-p_analytical)
 
   print('\nObserved order of convergence:')
   last_three = True
-  coarse, medium, fine = ([cases[-3], cases[-2], cases[-1]] 
-                          if last_three 
-                          else [cases[0], cases[1], cases[2]])
+  coarse, medium, fine = cases[-3:] if last_three else cases[:3]
   ratio = coarse['grid-spacing']/medium['grid-spacing']
   alpha = {'u': compute_order(ratio,
                               coarse['u']['values'],

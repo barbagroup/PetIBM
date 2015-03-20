@@ -11,6 +11,7 @@ import argparse
 import math
 
 import numpy
+from matplotlib import pyplot
 
 sys.path.append('{}/scripts/python'.format(os.environ['PETIBM_DIR']))
 import ioPetIBM
@@ -29,6 +30,14 @@ def read_inputs():
   parser.add_argument('--time-step', '-ts', dest='time_step', type=int, 
                       default=1000,
                       help='time-step at which the solution will be read')
+  parser.add_argument('--no-save', dest='save', action='store_false',
+                      help='does not save the figure')
+  parser.add_argument('--output', '-o', dest='output', type=str, 
+                      default='grid_convergence',
+                      help='name of the .png file saved')
+  parser.add_argument('--no-show', dest='show', action='store_false',
+                      help='does not display the figure')
+  parser.set_defaults(save=True, show=True)
   # parse command-line
   return parser.parse_args()
 
@@ -43,9 +52,7 @@ def compute_order(ratio, coarse, medium, fine):
   coarse, medium, fine -- solutions on three consecutive grids 
                           restricted on the coarsest grid
   """
-  return ( math.log(numpy.linalg.norm(medium-coarse)
-                    /numpy.linalg.norm(fine-medium))
-           /math.log(ratio) )
+  return math.log(l2_norm(medium-coarse)/l2_norm(fine-medium)) / math.log(ratio)
 
 
 def restriction(fine, coarse):
@@ -64,6 +71,9 @@ def restriction(fine, coarse):
           'values': numpy.array([fine['values'][j][mask_x] 
                                  for j in xrange(fine['y'].size) if mask_y[j]])}
 
+def l2_norm(x):
+  """Return the discrete L2 norm of x."""
+  return math.sqrt(numpy.sum(x**2)/x.size)
 
 def main():
   """Plots the grid convergence for the lid-driven cavity case."""
@@ -95,9 +105,7 @@ def main():
 
   print('\nObserved order of convergence:')
   last_three = True
-  coarse, medium, fine = ([cases[-3], cases[-2], cases[-1]] 
-                          if last_three 
-                          else [cases[0], cases[1], cases[2]])
+  coarse, medium, fine = cases[-3:] if last_three else cases[:3]
   ratio = coarse['grid-spacing']/medium['grid-spacing']
   alpha = {'u': compute_order(ratio,
                               coarse['u']['values'],
@@ -116,6 +124,43 @@ def main():
   print('\tp: {}'.format(alpha['p']))
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))
+
+  # grid convergence, comparison with finest grid
+  fine = cases[-1]
+  for i, case in enumerate(cases[:-1]):
+    u_fine = restriction(fine['u'], case['u'])
+    cases[i]['u']['error'] = l2_norm(case['u']['values'] - u_fine['values'])
+    v_fine = restriction(fine['v'], case['v'])
+    cases[i]['v']['error'] = l2_norm(case['v']['values'] - v_fine['values'])
+    p_fine = restriction(fine['p'], case['p'])
+    cases[i]['p']['error'] = l2_norm(case['p']['values'] - p_fine['values'])
+
+  if parameters.save or parameters.show:
+    print('\nPlot the grid convergence ...')
+    pyplot.style.use('{}/scripts/python/style/'
+                     'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
+    pyplot.xlabel('cell-width')
+    pyplot.ylabel('$L_2$-norm error')
+    pyplot.plot([case['grid-spacing'] for case in cases[:-1]], 
+                [case['u']['error'] for case in cases[:-1]], 
+                label='u-velocity', marker='o')
+    pyplot.plot([case['grid-spacing'] for case in cases[:-1]], 
+                [case['v']['error'] for case in cases[:-1]],
+                label='v-velocity', marker='o')
+    pyplot.plot([case['grid-spacing'] for case in cases[:-1]], 
+                [case['p']['error'] for case in cases[:-1]], 
+                label='pressure', marker='o')
+    h = numpy.linspace(cases[0]['grid-spacing'], cases[-1]['grid-spacing'], 101)
+    pyplot.plot(h, h, label='$1^{st}$-order convergence', color='k')
+    pyplot.plot(h, h**2, label='$2^{nd}$-order convergence', 
+                color='k', linestyle='--')
+    pyplot.legend()
+    pyplot.xscale('log')
+    pyplot.yscale('log')
+    if parameters.save:
+      pyplot.savefig('{}/{}.png'.format(parameters.directory, parameters.output))
+    if parameters.show:
+      pyplot.show()
 
 
 if __name__ == '__main__':

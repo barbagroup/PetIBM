@@ -11,7 +11,7 @@ import argparse
 import math
 
 import numpy
-from matplotlib import pyplot
+from matplotlib import pyplot, cm
 
 sys.path.append('{}/scripts/python'.format(os.environ['PETIBM_DIR']))
 import ioPetIBM
@@ -43,6 +43,9 @@ def read_inputs():
                       help='name of the .png file saved')
   parser.add_argument('--no-show', dest='show', action='store_false',
                       help='does not display the figure')
+  parser.add_argument('--plot', dest='plot', action='store_true',
+                      help='plots the field difference between the numerical '
+                           'and analytical solutions')
   parser.set_defaults(save=True, show=True)
   # parse command-line
   return parser.parse_args()
@@ -93,6 +96,7 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   time -- time at which the solution is computed (default 0.0)
   Re -- Reynolds number of the flow (default 100.0)
   """
+  print time
   x = 2.0*math.pi*(x-x[0])/(x[-1]-x[0])
   y = 2.0*math.pi*(y-y[0])/(y[-1]-y[0])
   X, Y = numpy.meshgrid(x, y)
@@ -101,6 +105,31 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   p = 0.25*(numpy.cos(2.0*X)+numpy.cos(2.0*Y))*math.exp(-4.0*time/Re)
   w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
   return u, v, p, w
+
+
+def plot_field(x, y, u, name, image_path):
+  """Plots the two-dimensional field.
+
+  Arguments
+  ---------
+  x, y -- x- and y- coordinates
+  u -- field to plot
+  name -- description of the field variable
+  image_path -- path of the file to save
+  """
+  fig, ax = pyplot.subplots()
+  pyplot.xlabel('$x$')
+  pyplot.ylabel('$y$')
+  X, Y = numpy.meshgrid(x, y)
+  levels = numpy.linspace(u.min(), u.max(), 10)
+  cont = pyplot.contourf(X, Y, u, 
+                         levels=levels, extend='both', cmap=cm.jet)
+  cont_bar = fig.colorbar(cont, label='{}'.format(name), 
+                          fraction=0.046, pad=0.04)
+  ax.axis([x.min(), x.max(), y.min(), y.max()])
+  ax.set_aspect('equal')
+  pyplot.savefig(image_path)
+  pyplot.close()
 
 
 def main():
@@ -131,22 +160,76 @@ def main():
                                            parameters.time_step, 
                                            [x, y])
     # compute analytical solution
-    u_analytical, _, _, _ = taylor_green_vortex(case['u']['x'], case['u']['y'], 
-                                                V=parameters.amplitude, 
-                                                time=parameters.time , 
-                                                Re=parameters.Re)
-    _, v_analytical, _, _ = taylor_green_vortex(case['v']['x'], case['v']['y'], 
-                                                V=parameters.amplitude, 
-                                                time=parameters.time , 
-                                                Re=parameters.Re)
-    _, _, p_analytical, _ = taylor_green_vortex(case['p']['x'], case['p']['y'], 
-                                                V=parameters.amplitude, 
-                                                time=parameters.time , 
-                                                Re=parameters.Re)
+    cases[i]['u']['analytical'], _, _, _ = taylor_green_vortex(case['u']['x'], 
+                                                               case['u']['y'], 
+                                                               V=parameters.amplitude, 
+                                                               time=parameters.time , 
+                                                               Re=parameters.Re)
+    _, cases[i]['v']['analytical'], _, _ = taylor_green_vortex(case['v']['x'], 
+                                                               case['v']['y'], 
+                                                               V=parameters.amplitude, 
+                                                               time=parameters.time , 
+                                                               Re=parameters.Re)
+    _, _, cases[i]['p']['analytical'], _ = taylor_green_vortex(case['p']['x'], 
+                                                               case['p']['y'], 
+                                                               V=parameters.amplitude, 
+                                                               time=parameters.time , 
+                                                               Re=parameters.Re)
     # compute L2-norm error
-    cases[i]['u']['error'] = l2_norm(case['u']['values']-u_analytical)
-    cases[i]['v']['error'] = l2_norm(case['v']['values']-v_analytical)
-    cases[i]['p']['error'] = l2_norm(case['p']['values']-p_analytical)
+    cases[i]['u']['error'] = l2_norm(case['u']['values']-case['u']['analytical'])
+    cases[i]['v']['error'] = l2_norm(case['v']['values']-case['v']['analytical'])
+    cases[i]['p']['error'] = l2_norm(case['p']['values']-case['p']['analytical'])
+    if parameters.plot:
+      print('\nPlot the field difference between numerical and analytical ...')
+      # create directory where images will be saved
+      images_directory = '{}/images/differences'.format(case['directory'])
+      if not os.path.isdir(images_directory):
+        os.makedirs(images_directory)
+      # load default style
+      pyplot.style.use('{}/scripts/python/style/'
+                       'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
+      # u-velocity
+      image_path = '{}/uVelocity{:0>7}_numerical.png'.format(images_directory, 
+                                                             parameters.time_step)
+      plot_field(case['u']['x'], case['u']['y'], case['u']['values'], 
+                 'u-velocity', image_path)
+      image_path = '{}/uVelocity{:0>7}_analytical.png'.format(images_directory,
+                                                              parameters.time_step)
+      plot_field(case['u']['x'], case['u']['y'], case['u']['analytical'], 
+                 'u-velocity (analytical)', image_path)
+      image_path = '{}/uVelocity{:0>7}_difference.png'.format(images_directory, 
+                                                              parameters.time_step)
+      plot_field(case['u']['x'], case['u']['y'], 
+                 case['u']['values']-case['u']['analytical'], 
+                 'difference in u-velocity', image_path)
+      # v-velocity
+      image_path = '{}/vVelocity{:0>7}_numerical.png'.format(images_directory, 
+                                                             parameters.time_step)
+      plot_field(case['v']['x'], case['v']['y'], case['v']['values'], 
+                 'v-velocity', image_path)
+      image_path = '{}/vVelocity{:0>7}_analytical.png'.format(images_directory,
+                                                              parameters.time_step)
+      plot_field(case['v']['x'], case['v']['y'], case['v']['analytical'], 
+                 'v-velocity (analytical)', image_path)
+      image_path = '{}/vVelocity{:0>7}_difference.png'.format(images_directory, 
+                                                              parameters.time_step)
+      plot_field(case['v']['x'], case['v']['y'], 
+                 case['v']['values']-case['v']['analytical'], 
+                 'difference in v-velocity', image_path)
+      # pressure
+      image_path = '{}/pressure{:0>7}_numerical.png'.format(images_directory, 
+                                                            parameters.time_step)
+      plot_field(case['p']['x'], case['p']['y'], case['p']['values'], 
+                 'pressure', image_path)
+      image_path = '{}/pressure{:0>7}_analytical.png'.format(images_directory,
+                                                             parameters.time_step)
+      plot_field(case['p']['x'], case['p']['y'], case['p']['analytical'], 
+                 'pressure (analytical)', image_path)
+      image_path = '{}/pressure{:0>7}_difference.png'.format(images_directory, 
+                                                             parameters.time_step)
+      plot_field(case['p']['x'], case['p']['y'], 
+                 case['p']['values']-case['p']['analytical'], 
+                 'difference in pressure', image_path)
 
   print('\nObserved order of convergence:')
   last_three = True

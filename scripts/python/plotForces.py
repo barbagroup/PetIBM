@@ -159,7 +159,8 @@ class Case(object):
   def plot_forces(self):
     """Displays the forces into a figure."""
     print('\nPlotting forces ...')
-    pyplot.style.use('{}/style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
+    pyplot.style.use('{}/style/'
+                     'style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
     pyplot.grid(True)
     pyplot.xlabel('times')
     pyplot.ylabel('forces')

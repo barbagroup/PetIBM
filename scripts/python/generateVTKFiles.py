@@ -33,7 +33,7 @@ def read_inputs():
                       nargs='+', 
                       default=[float('inf'), float('inf'), float('inf')],
                       help='coordinates of the top-right corner')
-  parser.add_argument('--time-steps', '-t', dest='time_steps', type=float,
+  parser.add_argument('--time-steps', '-t', dest='time_steps', type=int,
                       nargs='+', default=[None, None, None],
                       help='time-steps to convert (start, end, increment)')
   parser.add_argument('--stride', '-s', dest='stride', type=int, default=1,

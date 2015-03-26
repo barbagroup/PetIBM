@@ -48,7 +48,8 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     PetscReal **qx, **qy;
     Vec       qxGlobal, qyGlobal;
     PetscReal initVel[2]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1]};
-    PetscReal initPert[2] = {flowDesc->initialPerturbation[0], flowDesc->initialPerturbation[1]};
+    PetscReal perturbationAmplitude = flowDesc->perturbationAmplitude;
+    PetscReal perturbationFrequency = flowDesc->perturbationFrequency;
     PetscReal width[2]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
 
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
@@ -61,10 +62,10 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     {
       for(PetscInt i=mstart; i<mstart+m; i++)
       {
-        PetscReal x = 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
-                  y = 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
+        PetscReal x = 2*PETSC_PI*perturbationFrequency*(mesh->x[i+1] - mesh->x[0])/width[0],
+                  y = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
         
-        qx[j][i] = (initVel[0] + initPert[0]*sin(x)*cos(y))*mesh->dy[j];
+        qx[j][i] = (initVel[0] + perturbationAmplitude*sin(x)*cos(y))*mesh->dy[j];
       }
     }
     ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -77,10 +78,10 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     {
       for(PetscInt i=mstart; i<mstart+m; i++)
       {
-        PetscReal x = 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
-                  y = 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1];
+        PetscReal x = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+                  y = 2*PETSC_PI*perturbationFrequency*(mesh->y[j+1] - mesh->y[0])/width[1];
         
-        qy[j][i] = (initVel[1] + initPert[1]*cos(x)*sin(y))*mesh->dx[i];
+        qy[j][i] = (initVel[1] + perturbationAmplitude*cos(x)*sin(y))*mesh->dx[i];
       }
     }
     ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
@@ -108,7 +109,8 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
     PetscReal ***qx, ***qy, ***qz;
     Vec       qxGlobal, qyGlobal, qzGlobal;
     PetscReal initVel[3]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1], flowDesc->initialVelocity[2]};
-    PetscReal initPert[3] = {flowDesc->initialPerturbation[0], flowDesc->initialPerturbation[1], flowDesc->initialPerturbation[2]};
+    PetscReal perturbationAmplitude = flowDesc->perturbationAmplitude;
+    PetscReal perturbationFrequency = flowDesc->perturbationFrequency;
     PetscReal width[3]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0], mesh->z[mesh->nz] - mesh->z[0]};
 
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
@@ -123,11 +125,11 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
       {
         for(PetscInt i=mstart; i<mstart+m; i++)
         {
-          PetscReal x = 2*PETSC_PI*(mesh->x[i+1] - mesh->x[0])/width[0],
-                    y = 2*PETSC_PI*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
-                    z = 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
+          PetscReal x = 2*PETSC_PI*perturbationFrequency*(mesh->x[i+1] - mesh->x[0])/width[0],
+                    y = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
+                    z = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
           
-          qx[k][j][i] = (initVel[0] + initPert[0]*sin(x)*cos(y)*cos(z))*(mesh->dy[j]*mesh->dz[k]);
+          qx[k][j][i] = (initVel[0] + perturbationAmplitude*sin(x)*cos(y)*cos(z))*(mesh->dy[j]*mesh->dz[k]);
         }
       }
     }
@@ -143,11 +145,11 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
       {
         for(PetscInt i=mstart; i<mstart+m; i++)
         {
-          PetscReal x = 2*PETSC_PI*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
-                    y = 2*PETSC_PI*(mesh->y[j+1] - mesh->y[0])/width[1],
-                    z = 2*PETSC_PI*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
+          PetscReal x = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+                    y = 2*PETSC_PI*perturbationFrequency*(mesh->y[j+1] - mesh->y[0])/width[1],
+                    z = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
         
-          qy[k][j][i] = (initVel[1] + initPert[1]*cos(x)*sin(y)*cos(z))*(mesh->dx[i]*mesh->dz[k]);
+          qy[k][j][i] = (initVel[1] + perturbationAmplitude*cos(x)*sin(y)*cos(z))*(mesh->dx[i]*mesh->dz[k]);
         }
       }
     }
@@ -163,7 +165,7 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
       {
         for(PetscInt i=mstart; i<mstart+m; i++)
         { 
-          qz[k][j][i] = (initVel[2] + initPert[2]*0.0)*(mesh->dx[i]*mesh->dy[j]);
+          qz[k][j][i] = initVel[2]*(mesh->dx[i]*mesh->dy[j]);
         }
       }
     }

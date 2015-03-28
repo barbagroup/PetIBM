@@ -8,11 +8,8 @@
 import os
 import math
 import copy
-import argparse
 
 import numpy
-from matplotlib import pyplot
-from mayavi import mlab
 
 
 class Point(object):
@@ -273,6 +270,7 @@ class Geometry2d(Geometry):
     z_start, z_end = limits
     if not n:
       n = int(math.ceil(abs(z_start-z_end)/ds))
+    ds = abs(z_start-z_end)/n
     s = math.copysign(1.0, z_end-z_start)
     z = numpy.linspace(z_start+s*0.5*ds, z_end-s*0.5*ds, n+1)
     points = sum(([Point(point.x, point.y, z) for point in self.points] for z in z), [])
@@ -286,97 +284,62 @@ class Geometry2d(Geometry):
     n -- number of divisions (default None)
     ds -- target segment-length (default None)
     """
-    print('\nDiscretize the geometry ...')
     if not (n or ds):
       return
-    elif not ds:
-      ds = self.perimeter()/n
-    else:
+    print('\nDiscretize the geometry ...')
+    if not n:
       n = int(math.ceil(self.perimeter()/ds))
-      ds = self.perimeter()/n
-
+    ds = self.perimeter()/n
+    # store initial points
     points_old = copy.deepcopy(self.points) + [self.points[0]]
+    last = len(points_old)-1
+    # initialize new list of points
     self.points = [points_old[0]]
-
-    I = 0
+    # compute new points
+    next = 1
     tolerance = 1.0E-06
-    for i in xrange(n-1):
+    for i in xrange(1, n):
       start = self.points[-1]
-      end = points_old[I+1]
+      end = points_old[next]
       distance = start.distance(end)
+      # copy
       if abs(ds-distance) <= tolerance:
         self.points.append(end)
-        I += 1
+        next += 1
+      # interoplation
       elif ds < distance:
-        # interpolation method
-        self.points.append(self.interpolation(start, end, ds))
+        length = start.distance(end)
+        start, end = start.as_array(), end.as_array()
+        new = start + ds/length*(end-start)
+        self.points.append(Point(*new))
+      # projection
       else:
-        # projection method
-        while I < len(points_old)-2 and ds-distance > tolerance:
-          I += 1
-          tmp, end = end, points_old[I+1]
-          distance = start.distance(end)
-          self.points.append(self.projection(start, tmp, end, ds))
-
-  def interpolation(self, start, end, distance):
-    """Returns a point interpolated between two given points given the distance.
-
-    Arguments
-    ---------
-    start, end -- ending-points
-    distance -- distance between the starting point and the point to return
-    """
-    length = start.distance(end)
-    start, end = start.as_array(), end.as_array()
-    new = start + distance/length*(end-start)
-    return Point(*new)
-
-  def projection(self, start, tmp, end, distance):
-    """Returns a point projected on the segment [tmp, end] 
-    at a given distance from start.
-
-    Arguments
-    ---------
-    start -- starting point
-    tmp -- intermediate point
-    end -- end point
-    distance -- the distance
-    """
-    tolerance = 1.0E-06
-    if abs(end.y- tmp.y) >= tolerance:
-      # solve for y-component
-      # coefficients of the second-order polynomial
-      a = end.distance(tmp)**2
-      b = 2.0*((end.x-tmp.x)*(tmp.y*(start.x-end.x) + end.y*(tmp.x-start.x))
-               - start.y*(end.y-tmp.y)**2)
-      c = ((start.y**2-distance**2)*(end.y-tmp.y)**2
-           + (tmp.y*(start.x-end.x) + end.y*(tmp.x-start.x))**2)
-      # solve second-order polynomial: ay^2 + by + c = 0
-      y = numpy.roots([a, b, c])
-      # test if the first solution belongs to the segment
-      test = (tmp.y <= y[0] <= end.y or end.y <= y[0] <= tmp.y)
-      y_target = (y[0] if test else y[1])
-      x_target = tmp.x + (end.x-tmp.x)/(end.y-tmp.y)*(y_target-tmp.y)
-    else:
-      # solve for x-component
-      # coefficients of the second-order polynomial
-      a = end.distance(tmp)**2
-      b = 2.0*((end.x-tmp.x)*(tmp.y-start.y)*(end.y-tmp.y) 
-               - start.x*(end.x-tmp.x)**2 - tmp.x*(end.x-tmp.x)**2)
-      c = ((end.x-tmp.x)**2*((tmp.y-start.y)**2+start.x**2-distance**2)
-           + tmp.x**2*(end.y-tmp.y)**2
-           - 2.0*tmp.x*(end.x-tmp.x)*(tmp.y-start.y)*(end.y-tmp.y))
-      # solve second-order polynomial: ay^2 + by + c = 0
-      x = numpy.roots([a, b, c])
-      # test if the first solution belongs to the segment
-      test = (tmp.x <= x[0] <= end.x or end.x <= x[0] <= tmp.x)
-      x_target = (x[0] if test else x[1])
-      y_target = tmp.y + (end.y-tmp.y)/(end.x-tmp.x)*(x_target-tmp.x)
-    return Point(x_target, y_target)
+        # get segment index
+        while distance < ds and next < last:
+          next += 1
+          distance = start.distance(points_old[next])
+        #if next == last:
+        #  break
+        # gather coordinates as array
+        previous, end = points_old[next-1].as_array(), points_old[next].as_array()
+        # interpolate on segment
+        precision = 1
+        coeff = 0.0
+        while abs(ds-distance) > tolerance:
+          new = previous + coeff*(end-previous)
+          distance = start.distance(Point(*new))
+          if distance > ds:
+            coeff -= 0.1**precision
+            precision += 1
+          coeff += 0.1**precision
+        # check point not too close from first point before adding
+        if self.points[0].distance(Point(*new)) > 0.5*ds:
+          self.points.append(Point(*new))
 
   def plot(self):
     """Plots the two-dimensional geometry using Matplotlib."""
     print('\nPlot the two-dimensional geometry ...')
+    from matplotlib import pyplot
     pyplot.style.use('{}/scripts/python/style/'
                      'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
     pyplot.grid(True)
@@ -527,6 +490,7 @@ class Geometry3d(Geometry):
   def plot(self):
     """Plots the geometry using the package Mayavi."""
     print('\nPlot the three-dimensional geometry ...')
+    from mayavi import mlab
     x_init = self.gather_coordinate('x', position='initial')
     y_init = self.gather_coordinate('y', position='initial')
     z_init = self.gather_coordinate('z', position='initial')

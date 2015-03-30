@@ -253,7 +253,7 @@ class Geometry2d(Geometry):
     x, y = numpy.append(x, x[0]), numpy.append(y, y[0])
     return numpy.sum(numpy.sqrt((x[1:] - x[:-1])**2 + (y[1:] - y[:-1])**2))
 
-  def extrusion(self, limits=[-0.5, 0.5], n=None, ds=None):
+  def extrusion(self, limits=[-0.5, 0.5], n=None, ds=None, force=False):
     """Extrudes the two-dimensional geometry in the z-direction.
     
     Arguments
@@ -261,6 +261,7 @@ class Geometry2d(Geometry):
     limits -- limits of the extrusion (default [-0.5, 0.5])
     n -- number of divisions in the z-direction (default None)
     ds -- target segment-legnth (default None)
+    force -- forces the extrusion to the limits prescribed (default False)
     """
     print('\nExtrude the geometry in the z-direction...')
     if not (ds or n):
@@ -272,7 +273,10 @@ class Geometry2d(Geometry):
       n = int(math.ceil(abs(z_start-z_end)/ds))
     ds = abs(z_start-z_end)/n
     s = math.copysign(1.0, z_end-z_start)
-    z = numpy.linspace(z_start+s*0.5*ds, z_end-s*0.5*ds, n+1)
+    if force:
+      z = numpy.linspace(z_start, z_end, n+1)
+    else:
+      z = numpy.linspace(z_start+s*0.5*ds, z_end-s*0.5*ds, n)
     points = sum(([Point(point.x, point.y, z) for point in self.points] for z in z), [])
     return Geometry3d(points)
   

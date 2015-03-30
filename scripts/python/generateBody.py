@@ -62,6 +62,8 @@ def read_inputs():
   parser.add_argument('--extrusion', '-e', dest='extrusion', type=float, 
                       nargs='+',
                       help='limits of the cylinder in the third direction')
+  parser.add_argument('--force', dest='force', action='store_true',
+                      help='forces the limits of extrusion')
   # output arguments
   parser.add_argument('--save-name', dest='save_name', type=str, 
                       default='new_body', 
@@ -114,7 +116,8 @@ def main():
   if body.dimensions == 2 and args.body_type == 'file':
     body.discretization(n=args.n, ds=args.ds)
   if body.dimensions == 2 and args.extrusion:
-    body = body.extrusion(limits=args.extrusion, n=args.n, ds=args.ds)
+    body = body.extrusion(limits=args.extrusion, n=args.n, ds=args.ds, 
+                          force=args.force)
   if args.save:
       output_path = '{}/{}.{}'.format(args.save_directory, 
                                       args.save_name, 

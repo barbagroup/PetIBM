@@ -96,14 +96,14 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   time -- time at which the solution is computed (default 0.0)
   Re -- Reynolds number of the flow (default 100.0)
   """
-  print time
-  x = 2.0*math.pi*(x-x[0])/(x[-1]-x[0])
-  y = 2.0*math.pi*(y-y[0])/(y[-1]-y[0])
+  X1, X2 = 0.0, 2.0*math.pi
+  x = X1 + (X2-X1)*(x-x[0])/(x[-1]-x[0])
+  y = X1 + (X2-X1)*(y-y[0])/(y[-1]-y[0])
   X, Y = numpy.meshgrid(x, y)
-  u = +V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time/Re)
-  v = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
-  p = 0.25*(numpy.cos(2.0*X)+numpy.cos(2.0*Y))*math.exp(-4.0*time/Re)
-  w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time/Re)
+  u = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*time)
+  v = +V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time)
+  p = -0.25*(numpy.cos(2.0*X)+numpy.cos(2.0*Y))*math.exp(-4.0*time)
+  w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time)
   return u, v, p, w
 
 

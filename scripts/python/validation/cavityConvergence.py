@@ -28,7 +28,7 @@ def read_inputs():
                       default=os.getcwd(),
                       help='directory containing the simulation folders')
   parser.add_argument('--time-step', '-ts', dest='time_step', type=int, 
-                      default=1000,
+                      default=500,
                       help='time-step at which the solution will be read')
   parser.add_argument('--no-save', dest='save', action='store_false',
                       help='does not save the figure')

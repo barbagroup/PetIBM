@@ -52,20 +52,25 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     PetscReal perturbationFrequency = flowDesc->perturbationFrequency;
     PetscReal width[2]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
 
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "Amplitude: %f, frequency: %f", 
+                       perturbationAmplitude, perturbationFrequency);
+
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
     // U-FLUXES
     ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
     ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
     // Set interior values for u-fluxes
+    PetscReal X1 = 0.0,
+              X2 = 2.0*PETSC_PI;
     for(PetscInt j=nstart; j<nstart+n; j++)
     {
       for(PetscInt i=mstart; i<mstart+m; i++)
       {
-        PetscReal x = 2*PETSC_PI*perturbationFrequency*(mesh->x[i+1] - mesh->x[0])/width[0],
-                  y = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
+        PetscReal x = X1 + (X2-X1)*perturbationFrequency*(mesh->x[i+1] - mesh->x[0])/width[0],
+                  y = X1 + (X2-X1)*perturbationFrequency*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
         
-        qx[j][i] = (initVel[0] + perturbationAmplitude*sin(x)*cos(y))*mesh->dy[j];
+        qx[j][i] = (initVel[0] - perturbationAmplitude*cos(x)*sin(y))*mesh->dy[j];
       }
     }
     ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
@@ -78,10 +83,10 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     {
       for(PetscInt i=mstart; i<mstart+m; i++)
       {
-        PetscReal x = 2*PETSC_PI*perturbationFrequency*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
-                  y = 2*PETSC_PI*perturbationFrequency*(mesh->y[j+1] - mesh->y[0])/width[1];
+        PetscReal x = X1 + (X2-X1)*perturbationFrequency*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
+                  y = X1 + (X2-X1)*perturbationFrequency*(mesh->y[j+1] - mesh->y[0])/width[1];
         
-        qy[j][i] = (initVel[1] + perturbationAmplitude*cos(x)*sin(y))*mesh->dx[i];
+        qy[j][i] = (initVel[1] + perturbationAmplitude*sin(x)*cos(y))*mesh->dx[i];
       }
     }
     ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);

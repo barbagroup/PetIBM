@@ -52,7 +52,9 @@ def compute_order(ratio, coarse, medium, fine):
   coarse, medium, fine -- solutions on three consecutive grids 
                           restricted on the coarsest grid
   """
-  return math.log(l2_norm(medium-coarse)/l2_norm(fine-medium)) / math.log(ratio)
+  return ( math.log(numpy.linalg.norm(medium-coarse)
+                    / numpy.linalg.norm(fine-medium)) 
+           / math.log(ratio) )
 
 
 def restriction(fine, coarse):
@@ -71,9 +73,6 @@ def restriction(fine, coarse):
                                              for j in xrange(fine.y.size)
                                              if mask_y[j] ]))
 
-def l2_norm(x):
-  """Return the discrete L2 norm of x."""
-  return math.sqrt(numpy.sum(x**2)/x.size)
 
 def main():
   """Plots the grid convergence for the lid-driven cavity case."""
@@ -119,16 +118,6 @@ def main():
                               coarse['p'].values,
                               restriction(medium['p'], coarse['p']).values,
                               restriction(fine['p'], coarse['p']).values)}
-  # alpha = {}
-  # alpha['u'] = (math.log(l2_norm(restriction(medium['u'], coarse['u']).values-coarse['u'].values)
-  #                        / l2_norm(restriction(fine['u'], medium['u']).values-medium['u'].values)) 
-  #               / math.log(ratio))
-  # alpha['v'] = (math.log(l2_norm(restriction(medium['v'], coarse['v']).values-coarse['v'].values)
-  #                        / l2_norm(restriction(fine['v'], medium['v']).values-medium['v'].values)) 
-  #               / math.log(ratio))
-  # alpha['p'] = (math.log(l2_norm(restriction(medium['p'], coarse['p']).values-coarse['p'].values)
-  #                        / l2_norm(restriction(fine['p'], medium['p']).values-medium['p'].values)) 
-  #               / math.log(ratio))
   print('\tu: {}'.format(alpha['u']))
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))
@@ -139,11 +128,14 @@ def main():
   fine = cases[-1]
   for i, case in enumerate(cases[:-1]):
     u_fine = restriction(fine['u'], case['u'])
-    cases[i]['u'].error = l2_norm(case['u'].values - u_fine.values)
+    cases[i]['u'].error = numpy.linalg.norm(case['u'].values-u_fine.values)
+    cases[i]['u'].error *= case['grid-spacing']
     v_fine = restriction(fine['v'], case['v'])
-    cases[i]['v'].error = l2_norm(case['v'].values - v_fine.values)
+    cases[i]['v'].error = numpy.linalg.norm(case['v'].values-v_fine.values)
+    cases[i]['v'].error *= case['grid-spacing']
     p_fine = restriction(fine['p'], case['p'])
-    cases[i]['p'].error = l2_norm(case['p'].values - p_fine.values)
+    cases[i]['p'].error = numpy.linalg.norm(case['p'].values-p_fine.values)
+    cases[i]['p'].error *= case['grid-spacing']
 
   if args.save or args.show:
     print('\nPlot the grid convergence ...')

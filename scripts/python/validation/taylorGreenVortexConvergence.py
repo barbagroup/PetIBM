@@ -61,12 +61,9 @@ def compute_order(ratio, coarse, medium, fine):
   coarse, medium, fine -- solutions on three consecutive grids 
                           restricted on the coarsest grid
   """
-  return math.log(l2_norm(medium-coarse)/l2_norm(fine-medium)) / math.log(ratio)
-
-
-def l2_norm(x):
-  """Return the discrete L2 norm of x."""
-  return math.sqrt(numpy.sum(x**2)/x.size)
+  return ( math.log(numpy.linalg.norm(medium-coarse)
+                    / numpy.linalg.norm(fine-medium))
+           / math.log(ratio) )
 
 
 def restriction(fine, coarse):
@@ -179,7 +176,8 @@ def main():
                                                        Re=args.Re)
     # compute L2-norm error
     for field in ['u', 'v', 'p']:
-        cases[i][field].error = l2_norm(case[field].values-case[field].exact)
+        cases[i][field].error = numpy.linalg.norm(case[field].values-case[field].exact)
+        cases[i][field].error *= case['grid-spacing']
 
     if args.plot:
       print('\nPlot the field difference between numerical and analytical ...')
@@ -219,30 +217,18 @@ def main():
   last_three = True
   coarse, medium, fine = cases[-3:] if last_three else cases[:3]
   ratio = coarse['grid-spacing']/medium['grid-spacing']
-  # alpha = {'u': compute_order(ratio,
-  #                             coarse['u'].values,
-  #                             restriction(medium['u'], coarse['u']).values,
-  #                             restriction(fine['u'], coarse['u']).values),
-  #          'v': compute_order(ratio,
-  #                             coarse['v'].values,
-  #                             restriction(medium['v'], coarse['v']).values,
-  #                             restriction(fine['v'], coarse['v']).values),
-  #          'p': compute_order(ratio,
-  #                             coarse['p'].values,
-  #                             restriction(medium['p'], coarse['p']).values,
-  #                             restriction(fine['p'], coarse['p']).values)}
-  
-  alpha = {}
-  alpha['u'] = (math.log(l2_norm(restriction(medium['u'], coarse['u']).values-coarse['u'].values)
-                         / l2_norm(restriction(fine['u'], medium['u']).values-medium['u'].values)) 
-                / math.log(ratio))
-  alpha['v'] = (math.log(l2_norm(restriction(medium['v'], coarse['v']).values-coarse['v'].values)
-                         / l2_norm(restriction(fine['v'], medium['v']).values-medium['v'].values)) 
-                / math.log(ratio))
-  alpha['p'] = (math.log(l2_norm(restriction(medium['p'], coarse['p']).values-coarse['p'].values)
-                         / l2_norm(restriction(fine['p'], medium['p']).values-medium['p'].values)) 
-                / math.log(ratio))
-  
+  alpha = {'u': compute_order(ratio,
+                              coarse['u'].values,
+                              restriction(medium['u'], coarse['u']).values,
+                              restriction(fine['u'], coarse['u']).values),
+           'v': compute_order(ratio,
+                              coarse['v'].values,
+                              restriction(medium['v'], coarse['v']).values,
+                              restriction(fine['v'], coarse['v']).values),
+           'p': compute_order(ratio,
+                              coarse['p'].values,
+                              restriction(medium['p'], coarse['p']).values,
+                              restriction(fine['p'], coarse['p']).values)}
   print('\tu: {}'.format(alpha['u']))
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))

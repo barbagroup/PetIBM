@@ -52,9 +52,6 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     PetscReal perturbationFrequency = flowDesc->perturbationFrequency;
     PetscReal width[2]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
 
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "Amplitude: %f, frequency: %f", 
-                       perturbationAmplitude, perturbationFrequency);
-
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
     // U-FLUXES

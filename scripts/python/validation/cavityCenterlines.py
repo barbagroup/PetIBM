@@ -50,35 +50,31 @@ def main():
                        'cavity-GGS82.txt'.format(os.environ['PETIBM_DIR']))
 
   # parse command-line
-  parameters = read_inputs()
-  print('[case directory] {}'.format(parameters.case_directory))
-  Re = parameters.Re
+  args = read_inputs()
+  print('[case directory] {}'.format(args.case_directory))
+  Re = args.Re
 
-  if not parameters.time_step:
-    parameters.time_step = ioPetIBM.get_time_steps(parameters.case_directory)[-1]
+  if not args.time_step:
+    args.time_step = ioPetIBM.get_time_steps(args.case_directory)[-1]
 
   # read mesh grid
-  x, y = ioPetIBM.read_grid(parameters.case_directory)
-  nx, ny = x.size-1, y.size-1
-
-  # even number of cells in each direction?
-  even_x, even_y = (True if nx%2 == 0 else False), (True if ny%2 == 0 else False)
+  grid = ioPetIBM.read_grid(args.case_directory)
+  nx, ny = grid[0].size-1, grid[1].size-1
 
   # create directory where images will be saved
-  images_directory = '{}/images'.format(parameters.case_directory)
+  images_directory = '{}/images'.format(args.case_directory)
   print('[images directory] {}'.format(images_directory))
   if not os.path.isdir(images_directory):
     os.makedirs(images_directory)
 
   # create directory where data will be saved
-  data_directory = '{}/data'.format(parameters.case_directory)
+  data_directory = '{}/data'.format(args.case_directory)
   print('[data directory] {}'.format(data_directory))
   if not os.path.isdir(data_directory):
     os.makedirs(data_directory)
 
   # get velocity field
-  u, v = ioPetIBM.read_velocity(parameters.case_directory, 
-                                parameters.time_step, [x, y])
+  u, v = ioPetIBM.read_velocity(args.case_directory, args.time_step, grid)
 
   # load default style for figures
   pyplot.style.use('{}/scripts/python/style/'
@@ -88,12 +84,14 @@ def main():
   print('\nPlot u-velocity along vertical centerline ...')
   pyplot.xlabel('y',)
   pyplot.ylabel('u-velocity along vertical centerline')
-  u, yu = u['values'], u['y']
-  u_centerline = (u[:, nx/2-1] if even_x else 0.5*(u[:, nx/2-1]+u[:, nx/2]))
-  pyplot.plot(yu, u_centerline, label='PetIBM', 
+  if nx%2 == 0:
+    u_centerline = u.values[:, nx/2-1]
+  else:
+    u_centerline = 0.5*(u.values[:, nx/2-1]+u.values[:, nx/2])
+  pyplot.plot(u.y, u_centerline, label='PetIBM', 
               color='k', linestyle='-', linewidth=1)
   if Re in list(cols.keys()):
-    print('Comparison with Ghia et al. (1982)')
+    print('\nComparison with Ghia et al. (1982)')
     with open(experimental_file, 'r') as infile:
       y_exp, u_exp = numpy.loadtxt(infile, dtype=float, 
                                    usecols= (0, cols[Re]['u']), unpack=True)
@@ -108,7 +106,7 @@ def main():
   data_path = '{}/uVelocityCenterlineRe{}_{}x{}.txt'.format(data_directory, 
                                                             Re, nx, ny)
   with open(data_path, 'w') as outfile:
-    numpy.savetxt(outfile, numpy.c_[yu, u_centerline], 
+    numpy.savetxt(outfile, numpy.c_[u.y, u_centerline], 
                   fmt='%.6f', delimiter='\t',
                   header='u-velocity along vertical centerline\n'
                          'Re={}, mesh: {}x{}\n[y]\t[u]'.format(Re, nx, ny))
@@ -117,9 +115,11 @@ def main():
   print('\nPlot v-velocity along horizontal centerline ...')
   pyplot.xlabel('x')
   pyplot.ylabel('v-velocity along horizontal centerline')
-  v, xv = v['values'], v['x']
-  v_centerline = (v[ny/2-1, :] if even_y else 0.5*(y[ny/2-1, :]+y[ny/2, :]))
-  pyplot.plot(xv, v_centerline, label='PetIBM', 
+  if ny%2 == 0:
+    v_centerline = v.values[ny/2-1, :]
+  else:
+    v_centerline = 0.5*(v.values[ny/2-1, :]+v.values[ny/2, :])
+  pyplot.plot(v.x, v_centerline, label='PetIBM', 
               color='k', linestyle='-', linewidth=1)
   if Re in list(cols.keys()):
     print('Comparison with Ghia et al. (1982)')
@@ -137,7 +137,7 @@ def main():
   data_path = '{}/vVelocityCenterlineRe{}_{}x{}.txt'.format(data_directory, 
                                                             Re, nx, ny)
   with open(data_path, 'w') as outfile:
-    numpy.savetxt(outfile, numpy.c_[xv, v_centerline], 
+    numpy.savetxt(outfile, numpy.c_[v.x, v_centerline], 
                   fmt='%.6f', delimiter='\t',
                   header='v-velocity along horizontal centerline\n'
                          'Re={}, mesh: {}x{}\n[x]\t[v]'.format(Re, nx, ny))

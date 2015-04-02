@@ -64,12 +64,12 @@ def restriction(fine, coarse):
   """
   def intersection(a, b, tolerance=1.0E-06):
     return numpy.any(numpy.abs(a-b[:, numpy.newaxis]) <= tolerance, axis=0)
-  mask_x = intersection(fine['x'], coarse['x'])
-  mask_y = intersection(fine['y'], coarse['y'])
-  return {'x': fine['x'][mask_x],
-          'y': fine['y'][mask_y],
-          'values': numpy.array([fine['values'][j][mask_x] 
-                                 for j in xrange(fine['y'].size) if mask_y[j]])}
+  mask_x = intersection(fine.x, coarse.x)
+  mask_y = intersection(fine.y, coarse.y)
+  return ioPetIBM.Field(x=fine.x[mask_x], y=fine.y[mask_y],
+                        values=numpy.array([ fine.values[j][mask_x]
+                                             for j in xrange(fine.y.size)
+                                             if mask_y[j] ]))
 
 def l2_norm(x):
   """Return the discrete L2 norm of x."""
@@ -78,47 +78,57 @@ def l2_norm(x):
 def main():
   """Plots the grid convergence for the lid-driven cavity case."""
   # parse command-line
-  parameters = read_inputs()
+  args = read_inputs()
 
   # initialization
   simulations = sorted(int(directory) 
-                       for directory in os.listdir(parameters.directory)
-                       if os.path.isdir('/'.join([parameters.directory, directory])))
+                       for directory in os.listdir(args.directory)
+                       if os.path.isdir('/'.join([args.directory, directory])))
   cases = numpy.empty(len(simulations), dtype=dict) 
   for i, case in enumerate(cases):
-    cases[i] = {'directory': '{}/{}'.format(parameters.directory, simulations[i]),
+    cases[i] = {'directory': '{}/{}'.format(args.directory, simulations[i]),
                 'grid-size': '{0}x{0}'.format(simulations[i])}
 
   for i, case in enumerate(cases):
     print('\n[case] grid-size: {}'.format(case['grid-size']))
     # read mesh grid
-    x, y = ioPetIBM.read_grid(case['directory'])
-    cases[i]['grid-spacing'] = (x[-1]-x[0])/(x.size-1)
+    grid = ioPetIBM.read_grid(case['directory'])
+    cases[i]['grid-spacing'] = (grid[0][-1]-grid[0][0])/(grid[0].size-1)
     # read velocity components
     cases[i]['u'], cases[i]['v'] = ioPetIBM.read_velocity(case['directory'], 
-                                                          parameters.time_step, 
-                                                          [x, y])
+                                                          args.time_step, 
+                                                          grid)
     # pressure
     cases[i]['p'] = ioPetIBM.read_pressure(case['directory'], 
-                                           parameters.time_step, 
-                                           [x, y])
+                                           args.time_step, 
+                                           grid)
 
   print('\nObserved order of convergence:')
   last_three = True
   coarse, medium, fine = cases[-3:] if last_three else cases[:3]
   ratio = coarse['grid-spacing']/medium['grid-spacing']
   alpha = {'u': compute_order(ratio,
-                              coarse['u']['values'],
-                              restriction(medium['u'], coarse['u'])['values'],
-                              restriction(fine['u'], coarse['u'])['values']),
+                              coarse['u'].values,
+                              restriction(medium['u'], coarse['u']).values,
+                              restriction(fine['u'], coarse['u']).values),
            'v': compute_order(ratio,
-                              coarse['v']['values'],
-                              restriction(medium['v'], coarse['v'])['values'],
-                              restriction(fine['v'], coarse['v'])['values']),
+                              coarse['v'].values,
+                              restriction(medium['v'], coarse['v']).values,
+                              restriction(fine['v'], coarse['v']).values),
            'p': compute_order(ratio,
-                              coarse['p']['values'],
-                              restriction(medium['p'], coarse['p'])['values'],
-                              restriction(fine['p'], coarse['p'])['values'])}
+                              coarse['p'].values,
+                              restriction(medium['p'], coarse['p']).values,
+                              restriction(fine['p'], coarse['p']).values)}
+  # alpha = {}
+  # alpha['u'] = (math.log(l2_norm(restriction(medium['u'], coarse['u']).values-coarse['u'].values)
+  #                        / l2_norm(restriction(fine['u'], medium['u']).values-medium['u'].values)) 
+  #               / math.log(ratio))
+  # alpha['v'] = (math.log(l2_norm(restriction(medium['v'], coarse['v']).values-coarse['v'].values)
+  #                        / l2_norm(restriction(fine['v'], medium['v']).values-medium['v'].values)) 
+  #               / math.log(ratio))
+  # alpha['p'] = (math.log(l2_norm(restriction(medium['p'], coarse['p']).values-coarse['p'].values)
+  #                        / l2_norm(restriction(fine['p'], medium['p']).values-medium['p'].values)) 
+  #               / math.log(ratio))
   print('\tu: {}'.format(alpha['u']))
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))
@@ -129,37 +139,41 @@ def main():
   fine = cases[-1]
   for i, case in enumerate(cases[:-1]):
     u_fine = restriction(fine['u'], case['u'])
-    cases[i]['u']['error'] = l2_norm(case['u']['values'] - u_fine['values'])
+    cases[i]['u'].error = l2_norm(case['u'].values - u_fine.values)
     v_fine = restriction(fine['v'], case['v'])
-    cases[i]['v']['error'] = l2_norm(case['v']['values'] - v_fine['values'])
+    cases[i]['v'].error = l2_norm(case['v'].values - v_fine.values)
     p_fine = restriction(fine['p'], case['p'])
-    cases[i]['p']['error'] = l2_norm(case['p']['values'] - p_fine['values'])
+    cases[i]['p'].error = l2_norm(case['p'].values - p_fine.values)
 
-  if parameters.save or parameters.show:
+  if args.save or args.show:
     print('\nPlot the grid convergence ...')
     pyplot.style.use('{}/scripts/python/style/'
                      'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
     pyplot.xlabel('cell-width')
     pyplot.ylabel('$L_2$-norm error')
+    # plot errors in u-velocity
     pyplot.plot([case['grid-spacing'] for case in cases[:-1]], 
-                [case['u']['error'] for case in cases[:-1]], 
+                [case['u'].error for case in cases[:-1]], 
                 label='u-velocity', marker='o')
+    # plot errors in v-velocity
     pyplot.plot([case['grid-spacing'] for case in cases[:-1]], 
-                [case['v']['error'] for case in cases[:-1]],
+                [case['v'].error for case in cases[:-1]],
                 label='v-velocity', marker='o')
+    # plot errors in pressure
     pyplot.plot([case['grid-spacing'] for case in cases[:-1]], 
-                [case['p']['error'] for case in cases[:-1]], 
+                [case['p'].error for case in cases[:-1]], 
                 label='pressure', marker='o')
     h = numpy.linspace(cases[0]['grid-spacing'], cases[-1]['grid-spacing'], 101)
+    # plot convergence-gauge for 1st- and 2nd- order
     pyplot.plot(h, h, label='$1^{st}$-order convergence', color='k')
     pyplot.plot(h, h**2, label='$2^{nd}$-order convergence', 
                 color='k', linestyle='--')
     pyplot.legend()
     pyplot.xscale('log')
     pyplot.yscale('log')
-    if parameters.save:
-      pyplot.savefig('{}/{}.png'.format(parameters.directory, parameters.output))
-    if parameters.show:
+    if args.save:
+      pyplot.savefig('{}/{}.png'.format(args.directory, args.output))
+    if args.show:
       pyplot.show()
 
 

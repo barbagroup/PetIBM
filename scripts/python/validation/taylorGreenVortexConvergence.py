@@ -78,12 +78,12 @@ def restriction(fine, coarse):
   """
   def intersection(a, b, tolerance=1.0E-06):
     return numpy.any(numpy.abs(a-b[:, numpy.newaxis]) <= tolerance, axis=0)
-  mask_x = intersection(fine['x'], coarse['x'])
-  mask_y = intersection(fine['y'], coarse['y'])
-  return {'x': fine['x'][mask_x],
-          'y': fine['y'][mask_y],
-          'values': numpy.array([fine['values'][j][mask_x] 
-                                 for j in xrange(fine['y'].size) if mask_y[j]])}
+  mask_x = intersection(fine.x, coarse.x)
+  mask_y = intersection(fine.y, coarse.y)
+  return ioPetIBM.Field(x=fine.x[mask_x], y=fine.y[mask_y],
+                        values=numpy.array([ fine.values[j][mask_x]
+                                             for j in xrange(fine.y.size)
+                                             if mask_y[j] ]))
 
 
 def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
@@ -100,9 +100,13 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   x = X1 + (X2-X1)*(x-x[0])/(x[-1]-x[0])
   y = X1 + (X2-X1)*(y-y[0])/(y[-1]-y[0])
   X, Y = numpy.meshgrid(x, y)
+  # u-velocity
   u = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*time)
+  # v-velocity
   v = +V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time)
+  # pressure
   p = -0.25*(numpy.cos(2.0*X)+numpy.cos(2.0*Y))*math.exp(-4.0*time)
+  # z-vorticity
   w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time)
   return u, v, p, w
 
@@ -135,15 +139,15 @@ def plot_field(x, y, u, name, image_path):
 def main():
   """Plots the grid convergence for the Taylor-Green vortex case."""
   # parse command-line
-  parameters = read_inputs()
+  args = read_inputs()
 
   # initialization
   simulations = sorted(int(directory) 
-                       for directory in os.listdir(parameters.directory)
-                       if os.path.isdir('/'.join([parameters.directory, directory])))
+                       for directory in os.listdir(args.directory)
+                       if os.path.isdir('/'.join([args.directory, directory])))
   cases = numpy.empty(len(simulations), dtype=dict) 
   for i, case in enumerate(cases):
-    cases[i] = {'directory': '{}/{}'.format(parameters.directory, simulations[i]),
+    cases[i] = {'directory': '{}/{}'.format(args.directory, simulations[i]),
                 'grid-size': '{0}x{0}'.format(simulations[i])}
 
   for i, case in enumerate(cases):
@@ -153,33 +157,31 @@ def main():
     cases[i]['grid-spacing'] = (x[-1]-x[0])/(x.size-1)
     # read velocity and pressure fields
     cases[i]['u'], cases[i]['v'] = ioPetIBM.read_velocity(case['directory'], 
-                                                          parameters.time_step, 
+                                                          args.time_step, 
                                                           [x, y], 
                                                           periodic=['x', 'y'])
-    cases[i]['p'] = ioPetIBM.read_pressure(case['directory'], 
-                                           parameters.time_step, 
-                                           [x, y])
+    cases[i]['p'] = ioPetIBM.read_pressure(case['directory'], args.time_step, [x, y])
     # compute analytical solution
-    cases[i]['u']['analytical'], _, _, _ = taylor_green_vortex(case['u']['x'], 
-                                                               case['u']['y'], 
-                                                               V=parameters.amplitude, 
-                                                               time=parameters.time , 
-                                                               Re=parameters.Re)
-    _, cases[i]['v']['analytical'], _, _ = taylor_green_vortex(case['v']['x'], 
-                                                               case['v']['y'], 
-                                                               V=parameters.amplitude, 
-                                                               time=parameters.time , 
-                                                               Re=parameters.Re)
-    _, _, cases[i]['p']['analytical'], _ = taylor_green_vortex(case['p']['x'], 
-                                                               case['p']['y'], 
-                                                               V=parameters.amplitude, 
-                                                               time=parameters.time , 
-                                                               Re=parameters.Re)
+    cases[i]['u'].exact, _, _, _ = taylor_green_vortex(case['u'].x, 
+                                                       case['u'].y, 
+                                                       V=args.amplitude, 
+                                                       time=args.time, 
+                                                       Re=args.Re)
+    _, cases[i]['v'].exact, _, _ = taylor_green_vortex(case['v'].x, 
+                                                       case['v'].y, 
+                                                       V=args.amplitude, 
+                                                       time=args.time, 
+                                                       Re=args.Re)
+    _, _, cases[i]['p'].exact, _ = taylor_green_vortex(case['p'].x, 
+                                                       case['p'].y, 
+                                                       V=args.amplitude, 
+                                                       time=args.time, 
+                                                       Re=args.Re)
     # compute L2-norm error
-    cases[i]['u']['error'] = l2_norm(case['u']['values']-case['u']['analytical'])
-    cases[i]['v']['error'] = l2_norm(case['v']['values']-case['v']['analytical'])
-    cases[i]['p']['error'] = l2_norm(case['p']['values']-case['p']['analytical'])
-    if parameters.plot:
+    for field in ['u', 'v', 'p']:
+        cases[i][field].error = l2_norm(case[field].values-case[field].exact)
+
+    if args.plot:
       print('\nPlot the field difference between numerical and analytical ...')
       # create directory where images will be saved
       images_directory = '{}/images/differences'.format(case['directory'])
@@ -188,94 +190,91 @@ def main():
       # load default style
       pyplot.style.use('{}/scripts/python/style/'
                        'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
-      # u-velocity
-      image_path = '{}/uVelocity{:0>7}_numerical.png'.format(images_directory, 
-                                                             parameters.time_step)
-      plot_field(case['u']['x'], case['u']['y'], case['u']['values'], 
-                 'u-velocity', image_path)
-      image_path = '{}/uVelocity{:0>7}_analytical.png'.format(images_directory,
-                                                              parameters.time_step)
-      plot_field(case['u']['x'], case['u']['y'], case['u']['analytical'], 
-                 'u-velocity (analytical)', image_path)
-      image_path = '{}/uVelocity{:0>7}_difference.png'.format(images_directory, 
-                                                              parameters.time_step)
-      plot_field(case['u']['x'], case['u']['y'], 
-                 case['u']['values']-case['u']['analytical'], 
-                 'difference in u-velocity', image_path)
-      # v-velocity
-      image_path = '{}/vVelocity{:0>7}_numerical.png'.format(images_directory, 
-                                                             parameters.time_step)
-      plot_field(case['v']['x'], case['v']['y'], case['v']['values'], 
-                 'v-velocity', image_path)
-      image_path = '{}/vVelocity{:0>7}_analytical.png'.format(images_directory,
-                                                              parameters.time_step)
-      plot_field(case['v']['x'], case['v']['y'], case['v']['analytical'], 
-                 'v-velocity (analytical)', image_path)
-      image_path = '{}/vVelocity{:0>7}_difference.png'.format(images_directory, 
-                                                              parameters.time_step)
-      plot_field(case['v']['x'], case['v']['y'], 
-                 case['v']['values']-case['v']['analytical'], 
-                 'difference in v-velocity', image_path)
-      # pressure
-      image_path = '{}/pressure{:0>7}_numerical.png'.format(images_directory, 
-                                                            parameters.time_step)
-      plot_field(case['p']['x'], case['p']['y'], case['p']['values'], 
-                 'pressure', image_path)
-      image_path = '{}/pressure{:0>7}_analytical.png'.format(images_directory,
-                                                             parameters.time_step)
-      plot_field(case['p']['x'], case['p']['y'], case['p']['analytical'], 
-                 'pressure (analytical)', image_path)
-      image_path = '{}/pressure{:0>7}_difference.png'.format(images_directory, 
-                                                             parameters.time_step)
-      plot_field(case['p']['x'], case['p']['y'], 
-                 case['p']['values']-case['p']['analytical'], 
-                 'difference in pressure', image_path)
+      # set parameters of the plots
+      cases[i]['u'].label = 'u-velocity'
+      cases[i]['u'].file_name = 'uVelocity'
+      cases[i]['v'].label = 'v-velocity'
+      cases[i]['v'].file_name = 'vVelocity'
+      cases[i]['p'].label = 'pressure'
+      cases[i]['p'].file_name = 'pressure'
+      # plot velocity fields and pressure field
+      for field in ['u', 'v', 'p']:
+        image_path = '{}/{}{:0>7}_numerical.png'.format(images_directory,
+                                                        case[field].file_name, 
+                                                        args.time_step)
+        plot_field(case[field].x, case[field].y, case[field].values,
+                   case[field].label, image_path)
+        image_path = '{}/{}{:0>7}_analytical.png'.format(images_directory,
+                                                         case[field].file_name, 
+                                                         args.time_step)
+        plot_field(case[field].x, case[field].y, case[field].exact,
+                   case[field].label, image_path)
+        image_path = '{}/{}{:0>7}_difference.png'.format(images_directory,
+                                                         case[field].file_name, 
+                                                         args.time_step)
+        plot_field(case[field].x, case[field].y, case[field].values-case[field].exact,
+                   case[field].label, image_path)
 
   print('\nObserved order of convergence:')
   last_three = True
   coarse, medium, fine = cases[-3:] if last_three else cases[:3]
   ratio = coarse['grid-spacing']/medium['grid-spacing']
-  alpha = {'u': compute_order(ratio,
-                              coarse['u']['values'],
-                              restriction(medium['u'], coarse['u'])['values'],
-                              restriction(fine['u'], coarse['u'])['values']),
-           'v': compute_order(ratio,
-                              coarse['v']['values'],
-                              restriction(medium['v'], coarse['v'])['values'],
-                              restriction(fine['v'], coarse['v'])['values']),
-           'p': compute_order(ratio,
-                              coarse['p']['values'],
-                              restriction(medium['p'], coarse['p'])['values'],
-                              restriction(fine['p'], coarse['p'])['values'])}
+  # alpha = {'u': compute_order(ratio,
+  #                             coarse['u'].values,
+  #                             restriction(medium['u'], coarse['u']).values,
+  #                             restriction(fine['u'], coarse['u']).values),
+  #          'v': compute_order(ratio,
+  #                             coarse['v'].values,
+  #                             restriction(medium['v'], coarse['v']).values,
+  #                             restriction(fine['v'], coarse['v']).values),
+  #          'p': compute_order(ratio,
+  #                             coarse['p'].values,
+  #                             restriction(medium['p'], coarse['p']).values,
+  #                             restriction(fine['p'], coarse['p']).values)}
+  
+  alpha = {}
+  alpha['u'] = (math.log(l2_norm(restriction(medium['u'], coarse['u']).values-coarse['u'].values)
+                         / l2_norm(restriction(fine['u'], medium['u']).values-medium['u'].values)) 
+                / math.log(ratio))
+  alpha['v'] = (math.log(l2_norm(restriction(medium['v'], coarse['v']).values-coarse['v'].values)
+                         / l2_norm(restriction(fine['v'], medium['v']).values-medium['v'].values)) 
+                / math.log(ratio))
+  alpha['p'] = (math.log(l2_norm(restriction(medium['p'], coarse['p']).values-coarse['p'].values)
+                         / l2_norm(restriction(fine['p'], medium['p']).values-medium['p'].values)) 
+                / math.log(ratio))
+  
   print('\tu: {}'.format(alpha['u']))
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))
 
-  if parameters.save or parameters.show:
+  if args.save or args.show:
     print('\nPlot the grid convergence ...')
     pyplot.style.use('{}/scripts/python/style/'
                      'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
     pyplot.xlabel('cell-width')
     pyplot.ylabel('$L_2$-norm error')
-    pyplot.plot([case['grid-spacing'] for case in cases], 
-                [case['u']['error'] for case in cases], 
+    # plot errors in u-velocity
+    pyplot.plot([case['grid-spacing'] for case in cases],
+                [case['u'].error for case in cases],
                 label='u-velocity', marker='o')
-    pyplot.plot([case['grid-spacing'] for case in cases], 
-                [case['v']['error'] for case in cases],
+    # plot errors in v-velocity
+    pyplot.plot([case['grid-spacing'] for case in cases],
+                [case['v'].error for case in cases],
                 label='v-velocity', marker='o')
-    pyplot.plot([case['grid-spacing'] for case in cases], 
-                [case['p']['error'] for case in cases], 
+    # plot errors in pressure
+    pyplot.plot([case['grid-spacing'] for case in cases],
+                [case['p'].error for case in cases],
                 label='pressure', marker='o')
+    # plot convergence-gauge for 1st- and 2nd- orders
     h = numpy.linspace(cases[0]['grid-spacing'], cases[-1]['grid-spacing'], 101)
     pyplot.plot(h, h, label='$1^{st}$-order convergence', color='k')
-    pyplot.plot(h, h**2, label='$2^{nd}$-order convergence', 
-                color='k', linestyle='--')
+    pyplot.plot(h, h**2, label='$2^{nd}$-order convergence', color='k', linestyle='--')
     pyplot.legend()
     pyplot.xscale('log')
     pyplot.yscale('log')
-    if parameters.save:
-      pyplot.savefig('{}/{}.png'.format(parameters.directory, parameters.output))
-    if parameters.show:
+    if args.save:
+      pyplot.savefig('{}/{}.png'.format(args.directory, args.output))
+    if args.show:
       pyplot.show()
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))

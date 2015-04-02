@@ -24,16 +24,16 @@ def read_inputs():
   parser.add_argument('--case', dest='case_directory', type=str, 
                       default=os.getcwd(), help='directory of the simulation')
   parser.add_argument('--vorticity-range', '-wr', dest='vorticity_range', 
-                      type=float, nargs='+', default=[-5.0, 5.0, 11],
+                      type=float, nargs='+', default=None,
                       help='vorticity range (min, max, number of levels)')
   parser.add_argument('--u-range', '-ur', dest='u_range', 
-                      type=float, nargs='+', default=[-1.0, 1.0, 11],
+                      type=float, nargs='+', default=None,
                       help='u-velocity range (min, max, number of levels)')
   parser.add_argument('--v-range', '-vr', dest='v_range', 
-                      type=float, nargs='+', default=[-1.0, 1.0, 11],
+                      type=float, nargs='+', default=None,
                       help='v-velocity range (min, max, number of levels)')
   parser.add_argument('--pressure-range', '-pr', dest='pressure_range', 
-                      type=float, nargs='+', default=[-1.0, 1.0, 11],
+                      type=float, nargs='+', default=None,
                       help='pressure range (min, max, number of levels)')
   parser.add_argument('--bottom-left', '-bl', dest='bottom_left', type=float,
                       nargs='+', default=[float('-inf'), float('-inf')],
@@ -63,53 +63,49 @@ def vorticity(u, v):
 
   Arguments
   ---------
-  u, v -- dictionaries with x- and y- velocity fields
+  u, v -- velocity fields
   """
   print('\tCompute the vorticity field ...')
-  u, xu, yu = u['values'], u['x'], u['y']
-  v, xv, yv = v['values'], v['x'], v['y']
-  mask_x = numpy.where(numpy.logical_and(xu > xv[0], xu < xv[-1]))[0]
-  mask_y = numpy.where(numpy.logical_and(yv > yu[0], yv < yu[-1]))[0]
-  xu, yv = xu[mask_x], yv[mask_y]
-  # compute vorticity node coordinates
-  xw, yw = 0.5*(xv[:-1]+xv[1:]), 0.5*(yu[:-1]+yu[1:])
-  # compute vorticity field
-  w = ( (v[mask_y, 1:]-v[mask_y, :-1])
-        /numpy.outer(numpy.ones(yw.size), xv[1:]-xv[:-1]) 
-      - (u[1:, mask_x]-u[:-1, mask_x])
-        /numpy.outer(yu[1:]-yu[:-1], numpy.ones(xw.size)) )
-  # tests
-  assert (yw.size, xw.size) == w.shape
-  return {'x': xw, 'y': yw, 'values': w}
+  mask_x = numpy.where(numpy.logical_and(u.x > v.x[0], u.x < v.x[-1]))[0]
+  mask_y = numpy.where(numpy.logical_and(v.y > u.y[0], v.y < u.y[-1]))[0]
+  # vorticity nodes at cell vertices intersection
+  xw, yw = 0.5*(v.x[:-1]+v.x[1:]), 0.5*(u.y[:-1]+u.y[1:])
+  # compute vorticity
+  w = ( (v.values[mask_y, 1:] - v.values[mask_y, :-1])
+        / numpy.outer(numpy.ones(yw.size), v.x[1:]-v.x[:-1])
+      - (u.values[1:, mask_x] - u.values[:-1, mask_x])
+        / numpy.outer(u.y[1:]-u.y[:-1], numpy.ones(xw.size)) )
+  return ioPetIBM.Field(x=xw, y=yw, values=w)
 
 
-def plot_contour(variable, variable_name, variable_range, image_path, 
-                 view=[[None, None], [None, None]]):
-  """Plots and saves the variable field.
+def plot_contour(field, field_range, image_path, 
+                 view=[float('-inf'), float('-inf'), float('inf'), float('inf')]): 
+  """Plots and saves the field.
 
   Arguments
   ---------
-  variable -- dictionary with the nodal coordinates and values of the variable
-  variable_name -- name of the variable
-  variable_range -- contour values to plot
+  field -- intstance of class Field with node coordinates and values
+  field_range -- contour values to plot
   image_path -- path of the image to save
+  view -- rectangular view of the domain (default 'whole domain')
   """
-  print('\tPlot the {} contour ...'.format(variable_name))
+  print('\tPlot the {} contour ...'.format(field.label))
   fig, ax = pyplot.subplots()
   pyplot.xlabel('$x$')
   pyplot.ylabel('$y$')
-  levels = numpy.linspace(variable_range[0], variable_range[1], variable_range[2])
-  X, Y = numpy.meshgrid(variable['x'], variable['y'])
+  if field_range:
+    levels = numpy.linspace(field_range[0], field_range[1], field_range[2])
+  else:
+    levels = numpy.linspace(field.values.min(), field.values.max(), 101)
+  X, Y = numpy.meshgrid(field.x, field.y)
   color_map = {'pressure': cm.jet, 'vorticity': cm.RdBu_r,
                'u-velocity': cm.RdBu_r, 'v-velocity': cm.RdBu_r}
-  cont = ax.contourf(X, Y, variable['values'], 
+  cont = ax.contourf(X, Y, field.values, 
                      levels=levels, extend='both', 
-                     cmap=color_map[variable_name])
-  cont_bar = fig.colorbar(cont, label=variable_name, fraction=0.046, pad=0.04)
-  x_start = max(view[0][0], variable['x'].min())
-  x_end = min(view[1][0], variable['x'].max())
-  y_start = max(view[0][1], variable['y'].min())
-  y_end = min(view[1][1], variable['y'].max())
+                     cmap=color_map[field.label])
+  cont_bar = fig.colorbar(cont, label=field.label, fraction=0.046, pad=0.04)
+  x_start, x_end = max(view[0], field.x.min()), min(view[2], field.x.max())
+  y_start, y_end = max(view[1], field.y.min()), min(view[3], field.y.max())
   ax.axis([x_start, x_end, y_start, y_end])
   ax.set_aspect('equal')
   pyplot.savefig(image_path)
@@ -121,53 +117,56 @@ def main():
   for a two-dimensional simulation.
   """
   # parse command-line
-  parameters = read_inputs()
-  print('[case directory] {}'.format(parameters.case_directory))
+  args = read_inputs()
+  print('[case directory] {}'.format(args.case_directory))
 
-  time_steps = ioPetIBM.get_time_steps(parameters.case_directory, 
-                                       parameters.time_steps)
+  time_steps = ioPetIBM.get_time_steps(args.case_directory, args.time_steps)
  
   # create directory where images will be saved
-  images_directory = '{}/images'.format(parameters.case_directory)
+  images_directory = '{}/images'.format(args.case_directory)
   print('[images directory] {}'.format(images_directory))
   if not os.path.isdir(images_directory):
     os.makedirs(images_directory)
 
   # read the grid nodes
-  coords = ioPetIBM.read_grid(parameters.case_directory)
+  coords = ioPetIBM.read_grid(args.case_directory)
 
   # load default style of matplotlib figures
   pyplot.style.use('{}/scripts/python/style/'
                    'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
 
   for time_step in time_steps:
-    if parameters.velocity or parameters.vorticity:
+    if args.velocity or args.vorticity:
       # get velocity fields
-      u, v = ioPetIBM.read_velocity(parameters.case_directory, time_step, coords,
-                                    periodic=parameters.periodic)
-      if parameters.velocity:
+      u, v = ioPetIBM.read_velocity(args.case_directory, time_step, coords,
+                                    periodic=args.periodic)
+      if args.velocity:
         # plot u-velocity field
+        u.label = 'u-velocity'
         image_path = '{}/uVelocity{:0>7}.png'.format(images_directory, time_step)
-        plot_contour(u, 'u-velocity', parameters.u_range, image_path,
-                     view=[parameters.bottom_left, parameters.top_right]) 
+        plot_contour(u, args.u_range, image_path, 
+                     view=args.bottom_left+args.top_right)
         # plot v-velocity field
+        v.label = 'v-velocity'
         image_path = '{}/vVelocity{:0>7}.png'.format(images_directory, time_step)
-        plot_contour(v, 'v-velocity', parameters.v_range, image_path,
-                     view=[parameters.bottom_left, parameters.top_right])
-      if parameters.vorticity:
+        plot_contour(v, args.v_range, image_path, 
+                     view=args.bottom_left+args.top_right)
+      if args.vorticity:
         # compute vorticity field
         w = vorticity(u, v)
         # plot vorticity field
+        w.label = 'vorticity'
         image_path = '{}/vorticity{:0>7}.png'.format(images_directory, time_step)
-        plot_contour(w, 'vorticity', parameters.vorticity_range, image_path,
-                     view=[parameters.bottom_left, parameters.top_right])
-    if parameters.pressure:
+        plot_contour(w, args.vorticity_range, image_path, 
+                     view=args.bottom_left+args.top_right)
+    if args.pressure:
       # get pressure field
-      p = ioPetIBM.read_pressure(parameters.case_directory, time_step, coords)
+      p = ioPetIBM.read_pressure(args.case_directory, time_step, coords)
       # plot pressure field
+      p.label = 'pressure'
       image_path = '{}/pressure{:0>7}.png'.format(images_directory, time_step)
-      plot_contour(p, 'pressure', parameters.pressure_range, image_path,
-                   view=[parameters.bottom_left, parameters.top_right])
+      plot_contour(p, args.pressure_range, image_path, 
+                   view=args.bottom_left+args.top_right)
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))
 

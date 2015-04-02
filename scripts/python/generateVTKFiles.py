@@ -53,11 +53,11 @@ def interpolate_cell_centers(velocity):
   velocity -- velocity field on a staggered grid
   """
   dim3 = (True if len(velocity) == 3 else False)
-  x_centers, y_centers = velocity[1]['x'][1:-1], velocity[0]['y'][1:-1]
-  u, v = velocity[0]['values'], velocity[1]['values']
+  x_centers, y_centers = velocity[1].x[1:-1], velocity[0].y[1:-1]
+  u, v = velocity[0].values, velocity[1].values
   if dim3:
-    z_centers = velocity[0]['z'][1:-1]
-    w = velocity[2]['values']
+    z_centers = velocity[0].z[1:-1]
+    w = velocity[2].values
     u = 0.5*(u[1:-1, 1:-1, :-1] + u[1:-1, 1:-1, 1:])
     v = 0.5*(v[1:-1, :-1, 1:-1] + v[1:-1:, 1:, 1:-1])
     w = 0.5*(w[:-1, 1:-1, 1:-1] + w[1:, 1:-1, 1:-1])
@@ -65,51 +65,48 @@ def interpolate_cell_centers(velocity):
     assert (z_centers.size, y_centers.size, x_centers.size) == u.shape
     assert (z_centers.size, y_centers.size, x_centers.size) == v.shape
     assert (z_centers.size, y_centers.size, x_centers.size) == w.shape
-    return [{'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': u}, 
-            {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': v}, 
-            {'x': x_centers, 'y': y_centers, 'z': z_centers, 'values': w}]
+    return [ioPetIBM.Field(x=x_centers, y=y_centers, z=z_centers, values=u),
+            ioPetIBM.Field(x=x_centers, y=y_centers, z=z_centers, values=v),
+            ioPetIBM.Field(x=x_centers, y=y_centers, z=z_centers, values=w)]
   else:
     u = 0.5*(u[1:-1, :-1] + u[1:-1, 1:])
     v = 0.5*(v[:-1, 1:-1] + v[1:, 1:-1])
     # tests
     assert (y_centers.size, x_centers.size) == u.shape
     assert (y_centers.size, x_centers.size) == v.shape
-    return [{'x': x_centers, 'y': y_centers, 'values': u},
-            {'x': x_centers, 'y': y_centers, 'values': v}]
+    return [ioPetIBM.Field(x=x_centers, y=y_centers, values=u),
+            ioPetIBM.Field(x=x_centers, y=y_centers, values=v)]
 
 
 def main():
   """Converts PETSc output to .vtk format."""
   # parse command-line
-  parameters = read_inputs()
-  print ('[case-directory] %s' % parameters.case_directory)
-  print ('[variables] %s' % parameters.variables)
+  args = read_inputs()
+  print('[case-directory] {}'.format(args.case_directory))
+  print('[variables] {}'.format(args.variables))
 
   # list of time-steps to post-process
-  time_steps = ioPetIBM.get_time_steps(parameters.case_directory, 
-                                       parameters.time_steps)
+  time_steps = ioPetIBM.get_time_steps(args.case_directory, args.time_steps)
 
   # read mesh grid
-  coordinates = ioPetIBM.read_grid(parameters.case_directory)
+  grid = ioPetIBM.read_grid(args.case_directory)
 
   for time_step in time_steps:
-    if 'velocity' in parameters.variables:
-      velocity = ioPetIBM.read_velocity(parameters.case_directory, time_step, 
-                                        coordinates, 
-                                        periodic=parameters.periodic)
+    if 'velocity' in args.variables:
+      velocity = ioPetIBM.read_velocity(args.case_directory, time_step, grid,
+                                        periodic=args.periodic)
       # need to get velocity at cell-centers, not staggered arrangement
       velocity = interpolate_cell_centers(velocity)
-      ioPetIBM.write_vtk(velocity, parameters.case_directory, time_step, 
+      ioPetIBM.write_vtk(velocity, args.case_directory, time_step, 
                          name='velocity',
-                         view=[parameters.bottom_left, parameters.top_right],
-                         stride=parameters.stride)
-    if 'pressure' in parameters.variables:
-      pressure = ioPetIBM.read_pressure(parameters.case_directory, time_step, 
-                                        coordinates)
-      ioPetIBM.write_vtk(pressure, parameters.case_directory, time_step,
+                         view=[args.bottom_left, args.top_right],
+                         stride=args.stride)
+    if 'pressure' in args.variables:
+      pressure = ioPetIBM.read_pressure(args.case_directory, time_step, grid)
+      ioPetIBM.write_vtk(pressure, args.case_directory, time_step,
                          name='pressure',
-                         view=[parameters.bottom_left, parameters.top_right],
-                         stride=parameters.stride)
+                         view=[args.bottom_left, args.top_right],
+                         stride=args.stride)
 
   print('\n[{}] DONE'.format(os.path.basename(__file__)))
 

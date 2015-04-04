@@ -1,0 +1,20 @@
+# simulationParameters.yaml
+
+- type: simulation
+  dt: 0.01
+  startStep: 0
+  nt: 300
+  nsave: 300
+  timeScheme: [ADAMS_BASHFORTH_2, CRANK_NICOLSON]
+  ibmScheme: TAIRA_COLONIUS
+  linearSolvers:
+    - system: velocity
+      solver: CG
+      preconditioner: DIAGONAL
+      tolerance: 1.0E-05
+      maxIterations: 10000
+    - system: Poisson
+      solver: CG
+      preconditioner: SMOOTHED_AGGREGATION
+      tolerance: 1.0E-05
+      maxIterations: 20000

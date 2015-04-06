@@ -41,7 +41,7 @@ def define_test_cases():
 
   # test-case: 2d lid-driven cavity flow (Re=100)
   case = '2d lid-driven cavity (Re=100)'
-  tests[case] = TestCase('/home/mesnardo/tests_PetIBM/lidDrivenCavity2dRe100')
+  tests[case] = TestCase('{}/cases/2d/lidDrivenCavity/Re100'.format(os.environ['PETIBM_DIR']))
   tests[case].petibmexec = os.environ['PETIBM2D']
   tests[case].mpiexec = os.environ['MPIEXEC']
   tests[case].n = 1
@@ -49,21 +49,29 @@ def define_test_cases():
                            '-sys2_pc_gamg_agg_nsmooths 1')
   # test-case: 2d cylinder (Re=40)
   case = '2d cylinder (Re=40)'
-  tests[case] = TestCase('/home/mesnardo/tests_PetIBM/cylinder2dRe40')
+  tests[case] = TestCase('{}/cases/2d/cylinder/Re40'.format(os.environ['PETIBM_DIR']))
   tests[case].petibmexec = os.environ['PETIBM2D']
+  tests[case].mpiexec = os.environ['MPIEXEC']
+  tests[case].n = 2
+  tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
+                           '-sys2_pc_gamg_agg_nsmooths 1')
+  # test-case: 3d lid-driven cavity flow (Re=100, periodic=['x'])
+  case = '3d lid-driven cavity (Re=100)'
+  tests[case] = TestCase('{}/cases/3d/lidDrivenCavity/Re100PeriodicX'.format(os.environ['PETIBM_DIR']))
+  tests[case].periodic = ['x']
+  tests[case].petibmexec = os.environ['PETIBM3D']
   tests[case].mpiexec = os.environ['MPIEXEC']
   tests[case].n = 2
   tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
                            '-sys2_pc_gamg_agg_nsmooths 1')
   # test-case: 3d sphere (Re=300)
   case = '3d sphere (Re=300)'
-  tests[case] = TestCase('/home/mesnardo/tests_PetIBM/sphere3dRe300')
+  tests[case] = TestCase('{}/cases/3d/sphere/Re300'.format(os.environ['PETIBM_DIR']))
   tests[case].petibmexec = os.environ['PETIBM3D']
   tests[case].mpiexec = os.environ['MPIEXEC']
   tests[case].n = 4
   tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
                            '-sys2_pc_gamg_agg_nsmooths 1')
-
   return tests
 
 
@@ -89,7 +97,6 @@ class TestCase(object):
       Directions with periodic boundary conditions.
     """
     self.directory = directory
-    self.basename = os.path.basename(directory)
     self.petibmexec = petibmexec
     self.mpiexec = mpiexec
     self.n = n
@@ -114,6 +121,7 @@ class TestCase(object):
     directory: str
       Directory where is stored the reference case folder.
     """
+    self.basename = os.path.relpath(self.directory, os.environ['PETIBM_DIR'])
     self.reference = '{}/{}'.format(directory, self.basename)
     if not os.path.isdir(self.reference):
       print('\nWARNING: no numerical solution to compare with\n')
@@ -144,7 +152,9 @@ class TestCase(object):
     """Compares the mesh-grid with a reference one."""
     grid = ioPetIBM.read_grid(self.directory)
     grid_reference = ioPetIBM.read_grid(self.reference)
-    self.compare_arrays(grid, grid_reference, tag='grid')
+    for i, direction in enumerate(grid):
+      self.compare_arrays(direction, grid_reference[i], 
+                          tag='grid[{}]'.format(i))
 
   def compare_velocity(self):
     """Compares the velocity field node by node with a reference."""

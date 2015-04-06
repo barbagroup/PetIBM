@@ -11,6 +11,8 @@ import time
 import shutil
 import argparse
 
+import numpy
+
 sys.path.append('{}/scripts/python'.format(os.environ['PETIBM_DIR']))
 import ioPetIBM
 
@@ -21,11 +23,13 @@ def read_inputs():
   parser = argparse.ArgumentParser(description='Executes a regression-test',
                         formatter_class= argparse.ArgumentDefaultsHelpFormatter)
   # fill parser with arguments
-  parser.add_argument('--save', dest='save', action='store_true', 
+  parser.add_argument('--no-save', dest='save', action='store_false', 
                       help='saves the new numerical solutions')
   parser.add_argument('--no-compile', dest='compile', action='store_false',
                       help='skips PetIBM compilation')
-  parser.set_defaults(compile=True)
+  parser.add_argument('--no-run', dest='run', action='store_false',
+                      help='does not run the test-cases')
+  parser.set_defaults(save=True, compile=True, run=True)
   # parse command-line
   return parser.parse_args()
 
@@ -53,12 +57,12 @@ def define_test_cases():
                            '-sys2_pc_gamg_agg_nsmooths 1')
   # test-case: 3d sphere (Re=300)
   case = '3d sphere (Re=300)'
-  # tests[case] = TestCase('/home/mesnardo/tests_PetIBM/sphere3dRe300')
-  # tests[case].petibmexec = os.environ['PETIBM3D']
-  # tests[case].mpiexec = os.environ['MPIEXEC']
-  # tests[case].n = 4
-  # tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
-  #                          '-sys2_pc_gamg_agg_nsmooths 1')
+  tests[case] = TestCase('/home/mesnardo/tests_PetIBM/sphere3dRe300')
+  tests[case].petibmexec = os.environ['PETIBM3D']
+  tests[case].mpiexec = os.environ['MPIEXEC']
+  tests[case].n = 4
+  tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
+                           '-sys2_pc_gamg_agg_nsmooths 1')
 
   return tests
 
@@ -115,11 +119,12 @@ class TestCase(object):
       print('\nWARNING: no numerical solution to compare with\n')
       self.save(directory)
       self.passed = False
-      self.differences.append('no previous numerical solution to compare with')
+      self.differences.append('no numerical solution to compare with')
       return
     self.compare_grid()
     self.compare_velocity()
     self.compare_pressure()
+    self.compare_forces()
 
   def compare_arrays(self, array1, array2, tag):
     """Performs element-wise comparison of two given arrays.
@@ -131,7 +136,7 @@ class TestCase(object):
     tag: str
       A description of the arrays to be compared.
     """
-    if not (array1 == array2).all():
+    if not numpy.allclose(array1, array2, rtol=1.0E-06):
       self.passed = False
       self.differences.append('difference in {}'.format(tag))
 
@@ -155,9 +160,11 @@ class TestCase(object):
                           tag='velocity[{}]: x-nodes'.format(i))
       self.compare_arrays(component.y, velocity_reference[i].y, 
                           tag='velocity[{}]: y-nodes'.format(i))
-      if component.z:
+      try:
         self.compare_arrays(component.z, velocity_reference[i].z, 
                             tag='velocity[{}]: z-nodes'.format(i))
+      except:
+        pass
       self.compare_arrays(component.values, velocity_reference[i].values, 
                           tag='velocity[{}]: values'.format(i))
 
@@ -172,12 +179,25 @@ class TestCase(object):
                         tag='pressure: x-nodes')
     self.compare_arrays(pressure.y, pressure_reference.y, 
                         tag='pressure: y-nodes')
-    if pressure.z:
+    try:
       self.compare_arrays(pressure.z, pressure_reference.z, 
                           tag='pressure: z-nodes')
+    except:
+      pass
     self.compare_arrays(pressure.values, pressure_reference.values, 
                         tag='pressure: values')
 
+  def compare_forces(self):
+    """Compares forces acting on immersed boundaries (if applicable)."""
+    try:
+      with open('{}/forces.txt'.format(self.directory), 'r') as infile:
+        forces = numpy.loadtxt(infile, dtype=float)
+      with open('{}/forces.txt'.format(self.reference), 'r') as infile:
+        forces_reference = numpy.loadtxt(infile, dtype=float)
+      self.compare_arrays(forces, forces_reference, tag='forces')
+    except:
+      pass
+    
   def save(self, directory):
     """Saves the numerical solution into a folder.
 
@@ -188,7 +208,7 @@ class TestCase(object):
     """
     print('\nCopy numerical solution of {} into {}\n'.format(self.basename,
                                                              directory))
-    destination = '{}/{}'.format(regression_directory, self.basename)
+    destination = '{}/{}'.format(directory, self.basename)
     if os.path.isdir(destination):
       shutil.rmtree(destination)
     shutil.copytree(self.directory, destination)
@@ -203,7 +223,7 @@ class TestCase(object):
     """
     with open(file_path, 'a') as outfile:
       message = ('OK' if self.passed else 'NOT OK')
-      outfile.write('\n{}: {}\n'.format(self.basename, message))
+      outfile.write('\n\n{}: {}\n'.format(self.basename, message))
       outfile.write('\t\n'.join(self.differences))
 
 
@@ -242,7 +262,8 @@ def main():
 
   # run test-cases
   for test in tests.itervalues():
-    test.run()
+    if args.run:
+      test.run()
     test.regression_analysis(regression_directory)
     test.write(regression_file_path)
     if test.passed and args.save:

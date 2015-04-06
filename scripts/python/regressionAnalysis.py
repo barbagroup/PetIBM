@@ -1,6 +1,6 @@
 #!/usr/bin/env/ python
 
-# file: regression_analysis.py
+# file: regressionAnalysis.py
 # author: Olivier Mesnard (mesnardo@gwu.edu)
 # description: Performs regression tests for PetIBM.
 

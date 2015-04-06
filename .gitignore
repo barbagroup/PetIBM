@@ -21,6 +21,9 @@ cases/**/vtk_files
 cases/**/images
 cases/**/data
 
+# ignore regression analysis
+regression_analysis
+
 # ignore Python compiled files
 *.pyc
 

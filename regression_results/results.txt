@@ -1,6 +1,0 @@
-Regression performed on 04/04/2015
-
-
-lidDrivenCavity2dRe100: OK
-
-cylinder2dRe40: OK

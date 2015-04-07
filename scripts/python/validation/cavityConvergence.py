@@ -134,8 +134,6 @@ def main():
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))
 
-  print('\n[{}] DONE'.format(os.path.basename(__file__)))
-
   # grid convergence, comparison with finest grid
   fine = cases[-1]
   for i, case in enumerate(cases[:-1]):

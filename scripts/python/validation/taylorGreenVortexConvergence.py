@@ -119,13 +119,13 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   y = X1 + (X2-X1)*(y-y[0])/(y[-1]-y[0])
   X, Y = numpy.meshgrid(x, y)
   # u-velocity
-  u = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*time)
+  u = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*(2.0*math.pi)**2*time/Re)
   # v-velocity
-  v = +V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*time)
+  v = +V*numpy.sin(X)*numpy.cos(Y)*math.exp(-2.0*(2.0*math.pi)**2*time/Re)
   # pressure
-  p = -0.25*(numpy.cos(2.0*X)+numpy.cos(2.0*Y))*math.exp(-4.0*time)
+  p = -0.25*(numpy.cos(2.0*X)+numpy.cos(2.0*Y))*math.exp(-4.0*(2.0*math.pi)**2*time/Re)
   # z-vorticity
-  w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*time)
+  w = 2.0*numpy.sin(X)*numpy.sin(Y)*math.exp(-2.0*(2.0*math.pi)**2*time/Re)
   return u, v, p, w
 
 

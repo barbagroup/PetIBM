@@ -55,17 +55,24 @@ def read_inputs():
 
 class Force(object):
   """Contains info about a force."""
-  def __init__(self, f):
-    """Initializes the force."""
-    self.values = f
-    self.min, self.max = f.min(), f.max()
+  def __init__(self, force):
+    """Initializes the force.
+
+    Parameters
+    ----------
+    force: Numpy array
+      Values of the force.
+    """
+    self.values = force
+    self.min, self.max = force.min(), force.max()
 
   def mean(self, mask):
     """Computes the mean force.
 
-    Arguments
-    ---------
-    mask -- range of indices to consider
+    Parameters
+    ----------
+    mask: Numpy array
+      Range of indices to consider.
     """
     self.mean = numpy.mean(self.values[mask])
 
@@ -75,10 +82,12 @@ class Body(object):
   def __init__(self, name, fx, fy, fz=numpy.empty(0)):
     """Initializes the forces.
 
-    Arguments
-    ---------
-    name - name of the body
-    fx, fy -- forces in the x- and y- directions
+    Parameters
+    ----------
+    name: str
+      Name of the body.
+    fx, fy, fz: Numpy arrays
+      Forces in the x-, y-  and z-(if applicable) directions.
     """
     self.name = name
     self.fx, self.fy = Force(fx), Force(fy)
@@ -88,9 +97,10 @@ class Body(object):
   def means(self, mask):
     """Computes the mean forces.
 
-    Arguments
-    ---------
-    mask -- range of indices to consider
+    Parameters
+    ----------
+    mask: Numpy array
+      Range of indices to consider.
     """
     print('\nBody: {}'.format(self.name))
     self.fx.mean(mask)
@@ -107,9 +117,10 @@ class Case(object):
   def __init__(self, parameters):
     """Stores the parameters.
 
-    Arguments
-    ---------
-    parameters -- arguments from parser
+    Parameters
+    ----------
+    parameters: ArgumentPaser instance
+      Contains command-line arguments.
     """
     print('\nCase: {}'.format(parameters.case_directory))
     self.parameters = parameters
@@ -217,13 +228,15 @@ class Case(object):
 
 def main():
   """Plots the instantaneous force coefficients."""
-  parameters = read_inputs()
-  case = Case(parameters)
+  args = read_inputs()
+  case = Case(args)
   case.read_forces()
   case.get_mean_values()
-  if parameters.show or parameters.save:
+  if args.show or args.save:
     case.plot_forces()
 
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

@@ -46,11 +46,17 @@ def compute_order(ratio, coarse, medium, fine):
   """Computes the observed order of convergence 
   using the solution on three grids.
 
-  Arguments
-  ---------
-  ratio -- grid-refinement ratio
-  coarse, medium, fine -- solutions on three consecutive grids 
-                          restricted on the coarsest grid
+  Parameters
+  ----------
+  ratio: float
+    Grid-refinement ratio.
+  coarse, medium, fine: Numpy array
+    Solutions on three consecutive grids restricted on the coarsest grid.
+
+  Returns
+  -------
+  alpha: float
+    The observed order of convergence.
   """
   return ( math.log(numpy.linalg.norm(medium-coarse)
                     / numpy.linalg.norm(fine-medium)) 
@@ -60,9 +66,15 @@ def compute_order(ratio, coarse, medium, fine):
 def restriction(fine, coarse):
   """Restriction of the solution from a fine grid onto a coarse grid.
 
-  Arguments
-  ---------
-  fine, coarse -- fine and coarse numerical solutions
+  Parameters
+  ----------
+  fine, coarse: ioPetIBM.Field
+    Fine and coarse numerical solutions.
+
+  Returns
+  -------
+  fine_on_coarse: ioPetIBM.Field
+    The solution on the fine grid restricted to the coarse grid.
   """
   def intersection(a, b, tolerance=1.0E-06):
     return numpy.any(numpy.abs(a-b[:, numpy.newaxis]) <= tolerance, axis=0)
@@ -170,4 +182,6 @@ def main():
 
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

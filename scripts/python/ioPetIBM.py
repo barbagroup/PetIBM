@@ -16,20 +16,30 @@ import PetscBinaryIO
 class Field(object):
   """Contains information about a field (pressure for example)."""
   def __init__(self, x=None, y=None, z=None, values=None):
-    """Initializes the field by its grid and its values."""
+    """Initializes the field by its grid and its values.
+
+    Parameters
+    ----------
+    x, y, z: None or Numpy arrays
+      Coordinates of the grid-nodes in each direction.
+    value: None or Numpy array
+      Nodal values of the field.
+    """
     self.x, self.y, self.z = x, y, z
     self.values = values
 
 
-def get_time_steps(case_directory, time_steps_range=[None, None, None]):
+def get_time_steps(case_directory, time_steps_range=[]):
   """Returns a list of the time-steps to post-process.
 
-  Arguments
-  ---------
-  case_directory -- directory of the simulation
-  time_steps_range -- initial, final and stride of the time-steps (default None)
+  Parameters
+  ----------
+  case_directory: str
+    Directory of the simulation.
+  time_steps_range: list(int)
+    Initial, final and stride of the time-steps to consider.
   """
-  if any(time_steps_range):
+  if len(time_steps_range) == 3:
     return range(time_steps_range[0],
                  time_steps_range[1]+1,
                  time_steps_range[2])
@@ -41,9 +51,15 @@ def get_time_steps(case_directory, time_steps_range=[None, None, None]):
 def read_grid(case_directory):
   """Reads the coordinates from the file grid.txt.
 
-  Arguments
-  ---------
-  case_directory -- directory of the simulation
+  Parameters
+  ----------
+  case_directory: str
+    Directory of the simulation.
+
+  Returns
+  -------
+  grid: Numpy array
+    Coordinates of the grid-nodes in each direction.
   """
   print('Read the mesh grid ...')
   grid_path = '{}/grid.txt'.format(case_directory)
@@ -56,12 +72,21 @@ def read_grid(case_directory):
 def read_velocity(case_directory, time_step, coords, periodic=[]):
   """Reads the velocity field at a given time-step.
 
-  Arguments
-  ---------
-  case_directory -- directory of the simulation
-  time_step -- time-step at which the field will be read
-  coords -- coordinates in each direction
-  periodic -- list of directions with periodic boundary conditions (default [])
+  Parameters
+  ----------
+  case_directory: str
+    Directory of the simulation.
+  time_step: int
+    Time-step at which the field will be read.
+  coords: Numpy array
+    Coordinates in each direction.
+  periodic: list(str)
+    List of directions with periodic boundary conditions.
+
+  Returns
+  -------
+  field_vector: list(Field)
+    List containing the velocity field in each direction.
   """
   print('Read the velocity field at time-step {} ...'.format(time_step))
   dim3 = (True if len(coords) == 3 else False)
@@ -127,11 +152,19 @@ def read_velocity(case_directory, time_step, coords, periodic=[]):
 def read_pressure(case_directory, time_step, coords):
   """Reads the pressure fields from file given the time-step.
 
-  Arguments
-  ---------
-  case_directory -- directory of the simulation
-  time_step -- time-step at which the field will be read
-  n -- list of number of cells in each direction
+  Parameters
+  ----------
+  case_directory: str
+    Directory of the simulation.
+  time_step: int
+    Time-step at which the field will be read.
+  coords: Numpy array
+    Grid coordinates in each direction.
+
+  Returns
+  -------
+  pressure: Field
+    The pressure field.
   """
   print('Read the pressure field at time-step {} ...'.format(time_step))
   dim3 = (True if len(coords) == 3 else False)
@@ -167,14 +200,21 @@ def write_vtk(field, case_directory, time_step, name,
               stride=1):
   """Writes the field in a .vtk file.
 
-  Arguments
-  ---------
-  field -- field to write
-  case_directory -- directory of the simulation
-  time_step -- time-step to write
-  name -- name of the field
-  view -- rectangular of the domain to write (default 'whole domain')
-  stride -- stride at which the field is written (default 1)
+  Parameters
+  ----------
+  field: Field
+    Field to write.
+  case_directory: str
+    Directory of the simulation.
+  time_step: int
+    Time-step to write.
+  name: str
+    Name of the field.
+  view: list(float)
+    Bottom-left and top-right coordinates of the rectangulat view to write;
+    default: the whole domain is written.
+  stride: int
+    Stride at which the field is written; default: 1.
   """
   print('Write the {} field into .vtk file ...'.format(name))
   if type(field) is not list:

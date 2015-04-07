@@ -17,9 +17,10 @@ class Point(object):
   def __init__(self, x, y, z=None):
     """Initializes the position of the point.
     
-    Arguments
-    ---------
-    x, y, z -- coordinates of the point (default: z=0.0)
+    Parameters
+    ----------
+    x, y, z: float
+      Coordinates of the point.
     """
     self.dimensions = (2 if z == None else 3)
     self.x, self.y, self.z = x, y, z
@@ -32,6 +33,18 @@ class Point(object):
       return numpy.array([self.x, self.y, self.z])
 
   def distance(self, point=None):
+    """Computes the distance between the point and another one.
+
+    Parameters
+    ----------
+    point: Point or None
+      The other point.
+
+    Returns
+    -------
+    distance: float
+      The distance between the two points.
+    """
     if not point:
       raise ValueError('a point should be given to compute the distance')
     elif point.dimensions != self.dimensions:
@@ -42,11 +55,14 @@ class Point(object):
                roll=0.0, yaw=0.0, pitch=0.0, mode='deg'):
     """Performs an intrinsic rotation of the point.
     
-    Arguments
-    ---------
-    center -- center of rotation (default None)
-    roll, yaw, pitch -- angles of rotation (default 0.0, 0.0, 0.0)
-    mode -- anlges in degrees (deg) or radians (rad) (default deg)
+    Parameters
+    ----------
+    center: None or Point
+      Center of rotation.
+    roll, yaw, pitch: float
+      Angles of rotation in radians or degrees; default: 0.0, 0.0, 0.0.
+    mode: str
+      Anlges in degrees ('deg') or radians ('rad'); default: 'deg'.
     """
     if center:
       center = center.as_array()
@@ -76,10 +92,10 @@ class Point(object):
   def translation(self, displacement=[0.0, 0.0, 0.0]):
     """Translates the point.
     
-    Arguments
-    ---------
-    displacement -- displacement in each direction 
-                    (default [0.0, 0.0, 0.0])
+    Parameters
+    ----------
+    displacement: list(float)
+      Displacement in each direction; default: [0.0, 0.0, 0.0].
     """
     self.x += displacement[0]
     self.y += displacement[1]
@@ -88,16 +104,18 @@ class Point(object):
 
 
 class Geometry(object):
+  """Contains information about a geometry."""
   dimensions = None
 
-  """Contains information about a geometry."""
   def __init__(self, points=None, file_path=None):
     """Initializes the geometry with points.
     
-    Arguments
-    ---------
-    points -- list of points (default None)
-    file_path -- path of the file with coordinates (default None)
+    Parameters
+    ----------
+    points: None or list(Point)
+      List of points that defines the geometry.
+    file_path: None or str
+      Path of the file with coordinates.
     """
     if points:
       self.points = points
@@ -110,9 +128,10 @@ class Geometry(object):
   def read_from_file(self, file_path):
     """Reads the coordinates of the geometry from a file.
     
-    Arguments
-    ---------
-    file_path -- path of the coordinates file
+    Parameters
+    ----------
+    file_path: str
+      Path of the file that contains list of coordinates.
     """
     if not self.dimensions:
       print('\nGet the dimension of the geometry ...')
@@ -126,17 +145,22 @@ class Geometry(object):
     with open(file_path, 'r') as infile:
       coords = numpy.loadtxt(infile, dtype=float, skiprows=1)
     self.points = [Point(*coord) for coord in coords]
-    
-
     self.points_initial = copy.deepcopy(self.points)
           
   def gather_coordinate(self, component, position='current'):
     """Gathers a given component of all points into a Numpy array.
     
-    Arguments
-    ---------
-    component -- component of the point to look for
-    position -- position of the body (default current)
+    Parameters
+    ----------
+    component: str
+      Component of the point to look for ('x', 'y' or 'z').
+    position: str
+      Position of the body ('current' or 'initial'); default 'current'.
+
+    Returns
+    -------
+    array: Numpy array
+      Array with the appropriate component of all points defining the geometry.
     """
     if position == 'current':
       return numpy.array([getattr(point, component) 
@@ -148,10 +172,12 @@ class Geometry(object):
   def broadcast_coordinate(self, array, component):
     """Broadcasts Numpy array elemens to point coordinate.
     
-    Arguments
-    ---------
-    array -- Numpy array to broadcast
-    component -- point's component to be filled
+    Parameters
+    ----------
+    array: Numpy array
+      Array to broadcast to a component of all points.
+    component: str
+      Point's component to be filled.
     """
     for i, point in enumerate(self.points):
       setattr(self.points[i], component, array[i])
@@ -166,10 +192,10 @@ class Geometry(object):
   def translation(self, displacement=[0.0, 0.0, 0.0]):
     """Translates the geometry.
     
-    Arguments
-    ---------
-    displacement -- displacement in each direction 
-                    (default [0.0, 0.0, 0.0])
+    Parameters
+    ----------
+    displacement: list(float)
+      Displacement in each direction; default: [0.0, 0.0, 0.0].
     """
     if not any(displacement):
       return
@@ -182,11 +208,14 @@ class Geometry(object):
                roll=0.0, yaw=0.0, pitch=0.0, mode='deg'):
     """Rotates the geometry.
     
-    Arguments
-    ---------
-    center -- center of rotation (default None)
-    roll, yaw, pitch -- angles of rotation (default 0.0, 0.0, 0.0)
-    mode -- angles in degrees (deg) or radians (rad) (default deg)
+    Parameters
+    ----------
+    center: None or Point
+      Center of rotation.
+    roll, yaw, pitch: float
+      Angles of rotation; default: 0.0, 0.0, 0.0.
+    mode: str
+      Angles in degrees ('deg') or radians ('rad'); default: 'deg'.
     """
     if not any([roll, yaw, pitch]):
       return
@@ -200,9 +229,10 @@ class Geometry(object):
   def scale(self, ratio=1.0):
     """Scales the geometry.
     
-    Arguments
-    ---------
-    ratio -- scaling ratio (default 1.0)
+    Parameters
+    ----------
+    ratio: float
+      Scaling ratio; default: 1.0.
     """
     if ratio == 1.0:
       return
@@ -216,9 +246,10 @@ class Geometry(object):
   def write(self, file_path='{}/new_body'.format(os.getcwd())):
     """Writes the coordinates into a file.
     
-    Arguments
-    ---------
-    file_path -- path of the ouput file (default ./new_body)
+    Parameters
+    ----------
+    file_path: str
+      Path of the ouput file; default: ./new_body.
     """
     print('\nWrite coordinates into file: {}'.format(file_path))
     x = self.gather_coordinate('x')
@@ -240,15 +271,23 @@ class Geometry2d(Geometry):
   def __init__(self, points=None, file_path=None):
     """Initializes the geometry.
     
-    Arguments
-    ---------
-    points -- list of points (default None)
-    file_path -- path of the file with coordinates (default None)
+    Parameters
+    ----------
+    points: None or list(Point)
+      List of points that defines the geoemtry.
+    file_path: None or str
+      Path of the file with coordinates.
     """
     Geometry.__init__(self, points, file_path)
 
   def perimeter(self):
-    """Returns the perimeter of the closed geometry."""
+    """Returns the perimeter of the closed geometry.
+
+    Returns
+    -------
+    perimeter: float
+      Perimeter of the closed geometry.
+    """
     x, y = self.gather_coordinate('x'), self.gather_coordinate('y')
     x, y = numpy.append(x, x[0]), numpy.append(y, y[0])
     return numpy.sum(numpy.sqrt((x[1:] - x[:-1])**2 + (y[1:] - y[:-1])**2))
@@ -256,12 +295,21 @@ class Geometry2d(Geometry):
   def extrusion(self, limits=[-0.5, 0.5], n=None, ds=None, force=False):
     """Extrudes the two-dimensional geometry in the z-direction.
     
-    Arguments
-    ---------
-    limits -- limits of the extrusion (default [-0.5, 0.5])
-    n -- number of divisions in the z-direction (default None)
-    ds -- target segment-legnth (default None)
-    force -- forces the extrusion to the limits prescribed (default False)
+    Parameters
+    ----------
+    limits: list(float)
+      Limits of the extrusion; default: [-0.5, 0.5].
+    n:: None or int
+      Number of divisions in the z-direction.
+    ds: None or float
+      Desired segment-legnth.
+    force: bool
+      Forces the extrusion to the limits prescribed; default: False.
+
+    Returns
+    -------
+    geometry3d: Geometry3d
+      An instance of a three dimensional geometry.
     """
     print('\nExtrude the geometry in the z-direction...')
     if not (ds or n):
@@ -283,10 +331,12 @@ class Geometry2d(Geometry):
   def discretization(self, n=None, ds=None):
     """Discretizes the geometry.
   
-    Arguments
-    ---------
-    n -- number of divisions (default None)
-    ds -- target segment-length (default None)
+    Parameters
+    ----------
+    n: None or int
+      Number of divisions.
+    ds: None or float
+      Desired segment-length.
     """
     if not (n or ds):
       return
@@ -322,8 +372,6 @@ class Geometry2d(Geometry):
         while distance < ds and next < last:
           next += 1
           distance = start.distance(points_old[next])
-        #if next == last:
-        #  break
         # gather coordinates as array
         previous, end = points_old[next-1].as_array(), points_old[next].as_array()
         # interpolate on segment
@@ -371,14 +419,18 @@ class Line(Geometry2d):
   """Contains information about a line."""
   def __init__(self, start=Point(0.0, 0.0), length=1.0, 
                n=None, ds=None):
-    """Initializes the line.
+    """Creates the line.
     
-    Arguments
-    ---------
-    start -- starting point of the line (default Point(0.0, 0.0))
-    length -- length of the line (default 1.0)
-    n -- number of divisions on the line (default None)
-    ds -- target segment length (default None)
+    Parameters
+    ----------
+    start: Point
+      Starting point of the line; default: Point(0.0, 0.0).
+    length: float
+      Length of the line; default: 1.0.
+    n: None or int
+      Number of divisions on the line.
+    ds: None or float
+      Desired segment-length.
     """
     self.start = start
     self.length = length
@@ -403,14 +455,18 @@ class Circle(Geometry2d):
   """Contains information about a circular geometry."""
   def __init__(self, center=Point(0.0, 0.0), radius=0.5, 
                n=None, ds=None):
-    """Initializes the circle.
+    """Creates the circle.
     
-    Arguments
-    ---------
-    center -- center of the circle (default Point(0.0, 0.0))
-    radius -- radius of the circle (default 0.5)
-    n -- number of divisions on the circle (default None)
-    ds -- target segment-length (default None)
+    Parameters
+    ----------
+    center: Point
+      Center of the circle; default: Point(0.0, 0.0).
+    radius: float
+      Radius of the circle; default: 0.5.
+    n: None or int
+      Number of divisions.
+    ds: None or float
+      Desired segment-length.
     """
     self.center = center
     self.radius = radius
@@ -437,15 +493,20 @@ class Rectangle(Geometry2d):
   def __init__(self, 
                bottom_left=Point(0.0, 0.0), top_right=Point(1.0, 1.0),
                nx=None, ny=None, ds=None):
-    """Initializes the rectangle.
+    """Creates the rectangle.
     
-    Arguments
-    ---------
-    bottom_left -- bottom-left point (default Point(0.0, 0.0))
-    top_right -- top-right point (default Point(1.0, 1.0))
-    nx -- number of divisions in the x-direction (default None)
-    ny -- number of divisions in the y-direction (default None)
-    ds -- target segment-length (default None)
+    Parameters
+    ----------
+    bottom_left: Point
+      Bottom-left point; default: Point(0.0, 0.0).
+    top_right: Point
+      Top-right point; default: Point(1.0, 1.0).
+    nx: None or int
+      Number of divisions in the x-direction.
+    ny: None or int
+      Number of divisions in the y-direction.
+    ds: None or float
+      Desired segment-length.
     """
     self.bottom_left, self.top_right = bottom_left, top_right
     self.nx, self.ny, self.ds = nx, ny, ds
@@ -482,12 +543,14 @@ class Geometry3d(Geometry):
   dimensions = 3
   
   def __init__(self, points=None, file_path=None):
-    """Initializes the geometry with points.
+    """Initializes the three-dimensional geometry with points.
     
-    Arguments
-    ---------
-    points -- list of points (default None)
-    file_path -- path of the file with coordinates (default None)
+    Parameters
+    ----------
+    points: None or list(Point)
+      List of points that defines the geometry.
+    file_path: None or str
+      Path of the file with coordinates.
     """
     Geometry.__init__(self, points, file_path)
   
@@ -522,14 +585,18 @@ class Sphere(Geometry3d):
   """Contains information about a spherical geometry."""
   def __init__(self, center=Point(0.0, 0.0, 0.0), radius=0.5, 
                n=None, ds=None):
-    """Initializes the sphere.
+    """Creates the sphere.
     
-    Arguments
-    ---------
-    center -- center of the sphere (default Point(0.0, 0.0, 0.0))
-    radius -- radius of the sphere (default 0.5)
-    n -- number of divisions ont eh great-circle (default 10)
-    ds -- target segment length (default None)
+    Parameters
+    ----------
+    center: Point
+      Center of the sphere; default: Point(0.0, 0.0, 0.0).
+    radius: float
+      Radius of the sphere; default: 0.5.
+    n: None or int
+      Number of divisions on the great-circle of the sphere.
+    ds: None or float
+      Desired segment length.
     """
     self.center = center
     self.radius = radius

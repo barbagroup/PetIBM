@@ -41,29 +41,32 @@ def read_inputs():
 def main():
   """Cleans a PetIBM simulation."""
   # parse command-line
-  parameters = read_inputs()
+  args = read_inputs()
   # get different paths to delete
   paths = {}
-  if parameters.images:
-    paths['images'] = '{}/images'.format(parameters.case_directory)
-  if parameters.data:
-    paths['data'] = '{}/data'.format(parameters.case_directory)
-  if parameters.grid:
-    paths['grid'] = '{}/grid.txt'.format(parameters.case_directory)
-  if parameters.solutions:
-    paths['solutions'] = '{}/0*'.format(parameters.case_directory)
-  if parameters.forces:
-    paths['forces'] = '{}/forces.txt'.format(parameters.case_directory)
-  if parameters.vtk_files:
-    paths['vtk_files'] = '{}/vtk_files'.format(parameters.case_directory)
-  if parameters.logs:
-    paths['logs'] = '{0}/iterationCount.txt {0}/performanceSummary.txt'.format(parameters.case_directory) 
+  if args.images:
+    paths['images'] = '{}/images'.format(args.case_directory)
+  if args.data:
+    paths['data'] = '{}/data'.format(args.case_directory)
+  if args.grid:
+    paths['grid'] = '{}/grid.txt'.format(args.case_directory)
+  if args.solutions:
+    paths['solutions'] = '{}/0*'.format(args.case_directory)
+  if args.forces:
+    paths['forces'] = '{}/forces.txt'.format(args.case_directory)
+  if args.vtk_files:
+    paths['vtk_files'] = '{}/vtk_files'.format(args.case_directory)
+  if args.logs:
+    paths['logs'] = ('{0}/iterationCount.txt '
+                     '{0}/performanceSummary.txt'.format(args.case_directory))
   # delete appropriate files/folders
-  print('[case-directory] {}'.format(parameters.case_directory))
+  print('[case-directory] {}'.format(args.case_directory))
   for key, path in paths.iteritems():
     print('\t-> removing {} ...'.format(key))
     os.system('rm -rf {}'.format(path))
 
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

@@ -126,8 +126,8 @@ def main():
   if args.show:
       body.plot()
 
-  print('\n[{}] DONE'.format(os.path.basename(__file__)))
-
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

@@ -61,9 +61,15 @@ def read_inputs():
 def vorticity(u, v):
   """Computes the vorticity field for a two-dimensional simulation.
 
-  Arguments
-  ---------
-  u, v -- velocity fields
+  Parameters
+  ----------
+  u, v: ioPetIBM.Field instances
+    Velocity fields.
+
+  Returns
+  -------
+  vorticity: ioPetIBM.Field
+    The vorticity field.
   """
   print('\tCompute the vorticity field ...')
   mask_x = numpy.where(numpy.logical_and(u.x > v.x[0], u.x < v.x[-1]))[0]
@@ -82,12 +88,17 @@ def plot_contour(field, field_range, image_path,
                  view=[float('-inf'), float('-inf'), float('inf'), float('inf')]): 
   """Plots and saves the field.
 
-  Arguments
-  ---------
-  field -- intstance of class Field with node coordinates and values
-  field_range -- contour values to plot
-  image_path -- path of the image to save
-  view -- rectangular view of the domain (default 'whole domain')
+  Parameters
+  ----------
+  field: ioPetIBM.Field instance
+    Nodes and values of the field.
+  field_range: list(float)
+    Min, max and number of countours to plot.
+  image_path: str
+    Path of the image to save.
+  view: list(float)
+    Bottom-left and top-right coordinates of the rectangular view to plot;
+    default: the whole domain.
   """
   print('\tPlot the {} contour ...'.format(field.label))
   fig, ax = pyplot.subplots()
@@ -168,8 +179,8 @@ def main():
       plot_contour(p, args.pressure_range, image_path, 
                    view=args.bottom_left+args.top_right)
 
-  print('\n[{}] DONE'.format(os.path.basename(__file__)))
-
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

@@ -142,8 +142,8 @@ def main():
                   header='v-velocity along horizontal centerline\n'
                          'Re={}, mesh: {}x{}\n[x]\t[v]'.format(Re, nx, ny))
 
-  print('[{}] DONE'.format(os.path.basename(__file__)))
-
 
 if __name__ == "__main__":
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

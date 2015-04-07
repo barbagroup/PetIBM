@@ -55,11 +55,17 @@ def compute_order(ratio, coarse, medium, fine):
   """Computes the observed order of convergence 
   using the solution on three grids.
 
-  Arguments
-  ---------
-  ratio -- grid-refinement ratio
-  coarse, medium, fine -- solutions on three consecutive grids 
-                          restricted on the coarsest grid
+  Parameters
+  ----------
+  ratio: float
+    Grid-refinement ratio.
+  coarse, medium, fine: Numpy array
+    Solutions on three consecutive grids restricted on the coarsest grid.
+
+  Returns
+  -------
+  alpha: float
+    The observed order of convergence.
   """
   return ( math.log(numpy.linalg.norm(medium-coarse)
                     / numpy.linalg.norm(fine-medium))
@@ -69,9 +75,15 @@ def compute_order(ratio, coarse, medium, fine):
 def restriction(fine, coarse):
   """Restriction of the solution from a fine grid onto a coarse grid.
 
-  Arguments
-  ---------
-  fine, coarse -- fine and coarse numerical solutions
+  Parameters
+  ----------
+  fine, coarse: ioPetIBM.Field
+    Fine and coarse numerical solutions.
+
+  Returns
+  -------
+  fine_on_coarse: ioPetIBM.Field
+    The solution on the fine grid restricted to the coarse grid.
   """
   def intersection(a, b, tolerance=1.0E-06):
     return numpy.any(numpy.abs(a-b[:, numpy.newaxis]) <= tolerance, axis=0)
@@ -86,12 +98,21 @@ def restriction(fine, coarse):
 def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
   """Computes the analytical solution of the 2D Taylor-Green vortex.
 
-  Arguments
-  ---------
-  x, y -- coordinates in the x- and y- directions
-  V -- amplitude of the sinusoidal velocity field (default 1.0)
-  time -- time at which the solution is computed (default 0.0)
-  Re -- Reynolds number of the flow (default 100.0)
+  Parameters
+  ----------
+  x, y: Numpy array
+    Coordinates in the x- and y- directions.
+  V: float
+    Amplitude of the sinusoidal velocity field; default: 1.0.
+  time: float
+    Time at which the solution is computed; default: 0.0.
+  Re: float
+    Reynolds number of the flow; default: 100.0.
+
+  Returns
+  -------
+  u, v, p, w: Numpy array
+    Analytical solution (velocities, pressure and vorticity).
   """
   X1, X2 = 0.0, 2.0*math.pi
   x = X1 + (X2-X1)*(x-x[0])/(x[-1]-x[0])
@@ -111,12 +132,16 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
 def plot_field(x, y, u, name, image_path):
   """Plots the two-dimensional field.
 
-  Arguments
-  ---------
-  x, y -- x- and y- coordinates
-  u -- field to plot
-  name -- description of the field variable
-  image_path -- path of the file to save
+  Parameters
+  ----------
+  x, y: Numpy array
+    x- and y- coordinates.
+  u: Numpy array
+    Field to plot.
+  name: str
+    Description of the field variable.
+  image_path: str
+    Path of the file to save.
   """
   fig, ax = pyplot.subplots()
   pyplot.xlabel('$x$')
@@ -263,8 +288,8 @@ def main():
     if args.show:
       pyplot.show()
 
-  print('\n[{}] DONE'.format(os.path.basename(__file__)))
-
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

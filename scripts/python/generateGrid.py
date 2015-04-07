@@ -35,9 +35,15 @@ def read_inputs():
 def read_parameters_file(parameters):
   """Creates a database with all grid parameters read from file.
 
-  Arguments
-  ---------
-  parameters -- database with command-line arguments
+  Parameters
+  ----------
+  parameters: Namespace
+    Database with command-line arguments.
+
+  Returns
+  -------
+  database: dict
+    Database as a dictionary.
   """
   database = {'file_path': parameters.parameters_path,
               'case_directory': parameters.case_directory,
@@ -60,9 +66,10 @@ def get_ratios(database):
   """Computes stretching ratio and number of cells 
   in each direction for each subdomain.
 
-  Arguments
-  ---------
-  database -- dictionary containing the grid parameters
+  Parameters
+  ----------
+  database: dict
+    Dictionary containing the grid parameters.
   """
   compute_ratio('x', database)
   compute_ratio('y', database)
@@ -75,12 +82,15 @@ def get_ratios(database):
 def compute_ratio(direction, database):
   """Computes the aspect ratio for each sub-domain.
 
-  Arguments
-  ---------
-  direction -- direction name
-  database -- contains all grid parameters
+  Parameters
+  ----------
+  direction: str
+    Direction name ('x', 'y' or 'z').
+  database: dict
+    Dictionary with the grid parameters.
   """
   def compute_stretched_ratio():
+    """Computes the stretching ratio and number of cells."""
     precision = database['precision']
     current_precision = 1
     next_ratio = 2.0
@@ -128,11 +138,12 @@ def compute_ratio(direction, database):
 
 
 def write_yaml_file(database):
-  """Writes cartesianMesh.yaml into the case directory.
+  """Writes the file cartesianMesh.yaml into the case directory.
 
-  Arguments
-  ---------
-  database -- contains all grid parameters
+  Parameters
+  ----------
+  database: dict
+    Dictionary with all grid parameters.
   """
   file_path = '{}/cartesianMesh.yaml'.format(database['case_directory'])
   with open(file_path, 'w') as outfile:
@@ -151,11 +162,13 @@ def write_yaml_file(database):
 
 def main():
   """Creates cartesianMesh.yaml file for stretched grid."""
-  parameters = read_inputs()
-  database = read_parameters_file(parameters)
+  args = read_inputs()
+  database = read_parameters_file(args)
   get_ratios(database)
   write_yaml_file(database)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

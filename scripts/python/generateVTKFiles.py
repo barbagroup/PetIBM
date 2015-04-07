@@ -48,9 +48,15 @@ def read_inputs():
 def interpolate_cell_centers(velocity):
   """Interpolates the velocity field at the cell-centers.
 
-  Arguments
-  ---------
-  velocity -- velocity field on a staggered grid
+  Parameters
+  ----------
+  velocity: list(ioPetIBM.Field)
+    Velocity field on a staggered grid.
+
+  Returns
+  -------
+  velocity: list(ioPetIBM.Field)
+    Velocity field at cell-centers.
   """
   dim3 = (True if len(velocity) == 3 else False)
   x_centers, y_centers = velocity[1].x[1:-1], velocity[0].y[1:-1]
@@ -108,8 +114,8 @@ def main():
                          view=[args.bottom_left, args.top_right],
                          stride=args.stride)
 
-  print('\n[{}] DONE'.format(os.path.basename(__file__)))
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

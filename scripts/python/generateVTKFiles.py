@@ -34,7 +34,7 @@ def read_inputs():
                       default=[float('inf'), float('inf'), float('inf')],
                       help='coordinates of the top-right corner')
   parser.add_argument('--time-steps', '-t', dest='time_steps', type=int,
-                      nargs='+', default=[None, None, None],
+                      nargs='+', default=[],
                       help='time-steps to convert (start, end, increment)')
   parser.add_argument('--stride', '-s', dest='stride', type=int, default=1,
                       help='stride at which vector are written')

@@ -1,0 +1,427 @@
+/***************************************************************************//**
+ * \file ConvectionTerm.cpp
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \brief Implementation of the methods of the class \c ConvectionTerm.
+ */
+
+
+#include "ConvectionTerm.h"
+
+#include <sstream>
+
+#include <petscdmcomposite.h>
+
+
+/**
+ * \brief Constructor - Initializes pointers.
+ */
+template <PetscInt dim>
+ConvectionTerm<dim>::ConvectionTerm(std::string folder, 
+                                  FlowDescription *FD, 
+                                  SimulationParameters *SP, 
+                                  CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
+{
+  HExact = PETSC_NULL;
+}
+
+/**
+ * \brief Initializes the solver for the diffusion equation.
+ *
+ * The explicit time-intregration coefficients for the convective terms 
+ * are set to zero.
+ */
+template <PetscInt dim>
+PetscErrorCode ConvectionTerm<dim>::initialize()
+{
+  PetscErrorCode ierr;
+
+  ierr = NavierStokesSolver<dim>::initialize(); CHKERRQ(ierr);
+  NavierStokesSolver<dim>::simParams->gamma = 1.0;
+  NavierStokesSolver<dim>::simParams->zeta = 0.0;
+  NavierStokesSolver<dim>::simParams->alphaExplicit = 0.0;
+
+  return ierr;
+}
+
+/**
+ * \brief Initializes the fluxes with a sinusoidal solution.
+ *
+ * In terms of velocity, the initial conditions are:
+ * \f[ u = \sin(\pi x)*\sin(\pi y)*\sin(\pi z) + 1.0 \f]
+ * \f[ v = \sin(\pi x)*\sin(\pi y)*\sin(\pi z) \f]
+ * \f[ w = \sin(\pi x)*\sin(\pi y)*\sin(\pi z) \f]
+ * where (x, y, z) are the coordinates of the node.
+ * To get the fluxes, the discrete velocities are multiplied by the area of 
+ * the appropriate cell face.
+ */
+template <PetscInt dim>
+PetscErrorCode ConvectionTerm<dim>::initializeFluxes()
+{
+  return 0;
+}
+
+template <>
+PetscErrorCode ConvectionTerm<2>::initializeFluxes()
+{
+  PetscErrorCode ierr;
+
+  PetscInt mBegin, nBegin,  // global indices of local lower-left corner
+           m, n,            // number of local elements in each direction
+           i, j;            // iteration indices
+  PetscReal x, y;           // coordinates of a node
+
+  Vec qxGlobal, qyGlobal;
+  ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+
+  // fluxes in x-direction
+  PetscReal **qx;
+  ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  PetscReal u;  // value of u-velocity
+  for (j=nBegin; j<nBegin+n; j++)
+  {
+    for (i=mBegin; i<mBegin+m; i++)
+    {
+      x = mesh->x[i+1];
+      y = 0.5*(mesh->y[j]+mesh->y[j+1]);
+      u = sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0;
+      qx[j][i] = u*mesh->dy[j];
+    }
+  }
+  ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
+
+  // fluxes in y-direction
+  PetscReal **qy;
+  ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  PetscReal v;  // value of v-velocity
+  for (j=nBegin; j<nBegin+n; j++)
+  {
+    for (i=mBegin; i<mBegin+m; i++)
+    {
+      x = 0.5*(mesh->x[i]+mesh->x[i+1]);
+      y = mesh->y[j+1];
+      v = sin(PETSC_PI*x)*sin(PETSC_PI*y);
+      qy[j][i] = v*mesh->dx[i];
+    }
+  }
+  ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
+
+  ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+
+  return ierr;
+}
+
+template <>
+PetscErrorCode ConvectionTerm<3>::initializeFluxes()
+{
+  PetscErrorCode ierr;
+
+  PetscInt mBegin, nBegin, pBegin,  // global indices of local lower-left corner
+           m, n, p,                 // number of local elements in each direction
+           i, j, k;                 // iteration indices
+  PetscReal x, y, z;                // coordinates of a node
+
+  Vec qxGlobal, qyGlobal, qzGlobal;
+  ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
+
+  // fluxes in x-direction
+  PetscReal ***qx;
+  ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  PetscReal u;  // value of u-velocity
+  for (k=pBegin; k<pBegin+p; k++)
+  {
+    for (j=nBegin; j<nBegin+n; j++)
+    {
+      for (i=mBegin; i<mBegin+m; i++)
+      {
+        x = mesh->x[i+1];
+        y = 0.5*(mesh->y[j]+mesh->y[j+1]);
+        z = 0.5*(mesh->z[k]+mesh->z[k+1]);
+        u = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0;
+        qx[k][j][i] = u*mesh->dy[j]*mesh->dz[k];
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
+
+  // fluxes in y-direction
+  PetscReal ***qy;
+  ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  PetscReal v;  // value of v-velocity
+  for (k=pBegin; k<pBegin+p; k++)
+  {
+    for (j=nBegin; j<nBegin+n; j++)
+    {
+      for (i=mBegin; i<mBegin+m; i++)
+      {
+        x = 0.5*(mesh->x[i]+mesh->x[i+1]);
+        y = mesh->y[j+1];
+        z = 0.5*(mesh->z[k]+mesh->z[k+1]);
+        v = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        qy[k][j][i] = v*mesh->dx[i]*mesh->dz[k];
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
+
+  // fluxes in z-direction
+  PetscReal ***qz;
+  ierr = DMDAVecGetArray(wda, qzGlobal, &qz); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  PetscReal w;  // value of w-velocity
+  for (k=pBegin; k<pBegin+p; k++)
+  {
+    for (j=nBegin; j<nBegin+n; j++)
+    {
+      for (i=mBegin; i<mBegin+m; i++)
+      {
+        x = 0.5*(mesh->x[i]+mesh->x[i+1]);
+        y = 0.5*(mesh->y[j]+mesh->y[j+1]);
+        z = mesh->z[k+1];
+        w = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        qz[k][j][i] = w*mesh->dx[i]*mesh->dy[j];
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(wda, qzGlobal, &qz); CHKERRQ(ierr);
+
+  ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
+
+  return ierr;
+}
+
+/**
+ * \brief Computes the exact solution explicit convective terms.
+ */
+template <PetscInt dim>
+PetscErrorCode ConvectionTerm<dim>::calculateExactSolution()
+{
+  return 0;
+}
+
+template <>
+PetscErrorCode ConvectionTerm<2>::calculateExactSolution()
+{
+  PetscErrorCode ierr;
+  
+  PetscInt mBegin, nBegin,  // global indices of local lower-left node
+           m, n,            // number of local elements in each direction
+           i, j;            // iteration indices
+  
+  PetscReal x, y;           // coordinates of a node
+  
+  PetscReal dt = simParams->dt,       // time-increment
+            gamma = simParams->gamma; // explicit time-scheme coefficient for convective terms
+
+  ierr = VecDuplicate(q, &HExact); CHKERRQ(ierr);
+  Vec HExactXGlobal, HExactYGlobal;
+  ierr = DMCompositeGetAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal); CHKERRQ(ierr);
+
+  // exact explicit terms for u-nodes
+  PetscReal **HExactX;
+  ierr = DMDAVecGetArray(uda, HExactXGlobal, &HExactX);
+  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  PetscReal u, uConvection; // u-velocity value and convection value
+  for (j=nBegin; j<nBegin+n; j++)
+  {
+    for (i=mBegin; i<mBegin+m; i++)
+    {
+      x = mesh->x[i+1];
+      y = 0.5*(mesh->y[j]+mesh->y[j+1]);
+      u = sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0;
+      uConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y))*(sin(PETSC_PI*x)*cos(PETSC_PI*y));
+      HExactX[j][i] = u/dt - gamma*uConvection;
+    }
+  }
+  ierr = DMDAVecRestoreArray(uda, HExactXGlobal, &HExactX); CHKERRQ(ierr);
+
+  // exact explicit terms for v-nodes
+  PetscReal **HExactY;
+  ierr = DMDAVecGetArray(vda, HExactYGlobal, &HExactY);
+  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  PetscReal v, vConvection;  // v-velocity value and convection value
+  for (j=nBegin; j<nBegin+n; j++)
+  {
+    for (i=mBegin; i<mBegin+m; i++)
+    {
+      x = 0.5*(mesh->x[i]+mesh->x[i+1]);
+      y = mesh->y[j+1];
+      v = sin(PETSC_PI*x)*sin(PETSC_PI*y);
+      uConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y))*(sin(PETSC_PI*x)*cos(PETSC_PI*y));
+      HExactY[j][i] = v/dt - gamma*vConvection;
+    }
+  }
+  ierr = DMDAVecRestoreArray(vda, HExactYGlobal, &HExactY); CHKERRQ(ierr);
+
+  ierr = DMCompositeRestoreAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal); CHKERRQ(ierr);
+
+  return ierr;
+}
+
+template <>
+PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
+{
+  PetscErrorCode ierr;
+  
+  PetscInt mBegin, nBegin, pBegin,  // global indices of local lower-left node
+           m, n, p,                 // number of local elements in each direction
+           i, j, k;                 // iteration indices
+  
+  PetscReal x, y, z;                // coordinates of a node
+  
+  PetscReal dt = simParams->dt,       // time-increment
+            gamma = simParams->gamma; // explicit time-scheme coefficient for convective terms
+
+  ierr = VecDuplicate(q, &HExact); CHKERRQ(ierr);
+  Vec HExactXGlobal, HExactYGlobal, HExactZGlobal;
+  ierr = DMCompositeGetAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal, &HExactZGlobal); CHKERRQ(ierr);
+
+  // exact explicit terms for u-nodes
+  PetscReal ***HExactX;
+  ierr = DMDAVecGetArray(uda, HExactXGlobal, &HExactX);
+  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  PetscReal u, uConvection;  // u-velocity value and convection value
+  for (k=pBegin; k<pBegin+p; k++)
+  {
+    for (j=nBegin; j<nBegin+n; j++)
+    {
+      for (i=mBegin; i<mBegin+m; i++)
+      {
+        x = mesh->x[i+1];
+        y = 0.5*(mesh->y[j]+mesh->y[j+1]);
+        z = 0.5*(mesh->z[k]+mesh->z[k+1]);
+        u = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0;
+        uConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*cos(PETSC_PI*z));
+        HExactX[k][j][i] = u/dt - gamma*uConvection;
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(uda, HExactXGlobal, &HExactX); CHKERRQ(ierr);
+
+  // exact explicit terms for v-nodes
+  PetscReal ***HExactY;
+  ierr = DMDAVecGetArray(vda, HExactYGlobal, &HExactY);
+  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  PetscReal v, vConvection;  // value of v-velocity and its laplacian
+  for (k=pBegin; k<pBegin+p; k++)
+  {
+    for (j=nBegin; j<nBegin+n; j++)
+    {
+      for (i=mBegin; i<mBegin+m; i++)
+      {
+        x = 0.5*(mesh->x[i]+mesh->x[i+1]);
+        y = mesh->y[j+1];
+        z = 0.5*(mesh->z[k]+mesh->z[k+1]);
+        v = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        vConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*cos(PETSC_PI*z));
+        HExactY[k][j][i] = v/dt - gamma*vConvection;
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(vda, HExactYGlobal, &HExactY); CHKERRQ(ierr);
+
+  // exact explicit terms for w-nodes
+  PetscReal ***HExactZ;
+  ierr = DMDAVecGetArray(wda, HExactZGlobal, &HExactZ);
+  ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  PetscReal w, wConvection;  // w-velocity value and convection value
+  for (k=pBegin; k<pBegin+p; k++)
+  {
+    for (j=nBegin; j<nBegin+n; j++)
+    {
+      for (i=mBegin; i<mBegin+m; i++)
+      {
+        x = 0.5*(mesh->x[i]+mesh->x[i+1]);
+        y = 0.5*(mesh->y[j]+mesh->y[j+1]);
+        z = mesh->z[k+1];
+        w = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        wConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*cos(PETSC_PI*z));
+        HExactZ[k][j][i] = w/dt - gamma*wConvection;
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(wda, HExactZGlobal, &HExactZ); CHKERRQ(ierr);
+
+  ierr = DMCompositeRestoreAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal, &HExactZGlobal); CHKERRQ(ierr);
+
+  return ierr;
+}
+
+/**
+ * \brief Computes the relative L2 norm of the difference between the numerical
+ *        and the exact solution of the explicit terms.
+ */
+template<PetscInt dim>
+PetscErrorCode ConvectionTerm<dim>::calculateRelativeError()
+{
+  PetscErrorCode ierr;
+
+  ierr = VecAXPY(NavierStokesSolver<dim>::H, -1.0, HExact);
+  PetscReal l2NormDifference;
+  ierr = VecNorm(NavierStokesSolver<dim>::H, NORM_2, &l2NormDifference); CHKERRQ(ierr);
+  PetscReal l2NormExact;
+  ierr = VecNorm(HExact, NORM_2, &l2NormExact); CHKERRQ(ierr);
+  relativeError = l2NormDifference/l2NormExact;
+
+  return ierr;
+}
+
+/**
+ * \brief Writes the number of cells and the relative error in a file.
+ *
+ * In the file already exists, the values are appended; otherwise the file 
+ * is created.
+ */
+template <PetscInt dim>
+PetscErrorCode ConvectionTerm<dim>::writeRelativeError()
+{
+  PetscErrorCode ierr;
+
+  PetscInt rank;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+  if (rank == 0)
+  {
+    std::stringstream out;
+    out << "./relative_errors_" << dim << "d.dat";
+    std::ofstream fileStream;
+    fileStream.open(out.str().c_str(), std::ios::out | std::ios::app);
+    PetscInt nCells = NavierStokesSolver<dim>::mesh->nx*NavierStokesSolver<dim>::mesh->ny;
+    if (dim == 3)
+      nCells *= NavierStokesSolver<dim>::mesh->nz;
+    fileStream << nCells << "\t" << relativeError << std::endl;
+    fileStream.close();
+  }
+
+  return ierr;
+}
+
+/**
+ * \brief Frees memory to avoid memory leaks
+ */
+template <PetscInt dim>
+PetscErrorCode ConvectionTerm<dim>::finalize()
+{
+  PetscErrorCode ierr;
+
+  if (HExact != PETSC_NULL)
+  {
+    ierr = VecDestroy(&HExact); CHKERRQ(ierr);
+  }
+  ierr = NavierStokesSolver<dim>::finalize(); CHKERRQ(ierr);
+  
+  return ierr;
+}
+
+template class ConvectionTerm<2>;
+template class ConvectionTerm<3>;

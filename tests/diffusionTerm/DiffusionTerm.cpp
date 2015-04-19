@@ -210,7 +210,9 @@ PetscErrorCode DiffusionTerm<2>::calculateExactSolution()
            m, n,            // number of local elements in each direction
            i, j;            // iteration indices
   
-  PetscReal x, y;           // coordinates of a node
+  PetscReal x, y,           // coordinates of a node
+            velocity,       // velocity value at the node
+            diffusion;      // value of the diffusive term at the node
   
   PetscReal nu = flowDesc->nu,                // viscosity
             dt = simParams->dt,               // time-increment
@@ -224,16 +226,15 @@ PetscErrorCode DiffusionTerm<2>::calculateExactSolution()
   PetscReal **rnExactX;
   ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
   ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  PetscReal u, ulap;  // value of u-velocity and its laplacian
   for (j=nBegin; j<nBegin+n; j++)
   {
     for (i=mBegin; i<mBegin+m; i++)
     {
       x = mesh->x[i+1];
       y = 0.5*(mesh->y[j]+mesh->y[j+1]);
-      u = sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0;
-      ulap = -2.0*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y);
-      rnExactX[j][i] = u/dt + alpha*nu*ulap;
+      velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0;
+      diffusion = -2.0*nu*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y);
+      rnExactX[j][i] = velocity/dt + alpha*diffusion;
     }
   }
   ierr = DMDAVecRestoreArray(uda, rnExactXGlobal, &rnExactX); CHKERRQ(ierr);
@@ -242,16 +243,15 @@ PetscErrorCode DiffusionTerm<2>::calculateExactSolution()
   PetscReal **rnExactY;
   ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
   ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  PetscReal v, vlap;  // value of v-velocity and its laplacian
   for (j=nBegin; j<nBegin+n; j++)
   {
     for (i=mBegin; i<mBegin+m; i++)
     {
       x = 0.5*(mesh->x[i]+mesh->x[i+1]);
       y = mesh->y[j+1];
-      v = sin(PETSC_PI*x)*sin(PETSC_PI*y);
-      vlap = -2.0*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y);
-      rnExactY[j][i] = v/dt + alpha*nu*vlap;
+      velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y);
+      diffusion = -2.0*nu*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y);
+      rnExactY[j][i] = velocity/dt + alpha*diffusion;
     }
   }
   ierr = DMDAVecRestoreArray(vda, rnExactYGlobal, &rnExactY); CHKERRQ(ierr);
@@ -270,7 +270,9 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
            m, n, p,                 // number of local elements in each direction
            i, j, k;                 // iteration indices
   
-  PetscReal x, y, z;                // coordinates of a node
+  PetscReal x, y, z,                // coordinates of a node
+            velocity,               // velocity value at the node
+            diffusion;              // value of the diffusive term at the node
   
   PetscReal nu = flowDesc->nu,                // viscosity
             dt = simParams->dt,               // time-increment
@@ -284,7 +286,6 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
   PetscReal ***rnExactX;
   ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
   ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  PetscReal u, ulap;  // value of u-velocity and its laplacian
   for (k=pBegin; k<pBegin+p; k++)
   {
     for (j=nBegin; j<nBegin+n; j++)
@@ -294,9 +295,9 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
         x = mesh->x[i+1];
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
         z = 0.5*(mesh->z[k]+mesh->z[k+1]);
-        u = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0;
-        ulap = -3.0*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        rnExactX[k][j][i] = u/dt + alpha*nu*ulap;
+        velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0;
+        diffusion = -3.0*nu*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        rnExactX[k][j][i] = velocity/dt + alpha*diffusion;
       }
     }
   }
@@ -306,7 +307,6 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
   PetscReal ***rnExactY;
   ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
   ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  PetscReal v, vlap;  // value of v-velocity and its laplacian
   for (k=pBegin; k<pBegin+p; k++)
   {
     for (j=nBegin; j<nBegin+n; j++)
@@ -316,9 +316,9 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = mesh->y[j+1];
         z = 0.5*(mesh->z[k]+mesh->z[k+1]);
-        v = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        vlap = -3.0*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        rnExactY[k][j][i] = (v/dt + alpha*nu*vlap) * 0.5*(mesh->dy[j]+mesh->dy[j+1]);
+        velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        diffusion = -3.0*nu*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        rnExactY[k][j][i] = velocity/dt + alpha*diffusion;
       }
     }
   }
@@ -328,7 +328,6 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
   PetscReal ***rnExactZ;
   ierr = DMDAVecGetArray(wda, rnExactZGlobal, &rnExactZ);
   ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  PetscReal w, wlap;  // value of w-velocity and its laplacian
   for (k=pBegin; k<pBegin+p; k++)
   {
     for (j=nBegin; j<nBegin+n; j++)
@@ -338,9 +337,9 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
         z = mesh->z[k+1];
-        w = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        wlap = -3.0*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        rnExactZ[k][j][i] = w/dt + alpha*nu*wlap;
+        velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        diffusion = -3.0*nu*PETSC_PI*PETSC_PI*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        rnExactZ[k][j][i] = velocity/dt + alpha*diffusion;
       }
     }
   }

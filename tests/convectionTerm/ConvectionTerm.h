@@ -19,7 +19,7 @@ template <PetscInt dim>
 class ConvectionTerm : public NavierStokesSolver<dim>
 {
 public:
-  Vec HExact;               // exact solution of the explicit convection term
+  Vec rnExact;               // exact solution of the explicit convection term
   PetscReal relativeError;  // relative error in the explicit convection term
 
   PetscErrorCode initialize();

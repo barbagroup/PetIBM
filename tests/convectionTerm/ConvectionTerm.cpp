@@ -21,7 +21,7 @@ ConvectionTerm<dim>::ConvectionTerm(std::string folder,
                                   SimulationParameters *SP, 
                                   CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
 {
-  HExact = PETSC_NULL;
+  rnExact = PETSC_NULL;
 }
 
 /**
@@ -211,54 +211,54 @@ PetscErrorCode ConvectionTerm<2>::calculateExactSolution()
            m, n,            // number of local elements in each direction
            i, j;            // iteration indices
   
-  PetscReal x, y;           // coordinates of a node
+  PetscReal x, y,           // coordinates of a node
+            velocity,       // velocity value at the node
+            convection;     // convective term at the node
   
   PetscReal dt = simParams->dt,       // time-increment
             gamma = simParams->gamma; // explicit time-scheme coefficient for convective terms
 
-  ierr = VecDuplicate(q, &HExact); CHKERRQ(ierr);
-  Vec HExactXGlobal, HExactYGlobal;
-  ierr = DMCompositeGetAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal); CHKERRQ(ierr);
+  ierr = VecDuplicate(q, &rnExact); CHKERRQ(ierr);
+  Vec rnExactXGlobal, rnExactYGlobal;
+  ierr = DMCompositeGetAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal); CHKERRQ(ierr);
 
   // exact explicit terms for u-nodes
-  PetscReal **HExactX;
-  ierr = DMDAVecGetArray(uda, HExactXGlobal, &HExactX);
+  PetscReal **rnExactX;
+  ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
   ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  PetscReal u, uConvection; // u-velocity value and convection value
   for (j=nBegin; j<nBegin+n; j++)
   {
     for (i=mBegin; i<mBegin+m; i++)
     {
       x = mesh->x[i+1];
       y = 0.5*(mesh->y[j]+mesh->y[j+1]);
-      u = sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0;
-      uConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y))*(sin(PETSC_PI*x)*cos(PETSC_PI*y));
-      HExactX[j][i] = u/dt - gamma*uConvection;
+      velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0;
+      convection = 2.0*PETSC_PI*(cos(PETSC_PI*x)*sin(PETSC_PI*y))*(sin(PETSC_PI*x)*sin(PETSC_PI*y)+1.0) \
+                   + PETSC_PI*(sin(PETSC_PI*x)*cos(PETSC_PI*y))*(2.0*sin(PETSC_PI*x)*sin(PETSC_PI*y)+1.0);
+      rnExactX[j][i] = velocity/dt - gamma*convection;
     }
   }
-  ierr = DMDAVecRestoreArray(uda, HExactXGlobal, &HExactX); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(uda, rnExactXGlobal, &rnExactX); CHKERRQ(ierr);
 
   // exact explicit terms for v-nodes
-  PetscReal **HExactY;
-  ierr = DMDAVecGetArray(vda, HExactYGlobal, &HExactY);
+  PetscReal **rnExactY;
+  ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
   ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  PetscReal v, vConvection;  // v-velocity value and convection value
   for (j=nBegin; j<nBegin+n; j++)
   {
     for (i=mBegin; i<mBegin+m; i++)
     {
       x = 0.5*(mesh->x[i]+mesh->x[i+1]);
       y = mesh->y[j+1];
-      v = sin(PETSC_PI*x)*sin(PETSC_PI*y);
-      uConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y))*(sin(PETSC_PI*x)*cos(PETSC_PI*y));
-      HExactY[j][i] = v/dt - gamma*vConvection;
+      velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y);
+      convection = PETSC_PI*(cos(PETSC_PI*x)*sin(PETSC_PI*y))*(2.0*sin(PETSC_PI*x)*sin(PETSC_PI*y)+1.0) \
+                   + 2.0*PETSC_PI*(sin(PETSC_PI*x)*cos(PETSC_PI*y))*(sin(PETSC_PI*x)*sin(PETSC_PI*y));
+      rnExactY[j][i] = velocity/dt - gamma*convection;
     }
   }
-  ierr = DMDAVecRestoreArray(vda, HExactYGlobal, &HExactY); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(vda, rnExactYGlobal, &rnExactY); CHKERRQ(ierr);
 
-  ierr = DMCompositeRestoreAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal); CHKERRQ(ierr);
+  ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal); CHKERRQ(ierr);
 
   return ierr;
 }
@@ -272,20 +272,21 @@ PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
            m, n, p,                 // number of local elements in each direction
            i, j, k;                 // iteration indices
   
-  PetscReal x, y, z;                // coordinates of a node
+  PetscReal x, y, z,                // coordinates of a node
+            velocity,               // velocity value at the node
+            convection;             // convective term at the node
   
   PetscReal dt = simParams->dt,       // time-increment
             gamma = simParams->gamma; // explicit time-scheme coefficient for convective terms
 
-  ierr = VecDuplicate(q, &HExact); CHKERRQ(ierr);
-  Vec HExactXGlobal, HExactYGlobal, HExactZGlobal;
-  ierr = DMCompositeGetAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal, &HExactZGlobal); CHKERRQ(ierr);
+  ierr = VecDuplicate(q, &rnExact); CHKERRQ(ierr);
+  Vec rnExactXGlobal, rnExactYGlobal, rnExactZGlobal;
+  ierr = DMCompositeGetAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal, &rnExactZGlobal); CHKERRQ(ierr);
 
   // exact explicit terms for u-nodes
-  PetscReal ***HExactX;
-  ierr = DMDAVecGetArray(uda, HExactXGlobal, &HExactX);
+  PetscReal ***rnExactX;
+  ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
   ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  PetscReal u, uConvection;  // u-velocity value and convection value
   for (k=pBegin; k<pBegin+p; k++)
   {
     for (j=nBegin; j<nBegin+n; j++)
@@ -295,21 +296,20 @@ PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
         x = mesh->x[i+1];
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
         z = 0.5*(mesh->z[k]+mesh->z[k+1]);
-        u = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0;
-        uConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*cos(PETSC_PI*z));
-        HExactX[k][j][i] = u/dt - gamma*uConvection;
+        velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0;
+        convection = 2.0*PETSC_PI*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)+1.0) \
+                     + PETSC_PI*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z))*(2.0*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)+1.0) \
+                     + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*cos(PETSC_PI*z))*(2.0*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)+1.0);
+        rnExactX[k][j][i] = velocity/dt - gamma*convection;
       }
     }
   }
-  ierr = DMDAVecRestoreArray(uda, HExactXGlobal, &HExactX); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(uda, rnExactXGlobal, &rnExactX); CHKERRQ(ierr);
 
   // exact explicit terms for v-nodes
-  PetscReal ***HExactY;
-  ierr = DMDAVecGetArray(vda, HExactYGlobal, &HExactY);
+  PetscReal ***rnExactY;
+  ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
   ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  PetscReal v, vConvection;  // value of v-velocity and its laplacian
   for (k=pBegin; k<pBegin+p; k++)
   {
     for (j=nBegin; j<nBegin+n; j++)
@@ -319,21 +319,20 @@ PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = mesh->y[j+1];
         z = 0.5*(mesh->z[k]+mesh->z[k+1]);
-        v = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        vConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*cos(PETSC_PI*z));
-        HExactY[k][j][i] = v/dt - gamma*vConvection;
+        velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        convection = PETSC_PI*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(2.0*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)+1.0) \
+                     + 2.0*PETSC_PI*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                     + 2.0*PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*cos(PETSC_PI*z))*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z));
+        rnExactY[k][j][i] = velocity/dt - gamma*convection;
       }
     }
   }
-  ierr = DMDAVecRestoreArray(vda, HExactYGlobal, &HExactY); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(vda, rnExactYGlobal, &rnExactY); CHKERRQ(ierr);
 
   // exact explicit terms for w-nodes
-  PetscReal ***HExactZ;
-  ierr = DMDAVecGetArray(wda, HExactZGlobal, &HExactZ);
+  PetscReal ***rnExactZ;
+  ierr = DMDAVecGetArray(wda, rnExactZGlobal, &rnExactZ);
   ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  PetscReal w, wConvection;  // w-velocity value and convection value
   for (k=pBegin; k<pBegin+p; k++)
   {
     for (j=nBegin; j<nBegin+n; j++)
@@ -343,17 +342,17 @@ PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
         z = mesh->z[k+1];
-        w = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
-        wConvection = PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z) + 1.0)*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z)) \
-                    + PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*cos(PETSC_PI*z));
-        HExactZ[k][j][i] = w/dt - gamma*wConvection;
+        velocity = sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z);
+        convection = PETSC_PI*(cos(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z))*(2.0*sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)+1.0) \
+                     + 2.0*PETSC_PI*(sin(PETSC_PI*x)*cos(PETSC_PI*y)*sin(PETSC_PI*z))*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z)) \
+                     + 2.0*PETSC_PI*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*cos(PETSC_PI*z))*(sin(PETSC_PI*x)*sin(PETSC_PI*y)*sin(PETSC_PI*z));
+        rnExactZ[k][j][i] = velocity/dt - gamma*convection;
       }
     }
   }
-  ierr = DMDAVecRestoreArray(wda, HExactZGlobal, &HExactZ); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(wda, rnExactZGlobal, &rnExactZ); CHKERRQ(ierr);
 
-  ierr = DMCompositeRestoreAccess(qPack, HExact, &HExactXGlobal, &HExactYGlobal, &HExactZGlobal); CHKERRQ(ierr);
+  ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal, &rnExactZGlobal); CHKERRQ(ierr);
 
   return ierr;
 }
@@ -367,11 +366,11 @@ PetscErrorCode ConvectionTerm<dim>::calculateRelativeError()
 {
   PetscErrorCode ierr;
 
-  ierr = VecAXPY(NavierStokesSolver<dim>::H, -1.0, HExact);
+  ierr = VecAXPY(NavierStokesSolver<dim>::rn, -1.0, rnExact);
   PetscReal l2NormDifference;
-  ierr = VecNorm(NavierStokesSolver<dim>::H, NORM_2, &l2NormDifference); CHKERRQ(ierr);
+  ierr = VecNorm(NavierStokesSolver<dim>::rn, NORM_2, &l2NormDifference); CHKERRQ(ierr);
   PetscReal l2NormExact;
-  ierr = VecNorm(HExact, NORM_2, &l2NormExact); CHKERRQ(ierr);
+  ierr = VecNorm(rnExact, NORM_2, &l2NormExact); CHKERRQ(ierr);
   relativeError = l2NormDifference/l2NormExact;
 
   return ierr;
@@ -414,9 +413,9 @@ PetscErrorCode ConvectionTerm<dim>::finalize()
 {
   PetscErrorCode ierr;
 
-  if (HExact != PETSC_NULL)
+  if (rnExact != PETSC_NULL)
   {
-    ierr = VecDestroy(&HExact); CHKERRQ(ierr);
+    ierr = VecDestroy(&rnExact); CHKERRQ(ierr);
   }
   ierr = NavierStokesSolver<dim>::finalize(); CHKERRQ(ierr);
   

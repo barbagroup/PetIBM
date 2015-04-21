@@ -395,10 +395,11 @@ PetscErrorCode ConvectionTerm<dim>::writeRelativeError()
     out << "./relative_errors_" << dim << "d.dat";
     std::ofstream fileStream;
     fileStream.open(out.str().c_str(), std::ios::out | std::ios::app);
-    PetscInt nCells = NavierStokesSolver<dim>::mesh->nx*NavierStokesSolver<dim>::mesh->ny;
-    if (dim == 3)
-      nCells *= NavierStokesSolver<dim>::mesh->nz;
-    fileStream << nCells << "\t" << relativeError << std::endl;
+    PetscInt nx = NavierStokesSolver<dim>::mesh->nx;
+    PetscReal xStart = NavierStokesSolver<dim>::mesh->x[0],
+              xEnd = NavierStokesSolver<dim>::mesh->x[nx];
+    PetscReal h = (xEnd-xStart)/nx;
+    fileStream << h << "\t" << relativeError << std::endl;
     fileStream.close();
   }
 

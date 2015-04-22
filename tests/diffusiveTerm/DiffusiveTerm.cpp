@@ -1,11 +1,11 @@
 /***************************************************************************//**
- * \file DiffusionTerm.cpp
+ * \file DiffusiveTerm.cpp
  * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the methods of the class \c DiffusionTerm.
+ * \brief Implementation of the methods of the class \c DiffusiveTerm.
  */
 
 
-#include "DiffusionTerm.h"
+#include "DiffusiveTerm.h"
 
 #include <sstream>
 
@@ -16,7 +16,7 @@
  * \brief Constructor - Initializes pointers.
  */
 template <PetscInt dim>
-DiffusionTerm<dim>::DiffusionTerm(std::string folder, 
+DiffusiveTerm<dim>::DiffusiveTerm(std::string folder, 
                                   FlowDescription *FD, 
                                   SimulationParameters *SP, 
                                   CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
@@ -25,13 +25,13 @@ DiffusionTerm<dim>::DiffusionTerm(std::string folder,
 }
 
 /**
- * \brief Initializes the solver for the diffusion equation.
+ * \brief Initializes the solver for the diffusive term.
  *
  * The explicit time-intregration coefficients for the convective terms 
  * are set to zero.
  */
 template <PetscInt dim>
-PetscErrorCode DiffusionTerm<dim>::initialize()
+PetscErrorCode DiffusiveTerm<dim>::initialize()
 {
   PetscErrorCode ierr;
 
@@ -54,13 +54,13 @@ PetscErrorCode DiffusionTerm<dim>::initialize()
  * the appropriate cell face.
  */
 template <PetscInt dim>
-PetscErrorCode DiffusionTerm<dim>::initializeFluxes()
+PetscErrorCode DiffusiveTerm<dim>::initializeFluxes()
 {
   return 0;
 }
 
 template <>
-PetscErrorCode DiffusionTerm<2>::initializeFluxes()
+PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
@@ -112,7 +112,7 @@ PetscErrorCode DiffusionTerm<2>::initializeFluxes()
 }
 
 template <>
-PetscErrorCode DiffusionTerm<3>::initializeFluxes()
+PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
@@ -196,13 +196,13 @@ PetscErrorCode DiffusionTerm<3>::initializeFluxes()
  * \brief Computes the exact solution explicit diffusive terms.
  */
 template <PetscInt dim>
-PetscErrorCode DiffusionTerm<dim>::calculateExactSolution()
+PetscErrorCode DiffusiveTerm<dim>::calculateExactSolution()
 {
   return 0;
 }
 
 template <>
-PetscErrorCode DiffusionTerm<2>::calculateExactSolution()
+PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
@@ -262,7 +262,7 @@ PetscErrorCode DiffusionTerm<2>::calculateExactSolution()
 }
 
 template <>
-PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
+PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
@@ -355,7 +355,7 @@ PetscErrorCode DiffusionTerm<3>::calculateExactSolution()
  *        and the exact solution of the explicit terms.
  */
 template<PetscInt dim>
-PetscErrorCode DiffusionTerm<dim>::calculateRelativeError()
+PetscErrorCode DiffusiveTerm<dim>::calculateRelativeError()
 {
   PetscErrorCode ierr;
 
@@ -376,7 +376,7 @@ PetscErrorCode DiffusionTerm<dim>::calculateRelativeError()
  * is created.
  */
 template <PetscInt dim>
-PetscErrorCode DiffusionTerm<dim>::writeRelativeError()
+PetscErrorCode DiffusiveTerm<dim>::writeRelativeError()
 {
   PetscErrorCode ierr;
 
@@ -385,7 +385,7 @@ PetscErrorCode DiffusionTerm<dim>::writeRelativeError()
   if (rank == 0)
   {
     std::stringstream out;
-    out << "./relative_errors_" << dim << "d.dat";
+    out << "./data/relativeErrors" << dim << "d.dat";
     std::ofstream fileStream;
     fileStream.open(out.str().c_str(), std::ios::out | std::ios::app);
     PetscInt nx = NavierStokesSolver<dim>::mesh->nx;
@@ -403,7 +403,7 @@ PetscErrorCode DiffusionTerm<dim>::writeRelativeError()
  * \brief Frees memory to avoid memory leaks
  */
 template <PetscInt dim>
-PetscErrorCode DiffusionTerm<dim>::finalize()
+PetscErrorCode DiffusiveTerm<dim>::finalize()
 {
   PetscErrorCode ierr;
 
@@ -416,5 +416,5 @@ PetscErrorCode DiffusionTerm<dim>::finalize()
   return ierr;
 }
 
-template class DiffusionTerm<2>;
-template class DiffusionTerm<3>;
+template class DiffusiveTerm<2>;
+template class DiffusiveTerm<3>;

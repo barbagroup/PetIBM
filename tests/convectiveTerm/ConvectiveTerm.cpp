@@ -1,11 +1,11 @@
 /***************************************************************************//**
- * \file ConvectionTerm.cpp
+ * \file ConvectiveTerm.cpp
  * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the methods of the class \c ConvectionTerm.
+ * \brief Implementation of the methods of the class \c ConvectiveTerm.
  */
 
 
-#include "ConvectionTerm.h"
+#include "ConvectiveTerm.h"
 
 #include <sstream>
 
@@ -16,10 +16,10 @@
  * \brief Constructor - Initializes pointers.
  */
 template <PetscInt dim>
-ConvectionTerm<dim>::ConvectionTerm(std::string folder, 
-                                  FlowDescription *FD, 
-                                  SimulationParameters *SP, 
-                                  CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
+ConvectiveTerm<dim>::ConvectiveTerm(std::string folder, 
+                                    FlowDescription *FD, 
+                                    SimulationParameters *SP, 
+                                    CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
 {
   rnExact = PETSC_NULL;
 }
@@ -31,7 +31,7 @@ ConvectionTerm<dim>::ConvectionTerm(std::string folder,
  * are set to zero.
  */
 template <PetscInt dim>
-PetscErrorCode ConvectionTerm<dim>::initialize()
+PetscErrorCode ConvectiveTerm<dim>::initialize()
 {
   PetscErrorCode ierr;
 
@@ -55,13 +55,13 @@ PetscErrorCode ConvectionTerm<dim>::initialize()
  * the appropriate cell face.
  */
 template <PetscInt dim>
-PetscErrorCode ConvectionTerm<dim>::initializeFluxes()
+PetscErrorCode ConvectiveTerm<dim>::initializeFluxes()
 {
   return 0;
 }
 
 template <>
-PetscErrorCode ConvectionTerm<2>::initializeFluxes()
+PetscErrorCode ConvectiveTerm<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
@@ -113,7 +113,7 @@ PetscErrorCode ConvectionTerm<2>::initializeFluxes()
 }
 
 template <>
-PetscErrorCode ConvectionTerm<3>::initializeFluxes()
+PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
@@ -197,13 +197,13 @@ PetscErrorCode ConvectionTerm<3>::initializeFluxes()
  * \brief Computes the exact solution explicit convective terms.
  */
 template <PetscInt dim>
-PetscErrorCode ConvectionTerm<dim>::calculateExactSolution()
+PetscErrorCode ConvectiveTerm<dim>::calculateExactSolution()
 {
   return 0;
 }
 
 template <>
-PetscErrorCode ConvectionTerm<2>::calculateExactSolution()
+PetscErrorCode ConvectiveTerm<2>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
@@ -264,7 +264,7 @@ PetscErrorCode ConvectionTerm<2>::calculateExactSolution()
 }
 
 template <>
-PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
+PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
@@ -362,7 +362,7 @@ PetscErrorCode ConvectionTerm<3>::calculateExactSolution()
  *        and the exact solution of the explicit terms.
  */
 template<PetscInt dim>
-PetscErrorCode ConvectionTerm<dim>::calculateRelativeError()
+PetscErrorCode ConvectiveTerm<dim>::calculateRelativeError()
 {
   PetscErrorCode ierr;
 
@@ -383,7 +383,7 @@ PetscErrorCode ConvectionTerm<dim>::calculateRelativeError()
  * is created.
  */
 template <PetscInt dim>
-PetscErrorCode ConvectionTerm<dim>::writeRelativeError()
+PetscErrorCode ConvectiveTerm<dim>::writeRelativeError()
 {
   PetscErrorCode ierr;
 
@@ -392,7 +392,7 @@ PetscErrorCode ConvectionTerm<dim>::writeRelativeError()
   if (rank == 0)
   {
     std::stringstream out;
-    out << "./relative_errors_" << dim << "d.dat";
+    out << "./data/relativeErrors" << dim << "d.dat";
     std::ofstream fileStream;
     fileStream.open(out.str().c_str(), std::ios::out | std::ios::app);
     PetscInt nx = NavierStokesSolver<dim>::mesh->nx;
@@ -410,7 +410,7 @@ PetscErrorCode ConvectionTerm<dim>::writeRelativeError()
  * \brief Frees memory to avoid memory leaks
  */
 template <PetscInt dim>
-PetscErrorCode ConvectionTerm<dim>::finalize()
+PetscErrorCode ConvectiveTerm<dim>::finalize()
 {
   PetscErrorCode ierr;
 
@@ -423,5 +423,5 @@ PetscErrorCode ConvectionTerm<dim>::finalize()
   return ierr;
 }
 
-template class ConvectionTerm<2>;
-template class ConvectionTerm<3>;
+template class ConvectiveTerm<2>;
+template class ConvectiveTerm<3>;

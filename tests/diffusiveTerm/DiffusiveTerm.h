@@ -1,22 +1,22 @@
 /***************************************************************************//**
- * \file DiffusionTerm.h
+ * \file DiffusiveTerm.h
  * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Definition of the class \c DiffusionTerm.
+ * \brief Definition of the class \c DiffusiveTerm.
  */
 
 
- #if !defined(DIFFUSION_TERM_H)
- #define DIFFUSION_TERM_H
+ #if !defined(DIFFUSIVE_TERM_H)
+ #define DIFFUSIVE_TERM_H
 
  #include <NavierStokesSolver.h>
 
 
  /**
-  * \class DiffusionTerm
+  * \class DiffusiveTerm
   * \brief Computes the numerical and exact explicit diffusion terms.
   */
 template <PetscInt dim>
-class DiffusionTerm : public NavierStokesSolver<dim>
+class DiffusiveTerm : public NavierStokesSolver<dim>
 {
 public:
   Vec rnExact;  // exact solution of the explicit diffusion term
@@ -29,12 +29,7 @@ public:
   PetscErrorCode writeRelativeError();
   PetscErrorCode finalize();
 
-  DiffusionTerm(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM);
-
-  virtual std::string name()
-  {
-    return "Difffusion term";
-  }
+  DiffusiveTerm(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM);
 };
 
 #endif

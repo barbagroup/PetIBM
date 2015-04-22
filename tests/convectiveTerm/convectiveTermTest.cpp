@@ -1,11 +1,11 @@
 /***************************************************************************//**
- * \file main.cpp
+ * \file convectiveTermTest.cpp
  * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Tests the diffusion term.
+ * \brief Tests the explicit convective term.
  */
 
 
-#include "DiffusionTerm.h"
+#include "ConvectiveTerm.h"
 #include <NavierStokesSolver.h>
 #include <CartesianMesh.h>
 #include <FlowDescription.h>
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
   CartesianMesh CM(folder+"/cartesianMesh.yaml");
   SimulationParameters SP(folder+"/simulationParameters.yaml");
 
-  std::unique_ptr< DiffusionTerm<dim> > solver(new DiffusionTerm<dim>(folder, &FD, &SP, &CM));
+  std::unique_ptr< ConvectiveTerm<dim> > solver(new ConvectiveTerm<dim>(folder, &FD, &SP, &CM));
 
   ierr = solver->initialize(); CHKERRQ(ierr);
 

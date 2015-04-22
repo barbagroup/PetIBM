@@ -20,7 +20,7 @@ EXT_DIR = $(PETIBM_DIR)/external
 YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp-0.5.1 -type f -name *.o)
 GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
 
-.PHONY: ALL
+.PHONY: ALL cleanpetibm
 
 ALL: $(PETIBM2D) $(PETIBM3D)
 
@@ -64,64 +64,69 @@ $(EXT_LIBS):
 	cd external/yaml-cpp-0.5.1; $(MAKE)
 	cd external/gtest-1.7.0; $(MAKE)
 
+cleanpetibm:
+	@echo "\nCleaning PetIBM ..."
+	$(RM) -rf $(BIN_DIR) $(LIB_DIR)
+
 ################################################################################
 
 TESTS_DIR = $(PETIBM_DIR)/tests
-TESTS_SRCS = $(shell find $(TESTS_DIR) -type f -name *$(SUFFIX))
-TESTS_OBJS = $(addsuffix .o, $(basename $(TESTS_SRCS)))
-TESTS_BIN = $(TESTS_SRCS:$(SUFFIX)=)
 
-.PHONY: tests
+.PHONY: tests cleantests
 
-tests: $(TESTS_BIN)
-	$(TESTS_DIR)/CartesianMeshTest
-	$(TESTS_DIR)/NavierStokesTest -caseFolder tests/NavierStokes \
-												 				-sys2_pc_type gamg -sys2_pc_gamg_type agg \
-												 				-sys2_pc_gamg_agg_nsmooths 1
-	$(TESTS_DIR)/TairaColoniusTest -caseFolder tests/TairaColonius \
-																 -sys2_pc_type gamg -sys2_pc_gamg_type agg \
-																 -sys2_pc_gamg_agg_nsmooths 1
+tests: testCartesianMesh testNavierStokes testTairaColonius
 
-$(TESTS_DIR)/CartesianMeshTest: $(TESTS_DIR)/CartesianMeshTest.cpp $(LIBS) $(EXT_LIBS)
+testCartesianMesh: $(TESTS_DIR)/CartesianMesh/CartesianMeshTest
+	$(TESTS_DIR)/CartesianMesh/CartesianMeshTest
+
+testNavierStokes: $(TESTS_DIR)/NavierStokes/NavierStokesTest
+	$(TESTS_DIR)/NavierStokes/NavierStokesTest -caseFolder tests/NavierStokes/data \
+																						 -sys2_pc_type gamg -sys2_pc_gamg_type agg \
+																						 -sys2_pc_gamg_agg_nsmooths 1
+
+testTairaColonius: $(TESTS_DIR)/TairaColonius/TairaColoniusTest
+	$(TESTS_DIR)/TairaColonius/TairaColoniusTest -caseFolder tests/TairaColonius/data \
+																							 -sys2_pc_type gamg -sys2_pc_gamg_type agg \
+																							 -sys2_pc_gamg_agg_nsmooths 1
+
+$(TESTS_DIR)/CartesianMesh/CartesianMeshTest: $(TESTS_DIR)/CartesianMesh/CartesianMeshTest.cpp $(LIBS) $(EXT_LIBS)
 	$(CXX) $(PETSC_CC_INCLUDES) -std=c++0x -pthread $^ -o $@ $(PETSC_SYS_LIB)
 
-$(TESTS_DIR)/NavierStokesTest: $(TESTS_DIR)/NavierStokesTest.cpp $(LIBS) $(EXT_LIBS)
+$(TESTS_DIR)/NavierStokes/NavierStokesTest: $(TESTS_DIR)/NavierStokes/NavierStokesTest.cpp $(LIBS) $(EXT_LIBS)
 	$(CXX) $(PETSC_CC_INCLUDES) -std=c++0x -pthread $^ -o $@ $(PETSC_SYS_LIB)
 
-$(TESTS_DIR)/TairaColoniusTest: $(TESTS_DIR)/TairaColoniusTest.cpp $(LIBS) $(EXT_LIBS)
+$(TESTS_DIR)/TairaColonius/TairaColoniusTest: $(TESTS_DIR)/TairaColonius/TairaColoniusTest.cpp $(LIBS) $(EXT_LIBS)
 	$(CXX) $(PETSC_CC_INCLUDES) -std=c++0x -pthread $^ -o $@ $(PETSC_SYS_LIB)
+
+cleantests:
+	@echo "\nCleaning tests ..."
+	$(RM) -f $(TESTS_DIR)/CartesianMesh/CartesianMeshTest
+	$(RM) -f $(TESTS_DIR)/NavierStokes/NavierStokesTest
+	$(RM) -f $(TESTS_DIR)/TairaColonius/TairaColoniusTest
 
 ################################################################################
 
 DOC_DIR = $(PETIBM_DIR)/doc
 DOXYGEN = doxygen
 
-.PHONY: doc
+.PHONY: doc cleandoc
 
 doc:
 	@echo "\nGenerating Doxygen documentation ..."
 	cd $(DOC_DIR); $(DOXYGEN) Doxyfile
 
-################################################################################
-
-CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
-
-.PHONY: clean cleanpetibm cleantests cleandoc cleanoutput cleanall
-
-cleanall: clean cleanpetibm cleantests cleandoc cleanoutput
-
-cleanpetibm:
-	@echo "\nCleaning PetIBM ..."
-	$(RM) -rf $(BIN_DIR) $(LIB_DIR)
-
-cleantests:
-	@echo "\nCleaning tests ..."
-	$(RM) -f $(TESTS_BIN)
-
 cleandoc:
 	@echo "\nCleaning documentation ..."
 	find $(DOC_DIR) ! -name 'Doxyfile' -type f -delete
 	find $(DOC_DIR)/* ! -name 'Doxyfile' -type d -delete
+
+################################################################################
+
+CLEANFILES = $(OBJ) $(YAML_OBJS) $(GTEST_OBJS) $(TESTS_OBJS) $(TESTS_BIN)
+
+.PHONY: clean cleanoutput cleanall
+
+cleanall: clean cleanpetibm cleantests cleandoc cleanoutput
 
 cleanoutput:
 	@echo "\nCleaning outputs ..."

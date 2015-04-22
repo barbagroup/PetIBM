@@ -91,7 +91,7 @@ public:
   void initializeMeshSpacings();
 
   // populate flux vectors with initial conditions
-  PetscErrorCode initializeFluxes();
+  virtual PetscErrorCode initializeFluxes();
 
   // read fluxes from previously saved data
   PetscErrorCode readFluxes();

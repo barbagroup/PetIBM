@@ -20,6 +20,7 @@ cases/**/grid.txt
 cases/**/vtk_files
 cases/**/images
 cases/**/data
+cases/**/*.png
 
 # ignore regression analysis
 regression_analysis

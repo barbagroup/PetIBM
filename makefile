@@ -103,6 +103,8 @@ cleantests:
 	$(RM) -f $(TESTS_DIR)/CartesianMesh/CartesianMeshTest
 	$(RM) -f $(TESTS_DIR)/NavierStokes/NavierStokesTest
 	$(RM) -f $(TESTS_DIR)/TairaColonius/TairaColoniusTest
+	cd $(TESTS_DIR)/convectiveTerm; $(MAKE) cleanTest
+	cd $(TESTS_DIR)/diffusiveTerm; $(MAKE) cleanTest
 
 ################################################################################
 

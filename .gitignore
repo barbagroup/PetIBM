@@ -31,11 +31,14 @@ regression_analysis
 doc/*
 
 # ignore tests
-tests/*Test
+tests/CartesianMesh/*Test
+tests/NavierStokes/*Test
+tests/TairaColonius/*Test
+tests/**/bin
+tests/**/build
+tests/convectiveTerm/data
+tests/diffusiveTerm/data
 tests/**/performanceSummary.txt
-tests/**/*.dat
-tests/convectionTerm/convection*d
-tests/diffusionTerm/diffusion*d
 
 # ignore IPython Notebook checkpoints
 **.ipynb_checkpoints

@@ -8,7 +8,6 @@ TARGET = libclasses.a
 SUFFIX = .cpp
 SRCS = $(wildcard *$(SUFFIX))
 OBJ = $(SRCS:$(SUFFIX)=.o)
-LIB_DIR = $(PETIBM_DIR)/lib
 CLEANFILES = $(OBJ)
 
 ALL: $(TARGET)
@@ -16,7 +15,7 @@ ALL: $(TARGET)
 include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
-PETSC_CC_INCLUDES += -I../../external/yaml-cpp-0.5.1/include
+PETSC_CC_INCLUDES += -I $(YAML)/include -I $(BOOST_INCLUDE)
 
 $(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^

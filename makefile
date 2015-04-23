@@ -12,13 +12,15 @@ BIN_DIR = $(PETIBM_DIR)/bin
 PETIBM2D = $(BIN_DIR)/PetIBM2d
 PETIBM3D = $(BIN_DIR)/PetIBM3d
 
-LIB_DIR = $(PETIBM_DIR)/lib
+export LIB_DIR = $(PETIBM_DIR)/lib
 LIBS = $(addprefix $(LIB_DIR)/, libclasses.a libsolvers.a)
 EXT_LIBS = $(addprefix $(LIB_DIR)/, libyaml.a libgtest.a)
 
 EXT_DIR = $(PETIBM_DIR)/external
-YAML_OBJS = $(shell find $(EXT_DIR)/yaml-cpp-0.5.1 -type f -name *.o)
-GTEST_OBJS = $(shell find $(EXT_DIR)/gtest-1.7.0 -type f -name *.o)
+export YAML = $(EXT_DIR)/yaml-cpp-0.5.1
+YAML_OBJS = $(shell find $(YAML) -type f -name *.o)
+GTEST = $(EXT_DIR)/gtest-1.7.0
+GTEST_OBJS = $(shell find $(GTEST) -type f -name *.o)
 
 .PHONY: ALL cleanpetibm
 
@@ -28,19 +30,11 @@ include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
 # locations of include files
-PETSC_CC_INCLUDES += -I./src/include \
-										 -I./src/solvers \
-										 -I./external/gtest-1.7.0/include
+PETSC_CC_INCLUDES += -I ./src/include -I ./src/solvers -I $(GTEST)/include
 
 PCC_FLAGS += -std=c++0x -Wextra -pedantic
 CXX_FLAGS += -std=c++0x -Wextra -pedantic
-PCC_LINKER_FLAGS += -I./external/gtest-1.7.0/include
-
-$(SRC_DIR)/PetIBM2d.o: $(SRC_DIR)/PetIBM.cpp
-	$(PETSC_COMPILE) -D DIMENSIONS=2 $^ -o $@
-
-$(SRC_DIR)/PetIBM3d.o: $(SRC_DIR)/PetIBM.cpp
-	$(PETSC_COMPILE) -D DIMENSIONS=3 $^ -o $@
+PCC_LINKER_FLAGS += -I $(GTEST)/include
 
 $(PETIBM2D): $(SRC_DIR)/PetIBM2d.o $(LIBS) $(EXT_LIBS)
 	@echo "\n$@ - Linking ..."
@@ -52,6 +46,12 @@ $(PETIBM3D): $(SRC_DIR)/PetIBM3d.o $(LIBS) $(EXT_LIBS)
 	@mkdir -p $(BIN_DIR)
 	$(CLINKER) $^ -o $@ $(PETSC_SYS_LIB)
 
+$(SRC_DIR)/PetIBM2d.o: $(SRC_DIR)/PetIBM.cpp
+	$(PETSC_COMPILE) -D DIMENSIONS=2 $^ -o $@
+
+$(SRC_DIR)/PetIBM3d.o: $(SRC_DIR)/PetIBM.cpp
+	$(PETSC_COMPILE) -D DIMENSIONS=3 $^ -o $@
+
 $(LIBS):
 	@echo "\nGenerating static libraries ..."
 	@mkdir -p $(LIB_DIR)
@@ -61,8 +61,8 @@ $(LIBS):
 $(EXT_LIBS):
 	@echo "\nGenerating external static libraries ..."
 	@mkdir -p $(LIB_DIR)
-	cd external/yaml-cpp-0.5.1; $(MAKE)
-	cd external/gtest-1.7.0; $(MAKE)
+	cd $(YAML); $(MAKE)
+	cd $(GTEST); $(MAKE)
 
 cleanpetibm:
 	@echo "\nCleaning PetIBM ..."

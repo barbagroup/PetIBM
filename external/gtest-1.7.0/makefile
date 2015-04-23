@@ -9,7 +9,6 @@ SUFFIX = .cc
 SRC_DIR = src
 SRCS = $(wildcard $(SRC_DIR)/*$(SUFFIX))
 OBJ = $(SRC_DIR)/gtest-all.o
-LIB_DIR = $(PETIBM_DIR)/lib
 CLEANFILES = $(OBJ)
 
 ALL: $(TARGET)
@@ -17,7 +16,7 @@ ALL: $(TARGET)
 include $(PETSC_DIR)/conf/variables
 include $(PETSC_DIR)/conf/rules
 
-PETSC_CC_INCLUDES += -I./include -I./
+PETSC_CC_INCLUDES += -I ./include -I ./
 
 $(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^

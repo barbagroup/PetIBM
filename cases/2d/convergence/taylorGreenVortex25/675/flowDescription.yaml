@@ -1,0 +1,20 @@
+# flowDescription.yaml
+
+- type: flow
+  dimensions: 2
+  nu: 0.01
+  initialVelocity: [0.0, 0.0]
+  initialPerturbation: [1.0, 1.0]
+  boundaryConditions:
+    - location: xMinus
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]
+    - location: xPlus
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]
+    - location: yMinus
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]
+    - location: yPlus
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]

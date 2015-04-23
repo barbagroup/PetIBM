@@ -80,9 +80,8 @@ void FlowDescription::initialize(std::string fileName)
     initialVelocity[1] = node["initialVelocity"][1].as<PetscReal>();
     initialVelocity[2] = node["initialVelocity"][2].as<PetscReal>(0.0);
 
-    initialPerturbation[0] = node["initialPerturbation"][0].as<PetscReal>(0.0);
-    initialPerturbation[1] = node["initialPerturbation"][1].as<PetscReal>(0.0);
-    initialPerturbation[2] = node["initialPerturbation"][2].as<PetscReal>(0.0);
+    perturbationAmplitude = node["initialPerturbation"][0].as<PetscReal>(0.0);
+    perturbationFrequency = node["initialPerturbation"][1].as<PetscReal>(0);
 
     const YAML::Node &bcs = node["boundaryConditions"];
     Boundary location;
@@ -145,7 +144,8 @@ void FlowDescription::initialize(std::string fileName)
   MPI_Bcast(&dimensions, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&nu, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(initialVelocity, 3, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(initialPerturbation, 3, MPIU_REAL, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(&perturbationAmplitude, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(&perturbationFrequency, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   
   // create custom MPI type to broadcast BC information
   MPI_Datatype bcInfoType, types[2];

@@ -55,17 +55,24 @@ def read_inputs():
 
 class Force(object):
   """Contains info about a force."""
-  def __init__(self, f):
-    """Initializes the force."""
-    self.values = f
-    self.min, self.max = f.min(), f.max()
+  def __init__(self, force):
+    """Initializes the force.
+
+    Parameters
+    ----------
+    force: Numpy array
+      Values of the force.
+    """
+    self.values = force
+    self.min, self.max = force.min(), force.max()
 
   def mean(self, mask):
     """Computes the mean force.
 
-    Arguments
-    ---------
-    mask -- range of indices to consider
+    Parameters
+    ----------
+    mask: Numpy array
+      Range of indices to consider.
     """
     self.mean = numpy.mean(self.values[mask])
 
@@ -75,10 +82,12 @@ class Body(object):
   def __init__(self, name, fx, fy, fz=numpy.empty(0)):
     """Initializes the forces.
 
-    Arguments
-    ---------
-    name - name of the body
-    fx, fy -- forces in the x- and y- directions
+    Parameters
+    ----------
+    name: str
+      Name of the body.
+    fx, fy, fz: Numpy arrays
+      Forces in the x-, y-  and z-(if applicable) directions.
     """
     self.name = name
     self.fx, self.fy = Force(fx), Force(fy)
@@ -88,18 +97,19 @@ class Body(object):
   def means(self, mask):
     """Computes the mean forces.
 
-    Arguments
-    ---------
-    mask -- range of indices to consider
+    Parameters
+    ----------
+    mask: Numpy array
+      Range of indices to consider.
     """
+    print('\nBody: {}'.format(self.name))
     self.fx.mean(mask)
+    print('\t-> <fx> = {:0.6f}'.format(self.fx.mean))
     self.fy.mean(mask)
-    print 'Body: %s' % self.name
-    print '\t-> <fx> = %.6f' % self.fx.mean
-    print '\t-> <fy> = %.6f' % self.fy.mean
+    print('\t-> <fy> = {:0.6f}'.format(self.fy.mean))
     if hasattr(self, 'fz'):
       self.fz.mean(mask)
-      print '\t-> <fz> = %.6f' % self.fz.mean
+      print('\t-> <fz> = {:0.6f}'.format(self.fz.mean))
 
 
 class Case(object):
@@ -107,17 +117,18 @@ class Case(object):
   def __init__(self, parameters):
     """Stores the parameters.
 
-    Arguments
-    ---------
-    parameters -- arguments from parser
+    Parameters
+    ----------
+    parameters: ArgumentPaser instance
+      Contains command-line arguments.
     """
-    print '\nCase: %s' % parameters.case_directory
+    print('\nCase: {}'.format(parameters.case_directory))
     self.parameters = parameters
 
   def read_forces(self):
     """Reads forces from file."""
-    print '\nReading forces ...'
-    forces_path = '%s/forces.txt' % self.parameters.case_directory
+    print('\nReading forces ...')
+    forces_path = '{}/forces.txt'.format(self.parameters.case_directory)
     with open(forces_path, 'r') as infile:
       data = numpy.loadtxt(infile, dtype=float).transpose()
     t, forces = data[0], data[1:]
@@ -132,7 +143,7 @@ class Case(object):
     n_bodies = forces.shape[0]/self.parameters.dimensions
     # give default name to bodies
     if not self.parameters.body_names:
-      self.parameters.body_names = ['body %d' % i for i in xrange(n_bodies)]
+      self.parameters.body_names = ['body {}'.format(i) for i in xrange(n_bodies)]
     # create Body objects that store the forces
     if self.parameters.dimensions == 3:
       self.bodies = [Body(self.parameters.body_names[i], 
@@ -151,32 +162,36 @@ class Case(object):
     mask = numpy.where(numpy.logical_and(self.times >= lower_limit,
                                          self.times <= upper_limit))[0]
     # compute means for each immersed body
-    print '\nAveraging forces between %g and %g:' % (self.times[mask[0]],
-                                                     self.times[mask[-1]])
+    print('\nAveraging forces between {} and {}:'.format(self.times[mask[0]],
+                                                         self.times[mask[-1]]))
     for i in xrange(len(self.bodies)):
       self.bodies[i].means(mask)
 
   def plot_forces(self):
     """Displays the forces into a figure."""
-    print '\nPlotting forces ...'
-    pyplot.figure()
+    print('\nPlotting forces ...')
+    pyplot.style.use('{}/style/'
+                     'style_PetIBM.mplstyle'.format(os.path.dirname(__file__)))
     pyplot.grid(True)
-    pyplot.xlabel('times', fontsize=16)
-    pyplot.ylabel('forces', fontsize=16)
+    pyplot.xlabel('times')
+    pyplot.ylabel('forces')
     # only support 4 immersed bodies currently
     colors = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a']
     # plot forces for each immersed body
     for i, body in enumerate(self.bodies):
       if self.parameters.drag:
-        pyplot.plot(self.times, body.fx.values, label='%s - fx' % body.name,
-                    color=colors[i], linestyle='-', linewidth=2)
+        pyplot.plot(self.times, body.fx.values, 
+                    label='{} - fx'.format(body.name),
+                    color=colors[i], linestyle='-')
       if self.parameters.lift:
-        pyplot.plot(self.times, body.fy.values, label='%s - fy' % body.name,
-                    color=colors[i], linestyle='--', linewidth=2)
+        pyplot.plot(self.times, body.fy.values, 
+                    label='{} - fy'.format(body.name),
+                    color=colors[i], linestyle='--')
       if self.parameters.dimensions == 3 and self.parameters.sideforce:
-        pyplot.plot(self.times, body.fz.values, label='%s - fz' % body.name,
-                    color=colors[i], linestyle=':', linewidth=2)
-    pyplot.legend(loc='best', prop={'size': 18}, bbox_to_anchor=(1.0, 1.0))
+        pyplot.plot(self.times, body.fz.values, 
+                    label='{} - fz'.format(body.name),
+                    color=colors[i], linestyle=':')
+    pyplot.legend()
     # get default plot-limits if not specified
     if not any(self.parameters.plot_limits):
       self.parameters.plot_limits[0] = self.times[0]
@@ -200,13 +215,11 @@ class Case(object):
                  self.parameters.plot_limits[2], self.parameters.plot_limits[3]])
     # save the image as .png file
     if self.parameters.save:
-      images_directory = '%s/images' % self.parameters.case_directory
+      images_directory = '{}/images'.format(self.parameters.case_directory)
       if not os.path.isdir(images_directory):
         os.makedirs(images_directory)
-      pyplot.savefig('%s/%s.png' % (images_directory, 
-                                    self.parameters.image_name), 
-                     bbox_inches='tight')
-      print '\nFigure saved in folder %s' % os.path.basename(images_directory)
+      pyplot.savefig('{}/{}.png'.format(images_directory, self.parameters.image_name))
+      print('\nFigure saved in folder {}'.format(os.path.basename(images_directory)))
     # dislay the figure
     if self.parameters.show:
       pyplot.show()
@@ -215,13 +228,15 @@ class Case(object):
 
 def main():
   """Plots the instantaneous force coefficients."""
-  parameters = read_inputs()
-  case = Case(parameters)
+  args = read_inputs()
+  case = Case(args)
   case.read_forces()
   case.get_mean_values()
-  if parameters.show or parameters.save:
+  if args.show or args.save:
     case.plot_forces()
 
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

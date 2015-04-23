@@ -1,0 +1,31 @@
+# flowDescription.yaml
+
+- type: flow
+  dimensions: 3
+  nu: 3.33E-03
+  initialVelocity: [1.0, 0.0, 0.0]
+  boundaryConditions:
+    - location: xMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: xPlus
+      u: [CONVECTIVE, 1.0]
+      v: [CONVECTIVE, 0.0]
+      w: [CONVECTIVE, 0.0]
+    - location: yMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: yPlus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: zMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: zPlus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]

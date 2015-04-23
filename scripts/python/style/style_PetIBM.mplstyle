@@ -1,0 +1,42 @@
+# file: style_PetIBM.mplstyle
+# author: Olivier Mesnard (mesnardo@gwu.edu)
+# description: style sheet for Matplotlib figures.
+
+
+font.family : serif
+font.serif : New Century Schoolbook
+font.size : 14
+
+text.color : black
+text.usetex : True
+
+axes.facecolor : white
+axes.labelsize : 14
+axes.labelcolor : black
+axes.linewidth : 1
+axes.titlesize : 14
+axes.color_cycle : 1B9E77, D95F02, 7570B3, E7298A
+
+lines.linewidth : 1.0
+lines.linestyle : -
+lines.markersize : 6
+lines.markeredgewidth : 0.0
+
+xtick.color : black
+xtick.direction : in
+xtick.labelsize : 14
+
+ytick.color : black
+ytick.direction : in
+ytick.labelsize : 14
+
+figure.figsize : 6, 6 
+figure.facecolor : white
+figure.edgecolor : 0.50
+figure.dpi : 100
+
+legend.frameon : False
+legend.fontsize : 14
+legend.loc : best
+
+savefig.dpi : 100

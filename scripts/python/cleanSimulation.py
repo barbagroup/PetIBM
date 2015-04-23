@@ -40,33 +40,33 @@ def read_inputs():
 
 def main():
   """Cleans a PetIBM simulation."""
-  # parser command-line
+  # parse command-line
   args = read_inputs()
-
-  # get different parts to clean
-  parts = {}
+  # get different paths to delete
+  paths = {}
   if args.images:
-    parts['images'] = '%s/images' % args.case_directory
+    paths['images'] = '{}/images'.format(args.case_directory)
   if args.data:
-    parts['data'] = '%s/data' % args.case_directory
+    paths['data'] = '{}/data'.format(args.case_directory)
   if args.grid:
-    parts['grid'] = '%s/grid.txt' % args.case_directory
+    paths['grid'] = '{}/grid.txt'.format(args.case_directory)
   if args.solutions:
-    parts['solutions'] = '%s/0*' % args.case_directory
+    paths['solutions'] = '{}/0*'.format(args.case_directory)
   if args.forces:
-    parts['forces'] = '%s/forces.txt' % args.case_directory
+    paths['forces'] = '{}/forces.txt'.format(args.case_directory)
   if args.vtk_files:
-    parts['vtk_files'] = '%s/vtk_files' % args.case_directory
+    paths['vtk_files'] = '{}/vtk_files'.format(args.case_directory)
   if args.logs:
-    parts['logs'] = ('%s/iterationCount.txt %s/performanceSummary.txt' 
-                     % (args.case_directory, args.case_directory))
-
-  # remove appropriate files/folders
-  print '[case-directory] %s' % args.case_directory
-  for key, part in parts.iteritems():
-    print '\t--> removing %s ...' % key
-    os.system('rm -rf %s' % part)
+    paths['logs'] = ('{0}/iterationCount.txt '
+                     '{0}/performanceSummary.txt'.format(args.case_directory))
+  # delete appropriate files/folders
+  print('[case-directory] {}'.format(args.case_directory))
+  for key, path in paths.iteritems():
+    print('\t-> removing {} ...'.format(key))
+    os.system('rm -rf {}'.format(path))
 
 
 if __name__ == '__main__':
+  print('\n[{}] START\n'.format(os.path.basename(__file__)))
   main()
+  print('\n[{}] END\n'.format(os.path.basename(__file__)))

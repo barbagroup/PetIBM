@@ -1,0 +1,4 @@
+# bodies.yaml
+
+- type: points
+  pointsFile: sphere_ds0.04.body

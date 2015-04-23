@@ -16,7 +16,7 @@ PetscErrorCode NavierStokesSolver<dim>::printSimulationInfo()
 	PC             pc;
 	PCType         pcType;
 	KSPType        kspType;
-	PetscReal      rtol;
+	PetscReal      rtol, abstol;
 	
 	ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
@@ -93,8 +93,9 @@ PetscErrorCode NavierStokesSolver<dim>::printSimulationInfo()
 	ierr = KSPGetPC(ksp1, &pc); CHKERRQ(ierr);
 	ierr = PCGetType(pc, &pcType); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "preconditioner: %s\n", pcType); CHKERRQ(ierr);
-	ierr = KSPGetTolerances(ksp1, &rtol, NULL, NULL, &maxits); CHKERRQ(ierr);
+	ierr = KSPGetTolerances(ksp1, &rtol, &abstol, NULL, &maxits); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "relative tolerance: %g\n", rtol); CHKERRQ(ierr);
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "absolute tolerance: %g\n", abstol); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "maximum iterations: %d\n", maxits); CHKERRQ(ierr);
 
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
@@ -105,8 +106,9 @@ PetscErrorCode NavierStokesSolver<dim>::printSimulationInfo()
 	ierr = KSPGetPC(ksp2, &pc); CHKERRQ(ierr);
 	ierr = PCGetType(pc, &pcType); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "preconditioner: %s\n", pcType); CHKERRQ(ierr);
-	ierr = KSPGetTolerances(ksp2, &rtol, NULL, NULL, &maxits); CHKERRQ(ierr);
+	ierr = KSPGetTolerances(ksp2, &rtol, &abstol, NULL, &maxits); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "relative tolerance: %g\n", rtol); CHKERRQ(ierr);
+	ierr = PetscPrintf(PETSC_COMM_WORLD, "absolute tolerance: %g\n", abstol); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "maximum iterations: %d\n", maxits); CHKERRQ(ierr);
 	ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
 

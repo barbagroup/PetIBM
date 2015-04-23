@@ -42,7 +42,7 @@ def read_inputs():
                       nargs='+', default=[float('inf'), float('inf')],
                       help='coordinates of the top-right corner of the view')
   parser.add_argument('--time-steps', '-t', dest='time_steps', type=int,
-                      nargs='+', default=[None, None, None],
+                      nargs='+', default=[],
                       help='time-steps to plot (initial, final, increment)')
   parser.add_argument('--periodic', dest='periodic', type=str, nargs='+',
                       default=[], help='direction(s) (x and/or y) with '

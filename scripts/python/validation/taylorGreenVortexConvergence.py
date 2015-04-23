@@ -29,8 +29,8 @@ def read_inputs():
                       help='directory containing the simulation folders')
   parser.add_argument('--Re', '-Re', dest='Re', type=float, default=100.0,
                       help='Reynolds number of the simulation')
-  parser.add_argument('--time', '-t', dest='time', type=float, default=0.5,
-                      help='time at which the error will be computed')
+  parser.add_argument('--dt', '-dt', dest='dt', type=float, default=5.0E-04,
+                      help='time-increment of the simulations')
   parser.add_argument('--time-step', '-ts', dest='time_step', type=int, 
                       default=1000,
                       help='time-step at which the solution will be read')
@@ -51,6 +51,24 @@ def read_inputs():
   return parser.parse_args()
 
 
+def l2_norm(field):
+  """Computes the L2-norm of a 2d array
+
+  Parameters
+  ----------
+  field: 2D Numpy array
+    The numerical solution.
+
+  Returns
+  -------
+  l2: float
+    The L2-norm.
+  """
+  j_start, j_end, j_stride = 0, field.shape[0]+1, 1
+  i_start, i_end, i_stride = 0, field.shape[1]+1, 1
+  return numpy.linalg.norm(field[j_start:j_end:j_stride, i_start:i_end:i_stride])
+
+
 def compute_order(ratio, coarse, medium, fine):
   """Computes the observed order of convergence 
   using the solution on three grids.
@@ -67,8 +85,8 @@ def compute_order(ratio, coarse, medium, fine):
   alpha: float
     The observed order of convergence.
   """
-  return ( math.log(numpy.linalg.norm(medium-coarse)
-                    / numpy.linalg.norm(fine-medium))
+  assert coarse.shape == medium.shape and coarse.shape == fine.shape
+  return ( math.log(l2_norm(medium-coarse)/l2_norm(fine-medium))
            / math.log(ratio) )
 
 
@@ -89,19 +107,28 @@ def restriction(fine, coarse):
     return numpy.any(numpy.abs(a-b[:, numpy.newaxis]) <= tolerance, axis=0)
   mask_x = intersection(fine.x, coarse.x)
   mask_y = intersection(fine.y, coarse.y)
-  return ioPetIBM.Field(x=fine.x[mask_x], y=fine.y[mask_y],
-                        values=numpy.array([ fine.values[j][mask_x]
-                                             for j in xrange(fine.y.size)
-                                             if mask_y[j] ]))
+
+  fine_on_coarse = ioPetIBM.Field(x=fine.x[mask_x], y=fine.y[mask_y],
+                                  values=numpy.array([fine.values[j][mask_x]
+                                                      for j in xrange(fine.y.size)
+                                                      if mask_y[j]]))
+  assert numpy.allclose(coarse.x, fine_on_coarse.x, rtol=1.0E-04)
+  assert numpy.allclose(coarse.y, fine_on_coarse.y, rtol=1.0E-04)
+  assert coarse.values.shape == fine_on_coarse.values.shape
+  return fine_on_coarse
 
 
-def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
+def taylor_green_vortex(x, y, 
+                        x_start=0.0, x_end=1.0, y_start=0.0, y_end=1.0, 
+                        V=1.0, time=0.0, Re=100.0):
   """Computes the analytical solution of the 2D Taylor-Green vortex.
 
   Parameters
   ----------
   x, y: Numpy array
     Coordinates in the x- and y- directions.
+  x_start, x_end, y_start, y_end: float
+    Limits of the physical domain; default: 0.0, 1.0, 0.0, 1.0.
   V: float
     Amplitude of the sinusoidal velocity field; default: 1.0.
   time: float
@@ -115,8 +142,8 @@ def taylor_green_vortex(x, y, V=1.0, time=0.0, Re=100.0):
     Analytical solution (velocities, pressure and vorticity).
   """
   X1, X2 = 0.0, 2.0*math.pi
-  x = X1 + (X2-X1)*(x-x[0])/(x[-1]-x[0])
-  y = X1 + (X2-X1)*(y-y[0])/(y[-1]-y[0])
+  x = X1 + (X2-X1)*(x-x_start)/(x_end-x_start)
+  y = X1 + (X2-X1)*(y-y_start)/(y_end-y_start)
   X, Y = numpy.meshgrid(x, y)
   # u-velocity
   u = -V*numpy.cos(X)*numpy.sin(Y)*math.exp(-2.0*(2.0*math.pi)**2*time/Re)
@@ -187,22 +214,22 @@ def main():
     cases[i]['u'].exact, _, _, _ = taylor_green_vortex(case['u'].x, 
                                                        case['u'].y, 
                                                        V=args.amplitude, 
-                                                       time=args.time, 
+                                                       time=args.time_step*args.dt, 
                                                        Re=args.Re)
     _, cases[i]['v'].exact, _, _ = taylor_green_vortex(case['v'].x, 
                                                        case['v'].y, 
                                                        V=args.amplitude, 
-                                                       time=args.time, 
+                                                       time=args.time_step*args.dt, 
                                                        Re=args.Re)
     _, _, cases[i]['p'].exact, _ = taylor_green_vortex(case['p'].x, 
                                                        case['p'].y, 
                                                        V=args.amplitude, 
-                                                       time=args.time, 
+                                                       time=args.time_step*args.dt, 
                                                        Re=args.Re)
     # compute L2-norm error
     for field in ['u', 'v', 'p']:
-        cases[i][field].error = numpy.linalg.norm(case[field].values-case[field].exact)
-        cases[i][field].error *= case['grid-spacing']
+      cases[i][field].error = (l2_norm(case[field].values-case[field].exact)
+                               / l2_norm(case[field].exact))
 
     if args.plot:
       print('\nPlot the field difference between numerical and analytical ...')
@@ -257,12 +284,18 @@ def main():
   print('\tu: {}'.format(alpha['u']))
   print('\tv: {}'.format(alpha['v']))
   print('\tp: {}'.format(alpha['p']))
+  # write orders of convergence into file
+  file_path = '{}/orders_of_convergence.dat'.format(args.directory)
+  with open(file_path, 'w') as outfile:
+    outfile.write('u: {}\n'.format(alpha['u']))
+    outfile.write('v: {}\n'.format(alpha['v']))
+    outfile.write('p: {}\n'.format(alpha['p']))
 
   if args.save or args.show:
     print('\nPlot the grid convergence ...')
     pyplot.style.use('{}/scripts/python/style/'
                      'style_PetIBM.mplstyle'.format(os.environ['PETIBM_DIR']))
-    pyplot.xlabel('cell-width')
+    pyplot.xlabel('grid-spacing')
     pyplot.ylabel('$L_2$-norm error')
     # plot errors in u-velocity
     pyplot.plot([case['grid-spacing'] for case in cases],

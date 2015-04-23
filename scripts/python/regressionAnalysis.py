@@ -23,13 +23,13 @@ def read_inputs():
   parser = argparse.ArgumentParser(description='Executes a regression-test',
                         formatter_class= argparse.ArgumentDefaultsHelpFormatter)
   # fill parser with arguments
-  parser.add_argument('--no-save', dest='save', action='store_false', 
+  parser.add_argument('--save', dest='save', action='store_true', 
                       help='saves the new numerical solutions')
   parser.add_argument('--no-compile', dest='compile', action='store_false',
                       help='skips PetIBM compilation')
   parser.add_argument('--no-run', dest='run', action='store_false',
                       help='does not run the test-cases')
-  parser.set_defaults(save=True, compile=True, run=True)
+  parser.set_defaults(compile=True, run=True)
   # parse command-line
   return parser.parse_args()
 

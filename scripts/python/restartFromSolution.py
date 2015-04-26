@@ -12,7 +12,6 @@ import shutil
 
 import numpy
 
-sys.path.append('{}/scripts/python'.format(os.environ['PETIBM_DIR']))
 import ioPetIBM
 
 

@@ -6,7 +6,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeLambda()
 	
 	ierr = DMCompositeGetAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
 
-	if(simParams->restart)
+	if (simParams->startStep > 0 || simParams->restartFromSolution)
 	{
 		PetscViewer       viewer;
 		std::stringstream ss;

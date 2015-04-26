@@ -72,7 +72,7 @@ void SimulationParameters::initialize(std::string fileName)
 
     dt = node["dt"].as<PetscReal>();
     startStep = node["startStep"].as<PetscInt>(0);
-    restart = (startStep > 0) ? PETSC_TRUE : PETSC_FALSE;
+    restartFromSolution = (node["restartFromSolution"].as<bool>(false)) ? PETSC_TRUE : PETSC_FALSE;
     nt = node["nt"].as<PetscInt>();
     nsave = node["nsave"].as<PetscInt>(nt);
 
@@ -144,7 +144,7 @@ void SimulationParameters::initialize(std::string fileName)
   MPI_Bcast(&nt, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&startStep, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&restart, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(&restartFromSolution, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   
   MPI_Bcast(&gamma, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&zeta, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);

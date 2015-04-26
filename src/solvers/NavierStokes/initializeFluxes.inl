@@ -23,9 +23,9 @@
 *
 * When a simulation is restarted, the initial conditions are read from 
 * previously saved data. The time step at which the data is read is specified 
-* in the input file `simulationParameters.yaml`. The option `restart` is set to 
-* `true`, and the option `startStep` specifies the time step from which the 
-* simulation needs to be restarted.
+* in the input file `simulationParameters.yaml`. The option `restartFromSolution` 
+* is set to `true`, and the option `startStep` specifies the time step from 
+* which the simulation needs to be restarted.
 */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeFluxes()
@@ -38,7 +38,7 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
   
-  if(simParams->restart)
+  if (simParams->startStep > 0 || simParams->restartFromSolution)
   {
     ierr = readFluxes(); CHKERRQ(ierr);
   }
@@ -104,7 +104,7 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  if(simParams->restart)
+  if (simParams->startStep > 0 || simParams->restartFromSolution)
   {
     ierr = readFluxes(); CHKERRQ(ierr);
   }

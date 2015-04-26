@@ -28,6 +28,8 @@ public:
            nt,        ///< number of time steps
            nsave;     ///< data-saving interval
   
+  PetscBool restartFromSolution;  ///< flag to restart from given solution
+
   SolverType solverType;  ///< type of flow solver
   
   TimeSteppingScheme convectionScheme, ///< time-scheme for the convection term
@@ -37,8 +39,6 @@ public:
             zeta,          ///< coefficient of the convection term at previous time step
             alphaExplicit, ///< coefficient of the explicit diffusion term
             alphaImplicit; ///< coefficient of the implicit diffusion term
-  
-  PetscBool restart; ///< flag to indicate whether the simulation was restarted from saved data
 
   PetscReal velocitySolveTolerance, ///< tolerance (velocity solver)
             PoissonSolveTolerance;  ///< tolerance (Poisson solver)

@@ -6,7 +6,7 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeLambda()
 	
 	ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
-	if(NavierStokesSolver<dim>::simParams->restart)
+	if (NavierStokesSolver<dim>::simParams->startStep > 0 || NavierStokesSolver<dim>::simParams->restartFromSolution)
 	{
 		PetscViewer       viewer;
 		std::stringstream ss;

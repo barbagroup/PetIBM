@@ -25,6 +25,7 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 	ierr = KSPSetOperators(ksp1, A, A); CHKERRQ(ierr);
 	ierr = KSPSetInitialGuessNonzero(ksp1, PETSC_TRUE); CHKERRQ(ierr);
 	ierr = KSPSetType(ksp1, KSPCG); CHKERRQ(ierr);
+	ierr = KSPSetReusePreconditioner(ksp1, PETSC_TRUE); CHKERRQ(ierr);
 	ierr = KSPSetFromOptions(ksp1); CHKERRQ(ierr);
 
 	// linear system for the Poisson solver
@@ -34,6 +35,7 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 	ierr = KSPSetOperators(ksp2, QTBNQ, QTBNQ); CHKERRQ(ierr);
 	ierr = KSPSetInitialGuessNonzero(ksp2, PETSC_TRUE); CHKERRQ(ierr);
 	ierr = KSPSetType(ksp2, KSPCG); CHKERRQ(ierr);
+	ierr = KSPSetReusePreconditioner(ksp2, PETSC_TRUE); CHKERRQ(ierr);
 	ierr = KSPSetFromOptions(ksp2); CHKERRQ(ierr);
 
 	return 0;

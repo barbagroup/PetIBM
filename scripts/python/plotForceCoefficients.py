@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-# file: plotForces.py
+# file: plotForceCoefficients.py
 # author: Olivier Mesnard (mesnardo@gwu.edu)
-# description: Plots the instantaneous forces acting on multiple bodies.
+# description: Plots the instantaneous force coefficients 
+#              acting on multiple bodies.
 
 
 import os

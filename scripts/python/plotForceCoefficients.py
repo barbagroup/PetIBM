@@ -52,6 +52,8 @@ def read_inputs():
   parser.add_argument('--order', dest='order', type=int, default=5,
                       help='number of side-points used for comparison '
                            'to get extrema')
+  parser.add_argument('--gauge', dest='gauge', action='store_true',
+                      help='display gauges to check the convergence')
   parser.add_argument('--no-show', dest='show', action='store_false',
                       help='does not display the figure')
   parser.add_argument('--no-save', dest='save', action='store_false',
@@ -83,16 +85,10 @@ class ForceCoefficient(object):
     """
     self.mean = numpy.mean(self.values[mask])
 
-  def get_fluctuations(self, mask):
-    """Computes the fluctuations around the mean value.
-
-    Parameters
-    ----------
-    mask: Numpy array
-      Rane of indices to consider.
-    """
-    self.fluctuations = numpy.absolute([self.values[mask].min() - self.mean, 
-                                        self.values[mask].max() - self.mean])
+  def get_fluctuations(self):
+    """Computes the fluctuations around the mean value at the last period."""
+    self.fluctuations = numpy.absolute([self.values[self.minima[-1]] - self.mean, 
+                                        self.values[self.maxima[-1]] - self.mean])
 
   def get_extrema(self, order=5):
     """Computes extrema indices (minima and maxima) of the force coefficient.
@@ -139,16 +135,10 @@ class Body(object):
     for i in xrange(len(self.force_coefficients)):
       self.force_coefficients[i].get_mean(mask)
 
-  def get_fluctuations(self, mask):
-    """Computes the fluctuations around the mean force over a given range.
-
-    Parameters
-    ----------
-    mask: Numpy array
-      Range of indices to consider.
-    """
+  def get_fluctuations(self):
+    """Computes the fluctuations around the mean force over the last period."""
     for i in xrange(len(self.force_coefficients)):
-      self.force_coefficients[i].get_fluctuations(mask)
+      self.force_coefficients[i].get_fluctuations()
 
   def get_extrema(self, order=5):
     """Computes the extrema indices of each forces acting on the body.
@@ -257,8 +247,8 @@ class Case(object):
                                                                        self.times[mask[-1]]))
     for i, body in enumerate(self.bodies):
       self.bodies[i].get_means(mask)
-      self.bodies[i].get_fluctuations(mask)
       self.bodies[i].get_extrema(order=self.parameters.order)
+      self.bodies[i].get_fluctuations()
       self.bodies[i].get_strouhal(self.times)
       self.bodies[i].print_info()
 
@@ -285,6 +275,11 @@ class Case(object):
                          c=color, marker='o', zorder=10)
           pyplot.scatter(self.times[cd.maxima], cd.values[cd.maxima],
                          c=color, marker='o', zorder=10)
+        if self.parameters.gauge:
+          pyplot.axhline(cd.values[cd.minima[-1]],
+                         color=color, ls=':', zorder=10)
+          pyplot.axhline(cd.values[cd.maxima[-1]],
+                         color=color, ls=':', zorder=10)
       if self.parameters.lift:
         cl = body.force_coefficients[1]
         pyplot.plot(self.times, cl.values,
@@ -295,6 +290,11 @@ class Case(object):
                          c=color, marker='s', zorder=10)
           pyplot.scatter(self.times[cl.maxima], cl.values[cl.maxima],
                          c=color, marker='s', zorder=10)
+        if self.parameters.gauge:
+          pyplot.axhline(cl.values[cl.minima[-1]],
+                         color=color, ls=':', zorder=10)
+          pyplot.axhline(cl.values[cl.maxima[-1]],
+                         color=color, ls=':', zorder=10)
       if self.parameters.dimensions == 3 and self.parameters.sideforce:
         cz = body.force_coefficients[2]
         pyplot.plot(self.times, cz.values, 
@@ -305,6 +305,11 @@ class Case(object):
                          c=color, marker='*', zorder=10)
           pyplot.scatter(self.times[cz.maxima], cz.values[cz.maxima],
                          c=color, marker='*', zorder=10)
+        if self.parameters.gauge:
+          pyplot.axhline(cz.values[cz.minima[-1]],
+                         color=color, ls=':', zorder=10)
+          pyplot.axhline(cz.values[cz.maxima[-1]],
+                         color=color, ls=':', zorder=10)
     pyplot.legend()
     # get default plot-limits if not specified
     if not any(self.parameters.plot_limits):

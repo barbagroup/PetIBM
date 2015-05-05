@@ -4,23 +4,27 @@
 
 
 font.family : serif
-font.serif : New Century Schoolbook
+font.style : normal
+font.weight : normal
 font.size : 14
 
 text.color : black
-text.usetex : True
+text.usetex : False
 
-axes.facecolor : white
+axes.facecolor : E5E5E5
+axes.edgecolor : bcbcbc
 axes.labelsize : 14
 axes.labelcolor : black
-axes.linewidth : 1
+axes.linewidth : 0.0
 axes.titlesize : 14
-axes.color_cycle : 1B9E77, D95F02, 7570B3, E7298A
+axes.color_cycle : 348ABD, 7A68A6, A60628, 467821, CF4457, 188487, E24A33
 
 lines.linewidth : 1.0
 lines.linestyle : -
 lines.markersize : 6
 lines.markeredgewidth : 0.0
+
+patch.edgecolor : white
 
 xtick.color : black
 xtick.direction : in
@@ -30,12 +34,17 @@ ytick.color : black
 ytick.direction : in
 ytick.labelsize : 14
 
+grid.color : white
+grid.linestyle : -
+grid.linewidth : 1.0
+
 figure.figsize : 6, 6 
 figure.facecolor : white
-figure.edgecolor : 0.50
+figure.edgecolor : black
 figure.dpi : 100
 
-legend.frameon : False
+legend.fancybox : True
+legend.frameon : True
 legend.fontsize : 14
 legend.loc : best
 

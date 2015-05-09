@@ -71,7 +71,9 @@ public:
   PC  pc2;
 
   PetscLogStage stageInitialize,
+                stageRHSVelocitySystem,
                 stageSolveVelocitySystem,
+                stageRHSPoissonSystem,
                 stageSolvePoissonSystem,
                 stageProjectionStep;
 
@@ -235,7 +237,9 @@ public:
     pc2 = PETSC_NULL;
     // PetscLogStages
     PetscLogStageRegister("initialize", &stageInitialize);
+    PetscLogStageRegister("RHSVelocity", &stageRHSVelocitySystem);
     PetscLogStageRegister("solveVelocity", &stageSolveVelocitySystem);
+    PetscLogStageRegister("RHSPoisson", &stageRHSPoissonSystem);
     PetscLogStageRegister("solvePoisson", &stageSolvePoissonSystem);
     PetscLogStageRegister("projectionStep", &stageProjectionStep);
   }

@@ -156,16 +156,20 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   PetscErrorCode ierr;
 
   // solve for the intermediate velocity
+  ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
   ierr = calculateExplicitTerms(); CHKERRQ(ierr);
   ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
   ierr = generateBC1(); CHKERRQ(ierr);
   ierr = generateRHS1(); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
   ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
   // solve the Poisson system for the pressure
   // and body forces in the case of TairaColoniusSolver
+  ierr = PetscLogStagePush(stageRHSPoissonSystem); CHKERRQ(ierr);
   ierr = generateR2(); CHKERRQ(ierr);
   ierr = generateRHS2(); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
   ierr = solvePoissonSystem(); CHKERRQ(ierr);
 
   // project the pressure field to satisfy continuity

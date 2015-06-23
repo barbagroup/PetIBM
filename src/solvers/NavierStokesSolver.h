@@ -33,7 +33,7 @@ public:
   CartesianMesh        *mesh;
   
   PetscInt timeStep,
-           iteratonCount1,
+           iterationCount1,
            iterationCount2;
 
   std::vector<PetscReal> dxU, dyU, dzU,
@@ -71,7 +71,9 @@ public:
   PC  pc2;
 
   PetscLogStage stageInitialize,
-                stageSolveIntermediateVelocity,
+                stageRHSVelocitySystem,
+                stageSolveVelocitySystem,
+                stageRHSPoissonSystem,
                 stageSolvePoissonSystem,
                 stageProjectionStep;
 
@@ -235,8 +237,10 @@ public:
     pc2 = PETSC_NULL;
     // PetscLogStages
     PetscLogStageRegister("initialize", &stageInitialize);
-    PetscLogStageRegister("solveIntVel", &stageSolveIntermediateVelocity);
-    PetscLogStageRegister("solvePoissSys", &stageSolvePoissonSystem);
+    PetscLogStageRegister("RHSVelocity", &stageRHSVelocitySystem);
+    PetscLogStageRegister("solveVelocity", &stageSolveVelocitySystem);
+    PetscLogStageRegister("RHSPoisson", &stageRHSPoissonSystem);
+    PetscLogStageRegister("solvePoisson", &stageSolvePoissonSystem);
     PetscLogStageRegister("projectionStep", &stageProjectionStep);
   }
 };

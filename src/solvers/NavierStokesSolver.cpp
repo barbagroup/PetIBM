@@ -156,21 +156,21 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   PetscErrorCode ierr;
 
   // solve for the intermediate velocity
-  ierr = PetscLogStagePush(stageSolveIntermediateVelocity); CHKERRQ(ierr);
+  ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
   ierr = calculateExplicitTerms(); CHKERRQ(ierr);
   ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
   ierr = generateBC1(); CHKERRQ(ierr);
   ierr = generateRHS1(); CHKERRQ(ierr);
-  ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
   // solve the Poisson system for the pressure
   // and body forces in the case of TairaColoniusSolver
-  ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
+  ierr = PetscLogStagePush(stageRHSPoissonSystem); CHKERRQ(ierr);
   ierr = generateR2(); CHKERRQ(ierr);
   ierr = generateRHS2(); CHKERRQ(ierr);
-  ierr = solvePoissonSystem(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = solvePoissonSystem(); CHKERRQ(ierr);
 
   // project the pressure field to satisfy continuity
   // and the body forces to satisfy the no-slip condition
@@ -191,7 +191,9 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
   PetscErrorCode     ierr;
   KSPConvergedReason reason;
   
+  ierr = PetscLogStagePush(stageSolveVelocitySystem); CHKERRQ(ierr);
   ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
   if(reason < 0)
@@ -212,7 +214,9 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   PetscErrorCode     ierr;
   KSPConvergedReason reason;
   
+  ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
   ierr = KSPSolve(ksp2, rhs2, lambda); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
   
   ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
   if(reason < 0)

@@ -244,7 +244,8 @@ def main():
   # parse command-line
   args = read_inputs()
 
-  os.environ['MPIEXEC'] = '{}/arch-linux2-c-opt/bin/mpiexec'.format(os.environ['PETSC_DIR'])
+  os.environ['MPIEXEC'] = '{}/{}/bin/mpiexec'.format(os.environ['PETSC_DIR'],
+                                                     os.environ['PETSC_ARCH'])
 
   # clean and compile PetIBM
   if args.compile:

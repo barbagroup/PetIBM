@@ -1,4 +1,3 @@
-TESTS = navierStokesTest
 check_PROGRAMS = navierStokesTest
 
 navierStokesTest_SOURCES = NavierStokesTest.cpp

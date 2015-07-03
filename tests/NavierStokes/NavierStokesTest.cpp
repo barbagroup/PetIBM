@@ -25,7 +25,7 @@ public:
     lambdaGold = PETSC_NULL;
     
     // read input files and create solver
-    folder = "data";
+    folder = "NavierStokes/data";
     FD = FlowDescription(folder+"/flowDescription.yaml");
     CM = CartesianMesh(folder+"/cartesianMesh.yaml");
     SP = SimulationParameters(folder+"/simulationParameters.yaml");

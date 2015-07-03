@@ -1,4 +1,3 @@
-TESTS = tairaColoniusTest
 check_PROGRAMS = tairaColoniusTest
 
 tairaColoniusTest_SOURCES = TairaColoniusTest.cpp

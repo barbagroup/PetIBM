@@ -1,4 +1,3 @@
-TESTS = cartesianMeshTest
 check_PROGRAMS = cartesianMeshTest
 
 cartesianMeshTest_SOURCES = CartesianMeshTest.cpp

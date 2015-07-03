@@ -5798,7 +5798,7 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile src/Makefile src/utilities/Makefile src/solvers/Makefile external/Makefile external/yaml-cpp-0.5.1/Makefile external/gtest-1.7.0/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/utilities/Makefile src/solvers/Makefile external/Makefile external/yaml-cpp-0.5.1/Makefile external/gtest-1.7.0/Makefile tests/Makefile tests/CartesianMesh/Makefile tests/NavierStokes/Makefile tests/TairaColonius/Makefile"
 
 
 # output message
@@ -6544,6 +6544,10 @@ do
     "external/Makefile") CONFIG_FILES="$CONFIG_FILES external/Makefile" ;;
     "external/yaml-cpp-0.5.1/Makefile") CONFIG_FILES="$CONFIG_FILES external/yaml-cpp-0.5.1/Makefile" ;;
     "external/gtest-1.7.0/Makefile") CONFIG_FILES="$CONFIG_FILES external/gtest-1.7.0/Makefile" ;;
+    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "tests/CartesianMesh/Makefile") CONFIG_FILES="$CONFIG_FILES tests/CartesianMesh/Makefile" ;;
+    "tests/NavierStokes/Makefile") CONFIG_FILES="$CONFIG_FILES tests/NavierStokes/Makefile" ;;
+    "tests/TairaColonius/Makefile") CONFIG_FILES="$CONFIG_FILES tests/TairaColonius/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

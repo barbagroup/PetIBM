@@ -1,0 +1,3 @@
+SUBDIRS = CartesianMesh \
+          NavierStokes \
+          TairaColonius

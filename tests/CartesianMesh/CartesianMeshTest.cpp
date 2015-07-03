@@ -18,9 +18,9 @@ public:
 
   CartesianMeshTest()
   {
-    UniformMesh2d.initialize("tests/CartesianMesh/data/UniformMesh2d.yaml");
-    UniformMesh3d.initialize("tests/CartesianMesh/data/UniformMesh3d.yaml");
-    StretchedMesh3d.initialize("tests/CartesianMesh/data/StretchedMesh3d.yaml");
+    UniformMesh2d.initialize("data/UniformMesh2d.yaml");
+    UniformMesh3d.initialize("data/UniformMesh3d.yaml");
+    StretchedMesh3d.initialize("data/StretchedMesh3d.yaml");
   }
 };
 

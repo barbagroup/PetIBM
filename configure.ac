@@ -12,7 +12,7 @@ AC_CONFIG_SRCDIR([src/PetIBM.cpp])
 AC_CONFIG_HEADERS([config/config.h])
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE([disable])
-AC_LANG(C++)
+AC_LANG([C++])
 
 # check for programs
 AC_PROG_CXX
@@ -44,7 +44,11 @@ AC_CONFIG_FILES([Makefile
                  src/solvers/Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
-                 external/gtest-1.7.0/Makefile])
+                 external/gtest-1.7.0/Makefile
+                 tests/Makefile
+                 tests/CartesianMesh/Makefile
+                 tests/NavierStokes/Makefile
+                 tests/TairaColonius/Makefile])
 
 # output message
 AC_OUTPUT

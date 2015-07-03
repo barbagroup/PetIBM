@@ -38,7 +38,7 @@ std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string folder,
       PetscPrintf(PETSC_COMM_WORLD, "Unrecognized solver!\n");
       return NULL;
   }
-}
+} // createSolver
 
 template std::unique_ptr< NavierStokesSolver<2> > createSolver(std::string folder, 
                                                                FlowDescription *FD, 

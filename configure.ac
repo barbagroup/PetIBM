@@ -15,8 +15,10 @@ AM_MAINTAINER_MODE([disable])
 AC_LANG([C++])
 
 # check for programs
-AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
 AC_PROG_AWK
 AC_PROG_INSTALL
 AC_PROG_RANLIB
@@ -59,6 +61,22 @@ echo "====================="
 AC_MSG_NOTICE([PetIBM appears to have been configured successfully
 
 Prefix: '${prefix}'
+
+
+CXX: ${CXX}
+CXXFLAGS: ${CXXFLAGS}
+
+CC: ${CC}
+CFLAGS: ${CFLAGS}
+
+LDFLAGS: ${LDFLAGS}
+
+LIBS: ${LIBS}
+
+BOOST_ROOT: ${BOOST_ROOT}
+
+PETSC_DIR: ${PETSC_DIR}
+PETSC_ARCH: ${PETSC_ARCH}
 
 Now type 'make @<:@<target>@:>@'
   where the optional @<:@<target>@:>@ is:

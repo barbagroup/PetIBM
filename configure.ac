@@ -50,7 +50,8 @@ AC_CONFIG_FILES([Makefile
                  tests/Makefile
                  tests/CartesianMesh/Makefile
                  tests/NavierStokes/Makefile
-                 tests/TairaColonius/Makefile])
+                 tests/TairaColonius/Makefile
+                 examples/Makefile])
 
 # output message
 AC_OUTPUT

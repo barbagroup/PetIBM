@@ -1,3 +1,5 @@
+include $(PETSC_DIR)/conf/variables
+
 bin_PROGRAMS = diffusiveTermTest2d \
 							 diffusiveTermTest3d
 
@@ -37,8 +39,6 @@ input_data:
 		cp -r $(top_srcdir)/tests/diffusiveTerm/cases $(PWD) ; \
 		cp $(top_srcdir)/tests/diffusiveTerm/plotGridConvergence.py $(PWD) ; \
 	fi ;
-
-MPIEXEC = $(PETSC_DIR)/$(PETSC_ARCH)/bin/mpiexec
 
 tests:
 	@echo "Running 2D diffusive-term tests..."

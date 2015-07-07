@@ -218,7 +218,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-MPIEXEC = $(PETSC_DIR)/$(PETSC_ARCH)/bin/mpiexec
 PETIBM2D = $(top_builddir)/src/petibm2d
 PETIBM3D = $(top_builddir)/src/petibm3d
 all: all-am
@@ -404,6 +403,7 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am tags-am uninstall uninstall-am
 
+include $(PETSC_DIR)/conf/variables
 
 examples:
 	@echo "Copying examples folders..."

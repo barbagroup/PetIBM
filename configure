@@ -1390,7 +1390,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-doxygen=PATH     manually set directory where the doxygen executable
                           resides to PATH
-  --with-boost=DIR        prefix of Boost 1.46.1 [guess]
+  --with-boost=DIR        prefix of Boost 1.55 [guess]
 
 Some influential environment variables:
   CC          C compiler command
@@ -6370,7 +6370,7 @@ echo "check for a system Boost library"
 $as_unset boost_cv_inc_path
 echo "$as_me: this is boost.m4 serial 22" >&5
 boost_save_IFS=$IFS
-boost_version_req=1.46.1
+boost_version_req=1.55
 IFS=.
 set x $boost_version_req 0 0 0
 IFS=$boost_save_IFS
@@ -6693,7 +6693,7 @@ int
 main ()
 {
 
-#if ((PETSC_VERSION_GE(3, 4, 0) && PETSC_VERSION_LT(3, 6, 0)) || !PETSC_VERSION_RELEASE)
+#if ((PETSC_VERSION_GE(3, 5, 0) && PETSC_VERSION_LT(3, 6, 0)) || !PETSC_VERSION_RELEASE)
 #else
 asdf
 #endif

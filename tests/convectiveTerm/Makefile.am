@@ -1,3 +1,5 @@
+include $(PETSC_DIR)/conf/variables
+
 bin_PROGRAMS = convectiveTermTest2d \
 							 convectiveTermTest3d
 
@@ -37,8 +39,6 @@ input_data:
 		cp -r $(top_srcdir)/tests/convectiveTerm/cases $(PWD) ; \
 		cp $(top_srcdir)/tests/convectiveTerm/plotGridConvergence.py $(PWD) ; \
 	fi ;
-
-MPIEXEC = $(PETSC_DIR)/$(PETSC_ARCH)/bin/mpiexec
 
 tests:
 	@echo "Running 2D convective-term tests..."

@@ -46,8 +46,7 @@ Install PETSc-3.5.2 in the optimized mode by running the following:
 Get and unpack PETSc:
 
     > cd $HOME/sfw
-    > mkdir petsc
-    > cd petsc
+    > mkdir petsc && cd petsc
     > wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.5.2.tar.gz
     > tar xvfz petsc-lite-3.5.2.tar.gz
     > mv petsc-3.5.2 3.5.2
@@ -94,8 +93,7 @@ The PETSc Users Manual and the Manual Pages can be found on their
 Create a local copy of the PetIBM repository:
 
     > cd $HOME/sfw
-    > mkdir PetIBM
-    > cd PetIBM
+    > mkdir petibm && cd petibm
     > git clone https://github.com/barbagroup/PetIBM.git
 
 ### Set environment variables
@@ -106,7 +104,7 @@ You can either set them through the command line or insert the following lines i
 
     > export PETSC_DIR=$HOME/sfw/petsc/3.5.2
     > export PETSC_ARCH=linux-opt
-    > export PETIBM_DIR=$HOME/sfw/PetIBM/PetIBM
+    > export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
 
 If you are using C shell, use the `setenv` command.
 Then, restart the terminal or source the file:
@@ -115,9 +113,8 @@ Then, restart the terminal or source the file:
 
 ### Configure and compile a PetIBM build:
 
-    > mkdir petibm-linux-opt
-    > cd petibm-linux-opt
-    > $PETIBM_DIR/configure --prefix=$HOME/sfw/PetIBM/petibm-linux-opt \
+    > mkdir petibm-linux-opt && cd petibm-linux-opt
+    > $PETIBM_DIR/configure --prefix=$HOME/sfw/petibm/petibm-linux-opt \
                             CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc \
                             CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx
     > make all
@@ -128,7 +125,7 @@ Then, restart the terminal or source the file:
 The following case simulates flow over an impulsively started 2-D circular cylinder at Reynolds number 40. It runs with 
 2 MPI processes.
 
-    > cd $HOME/sfw/PetIBM/petibm-linux-opt/examples
+    > cd $HOME/sfw/petibm/petibm-linux-opt/examples
     > make examples
     > make cylinder2dRe40
 
@@ -138,7 +135,7 @@ We also provide a series of Python scripts to post-process the numerical solutio
 
 For instance, the Python script `plotFields2d.py` generates the contour of the velocity components, the pressure and the vorticity at saved time-steps. The following command-line displays the list of options available:
 
-    > python scripts/python/plotFields2d.py --help
+    > python $(PETIBM_DIR)/scripts/python/plotFields2d.py --help
 
 The contours, for the 2-D circular cylinder at Reynolds number 40, are generated with:
 

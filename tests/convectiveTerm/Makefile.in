@@ -303,7 +303,6 @@ convectiveTermTest3d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
 														 $(top_builddir)/src/solvers/libsolvers.a \
 														 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
-MPIEXEC = $(PETSC_DIR)/$(PETSC_ARCH)/bin/mpiexec
 all: all-am
 
 .SUFFIXES:
@@ -676,6 +675,7 @@ uninstall-am: uninstall-binPROGRAMS
 	ps ps-am tags tags-am uninstall uninstall-am \
 	uninstall-binPROGRAMS
 
+include $(PETSC_DIR)/conf/variables
 
 input_data:
 	@echo "Copying cases folder..."

@@ -1,4 +1,4 @@
-MPIEXEC = $(PETSC_DIR)/$(PETSC_ARCH)/bin/mpiexec
+include $(PETSC_DIR)/conf/variables
 
 PETIBM2D = $(top_builddir)/src/petibm2d
 PETIBM3D = $(top_builddir)/src/petibm3d

@@ -47,6 +47,7 @@ Get and unpack PETSc:
 
     > cd $HOME/sfw
     > mkdir petsc
+    > cd petsc
     > wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.5.2.tar.gz
     > tar xvfz petsc-lite-3.5.2.tar.gz
     > mv petsc-3.5.2 3.5.2
@@ -93,6 +94,8 @@ The PETSc Users Manual and the Manual Pages can be found on their
 Create a local copy of the PetIBM repository:
 
     > cd $HOME/sfw
+    > mkdir PetIBM
+    > cd PetIBM
     > git clone https://github.com/barbagroup/PetIBM.git
 
 ### Set environment variables
@@ -103,7 +106,7 @@ You can either set them through the command line or insert the following lines i
 
     > export PETSC_DIR=$HOME/sfw/petsc/3.5.2
     > export PETSC_ARCH=linux-opt
-    > export PETIBM_DIR=$HOME/sfw/PetIBM
+    > export PETIBM_DIR=$HOME/sfw/PetIBM/PetIBM
 
 If you are using C shell, use the `setenv` command.
 Then, restart the terminal or source the file:
@@ -114,9 +117,9 @@ Then, restart the terminal or source the file:
 
     > mkdir petibm-linux-opt
     > cd petibm-linux-opt
-    > $PETIBM_DIR/configure --prefix=$HOME/sfw/petibm-linux-opt \
-                            --CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc \
-                            --CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx
+    > $PETIBM_DIR/configure --prefix=$HOME/sfw/PetIBM/petibm-linux-opt \
+                            CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc \
+                            CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx
     > make all
     > make check
 
@@ -125,7 +128,7 @@ Then, restart the terminal or source the file:
 The following case simulates flow over an impulsively started 2-D circular cylinder at Reynolds number 40. It runs with 
 2 MPI processes.
 
-    > cd $HOME/sfw/petibm-linux-opt/examples
+    > cd $HOME/sfw/PetIBM/petibm-linux-opt/examples
     > make examples
     > make cylinder2dRe40
 
@@ -139,7 +142,7 @@ For instance, the Python script `plotFields2d.py` generates the contour of the v
 
 The contours, for the 2-D circular cylinder at Reynolds number 40, are generated with:
 
-    > python $(PETIBM_DIR)/scripts/python/plotFields2d.py --case cases/2d/cylinder/Re40 \
+    > python $(PETIBM_DIR)/scripts/python/plotFields2d.py --case 2d/cylinder/Re40 \
                                                           --bottom-left -2.0 -2.0 \
                                                           --top-right 4.0 2.0 \
 

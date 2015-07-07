@@ -61,6 +61,8 @@ AC_CONFIG_FILES([Makefile
                  tests/CartesianMesh/Makefile
                  tests/NavierStokes/Makefile
                  tests/TairaColonius/Makefile
+                 tests/convectiveTerm/Makefile
+                 tests/diffusiveTerm/Makefile
                  examples/Makefile])
 
 # output message

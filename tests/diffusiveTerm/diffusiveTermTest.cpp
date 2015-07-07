@@ -6,7 +6,7 @@
 
 
 #include "DiffusiveTerm.h"
-#include <NavierStokesSolver.h>
+#include <navierStokes/NavierStokesSolver.h>
 #include <CartesianMesh.h>
 #include <FlowDescription.h>
 #include <SimulationParameters.h>

@@ -8,7 +8,7 @@
  #if !defined(DIFFUSIVE_TERM_H)
  #define DIFFUSIVE_TERM_H
 
- #include <NavierStokesSolver.h>
+ #include <navierStokes/NavierStokesSolver.h>
 
 
  /**

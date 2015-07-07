@@ -48,13 +48,7 @@ def main():
   """Builds the unit-test, runs it for 2d grids and 3d grids 
   and plots the spatial convergence for the 2d and 3d cases.
   """
-  # bluid unit-test
-  test_directory = '{}/tests/diffusiveTerm'.format(os.environ['PETIBM_DIR'])
-  os.chdir(test_directory)
-  os.system('make cleanTest')
-  os.system('make')
-  # run unit-test for 2d grids and 3d grids
-  os.system('make runTest')
+  test_directory = os.getcwd()
 
   # plot and save spatial convergence
   pyplot.style.use('{}/scripts/python/style/'

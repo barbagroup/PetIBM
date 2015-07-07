@@ -6751,7 +6751,7 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile src/Makefile src/utilities/Makefile src/solvers/Makefile external/Makefile external/yaml-cpp-0.5.1/Makefile external/gtest-1.7.0/Makefile tests/Makefile tests/CartesianMesh/Makefile tests/NavierStokes/Makefile tests/TairaColonius/Makefile examples/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/utilities/Makefile src/solvers/Makefile external/Makefile external/yaml-cpp-0.5.1/Makefile external/gtest-1.7.0/Makefile tests/Makefile tests/CartesianMesh/Makefile tests/NavierStokes/Makefile tests/TairaColonius/Makefile tests/convectiveTerm/Makefile tests/diffusiveTerm/Makefile examples/Makefile"
 
 
 # output message
@@ -7501,6 +7501,8 @@ do
     "tests/CartesianMesh/Makefile") CONFIG_FILES="$CONFIG_FILES tests/CartesianMesh/Makefile" ;;
     "tests/NavierStokes/Makefile") CONFIG_FILES="$CONFIG_FILES tests/NavierStokes/Makefile" ;;
     "tests/TairaColonius/Makefile") CONFIG_FILES="$CONFIG_FILES tests/TairaColonius/Makefile" ;;
+    "tests/convectiveTerm/Makefile") CONFIG_FILES="$CONFIG_FILES tests/convectiveTerm/Makefile" ;;
+    "tests/diffusiveTerm/Makefile") CONFIG_FILES="$CONFIG_FILES tests/diffusiveTerm/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

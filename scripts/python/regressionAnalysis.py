@@ -23,116 +23,99 @@ def read_inputs():
   parser = argparse.ArgumentParser(description='Executes a regression-test',
                         formatter_class= argparse.ArgumentDefaultsHelpFormatter)
   # fill parser with arguments
+  parser.add_argument('--build', dest='build_directory', type=str, 
+                      default=os.getcwd(),
+                      help='directory of the PetIBM build')
   parser.add_argument('--save', dest='save', action='store_true', 
                       help='saves the new numerical solutions')
   parser.add_argument('--no-compile', dest='compile', action='store_false',
                       help='skips PetIBM compilation')
   parser.add_argument('--no-run', dest='run', action='store_false',
                       help='does not run the test-cases')
-  parser.set_defaults(compile=True, run=True)
+  parser.set_defaults(save=False, compile=True, run=True)
   # parse command-line
   return parser.parse_args()
 
 
-def define_test_cases():
-  """Defines the test-cases to be run."""
-  # dictionary that will contains test-cases info
-  tests = {}
-
-  # test-case: 2d lid-driven cavity flow (Re=100)
-  case = '2d lid-driven cavity (Re=100)'
-  tests[case] = TestCase('{}/cases/2d/lidDrivenCavity/Re100'.format(os.environ['PETIBM_DIR']))
-  tests[case].petibmexec = os.environ['PETIBM2D']
-  tests[case].mpiexec = os.environ['MPIEXEC']
-  tests[case].n = 1
-  tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
-                           '-sys2_pc_gamg_agg_nsmooths 1')
-  # test-case: 2d cylinder (Re=40)
-  case = '2d cylinder (Re=40)'
-  tests[case] = TestCase('{}/cases/2d/cylinder/Re40'.format(os.environ['PETIBM_DIR']))
-  tests[case].petibmexec = os.environ['PETIBM2D']
-  tests[case].mpiexec = os.environ['MPIEXEC']
-  tests[case].n = 2
-  tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
-                           '-sys2_pc_gamg_agg_nsmooths 1')
-  # test-case: 3d lid-driven cavity flow (Re=100, periodic=['x'])
-  case = '3d lid-driven cavity (Re=100)'
-  tests[case] = TestCase('{}/cases/3d/lidDrivenCavity/Re100PeriodicX'.format(os.environ['PETIBM_DIR']))
-  tests[case].periodic = ['x']
-  tests[case].petibmexec = os.environ['PETIBM3D']
-  tests[case].mpiexec = os.environ['MPIEXEC']
-  tests[case].n = 2
-  tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
-                           '-sys2_pc_gamg_agg_nsmooths 1')
-  # test-case: 3d sphere (Re=300)
-  case = '3d sphere (Re=300)'
-  tests[case] = TestCase('{}/cases/3d/sphere/Re300'.format(os.environ['PETIBM_DIR']))
-  tests[case].petibmexec = os.environ['PETIBM3D']
-  tests[case].mpiexec = os.environ['MPIEXEC']
-  tests[case].n = 4
-  tests[case].arguments = ('-sys2_pc_type gamg -sys2_pc_gamg_type agg '
-                           '-sys2_pc_gamg_agg_nsmooths 1')
+def define_test_cases(build_directory):
+  tests = []
+  tests.append(TestCase(description='2d lid-driven cavity flow at Re=100',
+                        directory='{}/examples/2d/lidDrivenCavity/Re100'.format(build_directory),
+                        command='make cavity2dRe100Serial'))
+  tests.append(TestCase(description='2d cylinder flow at Re=40',
+                        directory='{}/examples/2d/cylinder/Re40'.format(build_directory),
+                        command='make cylinder2dRe40'))
+  tests.append(TestCase(description='2d cylinder flow at Re=40 with y-periodic boundary conditions',
+                        directory='{}/examples/2d/cylinder/Re40PeriodicDomain'.format(build_directory),
+                        command='make cylinder2dRe40Periodic',
+                        periodic=['y']))
+  tests.append(TestCase(description='3d cavity flow at Re=100 with x-periodic boundary conditions',
+                        directory='{}/examples/3d/lidDrivenCavity/Re100PeriodicX'.format(build_directory),
+                        command='make cavity3dRe100PeriodicX',
+                        periodic=['x']))
   return tests
 
 
 class TestCase(object):
   """Contains information about a test-case."""
-  def __init__(self, directory, 
-               petibmexec=None, mpiexec=None, n=1, arguments=None, periodic=[]):
-    """Initializes the test-case with arguments for the command-line.
+  def __init__(self, description, directory, command, periodic=[]):
+    """Initializes the test-case.
 
     Parameters
     ----------
+    description: str
+      Description of the test-case.
     directory: str
-      Directory of the simulation.
-    petibmexec: None or str
-      Path of the PetIBM binary executable.
-    mpiexec: None or str
-      Path of the MPI executable.
-    n: int
-      Number of processes to use; default: 1.
-    arguments: None or list(str)
-      PETSc command-line arguments.
+      Directory of the test-case.
+    command: str
+      Command-line to execute to run the test-case.
     periodic: list(str)
       Directions with periodic boundary conditions.
     """
+    self.description = description
     self.directory = directory
-    self.petibmexec = petibmexec
-    self.mpiexec = mpiexec
-    self.n = n
-    self.arguments = arguments
+    self.reference = None
+    self.command = command
     self.periodic = periodic
     self.differences = []
     self.passed = True
+    self.saved = False
+
+  def print_info(self):
+    """Prints some info about the test-case."""
+    print('\n********************')
+    print('Test-case: {}'.format(self.description))
+    print('********************')
+    print('Directory: {}'.format(self.directory))
+    print('Command-line: {}'.format(self.command))
 
   def run(self):
     """Runs the test-case."""
-    print('\nRun test-case: {}\n'.format(self.directory))
-    os.system('{} -n {} {} -caseFolder {} {}'.format(self.mpiexec, self.n, 
-                                                     self.petibmexec,
-                                                     self.directory,
-                                                     self.arguments))
+    os.system(self.command)
 
-  def regression_analysis(self, directory):
-    """Compares the numerical solution with the solution from previous version.
+  def compare(self,save=False):
+    """Compares the numerical solution with a reference.
 
     Parameters
     ----------
-    directory: str
-      Directory where is stored the reference case folder.
+    save: bool
+      Save the new numerical solution; default: False.
     """
-    self.basename = os.path.relpath(self.directory, os.environ['PETIBM_DIR'])
-    self.reference = '{}/{}'.format(directory, self.basename)
+    self.reference = self.directory.replace('examples', 'regressionAnalysis')
     if not os.path.isdir(self.reference):
-      print('\nWARNING: no numerical solution to compare with\n')
-      self.save(directory)
+      print('\nWARNING: no reference available. Skipping comparison.')
       self.passed = False
-      self.differences.append('no numerical solution to compare with')
-      return
-    self.compare_grid()
-    self.compare_velocity()
-    self.compare_pressure()
-    self.compare_forces()
+      self.differences.append('reference solution did not exist -- force saving')
+      self.save()
+    else:
+      print('\nReference: {}'.format(self.reference))
+      print('Comparing numerical solution to reference...')
+      self.compare_grid()
+      self.compare_velocity()
+      self.compare_pressure()
+      self.compare_forces()
+      if self.passed and save:
+        self.save()
 
   def compare_arrays(self, array1, array2, tag):
     """Performs element-wise comparison of two given arrays.
@@ -208,20 +191,14 @@ class TestCase(object):
     except:
       pass
     
-  def save(self, directory):
-    """Saves the numerical solution into a folder.
-
-    Parameters
-    ----------
-    directory: str
-      Directory where the numerical solution will be saved.
-    """
-    print('\nCopy numerical solution of {} into {}\n'.format(self.basename,
-                                                             directory))
-    destination = '{}/{}'.format(directory, self.basename)
-    if os.path.isdir(destination):
-      shutil.rmtree(destination)
-    shutil.copytree(self.directory, destination)
+  def save(self):
+    """Saves the numerical solution into a folder."""
+    print('Copy numerical solution of {} into {}\n'.format(self.directory,
+                                                           self.reference))
+    if os.path.isdir(self.reference):
+      shutil.rmtree(self.reference)
+    shutil.copytree(self.directory, self.reference)
+    self.saved = True
 
   def write(self, file_path):
     """Writes the results of the regression analysis into a file.
@@ -229,56 +206,112 @@ class TestCase(object):
     Parameters
     ----------
     file_path: str
-      Path of the file.
+      Path of the file where to write.
     """
     with open(file_path, 'a') as outfile:
-      message = ('OK' if self.passed else 'NOT OK')
-      outfile.write('\n\n{}: {}\n'.format(self.basename, message))
-      outfile.write('\t\n'.join(self.differences))
+      outfile.write('\n--------------------\n')
+      outfile.write('Test-case: {}\n'.format(self.description))
+      outfile.write('--------------------\n')
+      outfile.write('directory: {}\n'.format(self.directory))
+      outfile.write('reference: {}\n'.format(self.reference))
+      outfile.write('passed: {}\n'.format('yes' if self.passed else 'no'))
+      if not self.passed:
+        outfile.write('reason(s): {}\n'.format('\n\t'.join(self.differences)))
+      outfile.write('saved: {}\n'.format('yes' if self.saved else 'no'))
+
+
+def print_configuration(build_directory):
+  """Prints the configuration used to build PetIBM.
+
+  Parameters
+  ----------
+  build_directory: str
+    Directory of the PetIBM build.
+  """
+  print('\n=============')
+  print(  'Configuration')
+  print(  '=============\n')
+  print('Build directory: {}'.format(build_directory))
+  print('PETSC_DIR: {}'.format(os.environ['PETSC_DIR']))
+  print('PETSC_ARCH: {}'.format(os.environ['PETSC_ARCH']))
+
+
+def compile_PetIBM(build_directory):
+  """Compiles PetIBM.
+
+  Parameters
+  ----------
+  build_directory: str
+    Directory of the PetIBM build.
+  """
+  print('\n==============')
+  print(  'Compile PetIBM')
+  print(  '==============\n')
+  os.chdir(build_directory)
+  os.system('make clean')
+  os.system('make all')
+  os.system('make check')
+  # check existence of executables
+  for executable in ['petibm2d', 'petibm3d']:
+    if not os.path.exists('{}/src/{}'.format(build_directory, executable)):
+      print('ERROR: {} does not exist.'.format(executable))
+      sys.exit()
+
+
+def perform_regression_analysis(build_directory, tests, run, save):
+  """Runs test-cases and performs regression analysis.
+
+  Parameters
+  ----------
+  build_directory: str
+    Directory of the PetIBM build.
+  tests: dict(TestCase)
+    Dictionary containing all the test-cases to run.
+  run: bool
+    Do you want to run the test-cases?
+  save: bool
+    Do you want to save the numerical results for future regression analysis?
+  """
+  print('\n===================')
+  print(  'Regression analysis')
+  print(  '===================\n')
+  os.chdir('{}/examples'.format(build_directory))
+  os.system('make examples')
+  # create regressionAnalysis folder if need
+  regression_directory = '{}/regressionAnalysis'.format(build_directory)
+  if not os.path.isdir(regression_directory):
+    os.makedirs(regression_directory)
+  # write intro to summary file
+  summary_path = '{}/summary.txt'.format(regression_directory)
+  with open(summary_path, 'w') as outfile:
+    outfile.write('Regression analysis performed on {}\n'.format(time.strftime('%m/%d/%Y')))
+  # run test-cases
+  print('Looping over the test-cases...')
+  global_passed = True
+  for test in tests:
+    test.print_info()
+    if run:
+      test.run()
+    test.compare(save=save)
+    test.write(summary_path)
+    if not test.passed:
+      global_passed = False
+
+  print('\nPassed: {}'.format('yes' if global_passed else 'no'))
+  if not global_passed:
+    print('Check {} for more info.'.format(summary_path))
 
 
 def main():
   """Cleans, compiles PetIBM, then runs test-cases to ensure that the output
   matches the solutions of the previous version."""
-
   # parse command-line
   args = read_inputs()
-
-  os.environ['MPIEXEC'] = '{}/{}/bin/mpiexec'.format(os.environ['PETSC_DIR'],
-                                                     os.environ['PETSC_ARCH'])
-
-  # clean and compile PetIBM
+  print_configuration(args.build_directory)
   if args.compile:
-    print('\nClean and compile PetIBM\n')
-    os.chdir(os.environ['PETIBM_DIR'])
-    os.system('make cleanall')
-    os.system('make')
-  # check existence of executables
-  os.environ['PETIBM2D'] = '{}/bin/PetIBM2d'.format(os.environ['PETIBM_DIR'])
-  os.environ['PETIBM3D'] = '{}/bin/PetIBM3d'.format(os.environ['PETIBM_DIR'])
-  for executable in [os.environ['PETIBM2D'], os.environ['PETIBM3D']]:
-    if not os.path.exists(executable):
-      print('ERROR: could not build {}'.format(executable))
-      sys.exit()
-
-  tests = define_test_cases()
-
-  # create regression directory
-  regression_directory = '{}/regression_analysis'.format(os.environ['PETIBM_DIR'])
-  if not os.path.isdir(regression_directory):
-    os.makedirs(regression_directory)
-  regression_file_path = '{}/summary.txt'.format(regression_directory)
-  with open(regression_file_path, 'w') as outfile:
-    outfile.write('Regression analysis performed on {}\n\n'.format(time.strftime('%m/%d/%Y')))
-
-  # run test-cases
-  for test in tests.itervalues():
-    if args.run:
-      test.run()
-    test.regression_analysis(regression_directory)
-    test.write(regression_file_path)
-    if test.passed and args.save:
-      test.save(regression_directory)
+    compile_PetIBM(args.build_directory)
+  tests = define_test_cases(args.build_directory)
+  perform_regression_analysis(args.build_directory, tests, args.run, args.save)
 
 
 if __name__ == '__main__':

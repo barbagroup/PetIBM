@@ -8,7 +8,7 @@
  #if !defined(CONVECTIVE_TERM_H)
  #define CONVECTIVE_TERM_H
 
- #include <NavierStokesSolver.h>
+ #include <navierStokes/NavierStokesSolver.h>
 
 
  /**

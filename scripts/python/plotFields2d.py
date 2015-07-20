@@ -106,15 +106,17 @@ def plot_contour(field, field_range, image_path,
   pyplot.ylabel('$y$')
   if field_range:
     levels = numpy.linspace(field_range[0], field_range[1], field_range[2])
+    colorbar_ticks = numpy.linspace(field_range[0], field_range[1], 5)
   else:
     levels = numpy.linspace(field.values.min(), field.values.max(), 101)
+    colorbar_ticks = numpy.linspace(field.values.min(), field.values.max(), 5)
   X, Y = numpy.meshgrid(field.x, field.y)
   color_map = {'pressure': cm.jet, 'vorticity': cm.RdBu_r,
                'u-velocity': cm.RdBu_r, 'v-velocity': cm.RdBu_r}
   cont = ax.contourf(X, Y, field.values, 
                      levels=levels, extend='both', 
                      cmap=color_map[field.label])
-  cont_bar = fig.colorbar(cont, label=field.label, fraction=0.046, pad=0.04)
+  cont_bar = fig.colorbar(cont, label=field.label, orientation='horizontal', format='%.02f', ticks=colorbar_ticks)#, fraction=0.046, pad=0.04)
   x_start, x_end = max(view[0], field.x.min()), min(view[2], field.x.max())
   y_start, y_end = max(view[1], field.y.min()), min(view[3], field.y.max())
   ax.axis([x_start, x_end, y_start, y_end])

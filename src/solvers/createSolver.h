@@ -8,12 +8,13 @@
 #if !defined(CREATE_SOLVER_H)
 #define CREATE_SOLVER_H
 
-#include "NavierStokesSolver.h"
-#include "TairaColoniusSolver.h"
+#include "navierStokes/NavierStokesSolver.h"
+#include "tairaColonius/TairaColoniusSolver.h"
 
 #include <memory>
 
 
+// create appropriate solver depending on method chosen
 template <PetscInt dim>
 std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string folder, 
                                                         FlowDescription *FD, 

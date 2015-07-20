@@ -1,0 +1,22 @@
+# cartesianMesh.yaml
+
+- direction: x
+  start: 0.0
+  subDomains:
+    - end: 1.0
+      cells: 24
+      stretchRatio: 1.0
+
+- direction: y
+  start: 0.0
+  subDomains:
+    - end: 1.0
+      cells: 24
+      stretchRatio: 1.0
+
+- direction: z
+  start: 0.0
+  subDomains:
+    - end: 1.0
+      cells: 24
+      stretchRatio: 1.0

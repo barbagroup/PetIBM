@@ -23,15 +23,10 @@ public:
 
   TairaColoniusTest()
   {
-    char           caseFolder[PETSC_MAX_PATH_LEN];
-
     lambdaGold = PETSC_NULL;
     
-    // read case folder
-    PetscOptionsGetString(NULL, "-caseFolder", caseFolder, sizeof(caseFolder), NULL);
-    
     // read input files and create solver
-    folder = std::string(caseFolder);
+    folder = "TairaColonius/data";
     FD = FlowDescription(folder+"/flowDescription.yaml");
     CM = CartesianMesh(folder+"/cartesianMesh.yaml");
     SP = SimulationParameters(folder+"/simulationParameters.yaml");

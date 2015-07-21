@@ -45,7 +45,7 @@ AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday memset mkdir munmap 
 
 # check for optional and required third-party libraries
 PACKAGE_INITIALIZE_ENVIRONMENT
-CONFIGURE_BOOST
+#CONFIGURE_BOOST
 CONFIGURE_PETSC
 PACKAGE_SETUP_ENVIRONMENT
 

@@ -1244,8 +1244,6 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([m4/boost.m4])
-m4_include([m4/configure_boost.m4])
 m4_include([m4/configure_doxygen.m4])
 m4_include([m4/configure_petsc.m4])
 m4_include([m4/package_utilities.m4])

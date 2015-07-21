@@ -1,5 +1,7 @@
 # PetIBM - A PETSc-based Immersed Boundary Method code
 
+[![Build Status](https://travis-ci.org/barbagroup/PetIBM.png?branch=develop)](https://travis-ci.org/barbagroup/PetIBM)
+
 PetIBM solves the incompressible Navier-Stokes equations in two and three dimensions using the immersed boundary projection method from [Taira and Colonius](http://colonius.caltech.edu/pdfs/TairaColonius2007.pdf) (2007) and is implemented using PETSc, the Portable, Extensible Toolkit for Scientific Computation.
 
 ---

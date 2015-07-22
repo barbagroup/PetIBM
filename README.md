@@ -14,7 +14,6 @@ Ensure that the following dependencies are installed before compiling PetIBM:
 
 * GNU C++ Compiler(`g++`) version 4.6 or above
 * [PETSc](http://www.mcs.anl.gov/petsc/) version 3.5.0 or above (use branch `petsc-3.4-compatible` to run with PETSc 3.4)
-* [Boost](http://www.boost.org) version 1.55.0 or above (no build is required)
 
 PetIBM has been tested and run on Ubuntu 12.04, Ubuntu 14.10 and Mac OS X 10.8.
 
@@ -83,20 +82,6 @@ The PETSc Users Manual and the Manual Pages can be found on their
 
 ---
 
-#### Get Boost
-
-The parser used in PetIBM to go through the input files requires some Boost header files.
-If the Boost library is not already installed on your machine, you may type the following command-lines:
-
-    > cd $HOME/sfw
-    > mkdir -p boost/1.57.0
-    > wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.gz
-    > tar -xvf boost_1_57_0.tar.gz -C boost/1.57.0 --strip-components=1
-
-That's it! We only need some header files from the Boost library.
-
----
-
 #### Get PetIBM
 
 Create a local copy of the PetIBM repository:
@@ -123,7 +108,6 @@ Configure and build PetIBM using the optimized PETSc build:
     > export PETSC_ARCH=linux-opt
     > mkdir petibm-linux-opt && cd petibm-linux-opt
     > $PETIBM_DIR/configure --prefix=$HOME/sfw/petibm/petibm-linux-opt \
-                            --with-boost=$HOME/sfw/boost/1.57.0 \
                             CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc \
                             CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx
     > make all
@@ -138,7 +122,6 @@ You may also want to build a debugging version:
     > export PETSC_ARCH=linux-dbg
     > mkdir petibm-linux-dbg && cd petibm-linux-dbg
     > $PETIBM_DIR/configure --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
-                            --with-boost=$HOME/sfw/boost/1.57.0 \
                             CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc \
                             CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx
     > make all

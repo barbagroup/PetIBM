@@ -22,18 +22,13 @@ install:
   - export PETSC_ARCH=arch-dbg
   - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=gcc --with-cxx=g++ --with-fc=gfortran --download-fblaslapack --download-mpich
   - make all
-  # download Boost 
-  - cd ..
-  - wget "http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.gz" -O /tmp/boost_1_57_0
-  - tar xfz /tmp/boost_1_57_0
-  - export BOOST_DIR=$PWD/boost_1_57_0
 
 script:
   # build PetIBM
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx --with-boost=$BOOST_DIR
+  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx
   - make all
   - make check
   - make install

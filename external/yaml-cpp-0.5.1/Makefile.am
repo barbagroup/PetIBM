@@ -1,4 +1,5 @@
 noinst_LIBRARIES = libyamlcpp.a
+
 libyamlcpp_a_SOURCES = src/binary.cpp \
                        src/convert.cpp \
                        src/directives.cpp \
@@ -28,4 +29,7 @@ libyamlcpp_a_SOURCES = src/binary.cpp \
                        src/tag.cpp \
                        src/contrib/graphbuilder.cpp \
                        src/contrib/graphbuilderadapter.cpp
-libyamlcpp_a_CPPFLAGS = -I$(srcdir)/include -I$(srcdir)/src
+
+libyamlcpp_a_CPPFLAGS = -I$(srcdir)/include \
+                        -I$(srcdir)/src \
+                        -I$(top_srcdir)/external/boost-1.57.0

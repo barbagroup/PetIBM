@@ -627,13 +627,9 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 PACKAGE_LIBS
+PACKAGE_CPPFLAGS
 PETSC_ARCH
 PETSC_DIR
-PACKAGE_CPPFLAGS
-SED
-BOOST_CPPFLAGS
-DISTCHECK_CONFIGURE_FLAGS
-BOOST_ROOT
 LIBOBJS
 EGREP
 GREP
@@ -743,7 +739,6 @@ enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
 with_doxygen
-with_boost
 '
       ac_precious_vars='build_alias
 host_alias
@@ -758,7 +753,6 @@ CXX
 CXXFLAGS
 CCC
 CXXCPP
-BOOST_ROOT
 PETSC_DIR
 PETSC_ARCH'
 
@@ -1390,7 +1384,6 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-doxygen=PATH     manually set directory where the doxygen executable
                           resides to PATH
-  --with-boost=DIR        prefix of Boost 1.55 [guess]
 
 Some influential environment variables:
   CC          C compiler command
@@ -1404,7 +1397,6 @@ Some influential environment variables:
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
   CXXCPP      C++ preprocessor
-  BOOST_ROOT  location of Boost installation.
   PETSC_DIR   location of the PETSc installation.
   PETSC_ARCH  configuration of PETSc, located in ${PETSC_DIR}/${PETSC_ARCH}.
 
@@ -6270,361 +6262,6 @@ PACKAGE_LIBS=""
 PACKAGE_FCLIBS=""
 PACKAGE_CONTRIB_LIBS=""
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-$as_echo_n "checking for a sed that does not truncate output... " >&6; }
-if ${ac_cv_path_SED+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-     for ac_i in 1 2 3 4 5 6 7; do
-       ac_script="$ac_script$as_nl$ac_script"
-     done
-     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-     { ac_script=; unset ac_script;}
-     if test -z "$SED"; then
-  ac_path_SED_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in sed gsed; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_SED" || continue
-# Check for GNU ac_path_SED and select it if it is found.
-  # Check for GNU $ac_path_SED
-case `"$ac_path_SED" --version 2>&1` in
-*GNU*)
-  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo '' >> "conftest.nl"
-    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_SED_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_SED="$ac_path_SED"
-      ac_path_SED_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_SED_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_SED"; then
-    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-  fi
-else
-  ac_cv_path_SED=$SED
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-$as_echo "$ac_cv_path_SED" >&6; }
- SED="$ac_cv_path_SED"
-  rm -f conftest.sed
-
-
-
-echo
-echo "=================================="
-echo "Configuring required package Boost"
-echo "=================================="
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-
-
-
-echo "check for a system Boost library"
-$as_unset boost_cv_inc_path
-echo "$as_me: this is boost.m4 serial 22" >&5
-boost_save_IFS=$IFS
-boost_version_req=1.55
-IFS=.
-set x $boost_version_req 0 0 0
-IFS=$boost_save_IFS
-shift
-boost_version_req=`expr "$1" '*' 100000 + "$2" '*' 100 + "$3"`
-boost_version_req_string=$1.$2.$3
-
-# Check whether --with-boost was given.
-if test "${with_boost+set}" = set; then :
-  withval=$with_boost;
-fi
-# If BOOST_ROOT is set and the user has not provided a value to
-# --with-boost, then treat BOOST_ROOT as if it the user supplied it.
-if test x"$BOOST_ROOT" != x; then
-  if test x"$with_boost" = x; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: Detected BOOST_ROOT; continuing with --with-boost=$BOOST_ROOT" >&5
-$as_echo "$as_me: Detected BOOST_ROOT; continuing with --with-boost=$BOOST_ROOT" >&6;}
-    with_boost=$BOOST_ROOT
-  else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: Detected BOOST_ROOT=$BOOST_ROOT, but overridden by --with-boost=$with_boost" >&5
-$as_echo "$as_me: Detected BOOST_ROOT=$BOOST_ROOT, but overridden by --with-boost=$with_boost" >&6;}
-  fi
-fi
-DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS '--with-boost=$with_boost'"
-boost_save_CPPFLAGS=$CPPFLAGS
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Boost headers version >= $boost_version_req_string" >&5
-$as_echo_n "checking for Boost headers version >= $boost_version_req_string... " >&6; }
-if ${boost_cv_inc_path+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  boost_cv_inc_path=no
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <boost/version.hpp>
-#if !defined BOOST_VERSION
-# error BOOST_VERSION is not defined
-#elif BOOST_VERSION < $boost_version_req
-# error Boost headers version < $boost_version_req
-#endif
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-    # If the user provided a value to --with-boost, use it and only it.
-    case $with_boost in #(
-      ''|yes) set x '' /opt/local/include /usr/local/include /opt/include \
-                 /usr/include C:/Boost/include;; #(
-      *)      set x "$with_boost/include" "$with_boost";;
-    esac
-    shift
-    for boost_dir
-    do
-    # Without --layout=system, Boost (or at least some versions) installs
-    # itself in <prefix>/include/boost-<version>.  This inner loop helps to
-    # find headers in such directories.
-    #
-    # Any ${boost_dir}/boost-x_xx directories are searched in reverse version
-    # order followed by ${boost_dir}.  The final '.' is a sentinel for
-    # searching $boost_dir" itself.  Entries are whitespace separated.
-    #
-    # I didn't indent this loop on purpose (to avoid over-indented code)
-    boost_layout_system_search_list=`cd "$boost_dir" 2>/dev/null \
-        && ls -1 | "${GREP}" '^boost-' | sort -rn -t- -k2 \
-        && echo .`
-    for boost_inc in $boost_layout_system_search_list
-    do
-      if test x"$boost_inc" != x.; then
-        boost_inc="$boost_dir/$boost_inc"
-      else
-        boost_inc="$boost_dir" # Uses sentinel in boost_layout_system_search_list
-      fi
-      if test x"$boost_inc" != x; then
-        # We are going to check whether the version of Boost installed
-        # in $boost_inc is usable by running a compilation that
-        # #includes it.  But if we pass a -I/some/path in which Boost
-        # is not installed, the compiler will just skip this -I and
-        # use other locations (either from CPPFLAGS, or from its list
-        # of system include directories).  As a result we would use
-        # header installed on the machine instead of the /some/path
-        # specified by the user.  So in that precise case (trying
-        # $boost_inc), make sure the version.hpp exists.
-        #
-        # Use test -e as there can be symlinks.
-        test -e "$boost_inc/boost/version.hpp" || continue
-        CPPFLAGS="$CPPFLAGS -I$boost_inc"
-      fi
-      if ac_fn_cxx_try_compile "$LINENO"; then :
-  boost_cv_inc_path=yes
-else
-  boost_cv_version=no
-fi
-rm -f core conftest.err conftest.$ac_objext
-      if test x"$boost_cv_inc_path" = xyes; then
-        if test x"$boost_inc" != x; then
-          boost_cv_inc_path=$boost_inc
-        fi
-        break 2
-      fi
-    done
-    done
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $boost_cv_inc_path" >&5
-$as_echo "$boost_cv_inc_path" >&6; }
-    case $boost_cv_inc_path in #(
-      no)
-        boost_errmsg="cannot find Boost headers version >= $boost_version_req_string"
-        { $as_echo "$as_me:${as_lineno-$LINENO}: $boost_errmsg" >&5
-$as_echo "$as_me: $boost_errmsg" >&6;}
-        as_fn_error $? "could not find system Boost library" "$LINENO" 5
-        ;;#(
-      yes)
-        BOOST_CPPFLAGS=
-        ;;#(
-      *)
-        BOOST_CPPFLAGS="-I$boost_cv_inc_path"
-        ;;
-    esac
-  if test x"$boost_cv_inc_path" != xno; then
-
-$as_echo "#define HAVE_BOOST 1" >>confdefs.h
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Boost's header version" >&5
-$as_echo_n "checking for Boost's header version... " >&6; }
-if ${boost_cv_lib_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-       ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <boost/version.hpp>
-boost-lib-version = BOOST_LIB_VERSION
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  tr -d '\r' |
-  $SED -n -e "/^boost-lib-version = /{s///;s/\"//g;p;q;}" >conftest.i 2>&1; then :
-  boost_cv_lib_version=`cat conftest.i`
-fi
-rm -rf conftest*
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $boost_cv_lib_version" >&5
-$as_echo "$boost_cv_lib_version" >&6; }
-    # e.g. "134" for 1_34_1 or "135" for 1_35
-    boost_major_version=`echo "$boost_cv_lib_version" | sed 's/_//;s/_.*//'`
-    case $boost_major_version in #(
-      '' | *[!0-9]*)
-        as_fn_error $? "invalid value: boost_major_version=$boost_major_version" "$LINENO" 5
-        ;;
-    esac
-fi
-CPPFLAGS=$boost_save_CPPFLAGS
-
-
-if test x"$boost_cv_inc_path" = xno; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Boost not available, not searching for boost/array.hpp" >&5
-$as_echo "$as_me: Boost not available, not searching for boost/array.hpp" >&6;}
-else
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-boost_save_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/array.hpp" "ac_cv_header_boost_array_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_array_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_ARRAY_HPP 1" >>confdefs.h
-
-else
-  as_fn_error $? "cannot find boost/array.hpp" "$LINENO" 5
-fi
-
-
-CPPFLAGS=$boost_save_CPPFLAGS
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-fi
-
-
-if test x"$boost_cv_inc_path" = xno; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Boost not available, not searching for boost/multi_array.hpp" >&5
-$as_echo "$as_me: Boost not available, not searching for boost/multi_array.hpp" >&6;}
-else
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-boost_save_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/multi_array.hpp" "ac_cv_header_boost_multi_array_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_multi_array_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_MULTI_ARRAY_HPP 1" >>confdefs.h
-
-else
-  as_fn_error $? "cannot find boost/multi_array.hpp" "$LINENO" 5
-fi
-
-
-CPPFLAGS=$boost_save_CPPFLAGS
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-fi
-
-
-
-PACKAGE_CPPFLAGS=""$BOOST_CPPFLAGS" $PACKAGE_CPPFLAGS"
-
-
-
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
-
-
 
 
 echo
@@ -8249,8 +7886,6 @@ LDFLAGS: ${LDFLAGS}
 
 LIBS: ${LIBS}
 
-BOOST_ROOT: ${BOOST_ROOT}
-
 PETSC_DIR: ${PETSC_DIR}
 PETSC_ARCH: ${PETSC_ARCH}
 
@@ -8273,8 +7908,6 @@ CFLAGS: ${CFLAGS}
 LDFLAGS: ${LDFLAGS}
 
 LIBS: ${LIBS}
-
-BOOST_ROOT: ${BOOST_ROOT}
 
 PETSC_DIR: ${PETSC_DIR}
 PETSC_ARCH: ${PETSC_ARCH}

@@ -3,15 +3,6 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
-/* Defined if the requested minimum BOOST version is satisfied */
-#undef HAVE_BOOST
-
-/* Define to 1 if you have <boost/array.hpp> */
-#undef HAVE_BOOST_ARRAY_HPP
-
-/* Define to 1 if you have <boost/multi_array.hpp> */
-#undef HAVE_BOOST_MULTI_ARRAY_HPP
-
 /* Define to 1 if you have the declaration of `strerror_r', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRERROR_R

@@ -108,16 +108,14 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 
 #include "inline/setNullSpace.inl"
 #include "inline/calculateCellIndices.inl"
-#include "inline/initializeLambda.inl"
 #include "inline/generateBodyInfo.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/initializeBodies.inl"
 #include "inline/createGlobalMappingBodies.inl"
 #include "inline/isInfluenced.inl"
-#include "inline/writeLambda.inl"
 #include "inline/calculateForce.inl"
-#include "inline/writeForces.inl"
+#include "inline/io.inl"
 
 template class TairaColoniusSolver<2>;
 template class TairaColoniusSolver<3>;

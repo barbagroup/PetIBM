@@ -35,7 +35,6 @@ public:
   std::vector<PetscInt>  numPhiOnProcess;
   std::vector< std::vector<PetscInt> > boundaryPointIndices;
   
-  PetscErrorCode initializeLambda();
   PetscErrorCode initializeBodies();
   PetscErrorCode generateBodyInfo();
   PetscErrorCode calculateCellIndices();
@@ -46,8 +45,11 @@ public:
   PetscErrorCode generateR2();
   PetscErrorCode createGlobalMappingBodies();
   PetscErrorCode calculateForce();
-  PetscErrorCode writeForces();
+  
+  PetscErrorCode readLambda();
+  PetscErrorCode writeData();
   PetscErrorCode writeLambda();
+  PetscErrorCode writeForces();
 
   PetscReal dhRoma(PetscReal x, PetscReal h);
   PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
@@ -58,7 +60,6 @@ public:
 public:
   PetscErrorCode initialize();
   PetscErrorCode finalize();
-  PetscErrorCode writeData();
 
   TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
   {

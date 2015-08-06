@@ -32,9 +32,7 @@ public:
   SimulationParameters *simParams;
   CartesianMesh        *mesh;
   
-  PetscInt timeStep,
-           iterationCount1,
-           iterationCount2;
+  PetscInt timeStep;
 
   std::vector<PetscReal> dxU, dyU, dzU,
                          dxV, dyV, dzV,
@@ -94,10 +92,6 @@ public:
 
   // populate flux vectors with initial conditions
   virtual PetscErrorCode initializeFluxes();
-
-  // read fluxes from previously saved data
-  PetscErrorCode readFluxes();
-
   // initialize lambda vector with previously saved data
   virtual PetscErrorCode initializeLambda();
 
@@ -118,25 +112,18 @@ public:
 
   // generate the matrix A
   PetscErrorCode generateA();
-
   // calculate explicit convective and diffusive terms
   PetscErrorCode calculateExplicitTerms();
-
   // assemble velocity boundary conditions vector
   PetscErrorCode generateBC1();
-
   // assemble RHS of intermediate velocity system
   PetscErrorCode generateRHS1();
-
   // assemble boundary conditions vector for the pressure-force system
   virtual PetscErrorCode generateR2();
-
   // assemble RHS of pressure-force system
   PetscErrorCode generateRHS2();
-
   // compute matrix \f$ B^N Q \f$
   virtual PetscErrorCode generateBNQ();
-
   // compute matrix \f$ Q^T B^N Q \f$
   PetscErrorCode generateQTBNQ();
 
@@ -146,37 +133,37 @@ public:
 
   // solve system for intermediate velocity fluxes \f$ q^* \f$
   PetscErrorCode solveIntermediateVelocity();
-
   // solver Poisson system for pressure and body forces
   PetscErrorCode solvePoissonSystem();
-
   // project velocity onto divergence-free field with satisfaction of the no-splip condition
   PetscErrorCode projectionStep();
 
+  // write simulation parameters into file
+  PetscErrorCode printSimulationInfo();
+  // write grid coordinates into file
+  PetscErrorCode writeGrid();
   // write fluxes into files
   PetscErrorCode writeFluxes();
-
-  // write pressure filed into file
+  // write pressure field into file
   virtual PetscErrorCode writeLambda();
+  // write KSP iteration counts into file
+  PetscErrorCode writeIterationCounts();
+  // read fluxes from files
+  PetscErrorCode readFluxes();
+  // read pressure field from file
+  virtual PetscErrorCode readLambda();
   
 public:
   // initial set-up of the system
   virtual PetscErrorCode initialize();
-
   // clean up at the end of the simulation
   virtual PetscErrorCode finalize();
 
   // advance in time
   PetscErrorCode stepTime();
 
-  // write flow variables into files
+  // write numerical solution into respective files
   virtual PetscErrorCode writeData();
-
-  // write simulation parameters into file
-  PetscErrorCode printSimulationInfo();
-
-  // write grid coordinates into file
-  PetscErrorCode writeGrid();
 
   // specify if data needs to be saved at current time-step
   PetscBool savePoint();

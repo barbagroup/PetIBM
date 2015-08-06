@@ -38,14 +38,13 @@ int main(int argc,char **argv)
   std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(folder, &FD, &SP, &CM);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
-  solver->printSimulationInfo();
-  solver->writeGrid();
   
   while(!solver->finished())
   {
     ierr = solver->stepTime(); CHKERRQ(ierr);
     ierr = solver->writeData(); CHKERRQ(ierr);
   }
+  
   ierr = solver->finalize(); CHKERRQ(ierr);
 
   ierr = PetscFinalize(); CHKERRQ(ierr);

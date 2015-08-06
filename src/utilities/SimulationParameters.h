@@ -28,8 +28,6 @@ public:
            nt,        ///< number of time steps
            nsave;     ///< data-saving interval
   
-  PetscBool restartFromSolution;  ///< flag to restart from given solution
-
   SolverType solverType;  ///< type of flow solver
   
   TimeSteppingScheme convectionScheme, ///< time-scheme for the convection term

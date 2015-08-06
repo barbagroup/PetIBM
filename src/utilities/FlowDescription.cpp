@@ -79,6 +79,7 @@ void FlowDescription::initialize(std::string fileName)
     initialVelocity[0] = node["initialVelocity"][0].as<PetscReal>();
     initialVelocity[1] = node["initialVelocity"][1].as<PetscReal>();
     initialVelocity[2] = node["initialVelocity"][2].as<PetscReal>(0.0);
+    initialCustomField = (node["initialCustomField"].as<bool>(false)) ? PETSC_TRUE : PETSC_FALSE;
 
     perturbationAmplitude = node["initialPerturbation"][0].as<PetscReal>(0.0);
     perturbationFrequency = node["initialPerturbation"][1].as<PetscReal>(0);

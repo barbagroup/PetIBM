@@ -1,29 +1,24 @@
+/***************************************************************************//**
+ * \file initializeLambda.inl
+ * \author Anush Kirshnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+ * \brief Implementation of the method to initialize the pressure field.
+ */
+
+/**
+ * \brief Initiliazes the lambda vector that contains the pressure.
+ *
+ * Only reads the pressure field when the simulation is restarted or when a 
+ * custom initial field is used.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeLambda()
 {
-	PetscErrorCode ierr;
-	Vec            phi;
-	
-	ierr = DMCompositeGetAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
+  PetscErrorCode ierr;
 
-	if (simParams->startStep > 0 || simParams->restartFromSolution)
-	{
-		PetscViewer       viewer;
-		std::stringstream ss;
-		std::string       savePointDir, fileName;
+  if (simParams->startStep > 0 || flowDesc->initialCustomField)
+  {
+    ierr = readLambda(); CHKERRQ(ierr);
+  }
 
-		// the name of the folder is the time step at which data is saved
-		// 7 characters long, with leading zeros
-		ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
-		savePointDir = ss.str();
-
-		fileName = savePointDir + "/phi.dat";
-		ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-		ierr = VecLoad(phi, viewer); CHKERRQ(ierr);
-		ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-	}
-	
-	ierr = DMCompositeRestoreAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
-
-	return 0;
+  return 0;
 } // initializeLambda

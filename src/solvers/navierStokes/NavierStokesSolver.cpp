@@ -27,6 +27,8 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = printSimulationInfo(); CHKERRQ(ierr);
+  ierr = writeGrid(); CHKERRQ(ierr);
 
   return 0;
 } // initialize

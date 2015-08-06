@@ -14,7 +14,7 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nReading pressure and body forces at time step %d...\n", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] reading pressure and body forces...\n", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
@@ -31,11 +31,15 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
   ierr = VecLoad(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-  // read body forces
-  std::string filePath = solutionDirectory + "/fTilde.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
-  ierr = VecLoad(fTilde, viewer); CHKERRQ(ierr);
-  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+  // read body forces iff restarting the simulation
+  if (NavierStokesSolver<dim>::timeStep > 0)
+  {
+    filePath = solutionDirectory + "/fTilde.dat";
+    ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+    ierr = VecLoad(fTilde, viewer); CHKERRQ(ierr);
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  }
 
   ierr = DMCompositeRestoreAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
@@ -51,8 +55,9 @@ PetscErrorCode TairaColoniusSolver<dim>::writeData()
 {
   PetscErrorCode ierr;
 
+  ierr = calculateForce(); CHKERRQ(ierr);
   ierr = writeForces(); CHKERRQ(ierr);
-  ierr = NavierStokesSolver<dim>::writeData(); CHKERRQ();
+  ierr = NavierStokesSolver<dim>::writeData(); CHKERRQ(ierr);
 
   return 0;
 } // writeData
@@ -68,12 +73,12 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting pressure and body forces at time step %d...\n", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing pressure and body forces...\n", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
   ss << NavierStokesSolver<dim>::caseFolder << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
-  std::string solutionDirectory = ss.str()
+  std::string solutionDirectory = ss.str();
   mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
   // get access to the pressure vector from the composite vector
@@ -87,7 +92,7 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   // write body forces
-  std::string filePath = solutionDirectory + "/fTilde.dat";
+  filePath = solutionDirectory + "/fTilde.dat";
   ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
   ierr = VecView(fTilde, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

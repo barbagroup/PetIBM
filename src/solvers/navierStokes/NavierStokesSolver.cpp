@@ -320,7 +320,6 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "inline/createLocalToGlobalMappingsLambda.inl"
 #include "inline/initializeMeshSpacings.inl"
 #include "inline/initializeFluxes.inl"
-#include "inline/readFluxes.inl"
 #include "inline/initializeLambda.inl"
 #include "inline/updateBoundaryGhosts.inl"
 #include "inline/calculateExplicitTerms.inl"
@@ -329,11 +328,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "inline/generateBC1.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
-#include "inline/printSimulationInfo.inl"
-#include "inline/writeGrid.inl"
-#include "inline/writeFluxes.inl"
-#include "inline/writeLambda.inl"
-#include "inline/writeData.inl"
+#include "inline/io.inl"
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

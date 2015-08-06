@@ -143,7 +143,6 @@ void SimulationParameters::initialize(std::string fileName)
   MPI_Bcast(&nt, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&startStep, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&startCustom, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   
   MPI_Bcast(&gamma, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&zeta, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);

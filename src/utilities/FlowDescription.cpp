@@ -145,6 +145,7 @@ void FlowDescription::initialize(std::string fileName)
   MPI_Bcast(&dimensions, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&nu, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(initialVelocity, 3, MPIU_REAL, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(&initialCustomField, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&perturbationAmplitude, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&perturbationFrequency, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   

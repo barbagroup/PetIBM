@@ -38,7 +38,7 @@ public:
                          dxV, dyV, dzV,
                          dxW, dyW, dzW;
 
-  std::ofstream iterationsFile;
+  std::ofstream iterationCountsFile;
   
   DM  pda,
       uda,

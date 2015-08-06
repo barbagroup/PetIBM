@@ -29,6 +29,8 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::printSimulationInfo(); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::writeGrid(); CHKERRQ(ierr);
 
   return 0;
 } // initialize
@@ -75,15 +77,6 @@ PetscErrorCode TairaColoniusSolver<dim>::createVecs()
   return 0;
 } // createVecs
 
-template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::writeData()
-{
-  NavierStokesSolver<dim>::writeData();
-  calculateForce();
-  writeForces();
-
-  return 0;
-} // writeData
 
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)

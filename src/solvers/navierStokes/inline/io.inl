@@ -125,12 +125,12 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nReading fluxes at time step %d...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] reading fluxes...\n", timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
   ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
-  std::string solutionDirectory = ss.str()
+  std::string solutionDirectory = ss.str();
 
   // get access to the individual vectors of the composite vector
   // depending on the dimension of the problem
@@ -187,7 +187,7 @@ PetscErrorCode NavierStokesSolver<dim>::readLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nReading pressure at time step %d...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] reading pressure...\n", timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
@@ -239,12 +239,12 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting fluxes at time step %d...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing fluxes...\n", timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
   ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
-  std::string solutionDirectory = ss.str()
+  std::string solutionDirectory = ss.str();
   mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
   // get access to the individual vectors of the composite vector
@@ -266,7 +266,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   // write fluxes in y-direction
-  std::string filePath = solutionDirectory + "/qy.dat";
+  filePath = solutionDirectory + "/qy.dat";
   ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
   ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
@@ -274,7 +274,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
   if (dim == 3)
   {
     // write fluxes in z-direction
-    std::string filePath = solutionDirectory + "/qz.dat";
+    filePath = solutionDirectory + "/qz.dat";
     ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
     ierr = VecView(qzGlobal, viewer); CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
@@ -302,12 +302,12 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting pressure at time step %d...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing pressure...\n", timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
   ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
-  std::string solutionDirectory = ss.str()
+  std::string solutionDirectory = ss.str();
   mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
   // get access to the pressure vector from the composite vector
@@ -335,12 +335,12 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrid()
   PetscErrorCode ierr;
   PetscInt rank;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting grid...\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing grid...\n", timeStep); CHKERRQ(ierr);
 
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
   if (rank == 0)
   {
-    std::ofstream stream = caseFolder + "/grid.txt";
+    std::ofstream stream(caseFolder + "/grid.txt");
     if (dim == 2)
     {
       stream << mesh->nx << '\t' << mesh->ny << '\n';
@@ -377,7 +377,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeIterationCounts()
   {
     PetscInt countVelocitySolver,
              countPoissonSolver;
-    std::string filePath = caseFolder + "iterationCounts.txt";
+    std::string filePath = caseFolder + "/iterationCounts.txt";
     if (timeStep == 1)
     {
       iterationCountsFile.open(filePath.c_str());

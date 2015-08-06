@@ -219,7 +219,10 @@ def write_vtk(field, case_directory, time_step, name,
   print('Write the {} field into .vtk file ...'.format(name))
   if type(field) is not list:
     field = [field]
-  dim3 = (True if field[0].z else False)
+  try:
+    dim3 = field[0].z.all()
+  except:
+    dim3 = False
   scalar = (True if len(field) == 1 else False)
   # get mask for the view
   mx = numpy.where(numpy.logical_and(field[0].x > view[0][0],

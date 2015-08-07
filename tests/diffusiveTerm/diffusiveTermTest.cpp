@@ -28,7 +28,7 @@ int main(int argc, char **argv)
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
 
   char dir[PETSC_MAX_PATH_LEN];
-  ierr = PetscOptionsGetString(NULL, "--directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
+  ierr = PetscOptionsGetString(NULL, "-directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
   std::string directory(dir);
 
   CartesianMesh cartesianMesh(directory);

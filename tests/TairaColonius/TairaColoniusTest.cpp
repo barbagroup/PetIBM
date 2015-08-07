@@ -14,23 +14,23 @@
 class TairaColoniusTest : public ::testing::Test
 {
 public:
-  std::string           folder;
-  FlowDescription       FD;
-  CartesianMesh         CM;
-  SimulationParameters  SP;
+  std::string directory;
+  FlowDescription flowDescription;
+  CartesianMesh cartesianMesh;
+  SimulationParameters simulationParameters;
   std::unique_ptr< NavierStokesSolver<2> > solver;
-  Vec                   lambdaGold, error;
+  Vec lambdaGold, error;
 
   TairaColoniusTest()
   {
     lambdaGold = PETSC_NULL;
     
     // read input files and create solver
-    folder = "TairaColonius/data";
-    FD = FlowDescription(folder+"/flowDescription.yaml");
-    CM = CartesianMesh(folder+"/cartesianMesh.yaml");
-    SP = SimulationParameters(folder+"/simulationParameters.yaml");
-    solver = createSolver<2>(folder, &FD, &SP, &CM);
+    directory = "TairaColonius/case";
+    cartesianMesh = CartesianMesh(directory);
+    flowDescription = FlowDescription(directory);
+    simulationParameters = SimulationParameters(directory);
+    solver = createSolver<2>(directory, &cartesianMesh, &flowDescription, &simulationParameters);
   }
 
   virtual void SetUp()
@@ -56,8 +56,8 @@ public:
 TEST_F(TairaColoniusTest, ComparePhi)
 {
   PetscViewer viewer;
-  Vec         phi, fTilde;
-  PetscReal   errorNorm, goldNorm;
+  Vec phi, fTilde;
+  PetscReal errorNorm, goldNorm;
 
   // create vector to store the gold data and the error
   VecDuplicate(solver->lambda, &lambdaGold);
@@ -65,12 +65,12 @@ TEST_F(TairaColoniusTest, ComparePhi)
 
   // read the gold data from file
   DMCompositeGetAccess(solver->lambdaPack, lambdaGold, &phi, &fTilde);
-  std::string fileName = folder + "/phi.dat";
-  PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer);
+  std::string filePath = directory + "/data/phi.dat";
+  PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer);
   VecLoad(phi, viewer);
   PetscViewerDestroy(&viewer);
-  fileName = folder + "/fTilde.dat";
-  PetscViewerBinaryOpen(PETSC_COMM_WORLD, fileName.c_str(), FILE_MODE_READ, &viewer);
+  filePath = directory + "/data/fTilde.dat";
+  PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer);
   VecLoad(fTilde, viewer);
   PetscViewerDestroy(&viewer);
   DMCompositeRestoreAccess(solver->lambdaPack, lambdaGold, &phi, &fTilde);

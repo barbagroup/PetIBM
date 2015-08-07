@@ -22,20 +22,25 @@
 
 int main(int argc,char **argv)
 {
-  PetscErrorCode ierr;
   const PetscInt dim = DIMENSIONS;
-  char           caseFolder[PETSC_MAX_PATH_LEN];
+  PetscErrorCode ierr;
   
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
 
-  ierr = PetscOptionsGetString(NULL, "-caseFolder", caseFolder, sizeof(caseFolder), NULL); CHKERRQ(ierr);
+  // parse command-line to get simulation directory
+  char dir[PETSC_MAX_PATH_LEN];
+  ierr = PetscOptionsGetString(NULL, "--directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
+  std::string directory(dir);
 
-  std::string          folder(caseFolder);
-  FlowDescription      FD(folder+"/flowDescription.yaml");
-  CartesianMesh        CM(folder+"/cartesianMesh.yaml");
-  SimulationParameters SP(folder+"/simulationParameters.yaml");
+  // read different input files
+  CartesianMesh cartesianMesh(directory);
+  FlowDescription flowDescription(directory);
+  SimulationParameters simulationParameters(directory);
 
-  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(folder, &FD, &SP, &CM);
+  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(directory, 
+                                                                        &cartesianMesh,
+                                                                        &flowDescription, 
+                                                                        &simulationParameters);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
   
@@ -48,5 +53,6 @@ int main(int argc,char **argv)
   ierr = solver->finalize(); CHKERRQ(ierr);
 
   ierr = PetscFinalize(); CHKERRQ(ierr);
+
   return 0;
 } // main

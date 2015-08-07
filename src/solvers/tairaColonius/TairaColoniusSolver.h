@@ -58,16 +58,15 @@ public:
   PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
 
 public:
+  // constructor
+  TairaColoniusSolver(std::string directory, 
+                      CartesianMesh *cartesianMesh, 
+                      FlowDescription *flowDescription, 
+                      SimulationParameters *simulationParameters);
+  // destructor
+  ~TairaColoniusSolver();
   PetscErrorCode initialize();
   PetscErrorCode finalize();
-
-  TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
-  {
-    bda = PETSC_NULL;
-    ET  = PETSC_NULL;
-    nullSpaceVec     = PETSC_NULL;
-    regularizedForce = PETSC_NULL;
-  }
   
   // name of the solver
   virtual std::string name()

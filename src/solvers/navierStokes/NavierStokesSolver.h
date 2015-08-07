@@ -8,8 +8,8 @@
 #if !defined(NAVIER_STOKES_SOLVER_H)
 #define NAVIER_STOKES_SOLVER_H
 
-#include "FlowDescription.h"
 #include "CartesianMesh.h"
+#include "FlowDescription.h"
 #include "SimulationParameters.h"
 
 #include <fstream>
@@ -108,7 +108,8 @@ public:
   PetscErrorCode generateDiagonalMatrices();
 
   // count number of non-zeros in the diagonal and off-diagonal portions of the parallel matrices
-  void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz);
+  void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, 
+                        PetscInt &d_nnz, PetscInt &o_nnz);
 
   // generate the matrix A
   PetscErrorCode generateA();
@@ -154,6 +155,13 @@ public:
   virtual PetscErrorCode readLambda();
   
 public:
+  // constructor
+  NavierStokesSolver(std::string directory, 
+                     CartesianMesh *cartesianMesh, 
+                     FlowDescription *flowDescription, 
+                     SimulationParameters *simulationParameters);
+  // destructor
+  ~NavierStokesSolver();
   // initial set-up of the system
   virtual PetscErrorCode initialize();
   // clean up at the end of the simulation
@@ -175,60 +183,6 @@ public:
   virtual std::string name()
   {
     return "Navier-Stokes";
-  }
-  
-  NavierStokesSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM)
-  {
-    // classes
-    caseFolder= folder;
-    flowDesc  = FD;
-    simParams = SP;
-    mesh      = CM;
-    timeStep  = simParams->startStep;
-    // DMs
-    pda = PETSC_NULL;
-    uda = PETSC_NULL;
-    vda = PETSC_NULL;
-    wda = PETSC_NULL;
-    qPack   = PETSC_NULL;
-    lambdaPack = PETSC_NULL;
-    // Vecs
-    qxLocal  = PETSC_NULL;
-    qyLocal  = PETSC_NULL;
-    qzLocal  = PETSC_NULL;
-    q        = PETSC_NULL;
-    qStar    = PETSC_NULL;
-    H        = PETSC_NULL;
-    rn       = PETSC_NULL;
-    bc1      = PETSC_NULL;
-    rhs1     = PETSC_NULL;
-    r2       = PETSC_NULL;
-    rhs2     = PETSC_NULL;
-    temp     = PETSC_NULL;
-    RInv     = PETSC_NULL;
-    MHat   = PETSC_NULL;
-    BN       = PETSC_NULL;
-    pMapping = PETSC_NULL;
-    uMapping = PETSC_NULL;
-    vMapping = PETSC_NULL;
-    wMapping = PETSC_NULL;
-    // Mats
-    A       = PETSC_NULL;
-    QT      = PETSC_NULL;
-    BNQ     = PETSC_NULL;
-    QTBNQ   = PETSC_NULL;
-    //KSPs
-    ksp1 = PETSC_NULL;
-    ksp2 = PETSC_NULL;
-    // PCs
-    pc2 = PETSC_NULL;
-    // PetscLogStages
-    PetscLogStageRegister("initialize", &stageInitialize);
-    PetscLogStageRegister("RHSVelocity", &stageRHSVelocitySystem);
-    PetscLogStageRegister("solveVelocity", &stageSolveVelocitySystem);
-    PetscLogStageRegister("RHSPoisson", &stageRHSPoissonSystem);
-    PetscLogStageRegister("solvePoisson", &stageSolvePoissonSystem);
-    PetscLogStageRegister("projectionStep", &stageProjectionStep);
   }
 
 }; // NavierStokesSolver

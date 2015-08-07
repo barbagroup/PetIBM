@@ -43,10 +43,13 @@ public:
   PetscInt velocitySolveMaxIts, ///< maximum number of iterations (velocity solver)
            PoissonSolveMaxIts;  ///< maximum number of iterations (Poisson solver)
   
-  // Parse file and store simulation parameters
-  SimulationParameters(std::string fileName);
+  // constructors
   SimulationParameters();
-  void initialize(std::string fileName);
+  SimulationParameters(std::string directory);
+  // destructor
+  ~SimulationParameters();
+  // parse input file and store simulation parameters
+  void initialize(std::string filePath);
 
 }; // SimulationParameters
 

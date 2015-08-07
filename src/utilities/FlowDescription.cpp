@@ -29,6 +29,7 @@ Boundary boundaryFromString(std::string s)
   exit(0);
 } // boundaryFromString
 
+
 /**
  * \brief Converts \c std::string to \c BCType.
  */
@@ -43,34 +44,49 @@ BCType bcTypeFromString(std::string s)
   exit(0);
 } // bcTypeFromString
 
+
+/**
+ * \brief Constructor.
+ */
 FlowDescription::FlowDescription()
 {
 } // FlowDescription
 
+
 /**
  * \brief Constructor -- Parses the input file.
  */
-FlowDescription::FlowDescription(std::string fileName)
+FlowDescription::FlowDescription(std::string directory)
 {
-  initialize(fileName);
+  initialize(directory + "/flowDescription.yaml");
 } // FlowDescription
+
+
+/**
+ * \brief Destructor
+ */
+FlowDescription::~FlowDescription()
+{
+} // ~FlowDescription
+
 
 /**
  * \brief Parses the input file and stores information about the flow.
  *
  * The file is parsed using YAML format.
  *
- * \param fileName path of the file to parse.
+ * \param filePath path of the file to parse.
  */
-void FlowDescription::initialize(std::string fileName)
+void FlowDescription::initialize(std::string filePath)
 {
-  PetscInt    rank;
+  PetscPrintf(PETSC_COMM_WORLD, "\n[info] Parsing file %s...\n", filePath.c_str());
   
+  PetscInt    rank;
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of current process
   
   if (rank == 0) // read the input file only on process 0
   {
-    YAML::Node nodes = YAML::LoadFile(fileName);
+    YAML::Node nodes = YAML::LoadFile(filePath);
     const YAML::Node &node = nodes[0];
 
     dimensions = node["dimensions"].as<PetscInt>();
@@ -165,4 +181,5 @@ void FlowDescription::initialize(std::string fileName)
   MPI_Bcast(bc[1], 6, bcInfoType, 0, PETSC_COMM_WORLD);
   MPI_Bcast(bc[2], 6, bcInfoType, 0, PETSC_COMM_WORLD);
   MPI_Type_free(&bcInfoType);
+
 } // initialize

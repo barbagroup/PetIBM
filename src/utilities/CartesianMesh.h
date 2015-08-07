@@ -32,10 +32,13 @@ public:
                          dy, ///< cell-widths along the y-direction 
                          dz; ///< cell-widths along the z-direction
 
-  // parse input file and initialize cartesian mesh
-  CartesianMesh(std::string fileName);
+  // constructors
   CartesianMesh();
-  void initialize(std::string fileName);
+  CartesianMesh(std::string directory);
+  // destructor
+  ~CartesianMesh();
+  // parse input file and create Cartesian mesh
+  void initialize(std::string filePath);
 
 }; // CartesianMesh
 

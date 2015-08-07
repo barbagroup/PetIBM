@@ -28,6 +28,7 @@ TimeSteppingScheme timeSchemeFromString(std::string s)
   return EULER_EXPLICIT;
 } // timeSchemeFromString
 
+
 /**
  * \brief Converts \c std::string to \c SolverType.
  */
@@ -40,34 +41,49 @@ SolverType solverTypeFromString(std::string s)
   return NAVIER_STOKES;
 } // solverTypeFromString
 
+
+/**
+ * \brief Constructor.
+ */
 SimulationParameters::SimulationParameters()
 {
 } // SimulationParameters
 
+
 /**
- * \brief Constructor -- Parses simulationParameters.yaml
+ * \brief Constructor -- Parses simulationParameters.yaml.
  */
-SimulationParameters::SimulationParameters(std::string fileName)
+SimulationParameters::SimulationParameters(std::string directory)
 {
-  initialize(fileName);
+  initialize(directory + "/simulationParameters.yaml");
 } // SimulationParameters
+
+
+/**
+ * \brief Destructor.
+ */
+SimulationParameters::~SimulationParameters()
+{
+} // ~SimulationParameters
+
 
 /**
  * \brief Parses file containing the simulation parameters.
  *
  * The file is parsed using YAML format.
  *
- * \param fileName path of the simulation parameters file
+ * \param filePath path of the simulation parameters file
  */
-void SimulationParameters::initialize(std::string fileName)
+void SimulationParameters::initialize(std::string filePath)
 {
+  PetscPrintf(PETSC_COMM_WORLD, "\n[info] Parsing file %s...\n", filePath.c_str());
+
   PetscInt    rank;
-  
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of current process
   
   if (rank == 0) // read the input file only on process 0
   {
-    YAML::Node nodes(YAML::LoadFile(fileName));
+    YAML::Node nodes(YAML::LoadFile(filePath));
     const YAML::Node &node = nodes[0];
 
     dt = node["dt"].as<PetscReal>();
@@ -158,4 +174,5 @@ void SimulationParameters::initialize(std::string fileName)
   MPI_Bcast(&PoissonSolveTolerance, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&velocitySolveMaxIts, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&PoissonSolveMaxIts, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
+  
 } // initialize

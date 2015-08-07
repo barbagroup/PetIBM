@@ -17,6 +17,36 @@
 #include <petscdmcomposite.h>
 
 
+/**
+ * \brief Constructor of the class \c TairaColoniusSolver.
+ */
+template <PetscInt dim>
+TairaColoniusSolver<dim>::TairaColoniusSolver(std::string directory, 
+                                              CartesianMesh *cartesianMesh, 
+                                              FlowDescription *flowDescription, 
+                                              SimulationParameters *simulationParameters)
+                        : NavierStokesSolver<dim>::NavierStokesSolver(directory, 
+                                                                      cartesianMesh, 
+                                                                      flowDescription, 
+                                                                      simulationParameters)
+{
+  bda = PETSC_NULL;
+  ET  = PETSC_NULL;
+  nullSpaceVec     = PETSC_NULL;
+  regularizedForce = PETSC_NULL;
+
+} // TairaColoniusSolver
+
+
+/**
+ * \brief Destructor of the class \c TairaColoniusSolver.
+ */
+template <PetscInt dim>
+TairaColoniusSolver<dim>::~TairaColoniusSolver()
+{
+} // ~TairaColoniusSolver
+
+
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialize()
 {

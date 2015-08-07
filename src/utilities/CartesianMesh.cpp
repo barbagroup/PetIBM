@@ -12,27 +12,41 @@
 #include "yaml-cpp/yaml.h"
 
 
+/**
+ * \brief Constructor.
+ */
 CartesianMesh::CartesianMesh()
 {
 } // CartesianMesh
 
+
 /**
  * \brief Constructor -- Parses input file.
  */
-CartesianMesh::CartesianMesh(std::string fileName)
+CartesianMesh::CartesianMesh(std::string directory)
 {
-  initialize(fileName);
+  initialize(directory + "/cartesianMesh.yaml");
 } // CartesianMesh
+
+
+/**
+ * \brief Destructor
+ */
+CartesianMesh::~CartesianMesh()
+{
+} // ~CartesianMesh
+
 
 /**
  * \brief Parses the input file using YAML format and discretizes the domain.
  *
- * \param fileName path of the file containing the mesh parameters
+ * \param filePath path of the file containing the mesh parameters
  */
-void CartesianMesh::initialize(std::string fileName)
+void CartesianMesh::initialize(std::string filePath)
 {
+  PetscPrintf(PETSC_COMM_WORLD, "\n[info] Parsing file %s...\n", filePath.c_str());
+
   PetscInt rank;
-  
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of the current process
   
   nx = 0;
@@ -42,7 +56,7 @@ void CartesianMesh::initialize(std::string fileName)
   // first pass of the input file to get number of cells in each direction
   if (rank == 0)
   {
-    YAML::Node nodes = YAML::LoadFile(fileName);
+    YAML::Node nodes = YAML::LoadFile(filePath);
     PetscInt numCells;
     std::string direction;
     for (unsigned int i=0; i<nodes.size(); i++)
@@ -91,7 +105,7 @@ void CartesianMesh::initialize(std::string fileName)
               stretchRatio,
               h;
     std::string direction;
-    YAML::Node nodes = YAML::LoadFile(fileName);
+    YAML::Node nodes = YAML::LoadFile(filePath);
 
     // loop over each direction
     for (unsigned int k=0; k<nodes.size(); k++)

@@ -18,7 +18,7 @@ navierStokesTest_LDADD = $(top_builddir)/src/utilities/libutilities.a \
 
 input_data:
 	if test "$(top_srcdir)" != "$(top_builddir)" ; then \
-		cp -r $(top_srcdir)/tests/NavierStokes/data $(PWD) ; \
+		cp -r $(top_srcdir)/tests/NavierStokes/case $(PWD) ; \
 	fi ;
 
 .PHONY: input_data

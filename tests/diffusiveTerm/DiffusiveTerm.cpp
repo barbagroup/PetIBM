@@ -16,13 +16,18 @@
  * \brief Constructor - Initializes pointers.
  */
 template <PetscInt dim>
-DiffusiveTerm<dim>::DiffusiveTerm(std::string folder, 
-                                  FlowDescription *FD, 
-                                  SimulationParameters *SP, 
-                                  CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
+DiffusiveTerm<dim>::DiffusiveTerm(std::string directory, 
+                                  CartesianMesh *cartesianMesh, 
+                                  FlowDescription *flowDescription, 
+                                  SimulationParameters *simulationParameters) 
+                  : NavierStokesSolver<dim>::NavierStokesSolver(directory, 
+                                                                cartesianMesh, 
+                                                                flowDescription, 
+                                                                simulationParameters)
 {
   rnExact = PETSC_NULL;
-}
+} // DiffusiveTerm
+
 
 /**
  * \brief Initializes the solver for the diffusive term.
@@ -40,7 +45,8 @@ PetscErrorCode DiffusiveTerm<dim>::initialize()
   NavierStokesSolver<dim>::simParams->zeta = 0.0;
 
   return ierr;
-}
+} // initialize
+
 
 /**
  * \brief Initializes the fluxes with a sinusoidal solution.
@@ -57,8 +63,10 @@ template <PetscInt dim>
 PetscErrorCode DiffusiveTerm<dim>::initializeFluxes()
 {
   return 0;
-}
+} // initializeFluxes
 
+
+// two-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
 {
@@ -109,8 +117,10 @@ PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
   ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // initializeFluxes
 
+
+// three-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
 {
@@ -190,7 +200,8 @@ PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
   ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // initializeFluxes
+
 
 /**
  * \brief Computes the exact solution explicit diffusive terms.
@@ -199,8 +210,10 @@ template <PetscInt dim>
 PetscErrorCode DiffusiveTerm<dim>::calculateExactSolution()
 {
   return 0;
-}
+} // calculateExactSolution
 
+
+// two-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
 {
@@ -259,8 +272,10 @@ PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
   ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // calculateExactSolution
 
+
+// three-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
 {
@@ -348,7 +363,8 @@ PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
   ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal, &rnExactZGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // calculateExactSolution
+
 
 /**
  * \brief Computes the relative L2 norm of the difference between the numerical
@@ -367,7 +383,8 @@ PetscErrorCode DiffusiveTerm<dim>::calculateRelativeError()
   relativeError = l2NormDifference/l2NormExact;
 
   return ierr;
-}
+} // calculateRelativeError
+
 
 /**
  * \brief Writes the number of cells and the relative error in a file.
@@ -397,7 +414,8 @@ PetscErrorCode DiffusiveTerm<dim>::writeRelativeError()
   }
 
   return ierr;
-}
+} // writeRelativeError
+
 
 /**
  * \brief Frees memory to avoid memory leaks
@@ -414,7 +432,9 @@ PetscErrorCode DiffusiveTerm<dim>::finalize()
   ierr = NavierStokesSolver<dim>::finalize(); CHKERRQ(ierr);
   
   return ierr;
-}
+} // finalize
 
+
+// template class specialization
 template class DiffusiveTerm<2>;
 template class DiffusiveTerm<3>;

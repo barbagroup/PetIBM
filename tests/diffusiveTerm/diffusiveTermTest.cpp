@@ -27,15 +27,18 @@ int main(int argc, char **argv)
 
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
 
-  char caseFolder[PETSC_MAX_PATH_LEN];
-  ierr = PetscOptionsGetString(NULL, "-caseFolder", caseFolder, sizeof(caseFolder), NULL); CHKERRQ(ierr);
+  char dir[PETSC_MAX_PATH_LEN];
+  ierr = PetscOptionsGetString(NULL, "--directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
+  std::string directory(dir);
 
-  std::string folder(caseFolder);
-  FlowDescription FD(folder+"/flowDescription.yaml");
-  CartesianMesh CM(folder+"/cartesianMesh.yaml");
-  SimulationParameters SP(folder+"/simulationParameters.yaml");
+  CartesianMesh cartesianMesh(directory);
+  FlowDescription flowDescription(directory);
+  SimulationParameters simulationParameters(directory);
 
-  std::unique_ptr< DiffusiveTerm<dim> > solver(new DiffusiveTerm<dim>(folder, &FD, &SP, &CM));
+  std::unique_ptr< DiffusiveTerm<dim> > solver(new DiffusiveTerm<dim>(directory, 
+                                                                      &cartesianMesh, 
+                                                                      &flowDescription, 
+                                                                      &simulationParameters));
 
   ierr = solver->initialize(); CHKERRQ(ierr);
 

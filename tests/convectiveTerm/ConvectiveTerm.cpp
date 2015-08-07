@@ -16,13 +16,18 @@
  * \brief Constructor - Initializes pointers.
  */
 template <PetscInt dim>
-ConvectiveTerm<dim>::ConvectiveTerm(std::string folder, 
-                                    FlowDescription *FD, 
-                                    SimulationParameters *SP, 
-                                    CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
+ConvectiveTerm<dim>::ConvectiveTerm(std::string directory, 
+                                    CartesianMesh *cartesianMesh, 
+                                    FlowDescription *flowDescription, 
+                                    SimulationParameters *simulationParameters) 
+                   : NavierStokesSolver<dim>::NavierStokesSolver(directory, 
+                                                                 cartesianMesh, 
+                                                                 flowDescription, 
+                                                                 simulationParameters)
 {
   rnExact = PETSC_NULL;
-}
+} // ConvectiveTerm
+
 
 /**
  * \brief Initializes the solver for the diffusion equation.
@@ -41,7 +46,8 @@ PetscErrorCode ConvectiveTerm<dim>::initialize()
   NavierStokesSolver<dim>::simParams->alphaExplicit = 0.0;
 
   return ierr;
-}
+} // initialize
+
 
 /**
  * \brief Initializes the fluxes with a sinusoidal solution.
@@ -58,8 +64,10 @@ template <PetscInt dim>
 PetscErrorCode ConvectiveTerm<dim>::initializeFluxes()
 {
   return 0;
-}
+} // initializeFluxes
 
+
+// two-dimensional specialization
 template <>
 PetscErrorCode ConvectiveTerm<2>::initializeFluxes()
 {
@@ -110,8 +118,10 @@ PetscErrorCode ConvectiveTerm<2>::initializeFluxes()
   ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // initializeFluxes
 
+
+// three-dimensional specialization
 template <>
 PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
 {
@@ -191,7 +201,8 @@ PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
   ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // initializeFluxes
+
 
 /**
  * \brief Computes the exact solution explicit convective terms.
@@ -200,8 +211,10 @@ template <PetscInt dim>
 PetscErrorCode ConvectiveTerm<dim>::calculateExactSolution()
 {
   return 0;
-}
+} // calculateExactSolution
 
+
+// two-dimensional specialization
 template <>
 PetscErrorCode ConvectiveTerm<2>::calculateExactSolution()
 {
@@ -261,8 +274,10 @@ PetscErrorCode ConvectiveTerm<2>::calculateExactSolution()
   ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // calculateExactSolution
 
+
+// three-dimensional specialization
 template <>
 PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
 {
@@ -355,7 +370,8 @@ PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
   ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal, &rnExactZGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // calculateExactSolution
+
 
 /**
  * \brief Computes the relative L2 norm of the difference between the numerical
@@ -374,7 +390,8 @@ PetscErrorCode ConvectiveTerm<dim>::calculateRelativeError()
   relativeError = l2NormDifference/l2NormExact;
 
   return ierr;
-}
+} // calculateRelativeError
+
 
 /**
  * \brief Writes the number of cells and the relative error in a file.
@@ -404,7 +421,8 @@ PetscErrorCode ConvectiveTerm<dim>::writeRelativeError()
   }
 
   return ierr;
-}
+} // writeRelativeError
+
 
 /**
  * \brief Frees memory to avoid memory leaks
@@ -421,7 +439,9 @@ PetscErrorCode ConvectiveTerm<dim>::finalize()
   ierr = NavierStokesSolver<dim>::finalize(); CHKERRQ(ierr);
   
   return ierr;
-}
+} // finalize
 
+
+// template class specialization
 template class ConvectiveTerm<2>;
 template class ConvectiveTerm<3>;

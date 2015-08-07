@@ -15,6 +15,78 @@
 
 #include <petscdmcomposite.h>
 
+
+/**
+ * \brief Constructor: Stores simulation parameters and initializes variables.
+ */
+template <PetscInt dim>
+NavierStokesSolver<dim>::NavierStokesSolver(std::string directory, 
+                                            CartesianMesh *cartesianMesh, 
+                                            FlowDescription *flowDescription, 
+                                            SimulationParameters *simulationParameters) 
+{
+  // classes
+  caseFolder = directory;
+  mesh = cartesianMesh;
+  flowDesc = flowDescription;
+  simParams = simulationParameters;
+  timeStep  = simParams->startStep;
+  // DMs
+  pda = PETSC_NULL;
+  uda = PETSC_NULL;
+  vda = PETSC_NULL;
+  wda = PETSC_NULL;
+  qPack   = PETSC_NULL;
+  lambdaPack = PETSC_NULL;
+  // Vecs
+  qxLocal  = PETSC_NULL;
+  qyLocal  = PETSC_NULL;
+  qzLocal  = PETSC_NULL;
+  q        = PETSC_NULL;
+  qStar    = PETSC_NULL;
+  H        = PETSC_NULL;
+  rn       = PETSC_NULL;
+  bc1      = PETSC_NULL;
+  rhs1     = PETSC_NULL;
+  r2       = PETSC_NULL;
+  rhs2     = PETSC_NULL;
+  temp     = PETSC_NULL;
+  RInv     = PETSC_NULL;
+  MHat   = PETSC_NULL;
+  BN       = PETSC_NULL;
+  pMapping = PETSC_NULL;
+  uMapping = PETSC_NULL;
+  vMapping = PETSC_NULL;
+  wMapping = PETSC_NULL;
+  // Mats
+  A       = PETSC_NULL;
+  QT      = PETSC_NULL;
+  BNQ     = PETSC_NULL;
+  QTBNQ   = PETSC_NULL;
+  //KSPs
+  ksp1 = PETSC_NULL;
+  ksp2 = PETSC_NULL;
+  // PCs
+  pc2 = PETSC_NULL;
+  // PetscLogStages
+  PetscLogStageRegister("initialize", &stageInitialize);
+  PetscLogStageRegister("RHSVelocity", &stageRHSVelocitySystem);
+  PetscLogStageRegister("solveVelocity", &stageSolveVelocitySystem);
+  PetscLogStageRegister("RHSPoisson", &stageRHSPoissonSystem);
+  PetscLogStageRegister("solvePoisson", &stageSolvePoissonSystem);
+  PetscLogStageRegister("projectionStep", &stageProjectionStep);
+} // NavierStokesSolver
+
+
+/**
+ * \brief Destructor of the class \c NavierStokesSolver.
+ */
+template <PetscInt dim>
+NavierStokesSolver<dim>::~NavierStokesSolver()
+{
+} // ~NavierStokesSolver
+
+
 /**
  * \brief Initializes the solver.
  */
@@ -32,6 +104,7 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
 
   return 0;
 } // initialize
+
 
 /**
  * \brief Initializes data common to \c NavierStokesSolver and its dereived classes.
@@ -60,6 +133,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 
   return 0;
 } // initializeCommon
+
 
 /**
  * \brief Deallocate memory to avoid memory leaks.
@@ -123,6 +197,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
   return 0;
 } // finalize
 
+
 /**
  * \brief Assembles the RHS of the system for the intermediate fluxes.
  */
@@ -136,6 +211,7 @@ PetscErrorCode NavierStokesSolver<dim>::generateRHS1()
   return 0;
 } // generateRHS1
 
+
 /**
  * \brief Assembles the RHS of the system for the pressure-forces. 
  */
@@ -148,6 +224,7 @@ PetscErrorCode NavierStokesSolver<dim>::generateRHS2()
 
   return 0;
 } // generateRHS2
+
 
 /**
  * \brief Adavance in time. Calculates the variables at the next time-step.
@@ -184,6 +261,7 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   return 0;
 } // stepTime
 
+
 /**
  * \brief Solves system for the intermediate fluxes.
  */
@@ -206,6 +284,7 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 
   return 0;
 } // solveIntermediateVelocity
+
 
 /**
  * \brief Solves Poisson system for the pressure-forces.
@@ -230,6 +309,7 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   return 0;
 } // solvePoissonSystem
 
+
 /**
  * \brief Projects the fluxes onto the divergence-free field 
  *        satisfying the no-slip condition at the immersed boundary.
@@ -246,6 +326,7 @@ PetscErrorCode NavierStokesSolver<dim>::projectionStep()
   return 0;
 } // projectionStep
 
+
 /**
  * \brief Do the data need to be saved at the current time-step?
  */
@@ -255,6 +336,7 @@ PetscBool NavierStokesSolver<dim>::savePoint()
   return (timeStep % simParams->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
 } // savePoint
 
+
 /**
  * \brief Is the simulation completed?
  */
@@ -263,6 +345,7 @@ PetscBool NavierStokesSolver<dim>::finished()
 {
   return (timeStep >= simParams->startStep+simParams->nt)? PETSC_TRUE : PETSC_FALSE;
 } // finished
+
 
 /**
  * \brief Computes the matrix \f$ Q^T B^N Q \f$.
@@ -282,6 +365,7 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 
   return 0;
 } // generateQTBNQ
+
 
 /**
  * \brief Count the numbers of non-zeros in the diagonal 
@@ -312,6 +396,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
   }
 } // countNumNonZeros
 
+
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
 #include "inline/createKSPs.inl"
@@ -329,6 +414,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/io.inl"
+
 
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

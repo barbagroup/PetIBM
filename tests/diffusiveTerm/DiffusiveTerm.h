@@ -5,16 +5,16 @@
  */
 
 
- #if !defined(DIFFUSIVE_TERM_H)
- #define DIFFUSIVE_TERM_H
+#if !defined(DIFFUSIVE_TERM_H)
+#define DIFFUSIVE_TERM_H
 
- #include <navierStokes/NavierStokesSolver.h>
+#include <navierStokes/NavierStokesSolver.h>
 
 
- /**
-  * \class DiffusiveTerm
-  * \brief Computes the numerical and exact explicit diffusion terms.
-  */
+/**
+ * \class DiffusiveTerm
+ * \brief Computes the numerical and exact explicit diffusion terms.
+ */
 template <PetscInt dim>
 class DiffusiveTerm : public NavierStokesSolver<dim>
 {
@@ -29,7 +29,11 @@ public:
   PetscErrorCode writeRelativeError();
   PetscErrorCode finalize();
 
-  DiffusiveTerm(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM);
-};
+  DiffusiveTerm(std::string directory, 
+                CartesianMesh *cartesianMesh, 
+                FlowDescription *flowDescription, 
+                SimulationParameters *simulationParameters);
+
+}; // DiffusiveTerm
 
 #endif

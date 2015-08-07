@@ -5,16 +5,16 @@
  */
 
 
- #if !defined(CONVECTIVE_TERM_H)
- #define CONVECTIVE_TERM_H
+#if !defined(CONVECTIVE_TERM_H)
+#define CONVECTIVE_TERM_H
 
- #include <navierStokes/NavierStokesSolver.h>
+#include <navierStokes/NavierStokesSolver.h>
 
 
- /**
-  * \class ConvectiveTerm
-  * \brief Computes the numerical and exact explicit convective terms.
-  */
+/**
+ * \class ConvectiveTerm
+ * \brief Computes the numerical and exact explicit convective terms.
+ */
 template <PetscInt dim>
 class ConvectiveTerm : public NavierStokesSolver<dim>
 {
@@ -29,7 +29,11 @@ public:
   PetscErrorCode writeRelativeError();
   PetscErrorCode finalize();
 
-  ConvectiveTerm(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM);
-};
+  ConvectiveTerm(std::string directory,
+                 CartesianMesh *cartesianMesh,  
+                 FlowDescription *flowDescription, 
+                 SimulationParameters *simulationParameters);
+
+}; // ConvectiveTerm
 
 #endif

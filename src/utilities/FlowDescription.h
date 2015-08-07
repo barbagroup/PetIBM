@@ -30,10 +30,13 @@ public:
   PetscReal perturbationFrequency;  ///< frequency of the Taylor-Green vortex perturbation
   BoundaryCondition bc[3][6];       ///< boundary conditions of the flow
   
-  // parse the input file and store information about the flow
-  FlowDescription(std::string fileName);
+  // contructors
   FlowDescription();
-  void initialize(std::string fileName);
+  FlowDescription(std::string directory);
+  // destructor
+  ~FlowDescription();
+  // parse input file and store description of the flow
+  void initialize(std::string filePath);
 
 }; // FlowDescription
 

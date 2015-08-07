@@ -13,9 +13,9 @@
 
 
 /**
- * \brief Converts \c std::string to \c TimeSteppingScheme.
+ * \brief Returns the time-integration scheme.
  */
-TimeSteppingScheme timeSchemeFromString(std::string s)
+TimeScheme stringToTimeScheme(std::string s)
 {
   if (s == "EULER_EXPLICIT")
     return EULER_EXPLICIT;
@@ -25,21 +25,31 @@ TimeSteppingScheme timeSchemeFromString(std::string s)
     return ADAMS_BASHFORTH_2;
   if (s == "CRANK_NICOLSON")
     return CRANK_NICOLSON;
-  return EULER_EXPLICIT;
-} // timeSchemeFromString
+  std::cout << "\nERROR: " << s << " - unknown time-integration scheme.\n";
+  std::cout << "Time-integration schemes available:\n";
+  std::cout << "\tEULER_EXPLICIT\n";
+  std::cout << "\tEULER_IMPLICIT\n";
+  std::cout << "\tADAMS_BASHFORTH_2\n";
+  std::cout << "\tCRANK_NICOLSON\n" << std::endl;
+  exit(0);
+} // stringToTimeScheme
 
 
 /**
- * \brief Converts \c std::string to \c SolverType.
+ * \brief Returns the type of solver.
  */
-SolverType solverTypeFromString(std::string s)
+SolverType stringToSolverType(std::string s)
 {
   if (s == "NAVIER_STOKES")
     return NAVIER_STOKES;
   if (s == "TAIRA_COLONIUS")
     return TAIRA_COLONIUS;
-  return NAVIER_STOKES;
-} // solverTypeFromString
+  std::cout << "\nERROR: " << s << " - unknown type of solver.\n";
+  std::cout << "Types of solver available:\n";
+  std::cout << "\tNAVIER_STOKES\n";
+  std::cout << "\tTAIRA_COLONIUS\n" << std::endl;
+  exit(0);
+} // stringToSolverType
 
 
 /**
@@ -91,9 +101,9 @@ void SimulationParameters::initialize(std::string filePath)
     nt = node["nt"].as<PetscInt>();
     nsave = node["nsave"].as<PetscInt>(nt);
 
-    solverType = solverTypeFromString(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
-    convectionScheme = timeSchemeFromString(node["timeScheme"][0].as<std::string>("EULER_EXPLICIT"));
-    diffusionScheme  = timeSchemeFromString(node["timeScheme"][1].as<std::string>("EULER_IMPLICIT"));
+    solverType = stringToSolverType(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
+    convectionScheme = stringToTimeScheme(node["timeScheme"][0].as<std::string>("EULER_EXPLICIT"));
+    diffusionScheme  = stringToTimeScheme(node["timeScheme"][1].as<std::string>("EULER_IMPLICIT"));
 
     // set the time-stepping coefficients for the different schemes
     switch (convectionScheme)

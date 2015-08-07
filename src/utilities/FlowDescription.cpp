@@ -14,35 +14,55 @@
 
 
 /**
- * \brief Converts \c std::string to \c Boundary.
+ * \brief Returns the boundary location.
  */
-Boundary boundaryFromString(std::string s)
+BoundaryLocation stringToBoundaryLocation(std::string s)
 {
-  if (s == "xMinus") return XMINUS;
-  if (s == "xPlus")  return XPLUS;
-  if (s == "yMinus") return YMINUS;
-  if (s == "yPlus")  return YPLUS;
-  if (s == "zMinus") return ZMINUS;
-  if (s == "zPlus")  return ZPLUS;
-  
-  std::cout << "ERROR: Invalid boundary location!\n";
+  if (s == "xMinus")
+    return XMINUS;
+  if (s == "xPlus")
+    return XPLUS;
+  if (s == "yMinus")
+    return YMINUS;
+  if (s == "yPlus")
+    return YPLUS;
+  if (s == "zMinus")
+    return ZMINUS;
+  if (s == "zPlus")
+    return ZPLUS;
+  std::cout << "\nERROR: " << s << " - unknown boundary location.\n";
+  std::cout << "Boundary locations available:\n";
+  std::cout << "\txMinus\n";
+  std::cout << "\txPlus\n";
+  std::cout << "\tyMinus\n";
+  std::cout << "\tyPlus\n";
+  std::cout << "\tzMinus\n";
+  std::cout << "\tzPlus\n" << std::endl;
   exit(0);
-} // boundaryFromString
+} // stringToBoundaryLocation
 
 
 /**
- * \brief Converts \c std::string to \c BCType.
+ * \brief Returns the boundary condition type.
  */
-BCType bcTypeFromString(std::string s)
+BCType stringToBCType(std::string s)
 {
-  if (s == "DIRICHLET") return DIRICHLET;
-  if (s == "NEUMANN") return NEUMANN;
-  if (s == "CONVECTIVE") return CONVECTIVE;
-  if (s == "PERIODIC") return PERIODIC;
-  
-  std::cout << "ERROR: Invalid boundary condition type!\n";
+  if (s == "DIRICHLET")
+    return DIRICHLET;
+  if (s == "NEUMANN")
+    return NEUMANN;
+  if (s == "CONVECTIVE")
+    return CONVECTIVE;
+  if (s == "PERIODIC")
+    return PERIODIC;
+  std::cout << "\nERROR: " << s << " - unknown boundary condition type.\n";
+  std::cout << "Boundary condition types available:\n";
+  std::cout << "\tDIRICHLET\n";
+  std::cout << "\tNEUMANN\n";
+  std::cout << "\tCONVECTIVE\n";
+  std::cout << "\tPERIODIC\n" << std::endl;
   exit(0);
-} // bcTypeFromString
+} // stringToBCType
 
 
 /**
@@ -101,17 +121,17 @@ void FlowDescription::initialize(std::string filePath)
     perturbationFrequency = node["initialPerturbation"][1].as<PetscReal>(0);
 
     const YAML::Node &bcs = node["boundaryConditions"];
-    Boundary location;
+    BoundaryLocation location;
     // loop over the boundaries
     for (unsigned int i=0; i<bcs.size(); i++)
     {
-      location = boundaryFromString(bcs[i]["location"].as<std::string>());
-      bc[0][location].type = bcTypeFromString(bcs[i]["u"][0].as<std::string>());
+      location = stringToBoundaryLocation(bcs[i]["location"].as<std::string>());
+      bc[0][location].type = stringToBCType(bcs[i]["u"][0].as<std::string>());
       bc[0][location].value = bcs[i]["u"][1].as<PetscReal>();
-      bc[1][location].type = bcTypeFromString(bcs[i]["v"][0].as<std::string>());
+      bc[1][location].type = stringToBCType(bcs[i]["v"][0].as<std::string>());
       bc[1][location].value = bcs[i]["v"][1].as<PetscReal>();
-      // 2D cases: periodic boundary condition in the third direction
-      bc[2][location].type = bcTypeFromString(bcs[i]["w"][0].as<std::string>("PERIODIC"));
+      // 2d cases: periodic boundary condition in the third direction
+      bc[2][location].type = stringToBCType(bcs[i]["w"][0].as<std::string>("PERIODIC"));
       bc[2][location].value = bcs[i]["w"][1].as<PetscReal>(0.0);
     }
     

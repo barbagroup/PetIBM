@@ -23,7 +23,7 @@ enum BCType
 /**
  * \brief The boundary of concern.
  */
-enum Boundary
+enum BoundaryLocation
 {
   XMINUS, ///< left
   XPLUS,  ///< right
@@ -44,7 +44,7 @@ enum Boundary
  * and the value at the next time step (which we want to determine) is
  * \f$ u^{n+1} \f$. \f$ u^{n-1} \f$ is the value at the previous time step.
  */
-enum TimeSteppingScheme
+enum TimeScheme
 {
   EULER_EXPLICIT,    ///< explicit Euler method
   EULER_IMPLICIT,    ///< implicit Euler method

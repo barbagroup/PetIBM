@@ -10,6 +10,7 @@
 
 #include "types.h"
 
+#include <iostream>
 #include <string>
 
 #include <petscsys.h>
@@ -30,8 +31,8 @@ public:
   
   SolverType solverType;  ///< type of flow solver
   
-  TimeSteppingScheme convectionScheme, ///< time-scheme for the convection term
-                     diffusionScheme;  ///< time-scheme for the diffusion term
+  TimeScheme convectionScheme, ///< time-scheme for the convection term
+             diffusionScheme;  ///< time-scheme for the diffusion term
   
   PetscReal gamma,         ///< coefficient of the convection term at current time step
             zeta,          ///< coefficient of the convection term at previous time step

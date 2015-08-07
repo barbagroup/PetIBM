@@ -8,7 +8,8 @@
 #if !defined(FLOW_DESCRIPTION_H)
 #define FLOW_DESCRIPTION_H
 
-#include "BoundaryCondition.h"
+// #include "BoundaryCondition.h"
+#include "types.h"
 
 #include <string>
 
@@ -22,6 +23,17 @@
 class FlowDescription
 {
 public:
+  /**
+   * \class BoundaryCondition
+   * \brief Stores the type of boundary condition and its associated value.
+   */
+  class BoundaryCondition
+  {
+  public:
+    BCType type;     ///< Type of boundary condition
+    PetscReal value; ///< Numerical value associated with the boundary condition
+  }; // BoundaryCondition
+
   PetscInt dimensions;              ///< number of dimensions 
   PetscReal nu;                     ///< kinematic viscosity of the fluid
   PetscReal initialVelocity[3];     ///< initial velocity of the flow field

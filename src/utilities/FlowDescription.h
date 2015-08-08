@@ -8,7 +8,6 @@
 #if !defined(FLOW_DESCRIPTION_H)
 #define FLOW_DESCRIPTION_H
 
-// #include "BoundaryCondition.h"
 #include "types.h"
 
 #include <string>

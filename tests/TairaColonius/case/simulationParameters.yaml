@@ -1,20 +1,20 @@
+# simulationParameters.yaml
+
 - type: simulation
   dt: 0.02
-  scaleCV: 5.0
   nt: 100
   nsave: 100
-  restart: false
-  startStep: 0
-  timeScheme: [ADAMS_BASHFORTH_2, CRANK_NICOLSON]
   ibmScheme: TAIRA_COLONIUS
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON
   linearSolvers:
     - system: velocity
       solver: CG
       preconditioner: DIAGONAL
-      tolerance: 1e-5
+      relativeTolerance: 1.0E-05
       maxIterations: 10000
     - system: Poisson
       solver: CG
-      preconditioner: SMOOTHED_AGGREGATION
-      tolerance: 1e-5
+      preconditioner: GAMG
+      relativeTolerance: 1.0E-05
       maxIterations: 20000

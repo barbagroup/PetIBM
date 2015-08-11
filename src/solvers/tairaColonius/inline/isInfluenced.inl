@@ -1,3 +1,13 @@
+/***************************************************************************//**
+ * \file isInfluanced.inl
+ * \author Anush Krishnan (anush@bu.edu)
+ * \brief
+ */
+
+
+/**
+ * \brief In two dimensions.
+ */
 template <PetscInt dim>
 PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *disp)
 {
@@ -14,12 +24,18 @@ PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGri
 	disp[0] = fabs(xGrid - xBody);
 	disp[1] = fabs(yGrid - yBody);
 
-	if(NavierStokesSolver<dim>::flowDesc->bc[0][XPLUS].type==PERIODIC && disp[0]>width[0]-disp[0]) disp[0] = width[0] - disp[0];
-	if(NavierStokesSolver<dim>::flowDesc->bc[0][YPLUS].type==PERIODIC && disp[1]>width[1]-disp[1]) disp[1] = width[1] - disp[1];
+	if (NavierStokesSolver<dim>::flow->boundaries[XPLUS][0].type == PERIODIC && disp[0] > width[0]-disp[0])
+		disp[0] = width[0] - disp[0];
+	if (NavierStokesSolver<dim>::flow->boundaries[YPLUS][0].type == PERIODIC && disp[1] > width[1]-disp[1])
+		disp[1] = width[1] - disp[1];
 
 	return (disp[0] < radius && disp[1] < radius)? PETSC_TRUE : PETSC_FALSE;
 } // isInfluenced
 
+
+/**
+ * \brief In three dimensions.
+ */
 template <PetscInt dim>
 PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *disp)
 {
@@ -40,9 +56,12 @@ PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGri
 	disp[1] = fabs(yGrid - yBody);
 	disp[2] = fabs(zGrid - zBody);
 
-	if(NavierStokesSolver<dim>::flowDesc->bc[0][XPLUS].type==PERIODIC && disp[0]>width[0]-disp[0]) disp[0] = width[0] - disp[0];
-	if(NavierStokesSolver<dim>::flowDesc->bc[0][YPLUS].type==PERIODIC && disp[1]>width[1]-disp[1]) disp[1] = width[1] - disp[1];
-	if(NavierStokesSolver<dim>::flowDesc->bc[0][ZPLUS].type==PERIODIC && disp[2]>width[2]-disp[2]) disp[2] = width[2] - disp[2];
+	if (NavierStokesSolver<dim>::flow->boundaries[XPLUS][0].type == PERIODIC && disp[0] > width[0]-disp[0])
+		disp[0] = width[0] - disp[0];
+	if (NavierStokesSolver<dim>::flow->boundaries[YPLUS][0].type == PERIODIC && disp[1] > width[1]-disp[1])
+		disp[1] = width[1] - disp[1];
+	if (NavierStokesSolver<dim>::flow->boundaries[ZPLUS][0].type == PERIODIC && disp[2] > width[2]-disp[2])
+		disp[2] = width[2] - disp[2];
 
 	return (disp[0] < radius && disp[1] < radius && disp[2] < radius)? PETSC_TRUE : PETSC_FALSE;
 } // isInfluenced

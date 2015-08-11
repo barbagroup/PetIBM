@@ -34,7 +34,7 @@ int main(int argc,char **argv)
 
   // read different input files
   CartesianMesh cartesianMesh(directory);
-  FlowDescription flowDescription(directory);
+  FlowDescription<dim> flowDescription(directory);
   SimulationParameters simulationParameters(directory);
 
   std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(directory, 

@@ -61,18 +61,12 @@ public:
   // constructor
   TairaColoniusSolver(std::string directory, 
                       CartesianMesh *cartesianMesh, 
-                      FlowDescription *flowDescription, 
+                      FlowDescription<dim> *flowDescription, 
                       SimulationParameters *simulationParameters);
   // destructor
   ~TairaColoniusSolver();
   PetscErrorCode initialize();
   PetscErrorCode finalize();
-  
-  // name of the solver
-  virtual std::string name()
-  {
-    return "Taira and Colonius";
-  }
 
 }; // TairaColoniusSolver
 

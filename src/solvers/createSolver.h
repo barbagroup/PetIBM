@@ -18,7 +18,7 @@
 template <PetscInt dim>
 std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string directory, 
                                                         CartesianMesh *cartesianMesh, 
-                                                        FlowDescription *flowDescription, 
+                                                        FlowDescription<dim> *flowDescription, 
                                                         SimulationParameters *simulationParameters);
 
 #endif

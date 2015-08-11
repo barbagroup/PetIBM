@@ -39,6 +39,8 @@ public:
   ~CartesianMesh();
   // parse input file and create Cartesian mesh
   void initialize(std::string filePath);
+  // print information about Cartesian mesh
+  PetscErrorCode printInfo();
 
 }; // CartesianMesh
 

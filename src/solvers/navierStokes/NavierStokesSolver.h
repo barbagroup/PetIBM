@@ -26,11 +26,11 @@ template <PetscInt dim>
 class NavierStokesSolver
 {
 public:
-  std::string caseFolder;
+  std::string directory;
 
-  FlowDescription      *flowDesc;
-  SimulationParameters *simParams;
-  CartesianMesh        *mesh;
+  CartesianMesh *mesh;
+  FlowDescription<dim> *flow;
+  SimulationParameters *parameters;
   
   PetscInt timeStep;
 
@@ -85,7 +85,9 @@ public:
   virtual PetscErrorCode createVecs();
 
   // set up Krylov solvers used to solve linear systems
-  PetscErrorCode createKSPs();
+  PetscErrorCode createSolvers();
+  PetscErrorCode createVelocitySolver();
+  PetscErrorCode createPoissonSolver();
 
   // initialize spaces between adjacent velocity nodes
   void initializeMeshSpacings();
@@ -139,8 +141,8 @@ public:
   // project velocity onto divergence-free field with satisfaction of the no-splip condition
   PetscErrorCode projectionStep();
 
-  // write simulation parameters into file
-  PetscErrorCode printSimulationInfo();
+  // print info about simulation
+  PetscErrorCode printInfo();
   // write grid coordinates into file
   PetscErrorCode writeGrid();
   // write fluxes into files
@@ -158,7 +160,7 @@ public:
   // constructor
   NavierStokesSolver(std::string directory, 
                      CartesianMesh *cartesianMesh, 
-                     FlowDescription *flowDescription, 
+                     FlowDescription<dim> *flowDescription, 
                      SimulationParameters *simulationParameters);
   // destructor
   ~NavierStokesSolver();
@@ -178,12 +180,6 @@ public:
 
   // evaluate if the simulation is completed
   PetscBool finished();
-  
-  // name of the solver
-  virtual std::string name()
-  {
-    return "Navier-Stokes";
-  }
 
 }; // NavierStokesSolver
 

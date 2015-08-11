@@ -23,7 +23,7 @@
 template <PetscInt dim>
 TairaColoniusSolver<dim>::TairaColoniusSolver(std::string directory, 
                                               CartesianMesh *cartesianMesh, 
-                                              FlowDescription *flowDescription, 
+                                              FlowDescription<dim> *flowDescription, 
                                               SimulationParameters *simulationParameters)
                         : NavierStokesSolver<dim>::NavierStokesSolver(directory, 
                                                                       cartesianMesh, 
@@ -47,11 +47,14 @@ TairaColoniusSolver<dim>::~TairaColoniusSolver()
 } // ~TairaColoniusSolver
 
 
+/**
+ * \brief
+ */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialize()
 {
   PetscErrorCode ierr;
-
+  ierr = NavierStokesSolver<dim>::printInfo(); CHKERRQ(ierr);
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialize); CHKERRQ(ierr);
   ierr = initializeBodies(); CHKERRQ(ierr);
   ierr = calculateCellIndices(); CHKERRQ(ierr);
@@ -59,12 +62,15 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
-  ierr = NavierStokesSolver<dim>::printSimulationInfo(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::writeGrid(); CHKERRQ(ierr);
 
   return 0;
 } // initialize
 
+
+/**
+ * \brief
+ */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::finalize()
 {
@@ -83,6 +89,10 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
   return 0;
 }  // finalize
 
+
+/**
+ * \brief
+ */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createDMs()
 {
@@ -95,6 +105,10 @@ PetscErrorCode TairaColoniusSolver<dim>::createDMs()
   return 0;
 } // createDMs
 
+
+/**
+ * \brief
+ */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createVecs()
 {
@@ -108,6 +122,9 @@ PetscErrorCode TairaColoniusSolver<dim>::createVecs()
 } // createVecs
 
 
+/**
+ * \brief Discrete delta function from Roma et al. (1999).
+ */
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
 {
@@ -117,17 +134,26 @@ PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
   return 1.0/(3*h)*( 1.0 + sqrt(-3.0*r*r + 1.0) );
 } // dhRoma
 
+
+/**
+ * \bief Two-dimensional discrete delta function.
+ */
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal h)
 {
   return dhRoma(x, h) * dhRoma(y, h);
 } // delta
 
+
+/**
+ * \bief Three-dimensional discrete delta function.
+ */
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
 {
   return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
 } // delta
+
 
 #include "inline/setNullSpace.inl"
 #include "inline/calculateCellIndices.inl"
@@ -140,5 +166,6 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 #include "inline/calculateForce.inl"
 #include "inline/io.inl"
 
+// dimensions specialization
 template class TairaColoniusSolver<2>;
 template class TairaColoniusSolver<3>;

@@ -1,11 +1,13 @@
 /***************************************************************************//**
  * \file initializeFluxes.inl
  * \author Anush Kirshnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the method to initialize the fluxes.
+ * \brief Implementation of the method `initializeFluxes`.
  */
 
 
 /**
+ * \brief Computes the initial fluxes with an optional initial perturbation.
+ * 
  * Initialize the flux vector with the values of the velocity fluxes at the first
  * time step. The initial values of the velocity from which the fluxes are 
  * calculated are read from the FlowDescription object `flowDesc`. If specified,
@@ -50,62 +52,64 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
   
-  if (simParams->startStep > 0 || flowDesc->initialCustomField)
+  if (parameters->startStep > 0 || flow->initialCustomField)
   {
     ierr = readFluxes(); CHKERRQ(ierr);
   }
   else
-  {
-    PetscInt  mstart, nstart, m, n;
-    PetscReal **qx, **qy;
-    Vec       qxGlobal, qyGlobal;
-    PetscReal initVel[2]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1]};
-    PetscReal width[2]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
+  { 
+    PetscReal initialVelocity[2]  = {flow->initialVelocity[0], flow->initialVelocity[1]};
+    PetscReal width[2] = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0]};
 
     // Taylor-Green vortex perturbation
-    PetscReal amplitude = flowDesc->perturbationAmplitude,
-              frequency = flowDesc->perturbationFrequency;
+    PetscReal amplitude = flow->perturbationAmplitude,
+              frequency = flow->perturbationFrequency;
     // size of the Taylor-Green vortex
     PetscReal X1 = 0.0,
               X2 = 2.0*PETSC_PI,
               Y1 = 0.0,
               Y2 = 2.0*PETSC_PI;
 
+    PetscInt mstart, nstart, m, n;
+
+    Vec qxGlobal, qyGlobal;
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
-    // U-FLUXES
+    // fluxes in x-direction
+    PetscReal **qx;
     ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
     ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
-    // Set interior values for u-fluxes
-    for(PetscInt j=nstart; j<nstart+n; j++)
+    // set interior values of fluxes in x-direction
+    for (PetscInt j=nstart; j<nstart+n; j++)
     {
-      for(PetscInt i=mstart; i<mstart+m; i++)
+      for (PetscInt i=mstart; i<mstart+m; i++)
       {
         PetscReal x = X1 + (X2-X1)*frequency*(mesh->x[i+1] - mesh->x[0])/width[0],
                   y = Y1 + (Y2-Y1)*frequency*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1];
-        qx[j][i] = (initVel[0] - amplitude*cos(x)*sin(y))*mesh->dy[j];
+        qx[j][i] = (initialVelocity[0] - amplitude*cos(x)*sin(y))*mesh->dy[j];
       }
     }
     ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
     
-    // V-FLUXES
+    // fluxes in y-direction
+    PetscReal **qy;
     ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
     ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
-    // Set interior values for v-fluxes
-    for(PetscInt j=nstart; j<nstart+n; j++)
+    // set interior values of fluxes in y-direction
+    for (PetscInt j=nstart; j<nstart+n; j++)
     {
-      for(PetscInt i=mstart; i<mstart+m; i++)
+      for (PetscInt i=mstart; i<mstart+m; i++)
       {
         PetscReal x = X1 + (X2-X1)*frequency*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
                   y = Y1 + (Y2-Y1)*frequency*(mesh->y[j+1] - mesh->y[0])/width[1];
-        qy[j][i] = (initVel[1] + amplitude*sin(x)*cos(y))*mesh->dx[i];
+        qy[j][i] = (initialVelocity[1] + amplitude*sin(x)*cos(y))*mesh->dx[i];
       }
     }
     ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
 
     ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
   }
-  
+
   ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
 
   return 0;
@@ -118,22 +122,18 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  if (simParams->startStep > 0 || flowDesc->initialCustomField)
+  if (parameters->startStep > 0 || flow->initialCustomField)
   {
     ierr = readFluxes(); CHKERRQ(ierr);
   }
   else
   {
-    PetscInt  mstart, nstart, pstart, m, n, p;
-    PetscReal ***qx, ***qy, ***qz;
-    Vec       qxGlobal, qyGlobal, qzGlobal;
-    PetscReal initVel[3]  = {flowDesc->initialVelocity[0], flowDesc->initialVelocity[1], flowDesc->initialVelocity[2]};
-    PetscReal width[3]    = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0], mesh->z[mesh->nz] - mesh->z[0]};
+    PetscReal initialVelocity[3]  = {flow->initialVelocity[0], flow->initialVelocity[1], flow->initialVelocity[2]};
+    PetscReal width[3] = {mesh->x[mesh->nx] - mesh->x[0], mesh->y[mesh->ny] - mesh->y[0], mesh->z[mesh->nz] - mesh->z[0]};
 
     // Taylor-Green vortex perturbation
-    PetscReal amplitude = flowDesc->perturbationAmplitude,
-              frequency = flowDesc->perturbationFrequency;
-              // size of the Taylor-Green vortex
+    PetscReal amplitude = flow->perturbationAmplitude,
+              frequency = flow->perturbationFrequency;
     PetscReal X1 = 0.0,
               X2 = 2.0*PETSC_PI,
               Y1 = 0.0,
@@ -141,58 +141,63 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
               Z1 = 0.0,
               Z2 = 2.0*PETSC_PI;
 
+    PetscInt  mstart, nstart, pstart, m, n, p;
+
+    Vec qxGlobal, qyGlobal, qzGlobal;
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
     
-    // U-FLUXES
+    // fluxes in x-direction
+    PetscReal ***qx;
     ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
     ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
-    // Set interior values for u-fluxes
-    for(PetscInt k=pstart; k<pstart+p; k++)
+    // set interior values of fluxes in x-direction
+    for (PetscInt k=pstart; k<pstart+p; k++)
     {
-      for(PetscInt j=nstart; j<nstart+n; j++)
+      for (PetscInt j=nstart; j<nstart+n; j++)
       {
-        for(PetscInt i=mstart; i<mstart+m; i++)
+        for (PetscInt i=mstart; i<mstart+m; i++)
         {
           PetscReal x = X1 + (X2-X1)*frequency*(mesh->x[i+1] - mesh->x[0])/width[0],
                     y = Y1 + (Y2-Y1)*frequency*(0.5*(mesh->y[j]+mesh->y[j+1]) - mesh->y[0])/width[1],
                     z = Z1 + (Z2-Z1)*frequency*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];     
-          qx[k][j][i] = (initVel[0] - amplitude*cos(x)*sin(y)*sin(z))*(mesh->dy[j]*mesh->dz[k]);
+          qx[k][j][i] = (initialVelocity[0] - amplitude*cos(x)*sin(y)*sin(z))*(mesh->dy[j]*mesh->dz[k]);
         }
       }
     }
     ierr = DMDAVecRestoreArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
     
-    // V-FLUXES
+    // fluxes in y-direction
+    PetscReal ***qy;
     ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
     ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
-    // Set interior values for v-fluxes
-    for(PetscInt k=pstart; k<pstart+p; k++)
+    // set interior values of fluxes in y-direction
+    for (PetscInt k=pstart; k<pstart+p; k++)
     {
-      for(PetscInt j=nstart; j<nstart+n; j++)
+      for (PetscInt j=nstart; j<nstart+n; j++)
       {
-        for(PetscInt i=mstart; i<mstart+m; i++)
+        for (PetscInt i=mstart; i<mstart+m; i++)
         {
           PetscReal x = X1 + (X2-X1)*frequency*(0.5*(mesh->x[i]+mesh->x[i+1]) - mesh->x[0])/width[0],
                     y = Y1 + (Y2-Y1)*frequency*(mesh->y[j+1] - mesh->y[0])/width[1],
                     z = Z1 + (Z2-Z1)*frequency*(0.5*(mesh->z[k]+mesh->z[k+1]) - mesh->z[0])/width[2];
-        
-          qy[k][j][i] = (initVel[1] + amplitude*sin(x)*cos(y)*sin(z))*(mesh->dx[i]*mesh->dz[k]);
+          qy[k][j][i] = (initialVelocity[1] + amplitude*sin(x)*cos(y)*sin(z))*(mesh->dx[i]*mesh->dz[k]);
         }
       }
     }
     ierr = DMDAVecRestoreArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
 
-    // W-FLUXES
+    // fluxes in z-direction
+    PetscReal ***qz;
     ierr = DMDAVecGetArray(wda, qzGlobal, &qz); CHKERRQ(ierr);
     ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
-    // Set interior values for w-fluxes
-    for(PetscInt k=pstart; k<pstart+p; k++)
+    // set interior values of fluxes in z-direction
+    for (PetscInt k=pstart; k<pstart+p; k++)
     {
-      for(PetscInt j=nstart; j<nstart+n; j++)
+      for (PetscInt j=nstart; j<nstart+n; j++)
       {
-        for(PetscInt i=mstart; i<mstart+m; i++)
+        for (PetscInt i=mstart; i<mstart+m; i++)
         { 
-          qz[k][j][i] = initVel[2]*(mesh->dx[i]*mesh->dy[j]);
+          qz[k][j][i] = initialVelocity[2]*(mesh->dx[i]*mesh->dy[j]);
         }
       }
     }

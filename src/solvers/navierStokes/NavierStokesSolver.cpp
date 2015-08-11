@@ -17,52 +17,52 @@
 
 
 /**
- * \brief Constructor: Stores simulation parameters and initializes variables.
+ * \brief Constructor: Stores simulation parameters and initializes pointers.
  */
 template <PetscInt dim>
-NavierStokesSolver<dim>::NavierStokesSolver(std::string directory, 
+NavierStokesSolver<dim>::NavierStokesSolver(std::string dir, 
                                             CartesianMesh *cartesianMesh, 
-                                            FlowDescription *flowDescription, 
+                                            FlowDescription<dim> *flowDescription, 
                                             SimulationParameters *simulationParameters) 
 {
-  // classes
-  caseFolder = directory;
+  // simulation info
+  directory = dir;
   mesh = cartesianMesh;
-  flowDesc = flowDescription;
-  simParams = simulationParameters;
-  timeStep  = simParams->startStep;
+  flow = flowDescription;
+  parameters = simulationParameters;
+  timeStep  = parameters->startStep;
   // DMs
   pda = PETSC_NULL;
   uda = PETSC_NULL;
   vda = PETSC_NULL;
   wda = PETSC_NULL;
-  qPack   = PETSC_NULL;
+  qPack = PETSC_NULL;
   lambdaPack = PETSC_NULL;
   // Vecs
-  qxLocal  = PETSC_NULL;
-  qyLocal  = PETSC_NULL;
-  qzLocal  = PETSC_NULL;
-  q        = PETSC_NULL;
-  qStar    = PETSC_NULL;
-  H        = PETSC_NULL;
-  rn       = PETSC_NULL;
-  bc1      = PETSC_NULL;
-  rhs1     = PETSC_NULL;
-  r2       = PETSC_NULL;
-  rhs2     = PETSC_NULL;
-  temp     = PETSC_NULL;
-  RInv     = PETSC_NULL;
-  MHat   = PETSC_NULL;
-  BN       = PETSC_NULL;
+  qxLocal = PETSC_NULL;
+  qyLocal = PETSC_NULL;
+  qzLocal = PETSC_NULL;
+  q = PETSC_NULL;
+  qStar = PETSC_NULL;
+  H = PETSC_NULL;
+  rn = PETSC_NULL;
+  bc1 = PETSC_NULL;
+  rhs1 = PETSC_NULL;
+  r2 = PETSC_NULL;
+  rhs2 = PETSC_NULL;
+  temp = PETSC_NULL;
+  RInv = PETSC_NULL;
+  MHat = PETSC_NULL;
+  BN = PETSC_NULL;
   pMapping = PETSC_NULL;
   uMapping = PETSC_NULL;
   vMapping = PETSC_NULL;
   wMapping = PETSC_NULL;
   // Mats
-  A       = PETSC_NULL;
-  QT      = PETSC_NULL;
-  BNQ     = PETSC_NULL;
-  QTBNQ   = PETSC_NULL;
+  A = PETSC_NULL;
+  QT = PETSC_NULL;
+  BNQ = PETSC_NULL;
+  QTBNQ = PETSC_NULL;
   //KSPs
   ksp1 = PETSC_NULL;
   ksp2 = PETSC_NULL;
@@ -94,12 +94,11 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initialize()
 {
   PetscErrorCode ierr;
-
+  ierr = printInfo(); CHKERRQ(ierr);
   ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
-  ierr = printSimulationInfo(); CHKERRQ(ierr);
   ierr = writeGrid(); CHKERRQ(ierr);
 
   return 0;
@@ -107,7 +106,7 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
 
 
 /**
- * \brief Initializes data common to \c NavierStokesSolver and its dereived classes.
+ * \brief Initializes data common to \c NavierStokesSolver and its derived classes.
  */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
@@ -128,7 +127,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   ierr = generateA(); CHKERRQ(ierr);
   ierr = generateBNQ(); CHKERRQ(ierr);
   ierr = generateQTBNQ(); CHKERRQ(ierr);
-  ierr = createKSPs(); CHKERRQ(ierr);
+  ierr = createSolvers(); CHKERRQ(ierr);
   ierr = setNullSpace(); CHKERRQ(ierr);
 
   return 0;
@@ -189,8 +188,8 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 
   // Print performance summary to file
   PetscViewer viewer;
-  std::string performanceSummaryFileName = caseFolder + "/performanceSummary.txt";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, performanceSummaryFileName.c_str(), &viewer); CHKERRQ(ierr);
+  std::string filePath = directory + "/performanceSummary.txt";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
   ierr = PetscLogView(viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
@@ -234,7 +233,7 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
   PetscErrorCode ierr;
 
-  // solve for the intermediate velocity
+  // solve system for intermediate velocity
   ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
   ierr = calculateExplicitTerms(); CHKERRQ(ierr);
   ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
@@ -243,19 +242,21 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
   ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
-  // solve the Poisson system for the pressure
-  // and body forces in the case of TairaColoniusSolver
+  // solve Poisson system for Lagrange multipliers
+  // Navier-Stokes: Lagrange multipliers = pressure
+  // Taira-Colonius: Lagrange multipliers = pressure + body forces
   ierr = PetscLogStagePush(stageRHSPoissonSystem); CHKERRQ(ierr);
   ierr = generateR2(); CHKERRQ(ierr);
   ierr = generateRHS2(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
   ierr = solvePoissonSystem(); CHKERRQ(ierr);
 
-  // project the pressure field to satisfy continuity
-  // and the body forces to satisfy the no-slip condition
+  // project intermediate velocity field to satisfy divergence-free condition
+  // and no-slip condition at immersed boundary (when Taira-Colonius method used)
   ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
   ierr = projectionStep(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  
   timeStep++;
 
   return 0;
@@ -268,17 +269,19 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 {
-  PetscErrorCode     ierr;
-  KSPConvergedReason reason;
-  
+  PetscErrorCode ierr;
+
   ierr = PetscLogStagePush(stageSolveVelocitySystem); CHKERRQ(ierr);
   ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
+  KSPConvergedReason reason;
   ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
-  if(reason < 0)
+  if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,"Velocity solve diverged due to reason: %d\n", reason); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD,
+                       "\nERROR: velocity solver diverged due to reason: %d\n", 
+                       reason); CHKERRQ(ierr);
     exit(0);
   }
 
@@ -292,17 +295,19 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
 {
-  PetscErrorCode     ierr;
-  KSPConvergedReason reason;
+  PetscErrorCode ierr;
   
   ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
   ierr = KSPSolve(ksp2, rhs2, lambda); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
   
+  KSPConvergedReason reason;
   ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
-  if(reason < 0)
+  if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,"Poisson solve diverged due to reason: %d\n", reason); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD,
+                       "\nERROR: Poisson solver diverged due to reason: %d\n", 
+                       reason); CHKERRQ(ierr);
     exit(0);
   }
 
@@ -311,8 +316,13 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
 
 
 /**
- * \brief Projects the fluxes onto the divergence-free field 
- *        satisfying the no-slip condition at the immersed boundary.
+ * \brief Projects the fluxes onto the space satisfying the constraints.
+ *
+ * In the case of a pure Navier-Stokes solver, the intermediate velocity is 
+ * projected on the divergence-free space.
+ * In the case where the immersed boundary projection method is used, the 
+ * velocity field is also projected onto the space where the no-slip condition 
+ * is satisfied.
  *
  * \f[ q = q^* - B^N Q \lambda \f]
  */
@@ -320,6 +330,7 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 {
   PetscErrorCode ierr;
+  
   ierr = MatMult(BNQ, lambda, temp); CHKERRQ(ierr);
   ierr = VecWAXPY(q, -1.0, temp, qStar); CHKERRQ(ierr);
 
@@ -333,7 +344,7 @@ PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 template <PetscInt dim>
 PetscBool NavierStokesSolver<dim>::savePoint()
 {
-  return (timeStep % simParams->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
+  return (timeStep%parameters->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
 } // savePoint
 
 
@@ -343,7 +354,7 @@ PetscBool NavierStokesSolver<dim>::savePoint()
 template <PetscInt dim>
 PetscBool NavierStokesSolver<dim>::finished()
 {
-  return (timeStep >= simParams->startStep+simParams->nt)? PETSC_TRUE : PETSC_FALSE;
+  return (timeStep >= parameters->startStep+parameters->nt)? PETSC_TRUE : PETSC_FALSE;
 } // finished
 
 
@@ -354,8 +365,8 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 {
   PetscErrorCode ierr;
+
   PetscLogEvent  GENERATE_QTBNQ;
-  
   ierr = PetscLogEventRegister("generateQTBNQ", 0, &GENERATE_QTBNQ); CHKERRQ(ierr);
   ierr = PetscLogEventBegin(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
@@ -399,7 +410,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
-#include "inline/createKSPs.inl"
+#include "inline/createSolvers.inl"
 #include "inline/setNullSpace.inl"
 #include "inline/createLocalToGlobalMappingsFluxes.inl"
 #include "inline/createLocalToGlobalMappingsLambda.inl"
@@ -416,5 +427,6 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "inline/io.inl"
 
 
+// template class specialization
 template class NavierStokesSolver<2>;
 template class NavierStokesSolver<3>;

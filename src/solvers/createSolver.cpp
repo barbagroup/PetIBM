@@ -16,15 +16,10 @@
 template <PetscInt dim>
 std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string directory, 
                                                         CartesianMesh *cartesianMesh, 
-                                                        FlowDescription *flowDescription, 
+                                                        FlowDescription<dim> *flowDescription, 
                                                         SimulationParameters *simulationParameters)
 {
-  if (flowDescription->dimensions != dim)
-  {
-    PetscPrintf(PETSC_COMM_WORLD, "ERROR: Check the number of dimensions in the input files.\n");
-    exit(0);
-  }
-  switch(simulationParameters->solverType)
+  switch(simulationParameters->ibmScheme)
   {
     case NAVIER_STOKES:
       return std::unique_ptr< NavierStokesSolver<dim> >(new NavierStokesSolver<dim>(directory,
@@ -44,12 +39,13 @@ std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string directory,
   }
 } // createSolver
 
-// specialization
+
+// dimensions specialization
 template std::unique_ptr< NavierStokesSolver<2> > createSolver(std::string directory, 
                                                                CartesianMesh *cartesianMesh, 
-                                                               FlowDescription *flowDescription, 
+                                                               FlowDescription<2> *flowDescription, 
                                                                SimulationParameters *simulationParameters); 
 template std::unique_ptr< NavierStokesSolver<3> > createSolver(std::string directory, 
                                                                CartesianMesh *cartesianMesh, 
-                                                               FlowDescription *flowDescription, 
+                                                               FlowDescription<3> *flowDescription, 
                                                                SimulationParameters *simulationParameters);

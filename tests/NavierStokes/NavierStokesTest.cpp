@@ -15,7 +15,7 @@ class NavierStokesTest : public ::testing::Test
 public:
   std::string directory;
   CartesianMesh cartesianMesh;
-  FlowDescription flowDescription;
+  FlowDescription<2> flowDescription;
   SimulationParameters simulationParameters;
   std::unique_ptr< NavierStokesSolver<2> > solver;
   Vec lambdaGold, error;
@@ -27,7 +27,7 @@ public:
     // read input files and create solver
     directory = "NavierStokes/case";
     cartesianMesh = CartesianMesh(directory);
-    flowDescription = FlowDescription(directory);
+    flowDescription = FlowDescription<2>(directory);
     simulationParameters = SimulationParameters(directory);
     solver = createSolver<2>(directory, &cartesianMesh, &flowDescription, &simulationParameters);
   }
@@ -38,7 +38,7 @@ public:
     solver->initialize();
 
     // perform the simulation
-    while(!solver->finished())
+    while (!solver->finished())
     {
       solver->stepTime();
     }
@@ -47,8 +47,8 @@ public:
   virtual void TearDown()
   {
     solver->finalize();
-    if(lambdaGold!=PETSC_NULL) VecDestroy(&lambdaGold);
-    if(error!=PETSC_NULL) VecDestroy(&error);
+    if (lambdaGold != PETSC_NULL) VecDestroy(&lambdaGold);
+    if (error != PETSC_NULL) VecDestroy(&error);
   }
 };
 

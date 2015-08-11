@@ -109,7 +109,8 @@ libutilities_a_AR = $(AR) $(ARFLAGS)
 libutilities_a_LIBADD =
 am_libutilities_a_OBJECTS = libutilities_a-CartesianMesh.$(OBJEXT) \
 	libutilities_a-SimulationParameters.$(OBJEXT) \
-	libutilities_a-FlowDescription.$(OBJEXT)
+	libutilities_a-FlowDescription.$(OBJEXT) \
+	libutilities_a-types.$(OBJEXT)
 libutilities_a_OBJECTS = $(am_libutilities_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -278,7 +279,8 @@ top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libutilities.a
 libutilities_a_SOURCES = CartesianMesh.cpp \
                          SimulationParameters.cpp \
-                         FlowDescription.cpp
+                         FlowDescription.cpp \
+                         types.cpp
 
 libutilities_a_CPPFLAGS = -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
                           -I$(top_srcdir)/external/boost-1.57.0
@@ -334,6 +336,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-CartesianMesh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-FlowDescription.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-SimulationParameters.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-types.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -392,6 +395,20 @@ libutilities_a-FlowDescription.obj: FlowDescription.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FlowDescription.cpp' object='libutilities_a-FlowDescription.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-FlowDescription.obj `if test -f 'FlowDescription.cpp'; then $(CYGPATH_W) 'FlowDescription.cpp'; else $(CYGPATH_W) '$(srcdir)/FlowDescription.cpp'; fi`
+
+libutilities_a-types.o: types.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-types.o -MD -MP -MF $(DEPDIR)/libutilities_a-types.Tpo -c -o libutilities_a-types.o `test -f 'types.cpp' || echo '$(srcdir)/'`types.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_a-types.Tpo $(DEPDIR)/libutilities_a-types.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='types.cpp' object='libutilities_a-types.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-types.o `test -f 'types.cpp' || echo '$(srcdir)/'`types.cpp
+
+libutilities_a-types.obj: types.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-types.obj -MD -MP -MF $(DEPDIR)/libutilities_a-types.Tpo -c -o libutilities_a-types.obj `if test -f 'types.cpp'; then $(CYGPATH_W) 'types.cpp'; else $(CYGPATH_W) '$(srcdir)/types.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_a-types.Tpo $(DEPDIR)/libutilities_a-types.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='types.cpp' object='libutilities_a-types.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-types.obj `if test -f 'types.cpp'; then $(CYGPATH_W) 'types.cpp'; else $(CYGPATH_W) '$(srcdir)/types.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

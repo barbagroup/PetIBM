@@ -1,3 +1,13 @@
+/***************************************************************************//**
+ * \file calculateCellIndices.inl
+ * \author Anush (anush@bu.edu)
+ * \brief Implementation of the method to compute cell indices.
+ */
+
+
+/**
+ * \brief Computes cell indices.
+ */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
 {
@@ -7,23 +17,23 @@ PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
 
 	I.reserve(x.size());
 	J.reserve(x.size());
-	if(dim==3) K.reserve(x.size());
+	if (dim == 3) K.reserve(x.size());
 
 	PetscInt i=0, j=0, k=0;
 
 	/// find the cell for the zeroth point
-	while(xMesh[i+1] < x[0]) i++;
-	while(yMesh[j+1] < y[0]) j++;
-	if(dim==3)
+	while (xMesh[i+1] < x[0]) i++;
+	while (yMesh[j+1] < y[0]) j++;
+	if (dim == 3)
 	{
-		while(zMesh[k+1] < z[0]) k++;
+		while (zMesh[k+1] < z[0]) k++;
 	}
 
 	I.push_back(i);
 	J.push_back(j);
-	if(dim==3) K.push_back(k);
+	if (dim == 3) K.push_back(k);
 
-	for(size_t l=1; l<x.size(); l++)
+	for (size_t l=1; l<x.size(); l++)
 	{
 		// if the next boundary point is to the left of the current boundary point
 		if(x[l] < x[l-1])
@@ -67,7 +77,7 @@ PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
 
 		I.push_back(i);
 		J.push_back(j);
-		if(dim==3) K.push_back(k);
+		if (dim == 3) K.push_back(k);
 	}
 
 	return 0;

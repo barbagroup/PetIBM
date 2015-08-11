@@ -14,61 +14,10 @@
 
 
 /**
- * \brief Returns the boundary location.
- */
-BoundaryLocation stringToBoundaryLocation(std::string s)
-{
-  if (s == "xMinus")
-    return XMINUS;
-  if (s == "xPlus")
-    return XPLUS;
-  if (s == "yMinus")
-    return YMINUS;
-  if (s == "yPlus")
-    return YPLUS;
-  if (s == "zMinus")
-    return ZMINUS;
-  if (s == "zPlus")
-    return ZPLUS;
-  std::cout << "\nERROR: " << s << " - unknown boundary location.\n";
-  std::cout << "Boundary locations available:\n";
-  std::cout << "\txMinus\n";
-  std::cout << "\txPlus\n";
-  std::cout << "\tyMinus\n";
-  std::cout << "\tyPlus\n";
-  std::cout << "\tzMinus\n";
-  std::cout << "\tzPlus\n" << std::endl;
-  exit(0);
-} // stringToBoundaryLocation
-
-
-/**
- * \brief Returns the boundary condition type.
- */
-BCType stringToBCType(std::string s)
-{
-  if (s == "DIRICHLET")
-    return DIRICHLET;
-  if (s == "NEUMANN")
-    return NEUMANN;
-  if (s == "CONVECTIVE")
-    return CONVECTIVE;
-  if (s == "PERIODIC")
-    return PERIODIC;
-  std::cout << "\nERROR: " << s << " - unknown boundary condition type.\n";
-  std::cout << "Boundary condition types available:\n";
-  std::cout << "\tDIRICHLET\n";
-  std::cout << "\tNEUMANN\n";
-  std::cout << "\tCONVECTIVE\n";
-  std::cout << "\tPERIODIC\n" << std::endl;
-  exit(0);
-} // stringToBCType
-
-
-/**
  * \brief Constructor.
  */
-FlowDescription::FlowDescription()
+template <PetscInt dim>
+FlowDescription<dim>::FlowDescription()
 {
 } // FlowDescription
 
@@ -76,7 +25,8 @@ FlowDescription::FlowDescription()
 /**
  * \brief Constructor -- Parses the input file.
  */
-FlowDescription::FlowDescription(std::string directory)
+template <PetscInt dim>
+FlowDescription<dim>::FlowDescription(std::string directory)
 {
   initialize(directory + "/flowDescription.yaml");
 } // FlowDescription
@@ -85,7 +35,8 @@ FlowDescription::FlowDescription(std::string directory)
 /**
  * \brief Destructor
  */
-FlowDescription::~FlowDescription()
+template <PetscInt dim>
+FlowDescription<dim>::~FlowDescription()
 {
 } // ~FlowDescription
 
@@ -97,109 +48,193 @@ FlowDescription::~FlowDescription()
  *
  * \param filePath path of the file to parse.
  */
-void FlowDescription::initialize(std::string filePath)
+template <PetscInt dim>
+void FlowDescription<dim>::initialize(std::string filePath)
 {
-  PetscPrintf(PETSC_COMM_WORLD, "\n[info] Parsing file %s...\n", filePath.c_str());
+  PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
   
-  PetscInt    rank;
-  MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of current process
+  // get rank of current process
+  PetscInt rank;
+  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
   
-  if (rank == 0) // read the input file only on process 0
+  if (rank == 0) // parse the input file only on process 0
   {
     YAML::Node nodes = YAML::LoadFile(filePath);
     const YAML::Node &node = nodes[0];
 
-    dimensions = node["dimensions"].as<PetscInt>();
     nu = node["nu"].as<PetscReal>();
 
-    initialVelocity[0] = node["initialVelocity"][0].as<PetscReal>();
-    initialVelocity[1] = node["initialVelocity"][1].as<PetscReal>();
-    initialVelocity[2] = node["initialVelocity"][2].as<PetscReal>(0.0);
+    for (PetscInt i=0; i<dim; i++)
+    {
+      initialVelocity[i] = node["initialVelocity"][i].as<PetscReal>();
+    }
+
     initialCustomField = (node["initialCustomField"].as<bool>(false)) ? PETSC_TRUE : PETSC_FALSE;
 
     perturbationAmplitude = node["initialPerturbation"][0].as<PetscReal>(0.0);
     perturbationFrequency = node["initialPerturbation"][1].as<PetscReal>(0);
 
     const YAML::Node &bcs = node["boundaryConditions"];
+    PetscBool checkDimensions = (bcs.size() == 2*dim) ? PETSC_TRUE : PETSC_FALSE;
+    if (!checkDimensions)
+    {
+      std::cout << "\nError: number of dimensions is inconsistent.\n";
+      std::cout << "Check boundary conditions in flowDescription.yaml.\n" << std::endl;
+      exit(0);
+    }
     BoundaryLocation location;
-    // loop over the boundaries
-    for (unsigned int i=0; i<bcs.size(); i++)
+    for (PetscInt i=0; i<bcs.size(); i++)
     {
       location = stringToBoundaryLocation(bcs[i]["location"].as<std::string>());
-      bc[0][location].type = stringToBCType(bcs[i]["u"][0].as<std::string>());
-      bc[0][location].value = bcs[i]["u"][1].as<PetscReal>();
-      bc[1][location].type = stringToBCType(bcs[i]["v"][0].as<std::string>());
-      bc[1][location].value = bcs[i]["v"][1].as<PetscReal>();
-      // 2d cases: periodic boundary condition in the third direction
-      bc[2][location].type = stringToBCType(bcs[i]["w"][0].as<std::string>("PERIODIC"));
-      bc[2][location].value = bcs[i]["w"][1].as<PetscReal>(0.0);
+      boundaries[location][U].type = stringToBoundaryType(bcs[i]["u"][0].as<std::string>());
+      boundaries[location][U].value = bcs[i]["u"][1].as<PetscReal>();
+      boundaries[location][V].type = stringToBoundaryType(bcs[i]["v"][0].as<std::string>());
+      boundaries[location][V].value = bcs[i]["v"][1].as<PetscReal>();
+      if (dim == 3)
+      {
+        boundaries[location][W].type = stringToBoundaryType(bcs[i]["w"][0].as<std::string>());
+        boundaries[location][W].value = bcs[i]["w"][1].as<PetscReal>();
+      }
     }
     
     // run some sanity checks on the input data
     PetscBool error = PETSC_FALSE;
-    // if the boundary condition on one face is periodic,
-    // then it should be periodic on the opposite face too
-    // check u on the X and Y faces
-    if (bc[0][XMINUS].type == PERIODIC && bc[0][XPLUS].type != PERIODIC) error = PETSC_TRUE;
-    if (bc[0][XMINUS].type != PERIODIC && bc[0][XPLUS].type == PERIODIC) error = PETSC_TRUE;
-    if (bc[0][YMINUS].type == PERIODIC && bc[0][YPLUS].type != PERIODIC) error = PETSC_TRUE;
-    if (bc[0][YMINUS].type != PERIODIC && bc[0][YPLUS].type == PERIODIC) error = PETSC_TRUE;
-    if (dimensions == 3)
+    // if the boundary condition is periodic on one side, it should be periodic on the other side
+    if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XPLUS][U].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[XMINUS][U].type != PERIODIC && boundaries[XPLUS][U].type == PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YPLUS][U].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[YMINUS][U].type != PERIODIC && boundaries[YPLUS][U].type == PERIODIC)
+      error = PETSC_TRUE;
+    if (dim == 3)
     {
-      if (bc[0][ZMINUS].type == PERIODIC && bc[0][ZPLUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][ZMINUS].type != PERIODIC && bc[0][ZPLUS].type == PERIODIC) error = PETSC_TRUE;
+      if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZPLUS][U].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[ZMINUS][U].type != PERIODIC && boundaries[ZPLUS][U].type == PERIODIC)
+        error = PETSC_TRUE;
     }
-    // if the boundary condition for one component of velocity is periodic,
-    // then it should be periodic for the other components too
-    // compare u and v on the X and Y faces
-    if (bc[0][XMINUS].type == PERIODIC && bc[1][XMINUS].type != PERIODIC) error = PETSC_TRUE;
-    if (bc[0][XPLUS].type == PERIODIC && bc[1][XPLUS].type != PERIODIC) error = PETSC_TRUE;
-    if (bc[0][YMINUS].type == PERIODIC && bc[1][YMINUS].type != PERIODIC) error = PETSC_TRUE;
-    if (bc[0][YPLUS].type == PERIODIC && bc[1][YPLUS].type != PERIODIC) error = PETSC_TRUE;
-    if (dimensions == 3)
+    // if the boundary condition is periodic for one component, it should periodic for the others
+    if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XMINUS][V].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[XPLUS][U].type == PERIODIC && boundaries[XPLUS][V].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YMINUS][V].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[YPLUS][U].type == PERIODIC && boundaries[YPLUS][V].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (dim == 3)
     {
-      // compare u and w on the X and Y faces
-      if (bc[0][XMINUS].type == PERIODIC && bc[2][XMINUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][XPLUS].type == PERIODIC && bc[2][XPLUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][YMINUS].type == PERIODIC && bc[2][YMINUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][YPLUS].type == PERIODIC && bc[2][YPLUS].type != PERIODIC) error = PETSC_TRUE;
-      // compare u and v, u and w the on Z faces
-      if (bc[0][ZMINUS].type == PERIODIC && bc[1][ZMINUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][ZMINUS].type == PERIODIC && bc[2][ZMINUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][ZPLUS].type == PERIODIC && bc[1][ZPLUS].type != PERIODIC) error = PETSC_TRUE;
-      if (bc[0][ZPLUS].type == PERIODIC && bc[2][ZPLUS].type != PERIODIC) error = PETSC_TRUE;
+      if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XMINUS][W].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[XPLUS][U].type == PERIODIC && boundaries[XPLUS][W].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YMINUS][W].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[YPLUS][U].type == PERIODIC && boundaries[YPLUS][W].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZMINUS][V].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZMINUS][W].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[ZPLUS][U].type == PERIODIC && boundaries[ZPLUS][V].type != PERIODIC)
+        error = PETSC_TRUE;
+      if (boundaries[ZPLUS][U].type == PERIODIC && boundaries[ZPLUS][W].type != PERIODIC)
+        error = PETSC_TRUE;
     }
     if (error)
     {
-      std::cout << "\nERROR: Check consistency of boundary conditions" << std::endl;
+      std::cout << "\nERROR: Boundary conditions are inconsistent.\n";
+      std::cout << "Check boundary conditions in flowDescription.yaml.\n" << std::endl;
       exit(0);
     }
   }
   MPI_Barrier(PETSC_COMM_WORLD);
   
   // broadcast flow description to all processes
-  MPI_Bcast(&dimensions, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&nu, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(initialVelocity, 3, MPIU_REAL, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(initialVelocity, dim, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&initialCustomField, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&perturbationAmplitude, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&perturbationFrequency, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
   
-  // create custom MPI type to broadcast BC information
-  MPI_Datatype bcInfoType, types[2];
+  // create custom MPI type to broadcast boundary information
+  MPI_Datatype boundaryInfoType, types[2];
   PetscInt blockcounts[2];
   MPI_Aint offsets[2];
-  offsets[0] = offsetof(BoundaryCondition, type);
+  offsets[0] = offsetof(Boundary, type);
   types[0] = MPIU_INT;
   blockcounts[0] = 1;
-  offsets[1] = offsetof(BoundaryCondition, value);
+  offsets[1] = offsetof(Boundary, value);
   types[1] = MPIU_REAL;
   blockcounts[1] = 1;
-  MPI_Type_create_struct(2, blockcounts, offsets, types, &bcInfoType);
-  MPI_Type_commit(&bcInfoType);
-  MPI_Bcast(bc[0], 6, bcInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(bc[1], 6, bcInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(bc[2], 6, bcInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Type_free(&bcInfoType);
+  MPI_Type_create_struct(2, blockcounts, offsets, types, &boundaryInfoType);
+  MPI_Type_commit(&boundaryInfoType);
+  MPI_Bcast(boundaries[XMINUS], dim, boundaryInfoType, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(boundaries[XPLUS], dim, boundaryInfoType, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(boundaries[YMINUS], dim, boundaryInfoType, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(boundaries[YPLUS], dim, boundaryInfoType, 0, PETSC_COMM_WORLD);
+  if (dim == 3)
+  {
+    MPI_Bcast(boundaries[ZMINUS], dim, boundaryInfoType, 0, PETSC_COMM_WORLD);
+    MPI_Bcast(boundaries[ZPLUS], dim, boundaryInfoType, 0, PETSC_COMM_WORLD);
+  }
+  MPI_Type_free(&boundaryInfoType);
+
+  PetscPrintf(PETSC_COMM_WORLD, "done.\n");
 
 } // initialize
+
+
+/**
+ * \brief Prints info about the initial and boundary conditions of the flow.
+ */
+template <PetscInt dim>
+PetscErrorCode FlowDescription<dim>::printInfo()
+{
+  PetscErrorCode ierr;
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "Flow\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "dimensions: %d\n", dim); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "viscosity: %g\n", nu); CHKERRQ(ierr);
+  if (initialCustomField)
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "using an initial custom field\n"); CHKERRQ(ierr);
+  }
+  else
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "initial velocity field:\n"); CHKERRQ(ierr);
+    for (PetscInt i=0; i<dim; i++)
+    {
+      ierr = PetscPrintf(PETSC_COMM_WORLD, "\t%g\n", initialVelocity[i]); CHKERRQ(ierr);
+    }
+  }
+  if (perturbationAmplitude != 0.0)
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "using an initial perturbation:\n"); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "\tamplitude: %g\n", perturbationAmplitude); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "\tfrequency: %g\n", perturbationFrequency); CHKERRQ(ierr);
+  }
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "boundary conditions (component, type, value):\n"); CHKERRQ(ierr);
+  for (PetscInt i=0; i<2*dim; i++)
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "\t->location: %s\n", (stringFromBoundaryLocation(static_cast<BoundaryLocation>(i))).c_str()); CHKERRQ(ierr);
+    for (PetscInt j=0; j<dim; j++)
+    {
+      ierr = PetscPrintf(PETSC_COMM_WORLD, "\t\t%d \t %s \t %g\n", 
+                                           j, 
+                                           (stringFromBoundaryType(boundaries[i][j].type).c_str()),
+                                           boundaries[i][j].value); CHKERRQ(ierr);
+    }
+  }
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+
+  return 0;
+} // printInfo
+
+
+// dimension spacialization
+template class FlowDescription<2>;
+template class FlowDescription<3>;

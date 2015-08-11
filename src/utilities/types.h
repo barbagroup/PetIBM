@@ -8,20 +8,36 @@
 #if !defined(TYPES_H)
 #define TYPES_H
 
+#include <string>
+
+
+/**
+ * \brief Velocity components.
+ */
+enum VelocityComponent
+{
+  U, ///< x-direction
+  V, ///< y-direction
+  W  ///< z-direction
+};
+
 
 /**
  * \brief Type of boundary condition.
  */
-enum BCType
+enum BoundaryType
 {
   DIRICHLET,  ///< Dirichlet
   NEUMANN,    ///< Neumann
   CONVECTIVE, ///< Convective
   PERIODIC    ///< Periodic
 };
+BoundaryType stringToBoundaryType(std::string s);
+std::string stringFromBoundaryType(BoundaryType type);
+
 
 /**
- * \brief The boundary of concern.
+ * \brief Location of the boundary.
  */
 enum BoundaryLocation
 {
@@ -29,9 +45,12 @@ enum BoundaryLocation
   XPLUS,  ///< right
   YMINUS, ///< bottom
   YPLUS,  ///< top
-  ZMINUS, ///< front
-  ZPLUS   ///< back
+  ZMINUS, ///< back
+  ZPLUS   ///< front
 };
+BoundaryLocation stringToBoundaryLocation(std::string s);
+std::string stringFromBoundaryLocation(BoundaryLocation location);
+
 
 /**
  * \brief Numerical scheme used to discretize the time derivative.
@@ -51,25 +70,46 @@ enum TimeScheme
   ADAMS_BASHFORTH_2, ///< second-order Adams-Bashforth scheme
   CRANK_NICOLSON     ///< Crank-Nicolson scheme
 };
+TimeScheme stringToTimeScheme(std::string);
+std::string stringFromTimeScheme(TimeScheme timeScheme);
+
 
 /**
  * \brief Immersed boundary method used to solve the flow.
  */
-enum SolverType
+enum IBMScheme
 {
-  NAVIER_STOKES,  ///< no immersed bodies
+  NAVIER_STOKES,  ///< no immersed bodies (Perot, 1993)
   TAIRA_COLONIUS  ///< immersed boundary projection method (Taira & Colonius, 2007)
 };
+IBMScheme stringToIBMScheme(std::string s);
+std::string stringFromIBMScheme(IBMScheme ibmScheme);
+
+
+/**
+ * \brief Iterative KSP method.
+ */
+enum IterativeMethod
+{
+  CG,     ///< Conjugate-Gradient
+  BCGS,   ///< biCGStab
+  GMRES   ///< GMRES
+};
+IterativeMethod stringToIterativeMethod(std::string s);
+std::string stringFromIterativeMethod(IterativeMethod method);
+
 
 /**
  * \brief Type of preconditioner.
  */
 enum PreconditionerType
 {
-  NONE,                ///< no preconditioner
-  DIAGONAL,            ///< diagonal preconditioner
-  SMOOTHED_AGGREGATION ///< smoothed-aggregation preconditioner
+  NONE,     ///< no preconditioner
+  DIAGONAL, ///< diagonal preconditioner
+  GAMG      ///< gamg with smoothed-aggregation preconditioner
 };
+PreconditionerType stringToPreconditionerType(std::string s);
+std::string stringFromPreconditionerType(PreconditionerType precoditioner);
 
 #endif
 

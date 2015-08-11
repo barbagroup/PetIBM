@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <petscsys.h>
 
@@ -23,26 +24,43 @@
 class SimulationParameters
 {
 public:
+  /**
+   * \class Solver
+   * \brief Stores info about the solver to use.
+   */
+  class Solver
+  {
+  public:
+    IterativeMethod method;             ///< iterative method to use
+    PreconditionerType preconditioner; ///< type of preconditioner
+    PetscReal relativeTolerance;     ///< relative tolerance of the solver
+    PetscInt maxIterations;          ///< maximum number of iterations
+  }; // Solver
+
+  /**
+   * \class TimeScheme
+   * \brief Stores info about the numerical scheme to use.
+   */
+  class TimeIntegration
+  {
+  public:
+    TimeScheme scheme;                   ///< type of time-stepping scheme
+    std::vector<PetscReal> coefficients; ///< coefficients of integration
+  }; // TimeIntegration
+
   PetscReal dt; ///< time-increment
   
   PetscInt startStep, ///< initial time-step 
            nt,        ///< number of time steps
            nsave;     ///< data-saving interval
   
-  SolverType solverType;  ///< type of flow solver
+  IBMScheme ibmScheme; ///< type of system to be solved
   
-  TimeScheme convectionScheme, ///< time-scheme for the convection term
-             diffusionScheme;  ///< time-scheme for the diffusion term
-  
-  PetscReal gamma,         ///< coefficient of the convection term at current time step
-            zeta,          ///< coefficient of the convection term at previous time step
-            alphaExplicit, ///< coefficient of the explicit diffusion term
-            alphaImplicit; ///< coefficient of the implicit diffusion term
+  TimeIntegration convection, ///< time-scheme for the convection term
+                  diffusion;  ///< time-scheme for the diffusion term
 
-  PetscReal velocitySolveTolerance, ///< tolerance (velocity solver)
-            PoissonSolveTolerance;  ///< tolerance (Poisson solver)
-  PetscInt velocitySolveMaxIts, ///< maximum number of iterations (velocity solver)
-           PoissonSolveMaxIts;  ///< maximum number of iterations (Poisson solver)
+  Solver velocitySolver, ///< info about the velocity solver
+         poissonSolver;  ///< info about the Poisson solver
   
   // constructors
   SimulationParameters();
@@ -51,6 +69,8 @@ public:
   ~SimulationParameters();
   // parse input file and store simulation parameters
   void initialize(std::string filePath);
+  // print simulation parameters
+  PetscErrorCode printInfo();
 
 }; // SimulationParameters
 

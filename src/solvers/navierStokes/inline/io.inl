@@ -6,114 +6,17 @@
 
 
 /**
- * \brief Prints the simulation parameters
+ * \brief Prints information about the simulation.
  */
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::printSimulationInfo()
+PetscErrorCode NavierStokesSolver<dim>::printInfo()
 {
   PetscErrorCode ierr;
-  PetscInt       rank, maxits;
-  PC             pc;
-  PCType         pcType;
-  KSPType        kspType;
-  PetscReal      rtol, abstol;
-  
-  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Flow\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "solver: "); CHKERRQ(ierr);
-  switch (simParams->solverType)
-  {
-    case NAVIER_STOKES :
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Navier-Stokes\n"); CHKERRQ(ierr); 
-      break;
-    case TAIRA_COLONIUS: 
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Taira & Colonius (2007)\n"); CHKERRQ(ierr);
-      break;
-    default:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Unrecognized solver!\n"); CHKERRQ(ierr);
-      break;
-  }
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "viscosity: %g\n", flowDesc->nu); CHKERRQ(ierr);
-  
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Mesh\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  if (dim == 3)
-  {
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "size: %d x %d x %d\n", mesh->nx, mesh->ny, mesh->nz); CHKERRQ(ierr);
-  }
-  else
-  {
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "size: %d x %d\n", mesh->nx, mesh->ny); CHKERRQ(ierr);
-  }
-  
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Time-stepping\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "convection: "); CHKERRQ(ierr);
-  switch (simParams->convectionScheme)
-  {
-    case EULER_EXPLICIT   :
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Explicit Euler\n"); CHKERRQ(ierr);
-      break;
-    case ADAMS_BASHFORTH_2:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "2nd-order Adams-Bashforth\n"); CHKERRQ(ierr);
-      break;
-    default:
-      break;
-  }
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "diffusion : "); CHKERRQ(ierr);
-  switch (simParams->diffusionScheme)
-  {
-    case EULER_EXPLICIT:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Explicit Euler\n"); CHKERRQ(ierr);
-      break;
-    case EULER_IMPLICIT:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Implicit Euler\n"); CHKERRQ(ierr);
-      break;
-    case CRANK_NICOLSON:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Crank-Nicolson\n"); CHKERRQ(ierr);
-      break;
-    default:
-      break;
-  }
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "time-increment      : %g\n", simParams->dt); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step  : %d\n", simParams->startStep); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", simParams->nt); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval     : %d\n", simParams->nsave); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Linear system for intermediate velocity\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = KSPGetType(ksp1, &kspType); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "solver: %s\n", kspType); CHKERRQ(ierr);
-  ierr = KSPGetPC(ksp1, &pc); CHKERRQ(ierr);
-  ierr = PCGetType(pc, &pcType); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "preconditioner: %s\n", pcType); CHKERRQ(ierr);
-  ierr = KSPGetTolerances(ksp1, &rtol, &abstol, NULL, &maxits); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "relative tolerance: %g\n", rtol); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "absolute tolerance: %g\n", abstol); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "maximum iterations: %d\n", maxits); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Linear system for pressure-force\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = KSPGetType(ksp2, &kspType); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "solver: %s\n", kspType); CHKERRQ(ierr);
-  ierr = KSPGetPC(ksp2, &pc); CHKERRQ(ierr);
-  ierr = PCGetType(pc, &pcType); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "preconditioner: %s\n", pcType); CHKERRQ(ierr);
-  ierr = KSPGetTolerances(ksp2, &rtol, &abstol, NULL, &maxits); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "relative tolerance: %g\n", rtol); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "absolute tolerance: %g\n", abstol); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "maximum iterations: %d\n", maxits); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-
+  ierr = mesh->printInfo(); CHKERRQ(ierr);
+  ierr = flow->printInfo(); CHKERRQ(ierr);
+  ierr = parameters->printInfo(); CHKERRQ(ierr);
   return 0;
-} // printSimulationInfo
+} // printInfo
 
 
 /**
@@ -125,11 +28,11 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] reading fluxes...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading fluxes... ", timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
-  ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
+  ss << directory << "/" << std::setfill('0') << std::setw(7) << timeStep;
   std::string solutionDirectory = ss.str();
 
   // get access to the individual vectors of the composite vector
@@ -173,6 +76,8 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
   {
     ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
   }
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
   
   return 0;
 } // readFluxes
@@ -187,11 +92,11 @@ PetscErrorCode NavierStokesSolver<dim>::readLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] reading pressure...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading pressure... ", timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
-  ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
+  ss << directory << "/" << std::setfill('0') << std::setw(7) << timeStep;
   std::string solutionDirectory = ss.str();
 
   // get access to the pressure vector from the composite vector
@@ -205,6 +110,8 @@ PetscErrorCode NavierStokesSolver<dim>::readLambda()
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   ierr = DMCompositeRestoreAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
 
   return 0;
 } // readLambda
@@ -220,7 +127,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 
   ierr = writeIterationCounts(); CHKERRQ(ierr);
 
-  if (timeStep%simParams->nsave == 0)
+  if (timeStep%parameters->nsave == 0)
   {
     ierr = writeFluxes(); CHKERRQ(ierr);
     ierr = writeLambda(); CHKERRQ(ierr);
@@ -239,11 +146,11 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing fluxes...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing fluxes... ", timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
-  ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
+  ss << directory << "/" << std::setfill('0') << std::setw(7) << timeStep;
   std::string solutionDirectory = ss.str();
   mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
@@ -289,6 +196,8 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
     ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
   }
 
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
   return 0;
 } // writeFluxes
 
@@ -302,11 +211,11 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing pressure...\n", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing pressure... ", timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
-  ss << caseFolder << "/" << std::setfill('0') << std::setw(7) << timeStep;
+  ss << directory << "/" << std::setfill('0') << std::setw(7) << timeStep;
   std::string solutionDirectory = ss.str();
   mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
@@ -322,6 +231,8 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda()
 
   ierr = DMCompositeRestoreAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
 
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
   return 0;
 } // writeLambda
 
@@ -333,31 +244,35 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::writeGrid()
 {
   PetscErrorCode ierr;
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting grid... "); CHKERRQ(ierr);
+
   PetscInt rank;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] writing grid...\n", timeStep); CHKERRQ(ierr);
-
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+
   if (rank == 0)
   {
-    std::ofstream stream(caseFolder + "/grid.txt");
+    std::ofstream streamFile(directory + "/grid.txt");
     if (dim == 2)
     {
-      stream << mesh->nx << '\t' << mesh->ny << '\n';
+      streamFile << mesh->nx << '\t' << mesh->ny << '\n';
     }
     else if (dim == 3)
     {
-      stream << mesh->nx << '\t' << mesh->ny << '\t' << mesh->nz << '\n';
+      streamFile << mesh->nx << '\t' << mesh->ny << '\t' << mesh->nz << '\n';
     }
     for (std::vector<PetscReal>::const_iterator i=mesh->x.begin(); i!=mesh->x.end(); ++i)
-      stream << *i << '\n';
+      streamFile << *i << '\n';
     for (std::vector<PetscReal>::const_iterator i=mesh->y.begin(); i!=mesh->y.end(); ++i)
-      stream << *i << '\n';
+      streamFile << *i << '\n';
     if (dim == 3)
+    {  
       for (std::vector<PetscReal>::const_iterator i=mesh->z.begin(); i!=mesh->z.end(); ++i)
-        stream << *i << '\n';
-    stream.close();
+        streamFile << *i << '\n';
+    }
+    streamFile.close();
   }
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n", timeStep); CHKERRQ(ierr);
 
   return 0;
 } // writeGrid
@@ -377,7 +292,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeIterationCounts()
   {
     PetscInt countVelocitySolver,
              countPoissonSolver;
-    std::string filePath = caseFolder + "/iterationCounts.txt";
+    std::string filePath = directory + "/iterationCounts.txt";
     if (timeStep == 1)
     {
       iterationCountsFile.open(filePath.c_str());

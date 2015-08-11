@@ -7,21 +7,31 @@
 
 /**
  * \brief Initializes the immersed boundaries by parsing the input file `bodies.yaml`.
- *
- * Two-dimensional simulations.
  */
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
+{
+  return 0;
+} // initializeBodies
+
+
+// two-dimensional specialization
 template <>
 PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
 {
   PetscErrorCode ierr;
-  PetscInt       rank;
+
+  std::string filePath = directory + "/bodies.yaml";
+  PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
+
   PetscInt       totalPoints;
   
+  PetscInt rank;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
   if (rank == 0)
   {
-    std::string bodiesFile = caseFolder + "/bodies.yaml";
+    std::string bodiesFile = filePath;
     YAML::Node nodes = YAML::LoadFile(bodiesFile);
     const YAML::Node &node = nodes[0];
 
@@ -46,7 +56,7 @@ PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
     {
       PetscInt numPoints;
       PetscReal xCoord, yCoord;
-      std::string pointsFile = caseFolder + "/" + node["pointsFile"].as<std::string>();
+      std::string pointsFile = directory + "/" + node["pointsFile"].as<std::string>();
       std::cout << "Initiliazing body: reading coordinates from: " << pointsFile << std::endl;
       std::ifstream infile(pointsFile.c_str());
       infile >> numPoints;
@@ -99,14 +109,13 @@ PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
   ierr = MPI_Bcast(&x.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
   ierr = MPI_Bcast(&y.front(), totalPoints, MPIU_REAL, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
 
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
   return 0;
 } // initializeBodies
 
-/**
- * \brief Initializes the immersed boundaries by parsing the input file `bodies.yaml`.
- *
- * Three-dimensional simulations.
- */
+
+// three-dimensional specialization
 template <>
 PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
 {
@@ -118,7 +127,7 @@ PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
 
   if (rank == 0)
   {
-    std::string bodiesFile = caseFolder + "/bodies.yaml";
+    std::string bodiesFile = directory + "/bodies.yaml";
     YAML::Node nodes = YAML::LoadFile(bodiesFile);
     const YAML::Node &node = nodes[0];
 
@@ -166,7 +175,7 @@ PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
     }
     else if (type == "points")
     {
-      std::string pointsFile = caseFolder + "/" + node["pointsFile"].as<std::string>();
+      std::string pointsFile = directory + "/" + node["pointsFile"].as<std::string>();
       std::cout << "Initiliazing body: reading coordinates from: " << pointsFile << std::endl;
       std::ifstream infile(pointsFile.c_str());
       PetscInt numPoints;

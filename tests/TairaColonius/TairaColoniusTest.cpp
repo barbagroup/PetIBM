@@ -15,7 +15,7 @@ class TairaColoniusTest : public ::testing::Test
 {
 public:
   std::string directory;
-  FlowDescription flowDescription;
+  FlowDescription<2> flowDescription;
   CartesianMesh cartesianMesh;
   SimulationParameters simulationParameters;
   std::unique_ptr< NavierStokesSolver<2> > solver;
@@ -28,7 +28,7 @@ public:
     // read input files and create solver
     directory = "TairaColonius/case";
     cartesianMesh = CartesianMesh(directory);
-    flowDescription = FlowDescription(directory);
+    flowDescription = FlowDescription<2>(directory);
     simulationParameters = SimulationParameters(directory);
     solver = createSolver<2>(directory, &cartesianMesh, &flowDescription, &simulationParameters);
   }
@@ -39,7 +39,7 @@ public:
     solver->initialize();
 
     // perform the simulation
-    while(!solver->finished())
+    while (!solver->finished())
     {
       solver->stepTime();
     }
@@ -48,8 +48,8 @@ public:
   virtual void TearDown()
   {
     solver->finalize();
-    if(lambdaGold!=PETSC_NULL) VecDestroy(&lambdaGold);
-    if(error!=PETSC_NULL) VecDestroy(&error);
+    if (lambdaGold != PETSC_NULL) VecDestroy(&lambdaGold);
+    if (error != PETSC_NULL) VecDestroy(&error);
   }
 };
 

@@ -44,7 +44,7 @@ CartesianMesh::~CartesianMesh()
  */
 void CartesianMesh::initialize(std::string filePath)
 {
-  PetscPrintf(PETSC_COMM_WORLD, "\n[info] Parsing file %s...\n", filePath.c_str());
+  PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
 
   PetscInt rank;
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of the current process
@@ -189,4 +189,30 @@ void CartesianMesh::initialize(std::string filePath)
     MPI_Bcast(&z.front(), nz+1, MPIU_REAL, 0, PETSC_COMM_WORLD);
     MPI_Bcast(&dz.front(), nz, MPIU_REAL, 0, PETSC_COMM_WORLD);
   }
+
+  PetscPrintf(PETSC_COMM_WORLD, "done.\n");
+
 } // initialize
+
+
+/**
+ * \brief Prints information about the Cartesian mesh.
+ */
+PetscErrorCode CartesianMesh::printInfo()
+{
+  PetscErrorCode ierr;
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "Cartesian grid\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+  if (nz > 0)
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "number of cells: %d x %d x %d\n", nx, ny, nz); CHKERRQ(ierr);
+  }
+  else
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "number of cells: %d x %d\n", nx, ny); CHKERRQ(ierr);
+  }
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+
+  return 0;
+} // printInfo

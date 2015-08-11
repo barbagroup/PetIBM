@@ -53,6 +53,12 @@ def read_inputs():
                       help='does not plot the pressure field')
   parser.add_argument('--no-vorticity', dest='vorticity', action='store_false',
                       help='does not plot the vorticity field')
+  parser.add_argument('--size', dest='size', type=float, nargs='+', 
+                      default=[8.0, 8.0],
+                      help='size (width and height) of the figure '
+                           'to save (in inches)')
+  parser.add_argument('--dpi', dest='dpi', type=int, default=100,
+                      help='dots per inch (resoltion of the figure)')
   parser.set_defaults(velocity=True, pressure=True, vorticity=True)
   # parse command-line
   return parser.parse_args()
@@ -85,7 +91,8 @@ def vorticity(u, v):
 
 
 def plot_contour(field, field_range, image_path, 
-                 view=[float('-inf'), float('-inf'), float('inf'), float('inf')]): 
+                 view=[float('-inf'), float('-inf'), float('inf'), float('inf')],
+                 size=[8.0, 8.0], dpi=100): 
   """Plots and saves the field.
 
   Parameters
@@ -99,9 +106,13 @@ def plot_contour(field, field_range, image_path,
   view: list(float)
     Bottom-left and top-right coordinates of the rectangular view to plot;
     default: the whole domain.
+  size: list(float)
+    Size (width and height) of the figure to save (in inches); default: [8, 8].
+  dpi: int
+    Dots per inch (resolution); default: 100
   """
   print('\tPlot the {} contour ...'.format(field.label))
-  fig, ax = pyplot.subplots()
+  fig, ax = pyplot.subplots(figsize=(size[0], size[1]), dpi=dpi)
   pyplot.xlabel('$x$')
   pyplot.ylabel('$y$')
   if field_range:
@@ -116,12 +127,14 @@ def plot_contour(field, field_range, image_path,
   cont = ax.contourf(X, Y, field.values, 
                      levels=levels, extend='both', 
                      cmap=color_map[field.label])
-  cont_bar = fig.colorbar(cont, label=field.label, orientation='horizontal', format='%.02f', ticks=colorbar_ticks)#, fraction=0.046, pad=0.04)
+  cont_bar = fig.colorbar(cont, label=field.label, 
+                          orientation='horizontal', format='%.02f', 
+                          ticks=colorbar_ticks)
   x_start, x_end = max(view[0], field.x.min()), min(view[2], field.x.max())
   y_start, y_end = max(view[1], field.y.min()), min(view[3], field.y.max())
   ax.axis([x_start, x_end, y_start, y_end])
   ax.set_aspect('equal')
-  pyplot.savefig(image_path)
+  pyplot.savefig(image_path, dpi=dpi)
   pyplot.close()
 
 
@@ -179,7 +192,8 @@ def main():
       p.label = 'pressure'
       image_path = '{}/pressure{:0>7}.png'.format(images_directory, time_step)
       plot_contour(p, args.pressure_range, image_path, 
-                   view=args.bottom_left+args.top_right)
+                   view=args.bottom_left+args.top_right,
+                   size=args.size, dpi=args.dpi)
 
 
 if __name__ == '__main__':

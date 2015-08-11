@@ -25,8 +25,9 @@ public:
   PetscInt dimensions;              ///< number of dimensions 
   PetscReal nu;                     ///< kinematic viscosity of the fluid
   PetscReal initialVelocity[3];     ///< initial velocity of the flow field
+  PetscBool initialCustomField;     ///< flag to start from an initial custom field
   PetscReal perturbationAmplitude;  ///< amplitude of the Taylor-Green vortex perturbation
-  PetscReal perturbationFrequency;   ///< frequency of the Taylor-Green vortex perturbation
+  PetscReal perturbationFrequency;  ///< frequency of the Taylor-Green vortex perturbation
   BoundaryCondition bc[3][6];       ///< boundary conditions of the flow
   
   // parse the input file and store information about the flow

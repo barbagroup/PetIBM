@@ -29,6 +29,8 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::printSimulationInfo(); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::writeGrid(); CHKERRQ(ierr);
 
   return 0;
 } // initialize
@@ -75,15 +77,6 @@ PetscErrorCode TairaColoniusSolver<dim>::createVecs()
   return 0;
 } // createVecs
 
-template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::writeData()
-{
-  NavierStokesSolver<dim>::writeData();
-  calculateForce();
-  writeForces();
-
-  return 0;
-} // writeData
 
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
@@ -108,16 +101,14 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 
 #include "inline/setNullSpace.inl"
 #include "inline/calculateCellIndices.inl"
-#include "inline/initializeLambda.inl"
 #include "inline/generateBodyInfo.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/initializeBodies.inl"
 #include "inline/createGlobalMappingBodies.inl"
 #include "inline/isInfluenced.inl"
-#include "inline/writeLambda.inl"
 #include "inline/calculateForce.inl"
-#include "inline/writeForces.inl"
+#include "inline/io.inl"
 
 template class TairaColoniusSolver<2>;
 template class TairaColoniusSolver<3>;

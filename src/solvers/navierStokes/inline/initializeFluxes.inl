@@ -1,44 +1,56 @@
+/***************************************************************************//**
+ * \file initializeFluxes.inl
+ * \author Anush Kirshnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+ * \brief Implementation of the method to initialize the fluxes.
+ */
+
+
 /**
-* Initialize the flux vector with the values of the velocity fluxes at the first
-* time step. The initial values of the velocity from which the fluxes are 
-* calculated are read from the FlowDescription object `flowDesc`. If specified,
-* an initial perturbation is added to this velocity. In 2-D, this perturbation 
-* takes the form
-* \f[ u' = u_{perturbation} \cos\left(\frac{x}{2}\right) \sin(y) \f]
-* \f[ v' = v_{perturbation} \sin(x) \cos\left(\frac{y}{2}\right) \f]
-*
-* and in 3-D:
-* \f[ u' = u_{perturbation} \cos\left(\frac{x}{2}\right) \sin(y) \sin(z) \f]
-* \f[ v' = v_{perturbation} \sin(x) \cos\left(\frac{y}{2}\right) \sin(z) \f]
-* \f[ w' = w_{perturbation} \sin(x) \sin(y) \cos\left(\frac{z}{2}\right) \f]
-*
-* The above equations are calculated in the cube 
-* \f$ [-\pi, \pi]\times[-\pi, \pi]\times[-\pi, \pi] \f$, and then mapped to the 
-* cuboidal domain of the flow using a linear transformation:
-* \f[ \left[-\pi,\pi\right] \rightarrow \left[x_{start}, x_{end}\right] \f]
-* \f[ x \rightarrow -\pi + 2\pi\frac{x-x_{start}}{x_{end}-x_{start}} \f]
-*
-* Hence, the initial velocity of the flow field is given by:
-* \f[ \vec{V}=\vec{V}_{initial}+\vec{V'} \f]
-*
-* When a simulation is restarted, the initial conditions are read from 
-* previously saved data. The time step at which the data is read is specified 
-* in the input file `simulationParameters.yaml`. The option `restartFromSolution` 
-* is set to `true`, and the option `startStep` specifies the time step from 
-* which the simulation needs to be restarted.
-*/
+ * Initialize the flux vector with the values of the velocity fluxes at the first
+ * time step. The initial values of the velocity from which the fluxes are 
+ * calculated are read from the FlowDescription object `flowDesc`. If specified,
+ * an initial perturbation is added to this velocity. In 2-D, this perturbation 
+ * takes the form
+ * \f[ u' = u_{perturbation} \cos\left(\frac{x}{2}\right) \sin(y) \f]
+ * \f[ v' = v_{perturbation} \sin(x) \cos\left(\frac{y}{2}\right) \f]
+ *
+ * and in 3-D:
+ * \f[ u' = u_{perturbation} \cos\left(\frac{x}{2}\right) \sin(y) \sin(z) \f]
+ * \f[ v' = v_{perturbation} \sin(x) \cos\left(\frac{y}{2}\right) \sin(z) \f]
+ * \f[ w' = w_{perturbation} \sin(x) \sin(y) \cos\left(\frac{z}{2}\right) \f]
+ *
+ * The above equations are calculated in the cube 
+ * \f$ [-\pi, \pi]\times[-\pi, \pi]\times[-\pi, \pi] \f$, and then mapped to the 
+ * cuboidal domain of the flow using a linear transformation:
+ * \f[ \left[-\pi,\pi\right] \rightarrow \left[x_{start}, x_{end}\right] \f]
+ * \f[ x \rightarrow -\pi + 2\pi\frac{x-x_{start}}{x_{end}-x_{start}} \f]
+ *
+ * Hence, the initial velocity of the flow field is given by:
+ * \f[ \vec{V}=\vec{V}_{initial}+\vec{V'} \f]
+ *
+ * In the input file `simulationParameters.yaml`, if `startStep` is higher than 
+ * `0`, the simulation is restarted, reading the numerical solution at the 
+ * time-step specified.
+ *
+ * In the input file `flowDescription.yaml`, if the parameter `initialCustomField` 
+ * is set to `true`, the initial field is read from the solution folder `0000000`.
+ * However if the input `startStep` is higher than `0`, the simulation is considered
+ * as restarted.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeFluxes()
 {
   return 0;
 } // initializeFluxes
 
+
+// specialization in 2 dimensions
 template <>
 PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
   
-  if (simParams->startStep > 0 || simParams->restartFromSolution)
+  if (simParams->startStep > 0 || flowDesc->initialCustomField)
   {
     ierr = readFluxes(); CHKERRQ(ierr);
   }
@@ -99,12 +111,14 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
   return 0;
 } // initializeFluxes
 
+
+// specialization in 3 dimensions
 template <>
 PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  if (simParams->startStep > 0 || simParams->restartFromSolution)
+  if (simParams->startStep > 0 || flowDesc->initialCustomField)
   {
     ierr = readFluxes(); CHKERRQ(ierr);
   }

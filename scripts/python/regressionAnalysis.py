@@ -38,6 +38,18 @@ def read_inputs():
 
 
 def define_test_cases(build_directory):
+  """Defines the list of test-case to execute.
+
+  Parameters
+  ----------
+  build_directory: str
+    Directory of the PetIBM build.
+
+  Returns
+  -------
+  tests: list(TestCase)
+    List of test-cases.
+  """
   tests = []
   tests.append(TestCase(description='2d lid-driven cavity flow at Re=100',
                         directory='{}/examples/2d/lidDrivenCavity/Re100'.format(build_directory),
@@ -83,9 +95,9 @@ class TestCase(object):
 
   def print_info(self):
     """Prints some info about the test-case."""
-    print('\n********************')
-    print('Test-case: {}'.format(self.description))
-    print('********************')
+    print('\n----------')
+    print(  'Test-case: {}'.format(self.description))
+    print(  '----------')
     print('Directory: {}'.format(self.directory))
     print('Command-line: {}'.format(self.command))
 
@@ -105,7 +117,7 @@ class TestCase(object):
     if not os.path.isdir(self.reference):
       print('\nWARNING: no reference available. Skipping comparison.')
       self.passed = False
-      self.differences.append('reference solution did not exist -- force saving')
+      self.differences.append('reference solution not available (new one will be saved)')
       self.save()
     else:
       print('\nReference: {}'.format(self.reference))
@@ -127,7 +139,7 @@ class TestCase(object):
     tag: str
       A description of the arrays to be compared.
     """
-    if not numpy.allclose(array1, array2, rtol=1.0E-06):
+    if not numpy.allclose(array1, array2, atol=1.0E-06):
       self.passed = False
       self.differences.append('difference in {}'.format(tag))
 
@@ -209,9 +221,9 @@ class TestCase(object):
       Path of the file where to write.
     """
     with open(file_path, 'a') as outfile:
-      outfile.write('\n--------------------\n')
-      outfile.write('Test-case: {}\n'.format(self.description))
-      outfile.write('--------------------\n')
+      outfile.write('\n----------\n')
+      outfile.write(  'Test-case: {}\n'.format(self.description))
+      outfile.write(  '----------\n')
       outfile.write('directory: {}\n'.format(self.directory))
       outfile.write('reference: {}\n'.format(self.reference))
       outfile.write('passed: {}\n'.format('yes' if self.passed else 'no'))

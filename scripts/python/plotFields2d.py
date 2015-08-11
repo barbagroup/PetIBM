@@ -171,12 +171,14 @@ def main():
         u.label = 'u-velocity'
         image_path = '{}/uVelocity{:0>7}.png'.format(images_directory, time_step)
         plot_contour(u, args.u_range, image_path, 
-                     view=args.bottom_left+args.top_right)
+                     view=args.bottom_left+args.top_right,
+                   size=args.size, dpi=args.dpi)
         # plot v-velocity field
         v.label = 'v-velocity'
         image_path = '{}/vVelocity{:0>7}.png'.format(images_directory, time_step)
         plot_contour(v, args.v_range, image_path, 
-                     view=args.bottom_left+args.top_right)
+                     view=args.bottom_left+args.top_right,
+                   size=args.size, dpi=args.dpi)
       if args.vorticity:
         # compute vorticity field
         w = vorticity(u, v)
@@ -184,7 +186,8 @@ def main():
         w.label = 'vorticity'
         image_path = '{}/vorticity{:0>7}.png'.format(images_directory, time_step)
         plot_contour(w, args.vorticity_range, image_path, 
-                     view=args.bottom_left+args.top_right)
+                     view=args.bottom_left+args.top_right,
+                   size=args.size, dpi=args.dpi)
     if args.pressure:
       # get pressure field
       p = ioPetIBM.read_pressure(args.case_directory, time_step, coords)

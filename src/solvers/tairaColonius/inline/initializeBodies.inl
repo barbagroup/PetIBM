@@ -21,7 +21,7 @@ PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
 {
   PetscErrorCode ierr;
 
-  std::string filePath = directory + "/bodies.yaml";
+  std::string filePath = parameters->directory + "/bodies.yaml";
   PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
 
   PetscInt       totalPoints;
@@ -56,7 +56,7 @@ PetscErrorCode TairaColoniusSolver<2>::initializeBodies()
     {
       PetscInt numPoints;
       PetscReal xCoord, yCoord;
-      std::string pointsFile = directory + "/" + node["pointsFile"].as<std::string>();
+      std::string pointsFile = parameters->directory + "/" + node["pointsFile"].as<std::string>();
       std::cout << "Initiliazing body: reading coordinates from: " << pointsFile << std::endl;
       std::ifstream infile(pointsFile.c_str());
       infile >> numPoints;
@@ -127,7 +127,7 @@ PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
 
   if (rank == 0)
   {
-    std::string bodiesFile = directory + "/bodies.yaml";
+    std::string bodiesFile = parameters->directory + "/bodies.yaml";
     YAML::Node nodes = YAML::LoadFile(bodiesFile);
     const YAML::Node &node = nodes[0];
 
@@ -175,7 +175,7 @@ PetscErrorCode TairaColoniusSolver<3>::initializeBodies()
     }
     else if (type == "points")
     {
-      std::string pointsFile = directory + "/" + node["pointsFile"].as<std::string>();
+      std::string pointsFile = parameters->directory + "/" + node["pointsFile"].as<std::string>();
       std::cout << "Initiliazing body: reading coordinates from: " << pointsFile << std::endl;
       std::ifstream infile(pointsFile.c_str());
       PetscInt numPoints;

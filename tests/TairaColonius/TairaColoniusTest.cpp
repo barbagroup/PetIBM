@@ -30,7 +30,7 @@ public:
     cartesianMesh = CartesianMesh(directory);
     flowDescription = FlowDescription<2>(directory);
     simulationParameters = SimulationParameters(directory);
-    solver = createSolver<2>(directory, &cartesianMesh, &flowDescription, &simulationParameters);
+    solver = createSolver<2>(&cartesianMesh, &flowDescription, &simulationParameters);
   }
 
   virtual void SetUp()

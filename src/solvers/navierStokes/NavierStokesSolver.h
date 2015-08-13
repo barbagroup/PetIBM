@@ -26,8 +26,6 @@ template <PetscInt dim>
 class NavierStokesSolver
 {
 public:
-  std::string directory;
-
   CartesianMesh *mesh;
   FlowDescription<dim> *flow;
   SimulationParameters *parameters;
@@ -158,8 +156,7 @@ public:
   
 public:
   // constructor
-  NavierStokesSolver(std::string directory, 
-                     CartesianMesh *cartesianMesh, 
+  NavierStokesSolver(CartesianMesh *cartesianMesh, 
                      FlowDescription<dim> *flowDescription, 
                      SimulationParameters *simulationParameters);
   // destructor

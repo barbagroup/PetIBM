@@ -14,11 +14,11 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading pressure and body forces... ", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading pressure and body forces from file... ", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
-  ss << NavierStokesSolver<dim>::directory << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
+  ss << NavierStokesSolver<dim>::parameters->directory << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
   std::string solutionDirectory = ss.str();
 
   // get access to the pressure vector from the composite vector
@@ -75,11 +75,11 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
   PetscErrorCode ierr;
   PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing pressure and body forces... ", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing pressure and body forces into file... ", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
-  ss << NavierStokesSolver<dim>::directory << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
+  ss << NavierStokesSolver<dim>::parameters->directory << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
   std::string solutionDirectory = ss.str();
   mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
@@ -119,7 +119,7 @@ PetscErrorCode TairaColoniusSolver<dim>::writeForces()
 
   if (rank == 0)
   {
-    std::string filePath = NavierStokesSolver<dim>::directory + "/forces.txt";
+    std::string filePath = NavierStokesSolver<dim>::parameters->directory + "/forces.txt";
     if (NavierStokesSolver<dim>::timeStep == 1)
     {
       forcesFile.open(filePath.c_str());

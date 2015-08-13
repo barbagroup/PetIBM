@@ -48,6 +48,8 @@ public:
     std::vector<PetscReal> coefficients; ///< coefficients of integration
   }; // TimeIntegration
 
+  std::string directory; ///< directory of the simulation
+
   PetscReal dt; ///< time-increment
   
   PetscInt startStep, ///< initial time-step 

@@ -25,6 +25,7 @@ SimulationParameters::SimulationParameters()
  */
 SimulationParameters::SimulationParameters(std::string directory)
 {
+  directory = directory;
   initialize(directory + "/simulationParameters.yaml");
 } // SimulationParameters
 

@@ -59,8 +59,7 @@ public:
 
 public:
   // constructor
-  TairaColoniusSolver(std::string directory, 
-                      CartesianMesh *cartesianMesh, 
+  TairaColoniusSolver(CartesianMesh *cartesianMesh, 
                       FlowDescription<dim> *flowDescription, 
                       SimulationParameters *simulationParameters);
   // destructor

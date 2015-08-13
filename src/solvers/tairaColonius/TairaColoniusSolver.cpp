@@ -21,12 +21,10 @@
  * \brief Constructor of the class \c TairaColoniusSolver.
  */
 template <PetscInt dim>
-TairaColoniusSolver<dim>::TairaColoniusSolver(std::string directory, 
-                                              CartesianMesh *cartesianMesh, 
+TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh, 
                                               FlowDescription<dim> *flowDescription, 
                                               SimulationParameters *simulationParameters)
-                        : NavierStokesSolver<dim>::NavierStokesSolver(directory, 
-                                                                      cartesianMesh, 
+                        : NavierStokesSolver<dim>::NavierStokesSolver(cartesianMesh, 
                                                                       flowDescription, 
                                                                       simulationParameters)
 {

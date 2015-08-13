@@ -37,8 +37,7 @@ int main(int argc,char **argv)
   FlowDescription<dim> flowDescription(directory);
   SimulationParameters simulationParameters(directory);
 
-  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(directory, 
-                                                                        &cartesianMesh,
+  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&cartesianMesh,
                                                                         &flowDescription, 
                                                                         &simulationParameters);
   

@@ -20,13 +20,11 @@
  * \brief Constructor: Stores simulation parameters and initializes pointers.
  */
 template <PetscInt dim>
-NavierStokesSolver<dim>::NavierStokesSolver(std::string dir, 
-                                            CartesianMesh *cartesianMesh, 
+NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh, 
                                             FlowDescription<dim> *flowDescription, 
                                             SimulationParameters *simulationParameters) 
 {
   // simulation info
-  directory = dir;
   mesh = cartesianMesh;
   flow = flowDescription;
   parameters = simulationParameters;
@@ -188,7 +186,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 
   // Print performance summary to file
   PetscViewer viewer;
-  std::string filePath = directory + "/performanceSummary.txt";
+  std::string filePath = parameters->directory + "/performanceSummary.txt";
   ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
   ierr = PetscLogView(viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

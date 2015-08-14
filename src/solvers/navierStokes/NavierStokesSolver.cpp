@@ -413,6 +413,7 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 #include "inline/createLocalToGlobalMappingsFluxes.inl"
 #include "inline/createLocalToGlobalMappingsLambda.inl"
 #include "inline/initializeMeshSpacings.inl"
+#include "inline/addInitialPerturbation.inl"
 #include "inline/initializeFluxes.inl"
 #include "inline/initializeLambda.inl"
 #include "inline/updateBoundaryGhosts.inl"

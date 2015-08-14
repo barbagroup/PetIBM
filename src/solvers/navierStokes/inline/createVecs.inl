@@ -1,13 +1,13 @@
 /***************************************************************************//**
  * \file createVecs.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `createVecs` of the class `NavierStokesSolver`.
  */
 
 
 /**
- * Allocate memory for the vectors required in the simulation using the 
- * corresponding distributed array structures.
+ * \brief Allocates memory for the vectors required in the simulation using the 
+ *        corresponding distributed array structures.
  */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createVecs()
@@ -21,7 +21,6 @@ PetscErrorCode NavierStokesSolver<dim>::createVecs()
   {  
     ierr = DMCreateLocalVector(wda, &qzLocal); CHKERRQ(ierr);
   }
-
   // create global vectors needed for velocity system
   ierr = DMCreateGlobalVector(qPack, &q); CHKERRQ(ierr); // velocity fluxes
   ierr = VecDuplicate(q, &qStar); CHKERRQ(ierr);         // intermediate velocity fluxes

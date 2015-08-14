@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file createDMs.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `createDMs` of the class `NavierStokesSolver`.
  */
 
 
@@ -39,9 +39,8 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
   PetscInt numX, numY;
     
   // set boundary types (periodic or ghosted)
-  DMBoundaryType dmBoundaryX, dmBoundaryY;
-  dmBoundaryX = (flow->boundaries[XPLUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
-  dmBoundaryY = (flow->boundaries[YPLUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+  DMBoundaryType dmBoundaryX = (flow->boundaries[XMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
+                 dmBoundaryY = (flow->boundaries[YMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
     
   // create DMDA object for pressure
   numX = mesh->nx;
@@ -52,7 +51,7 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
                       numX, numY, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, 
                       &pda); CHKERRQ(ierr);
 
-  // create DMDA objects for fluxes
+  // create DMDA objects for fluxes using the one for pressure
   const PetscInt *lxp, *lyp;
   ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRQ(ierr);
   PetscInt m, n;
@@ -65,16 +64,16 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
   ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
-  if (flow->boundaries[XPLUS][0].type != PERIODIC)
+  if (flow->boundaries[XMINUS][U].type != PERIODIC)
   {
     lxu[m-1]--;
-    numX = mesh->nx-1;
+    numX--;
   }
   ierr = DMDACreate2d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, 
                       DMDA_STENCIL_BOX, 
                       numX, numY, m, n, 1, 1, lxu, lyu, 
-                     &uda); CHKERRQ(ierr);
+                      &uda); CHKERRQ(ierr);
   ierr = PetscFree(lxu); CHKERRQ(ierr);
   ierr = PetscFree(lyu); CHKERRQ(ierr);
   // fluxes in y-direction
@@ -85,10 +84,10 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
   ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
-  if (flow->boundaries[YPLUS][1].type != PERIODIC)
+  if (flow->boundaries[YMINUS][V].type != PERIODIC)
   {
     lyv[n-1]--;
-    numY = mesh->ny-1;
+    numY--;
   }
   ierr = DMDACreate2d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, 
@@ -119,10 +118,9 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
   PetscInt numX, numY, numZ;
   
   // set boundary types (periodic or ghosted)
-  DMBoundaryType dmBoundaryX, dmBoundaryY, dmBoundaryZ;
-  dmBoundaryX = (flow->boundaries[XPLUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
-  dmBoundaryY = (flow->boundaries[YPLUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
-  dmBoundaryZ = (flow->boundaries[ZPLUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+  DMBoundaryType dmBoundaryX = (flow->boundaries[XMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
+                 dmBoundaryY = (flow->boundaries[YMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
+                 dmBoundaryZ = (flow->boundaries[ZMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
 
   // create DMDA object for pressure
   numX = mesh->nx;
@@ -134,7 +132,7 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
                       numX, numY, numZ, PETSC_DECIDE, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, NULL, 
                       &pda); CHKERRQ(ierr);
   
-  // create DMDA objects for fluxes
+  // create DMDA objects for fluxes from DMDA object for pressure
   const PetscInt *lxp, *lyp, *lzp;
   ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRQ(ierr);
   PetscInt m, n, p;
@@ -150,10 +148,10 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
   numX = mesh->nx;
   numY = mesh->ny;
   numZ = mesh->nz;
-  if (flow->boundaries[XPLUS][0].type != PERIODIC)
+  if (flow->boundaries[XMINUS][U].type != PERIODIC)
   {
     lxu[m-1]--;
-    numX = mesh->nx-1;
+    numX--;
   }
   ierr = DMDACreate3d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, dmBoundaryZ, 
@@ -174,10 +172,10 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
   numX = mesh->nx;
   numY = mesh->ny;
   numZ = mesh->nz;
-  if (flow->boundaries[YPLUS][1].type != PERIODIC)
+  if (flow->boundaries[YMINUS][V].type != PERIODIC)
   {
     lyv[n-1]--;
-    numY = mesh->ny-1;
+    numY--;
   }
   ierr = DMDACreate3d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, dmBoundaryZ, 
@@ -198,10 +196,10 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
   numX = mesh->nx;
   numY = mesh->ny;
   numZ = mesh->nz;
-  if (flow->boundaries[ZPLUS][2].type != PERIODIC)
+  if (flow->boundaries[ZMINUS][W].type != PERIODIC)
   {
     lzw[p-1]--;
-    numZ = mesh->nz-1;
+    numZ--;
   }
   ierr = DMDACreate3d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, dmBoundaryZ, 
@@ -212,11 +210,11 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
   ierr = PetscFree(lyw); CHKERRQ(ierr);
   ierr = PetscFree(lzw); CHKERRQ(ierr);
 
-  // create lambda packer
+  // create lambda packer and add DMDA to it
   ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(lambdaPack, pda); CHKERRQ(ierr);
 
-  // create fluxes packer
+  // create fluxes packer and add DMDA to it
   ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(qPack, uda); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(qPack, vda); CHKERRQ(ierr);

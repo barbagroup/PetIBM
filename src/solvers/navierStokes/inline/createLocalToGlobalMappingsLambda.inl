@@ -1,7 +1,8 @@
 /***************************************************************************//**
  * \file createLocalToGlobalMappingsLambda.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `createLocalToGlobalMappingsLambda`.
+ * \brief Implementation of the method `createLocalToGlobalMappingsLambda` 
+ *        of the class `NavierStokesSolver`.
  */
 
 
@@ -31,29 +32,27 @@ PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsLambda()
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
 
-  // get the range of the vector in the current process
-  PetscInt localIdx;
-  ierr = VecGetOwnershipRange(lambda, &localIdx, NULL); CHKERRQ(ierr);
+  // get global index of first local element of pressure
+  PetscInt globalIdx;
+  ierr = VecGetOwnershipRange(lambda, &globalIdx, NULL); CHKERRQ(ierr);
 
-  // populate local vector with the global indices
+  // populate local vector with global indices
   // values outside the domain are never accessed and hence not set
-  // pressure
   ierr = DMCreateLocalVector(pda, &pMapping); CHKERRQ(ierr);
-  PetscReal **lp;
-  ierr = DMDAVecGetArray(pda, pMapping, &lp); CHKERRQ(ierr);
+  PetscReal **pMappingArray;
+  ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(pda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
     for (i=mstart; i<mstart+m; i++)
     {
-      lp[j][i] = localIdx;
-      localIdx++;
+      pMappingArray[j][i] = globalIdx;
+      globalIdx++;
     }
   }
-  ierr = DMDAVecRestoreArray(pda, pMapping, &lp); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
   // scatter from local to local to obtain correct values in ghost cells
-  // pressure
   ierr = DMLocalToLocalBegin(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
   ierr = DMLocalToLocalEnd(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
 
@@ -70,16 +69,15 @@ PetscErrorCode NavierStokesSolver<3>::createLocalToGlobalMappingsLambda()
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // starting indices
 
-  // get the range of the vector in the current process
-  PetscInt localIdx;
-  ierr = VecGetOwnershipRange(lambda, &localIdx, NULL); CHKERRQ(ierr);
+  // get global index of first local element of pressure
+  PetscInt globalIdx;
+  ierr = VecGetOwnershipRange(lambda, &globalIdx, NULL); CHKERRQ(ierr);
 
   // populate local vector with the global indices
   // values outside the domain are never accessed and hence not set
-  // pressure
   ierr = DMCreateLocalVector(pda, &pMapping); CHKERRQ(ierr);
-  PetscReal ***lp;
-  ierr = DMDAVecGetArray(pda, pMapping, &lp); CHKERRQ(ierr);
+  PetscReal ***pMappingArray;
+  ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(pda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
@@ -87,15 +85,14 @@ PetscErrorCode NavierStokesSolver<3>::createLocalToGlobalMappingsLambda()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        lp[k][j][i] = localIdx;
-        localIdx++;
+        pMappingArray[k][j][i] = globalIdx;
+        globalIdx++;
       }
     }
   }
-  ierr = DMDAVecRestoreArray(pda, pMapping, &lp); CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
   // scatter from local to local to obtain correct values in ghost cells
-  // pressure
   ierr = DMLocalToLocalBegin(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
   ierr = DMLocalToLocalEnd(pda, pMapping, INSERT_VALUES, pMapping); CHKERRQ(ierr);
 

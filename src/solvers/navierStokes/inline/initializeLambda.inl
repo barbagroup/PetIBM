@@ -1,7 +1,8 @@
 /***************************************************************************//**
  * \file initializeLambda.inl
  * \author Anush Kirshnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the method `initializeLambda`.
+ * \brief Implementation of the method `initializeLambda` 
+ *        of the class `NavierStokesSolver`.
  */
 
 /**

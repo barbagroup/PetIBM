@@ -48,6 +48,8 @@ public:
   ~FlowDescription();
   // parse input file and store description of the flow
   void initialize(std::string filePath);
+  // run sanity checks about periodic boundary conditions
+  void checkPeriodicity();
   // print description of the flow
   PetscErrorCode printInfo();
 

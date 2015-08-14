@@ -23,9 +23,9 @@ SimulationParameters::SimulationParameters()
 /**
  * \brief Constructor -- Parses simulationParameters.yaml.
  */
-SimulationParameters::SimulationParameters(std::string directory)
+SimulationParameters::SimulationParameters(std::string dir)
 {
-  directory = directory;
+  directory = dir;
   initialize(directory + "/simulationParameters.yaml");
 } // SimulationParameters
 
@@ -144,7 +144,7 @@ void SimulationParameters::initialize(std::string filePath)
   MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   MPI_Bcast(&startStep, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
   
-  MPI_Bcast(&ibmScheme, 1, MPI_CHAR, 0, PETSC_COMM_WORLD);
+  MPI_Bcast(&ibmScheme, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 
   // create custom MPI type to broadcast time-stepping schemes
   MPI_Datatype timeIntegrationInfoType;
@@ -159,6 +159,7 @@ void SimulationParameters::initialize(std::string filePath)
   MPI_Type_create_struct(2, blockcounts1, offsets1, types1, &timeIntegrationInfoType);
   MPI_Type_commit(&timeIntegrationInfoType);
   MPI_Bcast(&convection, 1, timeIntegrationInfoType, 0, PETSC_COMM_WORLD);
+  MPI_Type_free(&timeIntegrationInfoType);
   // broadcast diffusion scheme
   blockcounts1[1] = diffusion.coefficients.size();
   MPI_Type_create_struct(2, blockcounts1, offsets1, types1, &timeIntegrationInfoType);

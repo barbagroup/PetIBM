@@ -98,57 +98,8 @@ void FlowDescription<dim>::initialize(std::string filePath)
     }
     
     // run some sanity checks on the input data
-    PetscBool error = PETSC_FALSE;
-    // if the boundary condition is periodic on one side, it should be periodic on the other side
-    if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XPLUS][U].type != PERIODIC)
-      error = PETSC_TRUE;
-    if (boundaries[XMINUS][U].type != PERIODIC && boundaries[XPLUS][U].type == PERIODIC)
-      error = PETSC_TRUE;
-    if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YPLUS][U].type != PERIODIC)
-      error = PETSC_TRUE;
-    if (boundaries[YMINUS][U].type != PERIODIC && boundaries[YPLUS][U].type == PERIODIC)
-      error = PETSC_TRUE;
-    if (dim == 3)
-    {
-      if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZPLUS][U].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[ZMINUS][U].type != PERIODIC && boundaries[ZPLUS][U].type == PERIODIC)
-        error = PETSC_TRUE;
-    }
-    // if the boundary condition is periodic for one component, it should periodic for the others
-    if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XMINUS][V].type != PERIODIC)
-      error = PETSC_TRUE;
-    if (boundaries[XPLUS][U].type == PERIODIC && boundaries[XPLUS][V].type != PERIODIC)
-      error = PETSC_TRUE;
-    if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YMINUS][V].type != PERIODIC)
-      error = PETSC_TRUE;
-    if (boundaries[YPLUS][U].type == PERIODIC && boundaries[YPLUS][V].type != PERIODIC)
-      error = PETSC_TRUE;
-    if (dim == 3)
-    {
-      if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XMINUS][W].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[XPLUS][U].type == PERIODIC && boundaries[XPLUS][W].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YMINUS][W].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[YPLUS][U].type == PERIODIC && boundaries[YPLUS][W].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZMINUS][V].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZMINUS][W].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[ZPLUS][U].type == PERIODIC && boundaries[ZPLUS][V].type != PERIODIC)
-        error = PETSC_TRUE;
-      if (boundaries[ZPLUS][U].type == PERIODIC && boundaries[ZPLUS][W].type != PERIODIC)
-        error = PETSC_TRUE;
-    }
-    if (error)
-    {
-      std::cout << "\nERROR: Boundary conditions are inconsistent.\n";
-      std::cout << "Check boundary conditions in flowDescription.yaml.\n" << std::endl;
-      exit(0);
-    }
+    checkPeriodicity();
+    
   }
   MPI_Barrier(PETSC_COMM_WORLD);
   
@@ -185,6 +136,73 @@ void FlowDescription<dim>::initialize(std::string filePath)
   PetscPrintf(PETSC_COMM_WORLD, "done.\n");
 
 } // initialize
+
+
+/**
+ * \brief Checks the correctness of periodic boundary conditions.
+ * 
+ * If the condition of periodicity is set on one face, it should be set of the
+ * direct opposite face.
+ * If the condition of periodicity is set for on velocity component, it should 
+ * be set for the other components.
+ */
+template <PetscInt dim>
+void FlowDescription<dim>::checkPeriodicity()
+{
+  PetscBool error = PETSC_FALSE;
+  // if the boundary condition is periodic on one side, it should be periodic on the other side
+  if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XPLUS][U].type != PERIODIC)
+    error = PETSC_TRUE;
+  if (boundaries[XMINUS][U].type != PERIODIC && boundaries[XPLUS][U].type == PERIODIC)
+    error = PETSC_TRUE;
+  if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YPLUS][U].type != PERIODIC)
+    error = PETSC_TRUE;
+  if (boundaries[YMINUS][U].type != PERIODIC && boundaries[YPLUS][U].type == PERIODIC)
+    error = PETSC_TRUE;
+  if (dim == 3)
+  {
+    if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZPLUS][U].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[ZMINUS][U].type != PERIODIC && boundaries[ZPLUS][U].type == PERIODIC)
+      error = PETSC_TRUE;
+  }
+  // if the boundary condition is periodic for one component, it should periodic for the others
+  if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XMINUS][V].type != PERIODIC)
+    error = PETSC_TRUE;
+  if (boundaries[XPLUS][U].type == PERIODIC && boundaries[XPLUS][V].type != PERIODIC)
+    error = PETSC_TRUE;
+  if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YMINUS][V].type != PERIODIC)
+    error = PETSC_TRUE;
+  if (boundaries[YPLUS][U].type == PERIODIC && boundaries[YPLUS][V].type != PERIODIC)
+    error = PETSC_TRUE;
+  if (dim == 3)
+  {
+    if (boundaries[XMINUS][U].type == PERIODIC && boundaries[XMINUS][W].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[XPLUS][U].type == PERIODIC && boundaries[XPLUS][W].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[YMINUS][U].type == PERIODIC && boundaries[YMINUS][W].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[YPLUS][U].type == PERIODIC && boundaries[YPLUS][W].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZMINUS][V].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[ZMINUS][U].type == PERIODIC && boundaries[ZMINUS][W].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[ZPLUS][U].type == PERIODIC && boundaries[ZPLUS][V].type != PERIODIC)
+      error = PETSC_TRUE;
+    if (boundaries[ZPLUS][U].type == PERIODIC && boundaries[ZPLUS][W].type != PERIODIC)
+      error = PETSC_TRUE;
+  }
+  if (error)
+  {
+    std::cout << "\nERROR: Boundary conditions are inconsistent.\n";
+    std::cout << "Check boundary conditions in flowDescription.yaml.\n" << std::endl;
+    exit(0);
+  }
+
+  return;
+} // checkPeriodicity
 
 
 /**

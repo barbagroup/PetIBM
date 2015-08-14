@@ -48,139 +48,88 @@ SimulationParameters::~SimulationParameters()
 void SimulationParameters::initialize(std::string filePath)
 {
   PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
-
-  PetscInt rank;
-  MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of current process
   
-  if (rank == 0) // read the input file only on process 0
+  YAML::Node nodes(YAML::LoadFile(filePath));
+  const YAML::Node &node = nodes[0];
+
+  dt = node["dt"].as<PetscReal>();
+  startStep = node["startStep"].as<PetscInt>(0);
+  nt = node["nt"].as<PetscInt>();
+  nsave = node["nsave"].as<PetscInt>(nt);
+
+  ibmScheme = stringToIBMScheme(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
+
+  convection.scheme = stringToTimeScheme(node["convection"].as<std::string>("EULER_EXPLICIT"));
+  diffusion.scheme = stringToTimeScheme(node["diffusion"].as<std::string>("EULER_IMPLICIT"));
+  // set time-stepping coefficients for convective terms
+  switch (convection.scheme)
   {
-    YAML::Node nodes(YAML::LoadFile(filePath));
-    const YAML::Node &node = nodes[0];
+    case EULER_EXPLICIT:
+      convection.coefficients.push_back(0.0); // n+1 coefficient
+      convection.coefficients.push_back(1.0); // n coefficient
+      break;
+    case ADAMS_BASHFORTH_2:
+      convection.coefficients.push_back(1.5);  // n+1 coefficient
+      convection.coefficients.push_back(-0.5); // n coefficient
+      break;
+    default:
+      std::cout << "\nERROR: unknown numerical scheme for convective terms.\n";
+      std::cout << "Numerical scheme implemented:\n";
+      std::cout << "\tEULER_EXPLICIT\n";
+      std::cout << "\tADAMS_BASHFORTH_2\n" << std::endl;
+      exit(0);
+      break;
+  }
+  // set time-stepping coefficients for diffusive terms
+  switch (diffusion.scheme)
+  {
+    case EULER_EXPLICIT:
+      diffusion.coefficients.push_back(0.0); // n+1 coefficient
+      diffusion.coefficients.push_back(1.0); // n coefficient
+      break;
+    case EULER_IMPLICIT:
+      diffusion.coefficients.push_back(1.0); // n+1 coefficient
+      break;
+    case CRANK_NICOLSON:
+      diffusion.coefficients.push_back(0.5); // n+1 coefficient
+      diffusion.coefficients.push_back(0.5); // n coefficient
+      break;
+    default:
+      std::cout << "\nERROR: unknown numerical scheme for diffusive terms.\n";
+      std::cout << "Numerical scheme implemented:\n";
+      std::cout << "\tEULER_EXPLICIT\n";
+      std::cout << "\tEULER_IMPLICIT\n";
+      std::cout << "\tCRANK_NICOLSON\n" << std::endl;
+      exit(0);
+      break;
+  }
 
-    dt = node["dt"].as<PetscReal>();
-    startStep = node["startStep"].as<PetscInt>(0);
-    nt = node["nt"].as<PetscInt>();
-    nsave = node["nsave"].as<PetscInt>(nt);
-
-    ibmScheme = stringToIBMScheme(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
-
-    convection.scheme = stringToTimeScheme(node["convection"].as<std::string>("EULER_EXPLICIT"));
-    diffusion.scheme = stringToTimeScheme(node["diffusion"].as<std::string>("EULER_IMPLICIT"));
-    // set time-stepping coefficients for convective terms
-    switch (convection.scheme)
+  const YAML::Node &solvers = node["linearSolvers"];
+  for (unsigned int i=0; i<solvers.size(); i++)
+  {
+    if (solvers[i]["system"].as<std::string>() == "velocity")
     {
-      case EULER_EXPLICIT:
-        convection.coefficients.push_back(0.0); // n+1 coefficient
-        convection.coefficients.push_back(1.0); // n coefficient
-        break;
-      case ADAMS_BASHFORTH_2:
-        convection.coefficients.push_back(1.5);  // n+1 coefficient
-        convection.coefficients.push_back(-0.5); // n coefficient
-        break;
-      default:
-        std::cout << "\nERROR: unknown numerical scheme for convective terms.\n";
-        std::cout << "Numerical scheme implemented:\n";
-        std::cout << "\tEULER_EXPLICIT\n";
-        std::cout << "\tADAMS_BASHFORTH_2\n" << std::endl;
-        exit(0);
-        break;
+      velocitySolver.method = stringToIterativeMethod(solvers[i]["solver"].as<std::string>("CG"));
+      velocitySolver.preconditioner = stringToPreconditionerType(solvers[i]["preconditioner"].as<std::string>("DIAGONAL"));
+      velocitySolver.relativeTolerance = solvers[i]["relativeTolerance"].as<PetscReal>(1.0E-05);
+      velocitySolver.maxIterations = solvers[i]["maxIterations"].as<PetscInt>(10000);
     }
-    // set time-stepping coefficients for diffusive terms
-    switch (diffusion.scheme)
+    else if (solvers[i]["system"].as<std::string>() == "Poisson" || solvers[i]["system"].as<std::string>() == "poisson")
     {
-      case EULER_EXPLICIT:
-        diffusion.coefficients.push_back(0.0); // n+1 coefficient
-        diffusion.coefficients.push_back(1.0); // n coefficient
-        break;
-      case EULER_IMPLICIT:
-        diffusion.coefficients.push_back(1.0); // n+1 coefficient
-        break;
-      case CRANK_NICOLSON:
-        diffusion.coefficients.push_back(0.5); // n+1 coefficient
-        diffusion.coefficients.push_back(0.5); // n coefficient
-        break;
-      default:
-        std::cout << "\nERROR: unknown numerical scheme for diffusive terms.\n";
-        std::cout << "Numerical scheme implemented:\n";
-        std::cout << "\tEULER_EXPLICIT\n";
-        std::cout << "\tEULER_IMPLICIT\n";
-        std::cout << "\tCRANK_NICOLSON\n" << std::endl;
-        exit(0);
-        break;
+      poissonSolver.method = stringToIterativeMethod(solvers[i]["solver"].as<std::string>("CG"));
+      poissonSolver.preconditioner = stringToPreconditionerType(solvers[i]["preconditioner"].as<std::string>("DIAGONAL"));
+      poissonSolver.relativeTolerance = solvers[i]["relativeTolerance"].as<PetscReal>(1.0E-05);
+      poissonSolver.maxIterations = solvers[i]["maxIterations"].as<PetscInt>(10000);
     }
-
-    const YAML::Node &solvers = node["linearSolvers"];
-    for (unsigned int i=0; i<solvers.size(); i++)
+    else
     {
-      if (solvers[i]["system"].as<std::string>() == "velocity")
-      {
-        velocitySolver.method = stringToIterativeMethod(solvers[i]["solver"].as<std::string>("CG"));
-        velocitySolver.preconditioner = stringToPreconditionerType(solvers[i]["preconditioner"].as<std::string>("DIAGONAL"));
-        velocitySolver.relativeTolerance = solvers[i]["relativeTolerance"].as<PetscReal>(1.0E-05);
-        velocitySolver.maxIterations = solvers[i]["maxIterations"].as<PetscInt>(10000);
-      }
-      else if (solvers[i]["system"].as<std::string>() == "Poisson" || solvers[i]["system"].as<std::string>() == "poisson")
-      {
-        poissonSolver.method = stringToIterativeMethod(solvers[i]["solver"].as<std::string>("CG"));
-        poissonSolver.preconditioner = stringToPreconditionerType(solvers[i]["preconditioner"].as<std::string>("DIAGONAL"));
-        poissonSolver.relativeTolerance = solvers[i]["relativeTolerance"].as<PetscReal>(1.0E-05);
-        poissonSolver.maxIterations = solvers[i]["maxIterations"].as<PetscInt>(10000);
-      }
-      else
-      {
-        std::cout << "\nERROR: " << solvers[i]["system"].as<std::string>() << " - unknown solver name.\n";
-        std::cout << "solver name implemented:\n";
-        std::cout << "\tvelocity (solver for the intermediate velocity)\n";
-        std::cout << "\tpoisson (poisson solver, modified or not)\n" << std::endl;
-        exit(0);
-      }
+      std::cout << "\nERROR: " << solvers[i]["system"].as<std::string>() << " - unknown solver name.\n";
+      std::cout << "solver name implemented:\n";
+      std::cout << "\tvelocity (solver for the intermediate velocity)\n";
+      std::cout << "\tpoisson (poisson solver, modified or not)\n" << std::endl;
+      exit(0);
     }
   }
-  MPI_Barrier(PETSC_COMM_WORLD);
-  
-  // broadcast parameters to all processes
-  MPI_Bcast(&dt, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&nt, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&startStep, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  
-  MPI_Bcast(&ibmScheme, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-
-  // create custom MPI type to broadcast time-stepping schemes
-  MPI_Datatype timeIntegrationInfoType;
-  MPI_Datatype types1[2] = {MPIU_INT, MPIU_REAL};
-  PetscInt blockcounts1[2];
-  MPI_Aint offsets1[2];
-  offsets1[0] = offsetof(TimeIntegration, scheme);
-  offsets1[1] = offsetof(TimeIntegration, coefficients);
-  blockcounts1[0] = 1;
-  // broadcast convection scheme
-  blockcounts1[1] = convection.coefficients.size();
-  MPI_Type_create_struct(2, blockcounts1, offsets1, types1, &timeIntegrationInfoType);
-  MPI_Type_commit(&timeIntegrationInfoType);
-  MPI_Bcast(&convection, 1, timeIntegrationInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Type_free(&timeIntegrationInfoType);
-  // broadcast diffusion scheme
-  blockcounts1[1] = diffusion.coefficients.size();
-  MPI_Type_create_struct(2, blockcounts1, offsets1, types1, &timeIntegrationInfoType);
-  MPI_Type_commit(&timeIntegrationInfoType);
-  MPI_Bcast(&diffusion, 1, timeIntegrationInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Type_free(&timeIntegrationInfoType);
-
-  // create custom MPI type to broadcast solver information
-  MPI_Datatype solverInfoType;
-  MPI_Datatype types2[4] = {MPIU_INT, MPIU_INT, MPIU_REAL, MPI_INT};
-  PetscInt blockcounts2[4] = {1, 1, 1, 1};
-  MPI_Aint offsets2[4];
-  offsets2[0] = offsetof(Solver, method);
-  offsets2[1] = offsetof(Solver, preconditioner);
-  offsets2[2] = offsetof(Solver, relativeTolerance);
-  offsets2[3] = offsetof(Solver, maxIterations);
-  MPI_Type_create_struct(4, blockcounts2, offsets2, types2, &solverInfoType);
-  MPI_Type_commit(&solverInfoType);
-  MPI_Bcast(&velocitySolver, 1, solverInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&poissonSolver, 1, solverInfoType, 0, PETSC_COMM_WORLD);
-  MPI_Type_free(&solverInfoType);
 
   PetscPrintf(PETSC_COMM_WORLD, "done.\n");
   

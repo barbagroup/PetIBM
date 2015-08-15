@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file generateBC1.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `generateBC1` of the class `NavierStokesSolver`.
  */
 
 
@@ -26,55 +26,67 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
            mstart, nstart; // starting indices
   
   PetscReal nu = flow->nu; // viscosity
-  PetscReal alphaImplicit = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
+  PetscReal alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
   PetscReal coeffMinus = 0.0, coeffPlus = 0.0;
+
+  PetscReal *dx = &mesh->dx[0],
+            *dy = &mesh->dy[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny;
 
   ierr = VecSet(bc1, 0.0); CHKERRQ(ierr);
   Vec bc1xGlobal, bc1yGlobal;
   ierr = DMCompositeGetAccess(qPack, bc1, &bc1xGlobal, &bc1yGlobal); CHKERRQ(ierr);
                  
-  // U-FLUXES
+  // fluxes in x-direction
   PetscReal **bc1x;
   ierr = DMDAVecGetArray(uda, bc1xGlobal, &bc1x); CHKERRQ(ierr);
   PetscReal **qx;
   ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   ierr = DMDAGetInfo(uda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
-  // x-faces
-  if (flow->boundaries[XPLUS][0].type != PERIODIC) // don't update if the BC type is periodic
+  // left and right boundaries
+  if (flow->boundaries[XPLUS][0].type != PERIODIC) // do not update if x-periodic
   {
-    coeffMinus = alphaImplicit*nu*2.0/dxU[0]/(dxU[0]+dxU[1]);
-    coeffPlus  = alphaImplicit*nu*2.0/dxU[M]/(dxU[M]+dxU[M-1]);
-    //loop over all points on the x-face
-    for (j=nstart; j<nstart+n; j++)
+    dxMinus = dx[0];
+    dxPlus = dx[1];
+    coeffMinus = alpha*nu * 2.0/dxMinus/(dxMinus+dxPlus);
+    dxMinus = dx[M-1];
+    dxPlus dx
+    coeffPlus  = alpha*nu * 2.0/dx[M]/(dx[M-1]+dx[M]);
+    for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
-      // -X
-      if (mstart == 0) // if the -X face is in the current process
+      if (mstart == 0) // left boundary on current process
       {
         switch (flow->boundaries[XMINUS][0].type)
         {
+          case DIRICHLET:
+            bc1x[j][0] += coeffMinus*qx[j][-1]/dy[j];
+            break;
           case CONVECTIVE:
-          case DIRICHLET : bc1x[j][0] += coeffMinus*qx[j][-1]/mesh->dy[j]; break;
-          default        : break;
+          default:
+            break;
         }
       }
-      // +X
-      if (mstart+m-1 == M-1) // if the +X face is in the current process
+      if (mstart+m-1 == M-1) // right on current process
       {     
         switch (flow->boundaries[XPLUS][0].type)
         {
+          case DIRICHLET:
+            bc1x[j][M-1] += coeffPlus*qx[j][M]/dy[j];
+            break;
           case CONVECTIVE:
-          case DIRICHLET: bc1x[j][M-1] += coeffPlus*qx[j][M]/mesh->dy[j]; break;
-          default        : break;
+          default:
+            break;
         }
       }
     }
   }
-  // y-faces
-  if (flow->boundaries[YPLUS][0].type != PERIODIC) // don't update if the BC type is periodic
+  // bottom and top boundaries
+  if (flow->boundaries[YPLUS][0].type != PERIODIC) // do not update if y-periodic
   {
-    coeffMinus = alphaImplicit*nu*2.0/dyU[0]/(dyU[0]+dyU[1]);
-    coeffPlus  = alphaImplicit*nu*2.0/dyU[N]/(dyU[N]+dyU[N-1]);
+    coeffMinus = alpha*nu*2.0/dyU[0]/(dyU[0]+dyU[1]);
+    coeffPlus  = alpha*nu*2.0/dyU[N]/(dyU[N]+dyU[N-1]);
     // loop over all points on the y-face
     for (i=mstart; i<mstart+m; i++)
     { 

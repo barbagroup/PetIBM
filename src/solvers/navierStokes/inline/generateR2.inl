@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file generateR2.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `generateR2` of the class `NavierStokesSolver`.
  */
 
 
@@ -20,9 +20,10 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::generateR2()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, 
-           m, n, 
-           mstart, nstart;
+
+  PetscInt i, j,           // loop indices
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
 
   ierr = VecSet(r2, 0.0); CHKERRQ(ierr);
   Vec bc2Global;

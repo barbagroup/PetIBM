@@ -36,11 +36,12 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::createDMs()
 {
   PetscErrorCode ierr;
+  
   PetscInt numX, numY;
     
   // set boundary types (periodic or ghosted)
-  DMBoundaryType dmBoundaryX = (flow->boundaries[XMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
-                 dmBoundaryY = (flow->boundaries[YMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+  DMBoundaryType dmBoundaryX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
+                 dmBoundaryY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
     
   // create DMDA object for pressure
   numX = mesh->nx;
@@ -52,50 +53,50 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
                       &pda); CHKERRQ(ierr);
 
   // create DMDA objects for fluxes using the one for pressure
-  const PetscInt *lxp, *lyp;
-  ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRQ(ierr);
+  const PetscInt *plx, *ply;
+  ierr = DMDAGetOwnershipRanges(pda, &plx, &ply, NULL); CHKERRQ(ierr);
   PetscInt m, n;
   ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // fluxes in x-direction
-  PetscInt *lxu, *lyu;
-  ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRQ(ierr);
-  ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lxu, lxp, m*sizeof(*lxu)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRQ(ierr);
+  PetscInt *ulx, *uly;
+  ierr = PetscMalloc(m*sizeof(*ulx), &ulx); CHKERRQ(ierr);
+  ierr = PetscMalloc(n*sizeof(*uly), &uly); CHKERRQ(ierr);
+  ierr = PetscMemcpy(ulx, plx, m*sizeof(*ulx)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(uly, ply, n*sizeof(*uly)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
-  if (flow->boundaries[XMINUS][U].type != PERIODIC)
+  if (flow->boundaries[XMINUS][0].type != PERIODIC)
   {
-    lxu[m-1]--;
+    ulx[m-1]--;
     numX--;
   }
   ierr = DMDACreate2d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, 
                       DMDA_STENCIL_BOX, 
-                      numX, numY, m, n, 1, 1, lxu, lyu, 
+                      numX, numY, m, n, 1, 1, ulx, uly, 
                       &uda); CHKERRQ(ierr);
-  ierr = PetscFree(lxu); CHKERRQ(ierr);
-  ierr = PetscFree(lyu); CHKERRQ(ierr);
+  ierr = PetscFree(ulx); CHKERRQ(ierr);
+  ierr = PetscFree(uly); CHKERRQ(ierr);
   // fluxes in y-direction
-  PetscInt *lxv, *lyv;
-  ierr = PetscMalloc(m*sizeof(*lxv), &lxv); CHKERRQ(ierr);
-  ierr = PetscMalloc(n*sizeof(*lyv), &lyv); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lxv, lxp, m*sizeof(*lxv)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRQ(ierr);
+  PetscInt *vlx, *vly;
+  ierr = PetscMalloc(m*sizeof(*vlx), &vlx); CHKERRQ(ierr);
+  ierr = PetscMalloc(n*sizeof(*vly), &vly); CHKERRQ(ierr);
+  ierr = PetscMemcpy(vlx, plx, m*sizeof(*vlx)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(vly, ply, n*sizeof(*vly)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
-  if (flow->boundaries[YMINUS][V].type != PERIODIC)
+  if (flow->boundaries[YMINUS][1].type != PERIODIC)
   {
-    lyv[n-1]--;
+    vly[n-1]--;
     numY--;
   }
   ierr = DMDACreate2d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, 
                       DMDA_STENCIL_BOX, 
-                      numX, numY, m, n, 1, 1, lxv, lyv, 
+                      numX, numY, m, n, 1, 1, vlx, vly, 
                       &vda); CHKERRQ(ierr);
-  ierr = PetscFree(lxv); CHKERRQ(ierr);
-  ierr = PetscFree(lyv); CHKERRQ(ierr);
+  ierr = PetscFree(vlx); CHKERRQ(ierr);
+  ierr = PetscFree(vly); CHKERRQ(ierr);
 
   // create lambda packer
   ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRQ(ierr);
@@ -115,12 +116,13 @@ template <>
 PetscErrorCode NavierStokesSolver<3>::createDMs()
 {
   PetscErrorCode ierr;
+
   PetscInt numX, numY, numZ;
   
   // set boundary types (periodic or ghosted)
-  DMBoundaryType dmBoundaryX = (flow->boundaries[XMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
-                 dmBoundaryY = (flow->boundaries[YMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
-                 dmBoundaryZ = (flow->boundaries[ZMINUS][U].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
+  DMBoundaryType dmBoundaryX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
+                 dmBoundaryY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED, 
+                 dmBoundaryZ = (flow->boundaries[ZMINUS][0].type == PERIODIC) ? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED;
 
   // create DMDA object for pressure
   numX = mesh->nx;
@@ -133,82 +135,82 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
                       &pda); CHKERRQ(ierr);
   
   // create DMDA objects for fluxes from DMDA object for pressure
-  const PetscInt *lxp, *lyp, *lzp;
-  ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRQ(ierr);
+  const PetscInt *plx, *ply, *plz;
+  ierr = DMDAGetOwnershipRanges(pda, &plx, &ply, &plz); CHKERRQ(ierr);
   PetscInt m, n, p;
   ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // fluxes in x-direction
-  PetscInt *lxu, *lyu, *lzu;
-  ierr = PetscMalloc(m*sizeof(*lxu), &lxu); CHKERRQ(ierr);
-  ierr = PetscMalloc(n*sizeof(*lyu), &lyu); CHKERRQ(ierr);
-  ierr = PetscMalloc(p*sizeof(*lzu), &lzu); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lxu, lxp, m*sizeof(*lxu)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lyu, lyp, n*sizeof(*lyu)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lzu, lzp, p*sizeof(*lzu)); CHKERRQ(ierr);
+  PetscInt *ulx, *uly, *ulz;
+  ierr = PetscMalloc(m*sizeof(*ulx), &ulx); CHKERRQ(ierr);
+  ierr = PetscMalloc(n*sizeof(*uly), &uly); CHKERRQ(ierr);
+  ierr = PetscMalloc(p*sizeof(*ulz), &ulz); CHKERRQ(ierr);
+  ierr = PetscMemcpy(ulx, plx, m*sizeof(*ulx)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(uly, ply, n*sizeof(*uly)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(ulz, plz, p*sizeof(*ulz)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
   numZ = mesh->nz;
-  if (flow->boundaries[XMINUS][U].type != PERIODIC)
+  if (flow->boundaries[XMINUS][0].type != PERIODIC)
   {
-    lxu[m-1]--;
+    ulx[m-1]--;
     numX--;
   }
   ierr = DMDACreate3d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, dmBoundaryZ, 
                       DMDA_STENCIL_BOX, 
-                      numX, numY, numZ, m, n, p, 1, 1, lxu, lyu, lzu, 
+                      numX, numY, numZ, m, n, p, 1, 1, ulx, uly, ulz, 
                       &uda); CHKERRQ(ierr);
-  ierr = PetscFree(lxu); CHKERRQ(ierr);
-  ierr = PetscFree(lyu); CHKERRQ(ierr);
-  ierr = PetscFree(lzu); CHKERRQ(ierr);
+  ierr = PetscFree(ulx); CHKERRQ(ierr);
+  ierr = PetscFree(uly); CHKERRQ(ierr);
+  ierr = PetscFree(ulz); CHKERRQ(ierr);
   // fluxes in y-direction
-  PetscInt *lxv, *lyv, *lzv;
-  ierr = PetscMalloc(m*sizeof(*lxv), &lxv); CHKERRQ(ierr);
-  ierr = PetscMalloc(n*sizeof(*lyv), &lyv); CHKERRQ(ierr);
-  ierr = PetscMalloc(p*sizeof(*lzv), &lzv); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lxv, lxp, m*sizeof(*lxv)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lyv, lyp, n*sizeof(*lyv)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lzv, lzp, p*sizeof(*lzv)); CHKERRQ(ierr);
+  PetscInt *vlx, *vly, *vlz;
+  ierr = PetscMalloc(m*sizeof(*vlx), &vlx); CHKERRQ(ierr);
+  ierr = PetscMalloc(n*sizeof(*vly), &vly); CHKERRQ(ierr);
+  ierr = PetscMalloc(p*sizeof(*vlz), &vlz); CHKERRQ(ierr);
+  ierr = PetscMemcpy(vlx, plx, m*sizeof(*vlx)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(vly, ply, n*sizeof(*vly)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(vlz, plz, p*sizeof(*vlz)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
   numZ = mesh->nz;
-  if (flow->boundaries[YMINUS][V].type != PERIODIC)
+  if (flow->boundaries[YMINUS][1].type != PERIODIC)
   {
-    lyv[n-1]--;
+    vly[n-1]--;
     numY--;
   }
   ierr = DMDACreate3d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, dmBoundaryZ, 
                       DMDA_STENCIL_BOX, 
-                      numX, numY, numZ, m, n, p, 1, 1, lxv, lyv, lzv, 
+                      numX, numY, numZ, m, n, p, 1, 1, vlx, vly, vlz, 
                       &vda); CHKERRQ(ierr);
-  ierr = PetscFree(lxv); CHKERRQ(ierr);
-  ierr = PetscFree(lyv); CHKERRQ(ierr);
-  ierr = PetscFree(lzv); CHKERRQ(ierr);
+  ierr = PetscFree(vlx); CHKERRQ(ierr);
+  ierr = PetscFree(vly); CHKERRQ(ierr);
+  ierr = PetscFree(vlz); CHKERRQ(ierr);
   // fluxes in z-direction
-  PetscInt *lxw, *lyw, *lzw;
-  ierr = PetscMalloc(m*sizeof(*lxw), &lxw); CHKERRQ(ierr);
-  ierr = PetscMalloc(n*sizeof(*lyw), &lyw); CHKERRQ(ierr);
-  ierr = PetscMalloc(p*sizeof(*lzw), &lzw); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lxw, lxp, m*sizeof(*lxw)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lyw, lyp, n*sizeof(*lyw)); CHKERRQ(ierr);
-  ierr = PetscMemcpy(lzw, lzp, p*sizeof(*lzw)); CHKERRQ(ierr);
+  PetscInt *wlx, *wly, *wlz;
+  ierr = PetscMalloc(m*sizeof(*wlx), &wlx); CHKERRQ(ierr);
+  ierr = PetscMalloc(n*sizeof(*wly), &wly); CHKERRQ(ierr);
+  ierr = PetscMalloc(p*sizeof(*wlz), &wlz); CHKERRQ(ierr);
+  ierr = PetscMemcpy(wlx, plx, m*sizeof(*wlx)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(wly, ply, n*sizeof(*wly)); CHKERRQ(ierr);
+  ierr = PetscMemcpy(wlz, plz, p*sizeof(*wlz)); CHKERRQ(ierr);
   numX = mesh->nx;
   numY = mesh->ny;
   numZ = mesh->nz;
-  if (flow->boundaries[ZMINUS][W].type != PERIODIC)
+  if (flow->boundaries[ZMINUS][2].type != PERIODIC)
   {
-    lzw[p-1]--;
+    wlz[p-1]--;
     numZ--;
   }
   ierr = DMDACreate3d(PETSC_COMM_WORLD, 
                       dmBoundaryX, dmBoundaryY, dmBoundaryZ, 
                       DMDA_STENCIL_BOX, 
-                      numX, numY, numZ, m, n, p, 1, 1, lxw, lyw, lzw, 
+                      numX, numY, numZ, m, n, p, 1, 1, wlx, wly, wlz, 
                       &wda); CHKERRQ(ierr);
-  ierr = PetscFree(lxw); CHKERRQ(ierr);
-  ierr = PetscFree(lyw); CHKERRQ(ierr);
-  ierr = PetscFree(lzw); CHKERRQ(ierr);
+  ierr = PetscFree(wlx); CHKERRQ(ierr);
+  ierr = PetscFree(wly); CHKERRQ(ierr);
+  ierr = PetscFree(wlz); CHKERRQ(ierr);
 
   // create lambda packer and add DMDA to it
   ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRQ(ierr);

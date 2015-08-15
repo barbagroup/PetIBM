@@ -28,30 +28,30 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
   mesh = cartesianMesh;
   flow = flowDescription;
   parameters = simulationParameters;
-  timeStep  = parameters->startStep;
-  // DMs
+  timeStep = parameters->startStep;
+  // DM objects
+  lambdaPack = PETSC_NULL;
   pda = PETSC_NULL;
+  qPack = PETSC_NULL;
   uda = PETSC_NULL;
   vda = PETSC_NULL;
   wda = PETSC_NULL;
-  qPack = PETSC_NULL;
-  lambdaPack = PETSC_NULL;
-  // Vecs
-  qxLocal = PETSC_NULL;
-  qyLocal = PETSC_NULL;
-  qzLocal = PETSC_NULL;
+  // global vectors
   q = PETSC_NULL;
   qStar = PETSC_NULL;
   H = PETSC_NULL;
   rn = PETSC_NULL;
   bc1 = PETSC_NULL;
   rhs1 = PETSC_NULL;
+  lambda = PETSC_NULL;
   r2 = PETSC_NULL;
   rhs2 = PETSC_NULL;
   temp = PETSC_NULL;
-  RInv = PETSC_NULL;
-  MHat = PETSC_NULL;
-  BN = PETSC_NULL;
+  // local vectors
+  qxLocal = PETSC_NULL;
+  qyLocal = PETSC_NULL;
+  qzLocal = PETSC_NULL;
+  // mappings local to global
   pMapping = PETSC_NULL;
   uMapping = PETSC_NULL;
   vMapping = PETSC_NULL;
@@ -61,10 +61,15 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
   QT = PETSC_NULL;
   BNQ = PETSC_NULL;
   QTBNQ = PETSC_NULL;
-  //KSPs
+  // diagonal matrices
+  BN = PETSC_NULL;
+  RInv = PETSC_NULL;
+  MHat = PETSC_NULL;
+  // KSPs
   ksp1 = PETSC_NULL;
   ksp2 = PETSC_NULL;
   // PCs
+  pc1 = PETSC_NULL;
   pc2 = PETSC_NULL;
   // PetscLogStages
   PetscLogStageRegister("initialize", &stageInitialize);
@@ -92,12 +97,15 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initialize()
 {
   PetscErrorCode ierr;
-  ierr = printInfo(); CHKERRQ(ierr);
+
   ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
+  
+  ierr = printInfo(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);
   ierr = writeGrid(); CHKERRQ(ierr);
+  
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   return 0;
 } // initialize
@@ -113,7 +121,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 
   ierr = createVecs(); CHKERRQ(ierr);
   
-  initializeMeshSpacings();
   ierr = initializeFluxes(); CHKERRQ(ierr);
   ierr = initializeLambda(); CHKERRQ(ierr);
   ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
@@ -125,7 +132,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   ierr = generateA(); CHKERRQ(ierr);
   ierr = generateBNQ(); CHKERRQ(ierr);
   ierr = generateQTBNQ(); CHKERRQ(ierr);
-  ierr = createSolvers(); CHKERRQ(ierr);
+  ierr = createKSPs(); CHKERRQ(ierr);
   ierr = setNullSpace(); CHKERRQ(ierr);
 
   return 0;
@@ -408,11 +415,10 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
 
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
-#include "inline/createSolvers.inl"
+#include "inline/createKSPs.inl"
 #include "inline/setNullSpace.inl"
 #include "inline/createLocalToGlobalMappingsFluxes.inl"
 #include "inline/createLocalToGlobalMappingsLambda.inl"
-#include "inline/initializeMeshSpacings.inl"
 #include "inline/addInitialPerturbation.inl"
 #include "inline/initializeFluxes.inl"
 #include "inline/initializeLambda.inl"

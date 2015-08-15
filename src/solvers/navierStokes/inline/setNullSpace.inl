@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file setNullSpace.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `setNullSpace`.
+ * \brief Implementation of the method `setNullSpace` of the class `NavierStokesSolver`.
  */
 
 
@@ -18,7 +18,7 @@ PetscErrorCode NavierStokesSolver<dim>::setNullSpace()
 {
 	PetscErrorCode ierr;
 	
-  MatNullSpace   nsp;
+  MatNullSpace nsp;
 	ierr = MatNullSpaceCreate(PETSC_COMM_WORLD, PETSC_TRUE, 0, NULL, &nsp); CHKERRQ(ierr);
 	ierr = KSPSetNullSpace(ksp2, nsp);
 	ierr = MatNullSpaceDestroy(&nsp);

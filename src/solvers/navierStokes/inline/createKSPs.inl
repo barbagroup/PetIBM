@@ -1,7 +1,7 @@
 /***************************************************************************//**
- * \file createSolvers.inl
+ * \file createKSPs.inl
  * \author Anush Krishnan (anush.bu.edu)
- * \brief Implementation of the method to create the solvers.
+ * \brief Implementation of the method `createKSPs` of the class `NavierStokesSolver`.
  */
 
 
@@ -11,21 +11,7 @@
  * Two solvers:
  *  - a solver for the intermediate velocity fluxes,
  *  - a Poisson solver for the pressure.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::createSolvers()
-{
-  PetscErrorCode ierr;
-  ierr = createVelocitySolver(); CHKERRQ(ierr);
-  ierr = createPoissonSolver(); CHKERRQ(ierr);
-
-  return 0;
-} // createSolvers
-
-
-/**
- * \brief Instantiates the solver to compute the intermediate fluxes.
- * 
+ *
  * `kps1` is the solver. Here, we list the default characteristicss:
  * - iterative method: Conjugate-Gradient
  * - relative tolerance: \f$ 10^{-5} \f$
@@ -33,11 +19,21 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
  *
  * It is possible to give command-line arguments to define the solver,
  * using the prefix `sys1_`.
+ *
+ * `kps2` is the solver. Here, we list the default characteristicss:
+ * - iterative method: Conjugate-Gradient
+ * - relative tolerance: \f$ 10^{-5} \f$
+ * - initial guess computed from output vector supplied
+ *
+ * It is possible to give command-line arguments to define the solver,
+ * using the prefix `sys2_`.
  */
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::createVelocitySolver()
+PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 {
   PetscErrorCode ierr;
+
+  // create KSP for intermaediate fluxes system
   ierr = KSPCreate(PETSC_COMM_WORLD, &ksp1); CHKERRQ(ierr);
   ierr = KSPSetOptionsPrefix(ksp1, "sys1_"); CHKERRQ(ierr);
   ierr = KSPSetTolerances(ksp1, 
@@ -51,26 +47,7 @@ PetscErrorCode NavierStokesSolver<dim>::createVelocitySolver()
   ierr = KSPSetReusePreconditioner(ksp1, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp1); CHKERRQ(ierr);
 
-  return 0;
-} // createVelocitySolver
-
-
-/**
- * \brief Instantiates the Poisson solver to compute the pressure 
- *        and possible other Langrange multipliers associated.
- * 
- * `kps2` is the solver. Here, we list the default characteristicss:
- * - iterative method: Conjugate-Gradient
- * - relative tolerance: \f$ 10^{-5} \f$
- * - initial guess computed from output vector supplied
- *
- * It is possible to give command-line arguments to define the solver,
- * using the prefix `sys2_`.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::createPoissonSolver()
-{
-  PetscErrorCode ierr;
+  // create KSP for Poisson system
   ierr = KSPCreate(PETSC_COMM_WORLD, &ksp2); CHKERRQ(ierr);
   ierr = KSPSetOptionsPrefix(ksp2, "sys2_"); CHKERRQ(ierr);
   ierr = KSPSetTolerances(ksp2, 
@@ -85,4 +62,4 @@ PetscErrorCode NavierStokesSolver<dim>::createPoissonSolver()
   ierr = KSPSetFromOptions(ksp2); CHKERRQ(ierr);
 
   return 0;
-} // createPoissonSolver
+} // createKSPs

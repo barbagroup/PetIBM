@@ -64,10 +64,6 @@ public:
   
   PetscInt timeStep;
 
-  std::vector<PetscReal> dxU, dyU, dzU,
-                         dxV, dyV, dzV,
-                         dxW, dyW, dzW;
-
   std::ofstream iterationCountsFile;
 
   PetscLogStage stageInitialize,
@@ -88,13 +84,7 @@ public:
   // create mapping from local pressure variable to global lambda vector
   PetscErrorCode createLocalToGlobalMappingsLambda();
   // set up Krylov solvers used to solve linear systems
-  PetscErrorCode createSolvers();
-  // set up Krylov solver for velocity system
-  PetscErrorCode createVelocitySolver();
-  // set up Krylov solver for Poisson system
-  PetscErrorCode createPoissonSolver();
-  // initialize spaces between adjacent velocity nodes
-  void initializeMeshSpacings();
+  PetscErrorCode createKSPs();
   // populate flux vectors with initial conditions
   PetscErrorCode initializeFluxes();
   PetscErrorCode addInitialPerturbation();

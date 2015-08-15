@@ -1,7 +1,8 @@
 /***************************************************************************//**
  * \file calculateExplicitTerms.inl
- * \author Anush Krishnan (anuhs@bu.edu)
- * \brief Implementation of the method to calculate explicit terms.
+ * \author Anush Krishnan (anuhs@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+ * \brief Implementation of the method `calculateExplicitTerms`
+ *        of the class `NavierStokesSolver`.
  */
 
 
@@ -9,14 +10,15 @@
  * \brief Calculates the second derivative on a non-uniform grid using a central
  *        difference scheme.
  */
-inline PetscReal du2dx2(PetscReal uMinus, PetscReal uCenter, PetscReal uPlus, PetscReal dxMinus, PetscReal dxPlus)
+inline PetscReal d2udx2(PetscReal uMinus, PetscReal uCenter, PetscReal uPlus, 
+                        PetscReal dxMinus, PetscReal dxPlus)
 {
   return (dxPlus*uMinus + dxMinus*uPlus - (dxPlus+dxMinus)*uCenter)*2.0/dxMinus/dxPlus/(dxMinus+dxPlus);
 } // du2dx2
 
 
 /**
- * \brief Calculate the explicit terms in the discretized Navier-Stokes equations. 
+ * \brief Calculates the explicit terms in the discretized Navier-Stokes equations. 
  * This includes the convection term, and the explicit portion of the diffusion
  * term. The velocity value at the previous time step that appears in the time 
  * discretization is also added to the explicit terms.
@@ -39,18 +41,32 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
 {
   PetscErrorCode ierr;
-  PetscInt       mstart, nstart, m, n, i, j, M, N;
-  PetscReal      HnMinus1, u, v;
-  PetscReal      uNorth, uEast, uWest, uSouth;
-  PetscReal      vNorth, vEast, vWest, vSouth;
-  PetscReal      convectionTerm, diffusionTerm;
-  PetscReal      nu = flow->nu;
-  PetscReal      alphaExplicit = parameters->diffusion.coefficients[1],
-                 gamma = parameters->convection.coefficients[1],
-                 zeta  = parameters->convection.coefficients[2];
-  PetscReal      dt = parameters->dt;
 
-  // copy fluxes to local vectors
+  PetscInt i, j,           // loop indices 
+           M, N,           // global number of nodes along each direction
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
+
+  PetscReal HnMinus1; // convection term at previous time-step
+  PetscReal u_W, u_P, u_E, u_S, u_N, // West, Point, East, South, North x-velocities
+            v_W, v_P, v_E, v_S, v_N, // West, Point, East, South, North y-velocities
+            u_w, u_e, u_s, u_n,      // interpolated x-velocities at cell-vertices
+            v_w, v_e, v_s, v_n;      // interpolated y-velocities at cell-vertices
+  PetscReal convectionTerm, // value of convection term
+            diffusionTerm;  // value of diffusion term
+  
+  PetscReal *dx = &mesh->dx[0],
+            *dy = &mesh->dy[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny;
+
+  PetscReal dt = parameters->dt, // time-increment
+            nu = flow->nu, // viscosity
+            alpha = parameters->diffusion.coefficients[1],  // explicit (n) diffusion coefficient
+            gamma = parameters->convection.coefficients[1], // explicit (n) convection coefficient
+            zeta  = parameters->convection.coefficients[2]; // explicit (n-1) convection coefficient
+
+  // copy global fluxes vector to local vectors
   ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
   
   Vec HxGlobal, HyGlobal;
@@ -63,7 +79,7 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
   ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
   ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRQ(ierr);
   
-  // x-component
+  // compute explicit terms: x-component
   PetscReal **Hx, **rx;
   ierr = DMDAVecGetArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
   ierr = DMDAVecGetArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
@@ -73,40 +89,46 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
   {
     for (i=mstart; i<mstart+m; i++)
     {
+      // velocity values
+      u_W = qx[j][i-1]/dy[j];
+      u_P = qx[j][i]/dy[j];
+      u_E = qx[j][i+1]/dy[j];
+      u_S = qx[j-1][i];
+      if (j == 0 && flow->boundaries[YMINUS][0].type == PERIODIC) // bottom boundary and y-periodic
+        u_S /= dy[ny-1];
+      else if (j > 0) // inside domain
+        u_S /= dy[j-1];
+      u_N = qx[j+1][i];
+      if (j == N-1 && flow->boundaries[YPLUS][0].type == PERIODIC) // top boundary and y-periodic
+        u_N /= dy[0];
+      else if (j < N-1) // inside domain
+        u_N /= dy[j+1];
+
       // convection term
-      u      = qx[j][i]/mesh->dy[j];
-      uWest  = 0.5*(u + qx[j][i-1]/mesh->dy[j]);
-      uEast  = 0.5*(u + qx[j][i+1]/mesh->dy[j]);
-      // first check if the node is adjacent to the -Y or +Y boundaries
-      // then check if the boundary condition in the y-direction is periodic
-      uSouth = (j > 0)?   0.5*(u + qx[j-1][i]/mesh->dy[j-1]) : (flow->boundaries[YMINUS][0].type != PERIODIC)? qx[j-1][i] : 0.5*(u + qx[j-1][i]/mesh->dy[mesh->ny-1]);
-      uNorth = (j < N-1)? 0.5*(u + qx[j+1][i]/mesh->dy[j+1]) : (flow->boundaries[YPLUS][0].type != PERIODIC)? qx[j+1][i] : 0.5*(u + qx[j+1][i]/mesh->dy[0]);
-      vSouth = 0.5*(qy[j-1][i]/dxU[i] + qy[j-1][i+1]/dxU[i+1]);
-      vNorth = 0.5*(  qy[j][i]/dxU[i] +   qy[j][i+1]/dxU[i+1]);
+      u_w = 0.5 * (u_W + u_P);
+      u_e = 0.5 * (u_P + u_E);
+      u_s = 0.5 * (u_S + u_P);
+      u_n = 0.5 * (u_P + u_N);
+      v_s = 0.5 * (qy[j-1][i]/dx[i] + qy[j-1][i+1]/dx[i+1]);
+      v_n = 0.5 * (qy[j][i]/dx[i] + qy[j][i+1]/dx[i+1]);
       // Hx = d(u^2)/dx + d(uv)/dy
       HnMinus1 = Hx[j][i];
-      Hx[j][i] = (uEast*uEast - uWest*uWest)/(0.5*(dxU[i] + dxU[i+1]))
-                 + (uNorth*vNorth - uSouth*vSouth)/mesh->dy[j];
+      Hx[j][i] = (  (u_e*u_e - u_w*u_w)/(0.5*(dx[i]+dx[i+1])) 
+                  + (u_n*v_n - u_s*v_s)/dy[j] );
       convectionTerm = gamma*Hx[j][i] + zeta*HnMinus1;
-      
+
       // diffusion term
-      // reuse the above variable names to calculate the diffusion term
-      // their meanings change
-      uWest  = qx[j][i-1]/mesh->dy[j];
-      uEast  = qx[j][i+1]/mesh->dy[j];
-      uSouth = (j > 0)?   qx[j-1][i]/mesh->dy[j-1] : (flow->boundaries[YMINUS][0].type != PERIODIC)? qx[j-1][i] : qx[j-1][i]/mesh->dy[mesh->ny-1];
-      uNorth = (j < N-1)? qx[j+1][i]/mesh->dy[j+1] : (flow->boundaries[YPLUS][0].type != PERIODIC)? qx[j+1][i] : qx[j+1][i]/mesh->dy[0];
-      // Dx = d^2(u)/dx^2 + d^2(u)/dy^2
-      diffusionTerm = alphaExplicit*nu*(   du2dx2(uWest,  u, uEast,  dxU[i], dxU[i+1])
-                                         + du2dx2(uSouth, u, uNorth, dyU[j], dyU[j+1])
-                                       );
-      rx[j][i] = (u/dt - convectionTerm + diffusionTerm);
+      diffusionTerm = alpha*nu * (  d2udx2(u_W, u_P, u_E, dx[i], dx[i+1])
+                                  + d2udx2(u_S, u_P, u_N, 0.5*(dy[j-1]+dy[j]), 0.5*(dy[j]+dy[j+1])) );
+
+      // explicit term
+      rx[j][i] = u_P/dt - convectionTerm + diffusionTerm;
     }
   }
   ierr = DMDAVecRestoreArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
   ierr = DMDAVecRestoreArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
   
-  // y-component
+  // compute explicit terms: y-component
   PetscReal **Hy, **ry;
   ierr = DMDAVecGetArray(vda, HyGlobal, &Hy); CHKERRQ(ierr);
   ierr = DMDAVecGetArray(vda, ryGlobal, &ry); CHKERRQ(ierr);
@@ -116,35 +138,40 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
   {
     for (i=mstart; i<mstart+m; i++)
     {
+      // velocity values
+      v_W = qy[j][i-1];
+      if (i == 0 && flow->boundaries[XMINUS][1].type == PERIODIC) // left boundary and x-periodic
+        v_W /= dx[nx-1];
+      else if (i > 0) // inside domain
+        v_W /= dx[i-1];
+      v_P = qy[j][i]/dx[i];
+      v_E = qy[j][i+1];
+      if (i == M-1 && flow->boundaries[XPLUS][1].type == PERIODIC) // right boundary and x-periodic
+        v_E /= dx[0];
+      else if (i < M-1) // inside domain
+        v_E /= dx[i+1];
+      v_S = qy[j-1][i]/dx[i];
+      v_N = qy[j+1][i]/dx[i];
+
       // convection term
-      v      = qy[j][i]/mesh->dx[i];
-      vSouth = 0.5*(v + qy[j-1][i]/mesh->dx[i]);
-      vNorth = 0.5*(v + qy[j+1][i]/mesh->dx[i]);
-      uWest  = 0.5*(qx[j][i-1]/dyV[j] + qx[j+1][i-1]/dyV[j+1]);
-      uEast  = 0.5*(qx[j][i]/dyV[j]   + qx[j+1][i]/dyV[j+1]);
-      // first check if the node is adjacent to the -X or +X boundaries
-      // then check if the boundary condition in the x-direction is periodic
-      vWest  = (i > 0)?   0.5*(v + qy[j][i-1]/mesh->dx[i-1]) : (flow->boundaries[XMINUS][1].type != PERIODIC)? qy[j][i-1] : 0.5*(v + qy[j][i-1]/mesh->dx[mesh->nx-1]);
-      vEast  = (i < M-1)? 0.5*(v + qy[j][i+1]/mesh->dx[i+1]) : (flow->boundaries[XPLUS][1].type != PERIODIC)? qy[j][i+1] : 0.5*(v + qy[j][i+1]/mesh->dx[0]);
-      // Hx = d(uv)/dx + d(v^2)/dy
+      u_w = 0.5 * (qx[j][i]/dy[j] + qx[j+1][i]/dy[j+1]);
+      u_e = 0.5 * (qx[j][i+1]/dy[j] + qx[j+1][i+1]/dy[j+1]);
+      v_w = 0.5 * (v_W + v_P); 
+      v_e = 0.5 * (v_P + v_E);
+      v_s = 0.5 * (v_S + v_P);
+      v_n = 0.5 * (v_P + v_N);
+      // Hy = d(uv)/dx + d(v^2)/dy
       HnMinus1 = Hy[j][i];
-      Hy[j][i] = (uEast*vEast - uWest*vWest)/mesh->dx[i]
-                 + (vNorth*vNorth - vSouth*vSouth)/(0.5*(dyV[j] + dyV[j+1]));
+      Hy[j][i] = (  (u_e*v_e - u_w*v_w)/dx[i] 
+                  + (v_n*v_n - v_s*v_s)/(0.5*(dy[j]+dy[j+1])) );
       convectionTerm = gamma*Hy[j][i] + zeta*HnMinus1;
-      
-      // diffusion term     
-      // reuse the above variable names to calculate the diffusion term
-      // their meanings change
-      vSouth = qy[j-1][i]/mesh->dx[i];
-      vNorth = qy[j+1][i]/mesh->dx[i];
-      vWest  = (i > 0)?   qy[j][i-1]/mesh->dx[i-1] : (flow->boundaries[XMINUS][1].type != PERIODIC)? qy[j][i-1] : qy[j][i-1]/mesh->dx[mesh->nx-1];
-      vEast  = (i < M-1)? qy[j][i+1]/mesh->dx[i+1] : (flow->boundaries[XPLUS][1].type != PERIODIC)? qy[j][i+1] : qy[j][i+1]/mesh->dx[0];
-      // Dy = d^2(v)/dx^2 + d^2(v)/dy^2
-      diffusionTerm = alphaExplicit*nu*(   du2dx2(vWest,  v, vEast,  dxV[i], dxV[i+1])
-                                         + du2dx2(vSouth, v, vNorth, dyV[j], dyV[j+1])
-                                       );
-      
-      ry[j][i] = (v/dt - convectionTerm + diffusionTerm);
+
+      // diffusion term
+      diffusionTerm = alpha*nu * (  d2udx2(v_W, v_P, v_E, 0.5*(dx[i-1]+dx[i]), 0.5*(dx[i]+dx[i+1]))
+                                  + d2udx2(v_S, v_P, v_N, dy[j], dy[j+1]) );
+
+      // explicit term
+      ry[j][i] = v_P/dt - convectionTerm + diffusionTerm;
     }
   }
   ierr = DMDAVecRestoreArray(vda, HyGlobal, &Hy); CHKERRQ(ierr);
@@ -165,19 +192,36 @@ template <>
 PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
 {
   PetscErrorCode ierr;
-  PetscInt       mstart, nstart, pstart, m, n, p, i, j, k, M, N, P;
-  PetscReal      HnMinus1, u, v, w;
-  PetscReal      uNorth, uEast, uWest, uSouth, uNadir, uZenith;
-  PetscReal      vNorth, vEast, vWest, vSouth, vNadir, vZenith;
-  PetscReal      wNorth, wEast, wWest, wSouth, wNadir, wZenith;
-  PetscReal      convectionTerm, diffusionTerm;
-  PetscReal      nu = flow->nu;
-  PetscReal      alphaExplicit = parameters->diffusion.coefficients[1],
-                 gamma = parameters->convection.coefficients[1],
-                 zeta  = parameters->convection.coefficients[2];
-  PetscReal      dt = parameters->dt;
 
-  // copy fluxes to local vectors
+  PetscInt i, j, k,                // loop indices
+           M, N, P,                // global number of nodes along each direction
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
+
+  PetscReal HnMinus1; // convection term at previous time-step
+  PetscReal u_W, u_P, u_E, u_S, u_N, u_B, u_F, // West, Point, East, South, North, Back, Front x-velocities
+            v_W, v_P, v_E, v_S, v_N, v_B, v_F, // West, Point, East, South, North, Back, Front y-velocities
+            w_W, w_P, w_E, w_S, w_N, w_B, w_F, // West, Point, East, South, North, Back, Front z-velocities
+            u_w, u_e, u_s, u_n, u_b, u_f, // interpolated x-velocities
+            v_w, v_e, v_s, v_n, v_b, v_f, // interpolated y-velocities
+            w_w, w_e, w_s, w_n, w_b, w_f; // interpolated z-velocities
+  PetscReal convectionTerm, // value of convection term
+            diffusionTerm;  // value of diffusion term
+
+  PetscReal *dx = &mesh->dx[0],
+            *dy = &mesh->dy[0],
+            *dz = &mesh->dz[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny,
+           nz = mesh->nz;
+
+  PetscReal nu = flow->nu, // viscosity
+            dt = parameters->dt, // time-increment
+            alpha = parameters->diffusion.coefficients[1],  // explicit (n) diffusion coefficient
+            gamma = parameters->convection.coefficients[1], // explicit (n) convection coefficient
+            zeta  = parameters->convection.coefficients[2]; // explicit (n-1) convection coefficient
+
+  // copy global fluxes vector to local vectors
   ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
   Vec HxGlobal, HyGlobal, HzGlobal;  
@@ -191,7 +235,7 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
   ierr = DMDAVecGetArray(vda, qyLocal, &qy); CHKERRQ(ierr);
   ierr = DMDAVecGetArray(wda, qzLocal, &qz); CHKERRQ(ierr);
   
-  // x-component
+  // compute explicit terms: x-component
   PetscReal ***Hx, ***rx;
   ierr = DMDAVecGetArray(uda, HxGlobal, &Hx); CHKERRQ(ierr);
   ierr = DMDAVecGetArray(uda, rxGlobal, &rx); CHKERRQ(ierr);
@@ -203,47 +247,56 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
     {
       for (i=mstart; i<mstart+m; i++)
       {
+        // velocity values
+        u_W = qx[k][j][i-1]/(dy[j]*dz[k]);
+        u_P = qx[k][j][i]/(dy[j]*dz[k]);
+        u_E = qx[k][j][i+1]/(dy[j]*dz[k]);
+        u_S = qx[k][j-1][i];
+        if (j == 0 && flow->boundaries[YMINUS][0].type == PERIODIC) // bottom boundary and y-periodic
+          u_S /= dy[ny-1]*dz[k];
+        else if (j > 0) // inside domain
+          u_S /= dy[j-1]*dz[k];
+        u_N = qx[k][j+1][i];
+        if (j == N-1 && flow->boundaries[YPLUS][0].type == PERIODIC) // top boundary and y-periodic
+          u_N /= dy[0]*dz[k];
+        else if (j < N-1) // inside domain
+          u_N /= dy[j+1]*dz[k];
+        u_B = qx[k-1][j][i];
+        if (k == 0 && flow->boundaries[ZMINUS][0].type == PERIODIC) // back boundary and z-periodic
+          u_B /= dy[j]*dz[nz-1];
+        else if (k < P-1) // inside domain
+          u_B /= dy[j]*dz[k];
+        u_F = qx[k+1][j][i];
+        if (k == 0 && flow->boundaries[ZPLUS][0].type == PERIODIC) // front boundary and z-periodic
+          u_F /= dy[j]*dz[0];
+        else if (k < P-1) // inside domain
+          u_B /= dy[j]*dz[k];
+
         // convection term
-        u = qx[k][j][i]/(mesh->dy[j]*mesh->dz[k]);
-        // x
-        uWest   = 0.5*(u + qx[k][j][i-1]/(mesh->dy[j]*mesh->dz[k]));
-        uEast   = 0.5*(u + qx[k][j][i+1]/(mesh->dy[j]*mesh->dz[k]));
-        // y
-        // first check if the node is adjacent to the -Y or +Y boundaries
-        // then check if the boundary condition in the y-direction is periodic
-        uSouth  = (j > 0)?   0.5*(u + qx[k][j-1][i]/(mesh->dy[j-1]*mesh->dz[k])) : (flow->boundaries[YMINUS][0].type != PERIODIC)? qx[k][j-1][i] : 0.5*(u + qx[k][j-1][i]/(mesh->dy[mesh->ny-1]*mesh->dz[k]));
-        uNorth  = (j < N-1)? 0.5*(u + qx[k][j+1][i]/(mesh->dy[j+1]*mesh->dz[k])) : (flow->boundaries[YPLUS][0].type != PERIODIC)? qx[k][j+1][i] : 0.5*(u + qx[k][j+1][i]/(mesh->dy[0]*mesh->dz[k]));
-        vSouth  = 0.5*(qy[k][j-1][i]/(mesh->dz[k]*dxU[i]) + qy[k][j-1][i+1]/(mesh->dz[k]*dxU[i+1]));
-        vNorth  = 0.5*(  qy[k][j][i]/(mesh->dz[k]*dxU[i]) +   qy[k][j][i+1]/(mesh->dz[k]*dxU[i+1]));
-        // z
-        // first check if the node is adjacent to the -Z or +Z boundaries
-        // then check if the boundary condition in the z-direction is periodic
-        uNadir  = (k > 0)?   0.5*(u + qx[k-1][j][i]/(mesh->dy[j]*mesh->dz[k-1])) : (flow->boundaries[ZMINUS][0].type != PERIODIC)? qx[k-1][j][i] : 0.5*(u + qx[k-1][j][i]/(mesh->dy[j]*mesh->dz[mesh->nz-1]));
-        uZenith = (k < P-1)? 0.5*(u + qx[k+1][j][i]/(mesh->dy[j]*mesh->dz[k+1])) : (flow->boundaries[ZPLUS][0].type != PERIODIC)? qx[k+1][j][i] : 0.5*(u + qx[k+1][j][i]/(mesh->dy[j]*mesh->dz[0]));
-        wNadir  = 0.5*(qz[k-1][j][i]/(dxU[i]*mesh->dy[j]) + qz[k-1][j][i+1]/(dxU[i+1]*mesh->dy[j]));
-        wZenith = 0.5*(  qz[k][j][i]/(dxU[i]*mesh->dy[j]) +   qz[k][j][i+1]/(dxU[i+1]*mesh->dy[j]));
+        u_w = 0.5 * (u_W + u_P);
+        u_e = 0.5 * (u_P + u_E);
+        u_s = 0.5 * (u_S + u_P);
+        u_n = 0.5 * (u_P + u_N);
+        u_b = 0.5 * (u_B + u_P);
+        u_f = 0.5 * (u_P + u_F);
+        v_s = 0.5 * (qy[k][j-1][i]/(dx[i]*dz[k]) + qy[k][j-1][i+1]/(dx[i+1]*dz[k]));
+        v_n = 0.5 * (qy[k][j][i]/(dx[i]*dz[k]) + qy[k][j][i+1]/(dx[i+1]*dz[k]));
+        w_b = 0.5 * (qz[k-1][j][i]/(dx[i]*dy[j]) + qz[k-1][j][i+1]/(dx[i]*dy[j]));
+        w_f = 0.5 * (qz[k][j][i]/(dx[i]*dy[j]) + qz[k][j][i+1]/(dx[i]*dy[j]));
         // Hx = d(u^2)/dx + d(uv)/dy + d(uw)/dz
-        HnMinus1    = Hx[k][j][i];
-        Hx[k][j][i] = (uEast*uEast - uWest*uWest)/(0.5*(dxU[i] + dxU[i+1]))
-                      + (uNorth*vNorth - uSouth*vSouth)/mesh->dy[j]
-                      + (uZenith*wZenith - uNadir*wNadir)/mesh->dz[k];
+        HnMinus1 = Hx[j][j][i];
+        Hx[k][j][i] = (  (u_e*u_e - u_w*u_w)/(0.5*(dx[i]+dx[i+1])) 
+                       + (u_n*v_n - u_s*v_s)/dy[j]
+                       + (u_f*w_f - u_b*w_b)/dz[k] );
         convectionTerm = gamma*Hx[k][j][i] + zeta*HnMinus1;
-        
+
         // diffusion term
-        // reuse the above variable names to calculate the diffusion term
-        // their meanings change
-        uWest   = qx[k][j][i-1]/(mesh->dy[j]*mesh->dz[k]);
-        uEast   = qx[k][j][i+1]/(mesh->dy[j]*mesh->dz[k]);
-        uSouth  = (j > 0)?   qx[k][j-1][i]/(mesh->dy[j-1]*mesh->dz[k]) : (flow->boundaries[YMINUS][0].type != PERIODIC)? qx[k][j-1][i] : qx[k][j-1][i]/(mesh->dy[mesh->ny-1]*mesh->dz[k]);
-        uNorth  = (j < N-1)? qx[k][j+1][i]/(mesh->dy[j+1]*mesh->dz[k]) : (flow->boundaries[YPLUS][0].type != PERIODIC)? qx[k][j+1][i] : qx[k][j+1][i]/(mesh->dy[0]*mesh->dz[k]);
-        uNadir  = (k > 0)?   qx[k-1][j][i]/(mesh->dy[j]*mesh->dz[k-1]) : (flow->boundaries[ZMINUS][0].type != PERIODIC)? qx[k-1][j][i] : qx[k-1][j][i]/(mesh->dy[j]*mesh->dz[mesh->nz-1]);
-        uZenith = (k < P-1)? qx[k+1][j][i]/(mesh->dy[j]*mesh->dz[k+1]) : (flow->boundaries[ZPLUS][0].type != PERIODIC)? qx[k+1][j][i] : qx[k+1][j][i]/(mesh->dy[j]*mesh->dz[0]);
-        // Dx = d^2(u)/dx^2 + d^2(u)/dy^2 + d^2(u)/dz^2
-        diffusionTerm = alphaExplicit*nu*(   du2dx2(uWest,  u, uEast,   dxU[i], dxU[i+1])
-                                           + du2dx2(uSouth, u, uNorth,  dyU[j], dyU[j+1])
-                                           + du2dx2(uNadir, u, uZenith, dzU[k], dzU[k+1])
-                                         );
-        rx[k][j][i] = (u/dt - convectionTerm + diffusionTerm);
+        diffusionTerm = alpha*nu * (  d2udx2(u_W, u_P, u_E, dx[i], dx[i+1])
+                                    + d2udx2(u_S, u_P, u_N, 0.5*(dy[j-1]+dy[j]), 0.5*(dy[j]+dy[j+1]))
+                                    + d2udx2(u_B, u_P, u_F, 0.5*(dz[k-1]+dz[k]), 0.5*(dz[k]+dz[k+1])) );
+
+        // explicit term
+        rx[k][j][i] = u_P/dt - convectionTerm + diffusionTerm;
       }
     }
   }
@@ -262,47 +315,56 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
     {
       for (i=mstart; i<mstart+m; i++)
       {
+        // velocity values
+        v_W = qy[k][j][i-1];
+        if (i == 0 && flow->boundaries[XMINUS][1].type == PERIODIC) // left boundary and x-periodic
+          v_W /= dx[nx-1]*dz[k];
+        else if (i > 0) // inside domain
+          v_W /= dx[i-1]*dz[k];
+        v_P = qy[k][j][i]/(dx[i]*dz[k]);
+        v_E = qy[k][j][i+1];
+        if (i == M-1 && flow->boundaries[XPLUS][1].type == PERIODIC) // right boundary and x-periodic
+          v_E /= dx[0]*dz[k];
+        else if (i < M-1) // inside domain
+          v_E /= dx[i+1]*dz[k];
+        v_S = qy[k][j-1][i]/(dx[i]*dz[k]);
+        v_N = qy[k][j+1][i]/(dx[i]*dz[k]);
+        v_B = qy[k-1][j][i];
+        if (k == 0 && flow->boundaries[ZMINUS][1].type == PERIODIC) // back boundary and z-periodic
+          v_B /= dx[i]*dz[nz-1];
+        else if (k > 0) // inside domain
+          v_B /= dx[i]*dz[k-1];
+        v_F = qy[k+1][j][i];
+        if (k == P-1 && flow->boundaries[ZPLUS][1].type == PERIODIC) // front boundary and z-periodic
+          v_F /= dx[i]*dz[0];
+        else if (k < P-1) // inside domain
+          v_F /= dx[i]*dz[k+1];
+
         // convection term
-        v = qy[k][j][i]/(mesh->dz[k]*mesh->dx[i]);
-        // x
-        // first check if the node is adjacent to the -X or +X boundaries
-        // then check if the boundary condition in the x-direction is periodic
-        vWest   = (i > 0)?   0.5*(v + qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[i-1])) : (flow->boundaries[XMINUS][1].type != PERIODIC)? qy[k][j][i-1] : 0.5*(v + qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[mesh->nx-1]));
-        vEast   = (i < M-1)? 0.5*(v + qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[i+1])) : (flow->boundaries[XPLUS][1].type != PERIODIC)? qy[k][j][i+1] : 0.5*(v + qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[0]));
-        uWest   = 0.5*(qx[k][j][i-1]/(dyV[j]*mesh->dz[k]) + qx[k][j+1][i-1]/(dyV[j+1]*mesh->dz[k]));
-        uEast   = 0.5*(  qx[k][j][i]/(dyV[j]*mesh->dz[k]) +   qx[k][j+1][i]/(dyV[j+1]*mesh->dz[k]));
-        // y
-        vSouth  = 0.5*(v + qy[k][j-1][i]/(mesh->dz[k]*mesh->dx[i]));
-        vNorth  = 0.5*(v + qy[k][j+1][i]/(mesh->dz[k]*mesh->dx[i]));
-        // z
-        // first check if the node is adjacent to the -Z or +Z boundaries
-        // then check if the boundary condition in the z-direction is periodic
-        vNadir  = (k > 0)?   0.5*(v + qy[k-1][j][i]/(mesh->dz[k-1]*mesh->dx[i])) : (flow->boundaries[ZMINUS][1].type != PERIODIC)? qy[k-1][j][i] : 0.5*(v + qy[k-1][j][i]/(mesh->dz[mesh->nz-1]*mesh->dx[i]));
-        vZenith = (k < P-1)? 0.5*(v + qy[k+1][j][i]/(mesh->dz[k+1]*mesh->dx[i])) : (flow->boundaries[ZPLUS][1].type != PERIODIC)? qy[k+1][j][i] : 0.5*(v + qy[k+1][j][i]/(mesh->dz[0]*mesh->dx[i]));
-        wNadir  = 0.5*(qz[k-1][j][i]/(mesh->dx[i]*dyV[j]) + qz[k-1][j+1][i]/(mesh->dx[i]*dyV[j+1]));
-        wZenith = 0.5*(  qz[k][j][i]/(mesh->dx[i]*dyV[j]) +   qz[k][j+1][i]/(mesh->dx[i]*dyV[j+1]));
-        // Hx = d(vu)/dx + d(v^2)/dy + d(vw)/dz
+        u_w = 0.5 * (qx[k][j][i]/(dy[j]*dz[k]) + qx[k][j+1][i]/(dy[j+1]*dz[k]));
+        u_e = 0.5 * (qx[k][j][i+1]/(dy[j]*dz[k]) + qx[k][j+1][i+1]/(dy[j+1]*dz[k]));
+        v_w = 0.5 * (v_W + v_P); 
+        v_e = 0.5 * (v_P + v_E);
+        v_s = 0.5 * (v_S + v_P);
+        v_n = 0.5 * (v_P + v_N);
+        v_b = 0.5 * (v_B + v_P);
+        v_f = 0.5 * (v_P + v_F);
+        w_b = 0.5 * (qz[k-1][j][i]/(dx[i]*dy[j]) + qz[k-1][j][i+1]/(dx[i]*dy[j]));
+        w_f = 0.5 * (qz[k][j][i]/(dx[i]*dy[j]) + qz[k][j][i+1]/(dx[i]*dy[j]));
+        // Hy = d(vu)/dx + d(v^2)/dy + d(vw)/dz
         HnMinus1 = Hy[k][j][i];
-        Hy[k][j][i] = (vEast*uEast - vWest*uWest)/mesh->dx[i]
-                      + (vNorth*vNorth - vSouth*vSouth)/(0.5*(dyV[j] + dyV[j+1]))
-                      + (vZenith*wZenith - vNadir*wNadir)/mesh->dz[k];
+        Hy[k][j][i] = (  (u_e*v_e - u_w*v_w)/(0.5*(dx[i]+dx[i+1])) 
+                       + (v_n*v_n - v_s*v_s)/dy[j]
+                       + (v_f*w_f - v_b*w_b)/(0.5*(dz[k]+dz[k+1])) );
         convectionTerm = gamma*Hy[k][j][i] + zeta*HnMinus1;
 
-        // diffusion term     
-        // reuse the above variables to calculate the diffusion term
-        // their meanings change
-        vWest   = (i > 0)?   qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[i-1]) : (flow->boundaries[XMINUS][1].type != PERIODIC)? qy[k][j][i-1] : qy[k][j][i-1]/(mesh->dz[k]*mesh->dx[mesh->nx-1]);
-        vEast   = (i < M-1)? qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[i+1]) : (flow->boundaries[XPLUS][1].type != PERIODIC)? qy[k][j][i+1] : qy[k][j][i+1]/(mesh->dz[k]*mesh->dx[0]);
-        vSouth  = qy[k][j-1][i]/(mesh->dz[k]*mesh->dx[i]);
-        vNorth  = qy[k][j+1][i]/(mesh->dz[k]*mesh->dx[i]);
-        vNadir  = (k > 0)?   qy[k-1][j][i]/(mesh->dz[k-1]*mesh->dx[i]) : (flow->boundaries[ZMINUS][1].type != PERIODIC)? qy[k-1][j][i] : qy[k-1][j][i]/(mesh->dz[mesh->nz-1]*mesh->dx[i]);
-        vZenith = (k < P-1)? qy[k+1][j][i]/(mesh->dz[k+1]*mesh->dx[i]) : (flow->boundaries[ZPLUS][1].type != PERIODIC)? qy[k+1][j][i] : qy[k+1][j][i]/(mesh->dz[0]*mesh->dx[i]);
-        // Dy = d^2(v)/dx^2 + d^2(v)/dy^2 + d^2(v)/dz^2
-        diffusionTerm = alphaExplicit*nu*(   du2dx2(vWest,  v, vEast,   dxV[i], dxV[i+1])
-                                           + du2dx2(vSouth, v, vNorth,  dyV[j], dyV[j+1])
-                                           + du2dx2(vNadir, v, vZenith, dzV[k], dzV[k+1])
-                                         );
-        ry[k][j][i] = (v/dt - convectionTerm + diffusionTerm);
+        // diffusion term
+        diffusionTerm = alpha*nu * (  d2udx2(v_W, v_P, v_E, 0.5*(dx[i-1]+dx[i]), 0.5*(dx[i]+dx[i+1]))
+                                    + d2udx2(v_S, v_P, v_N, dy[j], dy[j+1])
+                                    + d2udx2(v_B, v_P, v_F, 0.5*(dz[k-1]+dz[k]), 0.5*(dz[k]+dz[k+1])) );
+
+        // explicit term
+        ry[k][j][i] = v_P/dt - convectionTerm + diffusionTerm;
       }
     }
   }
@@ -321,47 +383,56 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
     {
       for (i=mstart; i<mstart+m; i++)
       {
+        // velocity values
+        w_P = qz[k][j][i]/(dx[i]*dy[j]);
+        w_W = qz[k][j][i-1];
+        if (i == 0 && flow->boundaries[XMINUS][2].type == PERIODIC) // left boundary and x-periodic
+          w_W /= dx[nx-1]*dy[j];
+        else if (i > 0) // inside domain
+          w_W /= dx[i-1]*dy[j];
+        w_E = qz[k][j][i+1];
+        if (i == M-1 && flow->boundaries[XPLUS][2].type == PERIODIC) // right boundary and x-periodic
+          w_E /= dx[0]*dy[j];
+        else if (i < M-1) // inside domain
+          w_E /= dx[i+1]*dy[j];
+        w_S = qz[k][j-1][i];
+        if (j == 0 && flow->boundaries[YMINUS][2].type == PERIODIC) // bottom boundary and y-periodic
+          w_S /= dx[i]*dy[ny-1];
+        else if (j > 0) // inside domain
+          w_S /= dx[i]*dy[j-1];
+        w_N = qz[k][j+1][i];
+        if (j == N-1 && flow->boundaries[YPLUS][2].type == PERIODIC) // top boundary and y-periodic
+          w_N /= dx[i]*dy[0];
+        else if (j < N-1) // inside domain
+          w_N /= dx[i]*dy[j+1];
+        w_B = qz[k-1][j][i]/(dx[i]*dy[j]);
+        w_F = qz[k+1][j][i]/(dx[i]*dy[j]);
+
         // convection term
-        w = qz[k][j][i]/(mesh->dx[i]*mesh->dy[j]);
-        // x
-        // first check if the node is adjacent to the -X or +X boundaries
-        // then check if the boundary condition in the x-direction is periodic
-        wWest   = (i > 0)?   0.5*(w + qz[k][j][i-1]/(mesh->dx[i-1]*mesh->dy[j])) : (flow->boundaries[XMINUS][2].type != PERIODIC)? qz[k][j][i-1] : 0.5*(w + qz[k][j][i-1]/(mesh->dx[mesh->nx-1]*mesh->dy[j]));
-        wEast   = (i < M-1)? 0.5*(w + qz[k][j][i+1]/(mesh->dx[i+1]*mesh->dy[j])) : (flow->boundaries[XPLUS][2].type != PERIODIC)? qz[k][j][i+1] : 0.5*(w + qz[k][j][i+1]/(mesh->dx[0]*mesh->dy[j]));
-        uWest   = 0.5*(qx[k][j][i-1]/(mesh->dy[j]*dzW[k]) + qx[k+1][j][i-1]/(mesh->dy[j]*dzW[k+1]));
-        uEast   = 0.5*(  qx[k][j][i]/(mesh->dy[j]*dzW[k]) +   qx[k+1][j][i]/(mesh->dy[j]*dzW[k+1]));
-        // y
-        // first check if the node is adjacent to the -Y or +Y boundaries
-        // then check if the boundary condition in the y-direction is periodic
-        wSouth  = (j > 0)?   0.5*(w + qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[j-1])) : (flow->boundaries[YMINUS][2].type != PERIODIC)? qz[k][j-1][i] : 0.5*(w + qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[mesh->ny-1]));
-        wNorth  = (j < N-1)? 0.5*(w + qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[j+1])) : (flow->boundaries[YPLUS][2].type != PERIODIC)? qz[k][j+1][i] : 0.5*(w + qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[0]));
-        vSouth  = 0.5*(qy[k][j-1][i]/(dzW[k]*mesh->dx[i]) + qy[k+1][j-1][i]/(dzW[k+1]*mesh->dx[i]));
-        vNorth  = 0.5*(  qy[k][j][i]/(dzW[k]*mesh->dx[i]) +   qy[k+1][j][i]/(dzW[k+1]*mesh->dx[i]));
-        // z
-        wNadir  = 0.5*(w + qz[k-1][j][i]/(mesh->dx[i]*mesh->dy[j]));
-        wZenith = 0.5*(w + qz[k+1][j][i]/(mesh->dx[i]*mesh->dy[j]));
-        // Hx = d(wu)/dx + d(wv)/dy + d(w^2)/dz
+        u_w = 0.5 * (qx[k][j][i]/(dy[j]*dz[k]) + qx[k+1][j][i]/(dy[j]*dz[k+1]));
+        u_e = 0.5 * (qx[k][j][i+1]/(dy[j]*dz[k]) + qx[k+1][j][i+1]/(dy[j]*dz[k+1]));
+        v_s = 0.5 * (qy[k][j][i]/(dx[i]*dz[k]) + qy[k+1][j][i]/(dx[i]*dz[k+1]));
+        v_n = 0.5 * (qy[k][j+1][i]/(dx[i]*dz[k]) + qy[k+1][j+1][i]/(dx[i]*dz[k+1]));
+        w_w = 0.5 * (w_W + w_P);
+        w_e = 0.5 * (w_P + w_E);
+        w_s = 0.5 * (w_S + w_P);
+        w_n = 0.5 * (w_P + w_N);
+        w_b = 0.5 * (w_B + w_P);
+        w_f = 0.5 * (w_P + w_F);
+        // Hz = d(wu)/dx + d(wv)/dy + d(w^2)/dz
         HnMinus1 = Hz[k][j][i];
-        Hz[k][j][i] = (wEast*uEast - wWest*uWest)/mesh->dx[i]
-                      + (wNorth*vNorth - wSouth*vSouth)/mesh->dy[j]
-                      + (wZenith*wZenith - wNadir*wNadir)/(0.5*(dzW[k] + dzW[k+1]));
+        Hz[k][j][i] = (  (u_e*w_e - u_w*w_w)/(0.5*(dx[i]+dx[i+1])) 
+                       + (v_n*w_n - v_s*w_s)/(0.5*(dy[j]+dy[j+1]))
+                       + (w_f*w_f - w_b*w_b)/dz[k] );
         convectionTerm = gamma*Hz[k][j][i] + zeta*HnMinus1;
 
-        // diffusion term     
-        // reuse the above variables to calculate the diffusion term
-        // their meanings change
-        wWest   = (i > 0)?   qz[k][j][i-1]/(mesh->dx[i-1]*mesh->dy[j]) : (flow->boundaries[XMINUS][2].type != PERIODIC)? qz[k][j][i-1] : qz[k][j][i-1]/(mesh->dx[mesh->nx-1]*mesh->dy[j]);
-        wEast   = (i < M-1)? qz[k][j][i+1]/(mesh->dx[i+1]*mesh->dy[j]) : (flow->boundaries[XPLUS][2].type != PERIODIC)? qz[k][j][i+1] : qz[k][j][i+1]/(mesh->dx[0]*mesh->dy[j]);
-        wSouth  = (j > 0)?   qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[j-1]) : (flow->boundaries[YMINUS][2].type != PERIODIC)? qz[k][j-1][i] : qz[k][j-1][i]/(mesh->dx[i]*mesh->dy[mesh->ny-1]);
-        wNorth  = (j < N-1)? qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[j+1]) : (flow->boundaries[YPLUS][2].type != PERIODIC)? qz[k][j+1][i] : qz[k][j+1][i]/(mesh->dx[i]*mesh->dy[0]);
-        wNadir  = qz[k-1][j][i]/(mesh->dx[i]*mesh->dy[j]);
-        wZenith = qz[k+1][j][i]/(mesh->dx[i]*mesh->dy[j]);
-        // Dz = d^2(w)/dx^2 + d^2(w)/dy^2 + d^2(w)/dz^2
-        diffusionTerm = alphaExplicit*nu*(   du2dx2(wWest,  w, wEast,   dxW[i], dxW[i+1])
-                                           + du2dx2(wSouth, w, wNorth,  dyW[j], dyW[j+1])
-                                           + du2dx2(wNadir, w, wZenith, dzW[k], dzW[k+1])
-                                         );
-        rz[k][j][i] = (w/dt - convectionTerm + diffusionTerm);
+        // diffusion term
+        diffusionTerm = alpha*nu * (  d2udx2(w_W, w_P, w_E, 0.5*(dx[i-1]+dx[i]), 0.5*(dx[i]+dx[i+1]))
+                                    + d2udx2(w_S, w_P, w_N, 0.5*(dy[j-1]+dy[j]), 0.5*(dy[j]+dy[j+1]))
+                                    + d2udx2(v_B, v_P, v_F, dz[k], dz[k+1]) );
+
+        // explicit term
+        rz[k][j][i] = w_P/dt - convectionTerm + diffusionTerm;
       }
     }
   }

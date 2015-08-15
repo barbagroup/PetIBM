@@ -1,7 +1,8 @@
 /***************************************************************************//**
  * \file updateBoundaryGhosts.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `updateBoundaryGhosts`.
+ * \brief Implementation of the method `updateBoundaryGhosts` 
+ *        of the class `NavierStokesSolver`.
  */
 
 
@@ -42,6 +43,7 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
 {
   PetscErrorCode ierr;
+  
   PetscInt i, j,           // loop indices
            M, N,           // global number of values in each direction
            m, n,           // local number of values in each direction
@@ -49,10 +51,6 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
   PetscReal dt = parameters->dt,
             startStep = parameters->startStep;
   PetscReal beta; // convective speed
-                 
-  // look for periodic boundary conditions in x- and y- directions
-  bool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC), 
-       periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC);
 
   // fluxes in x-direction
   PetscReal **qx;
@@ -60,7 +58,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   ierr = DMDAGetInfo(uda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // left and right boundaries
-  if (!periodicX) // do not update if x-periodic
+  if (flow->boundaries[XMINUS][0].type != PERIODIC) // do not update if x-periodic
   {
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
@@ -72,7 +70,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qx[j][-1] = flow->boundaries[XMINUS][0].value*mesh->dy[j];
             break;
           case CONVECTIVE: 
-            beta = flow->boundaries[XMINUS][0].value*dt/dxU[0];
+            beta = flow->boundaries[XMINUS][0].value * dt / mesh->dx[0];
             qx[j][-1] = (1-beta)*qx[j][-1] + beta*qx[j][0];
             if (timeStep == startStep)
               qx[j][-1] = qx[j][0];
@@ -92,7 +90,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qx[j][M] = flow->boundaries[XPLUS][0].value*mesh->dy[j];
             break;
           case CONVECTIVE:
-            beta = flow->boundaries[XPLUS][0].value*dt/dxU[M];
+            beta = flow->boundaries[XPLUS][0].value * dt / mesh->dx[M];
             qx[j][M] = (1-beta)*qx[j][M] + beta*qx[j][M-1];
             if (timeStep == startStep)
               qx[j][M] = qx[j][M-1];
@@ -107,7 +105,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
     }
   }
   // bottom and top boundaries
-  if (!periodicY) // do not update if y-periodic
+  if (flow->boundaries[YMINUS][0].type != PERIODIC) // do not update if y-periodic
   {
     for (i=mstart; i<mstart+m; i++) // loop over x-direction
     { 
@@ -119,7 +117,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qx[-1][i] = flow->boundaries[YMINUS][0].value;
             break;
           case CONVECTIVE:
-            beta = flow->boundaries[YMINUS][1].value*dt/dyU[0];
+            beta = flow->boundaries[YMINUS][1].value * dt / (0.5*mesh->dy[0]);
             qx[-1][i] = (1.0-beta)*qx[-1][i] + beta*qx[0][i]/mesh->dy[0];
             if (timeStep == startStep)
               qx[-1][i] = qx[0][i]/mesh->dy[0];
@@ -139,7 +137,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qx[N][i] = flow->boundaries[YPLUS][0].value;
             break;
           case CONVECTIVE:
-            beta = flow->boundaries[YPLUS][1].value*dt/dyU[N];
+            beta = flow->boundaries[YPLUS][1].value * dt / (0.5*mesh->dy[N]);
             qx[N][i] = (1.0-beta)*qx[N][i] + beta*qx[N-1][i]/mesh->dy[N-1];
             if (timeStep == startStep)
               qx[N][i] = qx[N-1][i]/mesh->dy[N-1];
@@ -154,7 +152,6 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
     }
   }
   ierr = DMDAVecRestoreArray(uda, qxLocal, &qx); CHKERRQ(ierr);
-    
   
   // fluxes in y-direction
   PetscReal **qy;
@@ -162,7 +159,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
   ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   ierr = DMDAGetInfo(vda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // left and right boundaries
-  if (!periodicX) // do not update if x-periodic
+  if (flow->boundaries[XMINUS][1].type != PERIODIC) // do not update if x-periodic
   {
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
@@ -174,7 +171,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qy[j][-1] = flow->boundaries[XMINUS][1].value;
             break;
           case CONVECTIVE: 
-            beta = flow->boundaries[XMINUS][0].value*dt/dxV[0];
+            beta = flow->boundaries[XMINUS][0].value * dt / (0.5*mesh->dx[0]);
             qy[j][-1] = (1.0-beta)*qy[j][-1] + beta*qy[j][0]/mesh->dx[0];
             if (timeStep == startStep)
               qy[j][-1] = qy[j][0]/mesh->dx[0];
@@ -194,7 +191,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qy[j][M] = flow->boundaries[XPLUS][1].value;
             break;
           case CONVECTIVE:
-            beta = flow->boundaries[XPLUS][0].value*dt/dxV[M];
+            beta = flow->boundaries[XPLUS][0].value * dt / (0.5*mesh->dx[M]);
             qy[j][M] = (1.0-beta)*qy[j][M] + beta*qy[j][M-1]/mesh->dx[M-1];
             if (timeStep == startStep)
               qy[j][M] = qy[j][M-1]/mesh->dx[M-1];
@@ -209,7 +206,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
     }
   }
   // bottom and top boundaries
-  if (!periodicY) // do not update if y-periodic
+  if (flow->boundaries[YMINUS][1].type != PERIODIC) // do not update if y-periodic
   {
     for (i=mstart; i<mstart+m; i++) // loop over x-direction
     { 
@@ -221,7 +218,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qy[-1][i] = flow->boundaries[YMINUS][1].value*mesh->dx[i];
             break;
           case CONVECTIVE:
-            beta = flow->boundaries[YMINUS][1].value*dt/dyV[0];
+            beta = flow->boundaries[YMINUS][1].value * dt / mesh->dy[0];
             qy[-1][i] = (1.0-beta)*qy[-1][i] + beta*qy[0][i];
             if (timeStep == startStep)
               qy[-1][i] = qy[0][i];
@@ -241,7 +238,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             qy[N][i] = flow->boundaries[YPLUS][1].value*mesh->dx[i];
             break;
           case CONVECTIVE:
-            beta = flow->boundaries[YPLUS][1].value*dt/dyV[N];
+            beta = flow->boundaries[YPLUS][1].value * dt / mesh->dy[N];
             qy[N][i] = (1.0-beta)*qy[N][i] + beta*qy[N-1][i];
             if (timeStep == startStep)
               qy[N][i] = qy[N-1][i];
@@ -266,18 +263,15 @@ template <>
 PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
 {
   PetscErrorCode ierr;
+
   PetscInt i, j, k,                // loop indices
            M, N, P,                // global number of values in each direction
            m, n, p,                // local number of values in each direction
            mstart, nstart, pstart; // stating indices
+  
   PetscReal dt = parameters->dt,               // time-increment
             startStep = parameters->startStep; // starting time-step
   PetscReal beta; // convective speed
-
-  // look for periodic boundary conditions in all directions
-  bool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC), 
-       periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC),
-       periodicZ = (flow->boundaries[ZMINUS][0].type == PERIODIC);
 
   // fluxes in x-direction
   PetscReal ***qx;
@@ -285,7 +279,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   ierr = DMDAGetInfo(uda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // left and right boundaries
-  if (!periodicX) // do not update if x-periodic
+  if (flow->boundaries[XMINUS][0].type != PERIODIC) // do not update if x-periodic
   {
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
@@ -299,7 +293,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qx[k][j][-1] = flow->boundaries[XMINUS][0].value*(mesh->dy[j]*mesh->dz[k]);
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[XMINUS][0].value*dt/dxU[0];
+              beta = flow->boundaries[XMINUS][0].value * dt / mesh->dx[0];
               qx[k][j][-1] = (1-beta)*qx[k][j][-1] + beta*qx[k][j][0];
               if (timeStep == startStep)
                 qx[k][j][-1] = qx[k][j][0];
@@ -319,7 +313,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qx[k][j][M] = flow->boundaries[XPLUS][0].value*(mesh->dy[j]*mesh->dz[k]);
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[XPLUS][0].value*dt/dxU[M];
+              beta = flow->boundaries[XPLUS][0].value * dt / mesh->dx[M];
               qx[k][j][M] = (1-beta)*qx[k][j][M] + beta*qx[k][j][M-1];
               if (timeStep == startStep)
                 qx[k][j][M] = qx[k][j][M-1];
@@ -335,7 +329,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
     }
   }
   // bottom and top boundaries
-  if (!periodicY) // do not update if y-periodic
+  if (flow->boundaries[YMINUS][0].type != PERIODIC) // do not update if y-periodic
   {
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
@@ -349,7 +343,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qx[k][-1][i] = flow->boundaries[YMINUS][0].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[YMINUS][1].value*dt/dyU[0];
+              beta = flow->boundaries[YMINUS][1].value * dt / (0.5*mesh->dy[0]);
               qx[k][-1][i] = (1.0-beta)*qx[k][-1][i] + beta*qx[k][0][i]/(mesh->dy[0]*mesh->dz[k]);
               if (timeStep == startStep)
                 qx[k][-1][i] = qx[k][0][i]/(mesh->dy[0]*mesh->dz[k]);
@@ -369,7 +363,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qx[k][N][i] = flow->boundaries[YPLUS][0].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[YPLUS][1].value*dt/dyU[N];
+              beta = flow->boundaries[YPLUS][1].value * dt / (0.5*mesh->dy[N]);
               qx[k][N][i] = (1.0-beta)*qx[k][N][i] + beta*qx[k][N-1][i]/(mesh->dy[N-1]*mesh->dz[k]);
               if (timeStep == startStep)
                 qx[k][N][i] = qx[k][N-1][i]/(mesh->dy[N-1]*mesh->dz[k]);
@@ -385,7 +379,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
     }
   }
   // back and front boundaries
-  if (!periodicZ) // do not update if z-periodic
+  if (flow->boundaries[ZMINUS][0].type != PERIODIC) // do not update if z-periodic
   {
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
@@ -399,7 +393,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qx[-1][j][i] = flow->boundaries[ZMINUS][0].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[ZMINUS][2].value*dt/dzU[0];
+              beta = flow->boundaries[ZMINUS][2].value * dt / (0.5*mesh->dz[0]);
               qx[-1][j][i] = (1.0-beta)*qx[-1][j][i] + beta*qx[0][j][i]/(mesh->dy[j]*mesh->dz[0]);
               if (timeStep == startStep)
                 qx[-1][j][i] = qx[0][j][i]/(mesh->dy[j]*mesh->dz[0]);
@@ -419,7 +413,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qx[P][j][i] = flow->boundaries[ZPLUS][0].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[ZPLUS][2].value*dt/dzU[P];
+              beta = flow->boundaries[ZPLUS][2].value * dt / (0.5*mesh->dz[P]);
               qx[P][j][i] = (1.0-beta)*qx[P][j][i] + beta*qx[P-1][j][i]/(mesh->dy[j]*mesh->dz[P-1]);
               if (timeStep == startStep)
                 qx[P][j][i] = qx[P-1][j][i]/(mesh->dy[j]*mesh->dz[P-1]);
@@ -442,7 +436,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
   ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   ierr = DMDAGetInfo(vda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // left and right boundaries
-  if (!periodicX) // do not update if x-periodic
+  if (flow->boundaries[XMINUS][1].type != PERIODIC) // do not update if x-periodic
   {
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
@@ -456,7 +450,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qy[k][j][-1] = flow->boundaries[XMINUS][1].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[XMINUS][0].value*dt/dxV[0];
+              beta = flow->boundaries[XMINUS][0].value * dt / (0.5*mesh->dx[0]);
               qy[k][j][-1] = (1.0-beta)*qy[k][j][-1] + beta*qy[k][j][0]/(mesh->dx[0]*mesh->dz[k]);
               if (timeStep == startStep)
                 qy[k][j][-1] = qy[k][j][0]/(mesh->dx[0]*mesh->dz[k]);
@@ -476,7 +470,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qy[k][j][M] = flow->boundaries[XPLUS][1].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[XPLUS][0].value*dt/dxV[M];
+              beta = flow->boundaries[XPLUS][0].value * dt / (0.5*mesh->dx[M]);
               qy[k][j][M] = (1.0-beta)*qy[k][j][M] + beta*qy[k][j][M-1]/(mesh->dx[M-1]*mesh->dz[k]);
               if (timeStep == startStep)
                 qy[k][j][M] = qy[k][j][M-1]/(mesh->dx[M-1]*mesh->dz[k]);
@@ -492,7 +486,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
     }
   }
   // bottom and top boundaries
-  if (!periodicY) // do not update if y-periodic
+  if (flow->boundaries[YMINUS][1].type != PERIODIC) // do not update if y-periodic
   {
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
@@ -506,7 +500,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qy[k][-1][i] = flow->boundaries[YMINUS][1].value*(mesh->dz[k]*mesh->dx[i]);
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[YMINUS][1].value*dt/dyV[0];
+              beta = flow->boundaries[YMINUS][1].value * dt / mesh->dy[0];
               qy[k][-1][i] = (1.0-beta)*qy[k][-1][i] + beta*qy[k][0][i];
               if (timeStep == startStep)
                 qy[k][-1][i] = qy[k][0][i];
@@ -526,7 +520,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qy[k][N][i] = flow->boundaries[YPLUS][1].value*(mesh->dz[k]*mesh->dx[i]);
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[YPLUS][1].value*dt/dyV[N];
+              beta = flow->boundaries[YPLUS][1].value * dt / mesh->dy[N];
               qy[k][N][i] = (1.0-beta)*qy[k][N][i] + beta*qy[k][N-1][i];
               if (timeStep == startStep)
                 qy[k][N][i] = qy[k][N-1][i];
@@ -542,7 +536,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
     }
   }
   // back and front boundaries
-  if (!periodicZ) // do not update if z-periodic
+  if (flow->boundaries[ZMINUS][1].type != PERIODIC) // do not update if z-periodic
   {
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
@@ -556,7 +550,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qy[-1][j][i] = flow->boundaries[ZMINUS][1].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[ZMINUS][2].value*dt/dzV[0];
+              beta = flow->boundaries[ZMINUS][2].value * dt / (0.5*mesh->dz[0]);
               qy[-1][j][i] = (1.0-beta)*qy[-1][j][i] + beta*qy[0][j][i]/(mesh->dx[i]*mesh->dz[0]);
               if (timeStep == startStep)
                 qy[-1][j][i] = qy[0][j][i]/(mesh->dx[i]*mesh->dz[0]);
@@ -576,7 +570,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qy[P][j][i] = flow->boundaries[ZPLUS][1].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[ZPLUS][2].value*dt/dzV[P];
+              beta = flow->boundaries[ZPLUS][2].value * dt / (0.5*mesh->dz[P]);
               qy[P][j][i] = (1.0-beta)*qy[P][j][i] + beta*qy[P-1][j][i]/(mesh->dx[i]*mesh->dz[P-1]);
               if (timeStep == startStep)
                 qy[P][j][i] = qy[P-1][j][i]/(mesh->dx[i]*mesh->dz[P-1]);
@@ -599,7 +593,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
   ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   ierr = DMDAGetInfo(wda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   // left and right boundaries
-  if (!periodicX) // do not update if x-periodic
+  if (flow->boundaries[XMINUS][2].type != PERIODIC) // do not update if x-periodic
   {
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
@@ -613,7 +607,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qz[k][j][-1] = flow->boundaries[XMINUS][2].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[XMINUS][0].value*dt/dxW[0];
+              beta = flow->boundaries[XMINUS][0].value * dt / (0.5*mesh->dx[0]);
               qz[k][j][-1] = (1.0-beta)*qz[k][j][-1] + beta*qz[k][j][0]/(mesh->dx[0]*mesh->dy[j]);
               if (timeStep == startStep)
                 qz[k][j][-1] = qz[k][j][0]/(mesh->dx[0]*mesh->dy[j]);
@@ -633,7 +627,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qz[k][j][M] = flow->boundaries[XPLUS][2].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[XPLUS][0].value*dt/dxW[M];
+              beta = flow->boundaries[XPLUS][0].value * dt / (0.5*mesh->dx[M]);
               qz[k][j][M] = (1.0-beta)*qz[k][j][M] + beta*qz[k][j][M-1]/(mesh->dx[M-1]*mesh->dy[j]);
               if (timeStep == startStep)
                 qz[k][j][M] = qz[k][j][M-1]/(mesh->dx[M-1]*mesh->dy[j]);
@@ -649,7 +643,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
     }
   }
   // bottom and top boundaries
-  if (!periodicY) // do not update if y-periodic
+  if (flow->boundaries[YMINUS][2].type != PERIODIC) // do not update if y-periodic
   {
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
@@ -663,7 +657,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qz[k][-1][i] = flow->boundaries[YMINUS][2].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[YMINUS][1].value*dt/dyW[0];
+              beta = flow->boundaries[YMINUS][1].value * dt / (0.5*mesh->dy[0]);
               qz[k][-1][i] = (1.0-beta)*qz[k][-1][i] + beta*qz[k][0][i]/(mesh->dx[i]*mesh->dy[0]);
               if (timeStep == startStep)
                 qz[k][-1][i] = qz[k][0][i]/(mesh->dx[i]*mesh->dy[0]);
@@ -683,7 +677,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qz[k][N][i] = flow->boundaries[YPLUS][2].value;
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[YPLUS][1].value*dt/dyW[N];
+              beta = flow->boundaries[YPLUS][1].value * dt / (0.5*mesh->dy[N]);
               qz[k][N][i] = (1.0-beta)*qz[k][N][i] + beta*qz[k][N-1][i]/(mesh->dx[i]*mesh->dy[N-1]);
               if (timeStep == startStep)
                 qz[k][N][i] = qz[k][N-1][i]/(mesh->dx[i]*mesh->dy[N-1]);
@@ -699,7 +693,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
     }
   }
   // back and front boundaries
-  if (!periodicZ) // do not update if z-periodic
+  if (flow->boundaries[ZMINUS][2].type != PERIODIC) // do not update if z-periodic
   {
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
@@ -713,7 +707,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qz[-1][j][i] = flow->boundaries[ZMINUS][2].value*(mesh->dx[i]*mesh->dy[j]);
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[ZMINUS][2].value*dt/dzW[0];
+              beta = flow->boundaries[ZMINUS][2].value * dt / mesh->dz[0];
               qz[-1][j][i] = (1.0-beta)*qz[-1][j][i] + beta*qz[0][j][i];
               if (timeStep == startStep)
                 qz[-1][j][i] = qz[0][j][i];
@@ -733,7 +727,7 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
               qz[P][j][i] = flow->boundaries[ZPLUS][2].value*(mesh->dx[i]*mesh->dy[j]);
               break;
             case CONVECTIVE:
-              beta = flow->boundaries[ZPLUS][2].value*dt/dzW[P];
+              beta = flow->boundaries[ZPLUS][2].value * dt / mesh->dz[P];
               qz[P][j][i] = (1.0-beta)*qz[P][j][i] + beta*qz[P-1][j][i];
               if (timeStep == startStep)
                 qz[P][j][i] = qz[P-1][j][i];

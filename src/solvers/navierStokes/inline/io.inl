@@ -12,9 +12,11 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::printInfo()
 {
   PetscErrorCode ierr;
+
   ierr = mesh->printInfo(); CHKERRQ(ierr);
   ierr = flow->printInfo(); CHKERRQ(ierr);
   ierr = parameters->printInfo(); CHKERRQ(ierr);
+  
   return 0;
 } // printInfo
 
@@ -26,6 +28,7 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::readFluxes()
 {
   PetscErrorCode ierr;
+
   PetscViewer viewer;
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading fluxes from file... ", timeStep); CHKERRQ(ierr);
@@ -90,6 +93,7 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::readLambda()
 {
   PetscErrorCode ierr;
+
   PetscViewer viewer;
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading pressure from file... ", timeStep); CHKERRQ(ierr);
@@ -144,6 +148,7 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
 {
   PetscErrorCode ierr;
+
   PetscViewer viewer;
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing fluxes into file... ", timeStep); CHKERRQ(ierr);
@@ -209,6 +214,7 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::writeLambda()
 {
   PetscErrorCode ierr;
+
   PetscViewer viewer;
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing pressure into file... ", timeStep); CHKERRQ(ierr);
@@ -272,6 +278,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrid()
     }
     streamFile.close();
   }
+  
   ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n", timeStep); CHKERRQ(ierr);
 
   return 0;
@@ -285,6 +292,7 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::writeIterationCounts()
 {
   PetscErrorCode ierr;
+
   PetscInt rank;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 

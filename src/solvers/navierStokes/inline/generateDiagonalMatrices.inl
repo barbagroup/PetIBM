@@ -1,12 +1,13 @@
 /***************************************************************************//**
  * \file generateDiagonalMatrices.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `generateDiagonalMatrices`.
+ * \brief Implementation of the method `generateDiagonalMatrices` 
+ *        of the class `NavierStokesSolver`.
  */
 
 
 /**
- * \brief Assmebles the diagonal matrices \f$ B^N \f$, \f$ \hat{M} \f$ 
+ * \brief Assembles the diagonal matrices \f$ B^N \f$, \f$ \hat{M} \f$ 
  *        and \f$ R^{-1} \f$.
  *
  * The matrix \f$ B^N \f$ is the approximate inverse of the the matrix \f$ A \f$ 
@@ -27,9 +28,11 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::generateDiagonalMatrices()
 {
   PetscErrorCode ierr;
+
   PetscInt i, j,           // loop indices
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
+  
   PetscReal dt = parameters->dt; // time-increment
 
   Vec MHatxGlobal, MHatyGlobal;
@@ -94,9 +97,11 @@ template <>
 PetscErrorCode NavierStokesSolver<3>::generateDiagonalMatrices()
 {
   PetscErrorCode ierr;
+
   PetscInt i, j, k,                // loop indices
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // starting indices
+  
   PetscReal dt = parameters->dt; // time-increment
   
   Vec MHatxGlobal, MHatyGlobal, MHatzGlobal;

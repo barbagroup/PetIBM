@@ -6,7 +6,7 @@
  */
 
 /**
- * \brief Initiliazes the lambda vector that contains the pressure.
+ * \brief Initializes the lambda vector that contains the pressure.
  *
  * Only reads the pressure field when the simulation is restarted or when a 
  * custom initial field is used.

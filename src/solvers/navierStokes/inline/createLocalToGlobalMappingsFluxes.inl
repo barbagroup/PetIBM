@@ -28,6 +28,7 @@ template <>
 PetscErrorCode NavierStokesSolver<2>::createLocalToGlobalMappingsFluxes()
 {
 	PetscErrorCode ierr;
+
 	PetscInt i, j,           // loop indices
 					 m, n,           // local number of nodes along each direction
 					 mstart, nstart; // starting indices

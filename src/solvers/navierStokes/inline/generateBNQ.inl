@@ -45,7 +45,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
   ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
   lambdaLocalSize = lambdaEnd-lambdaStart;
 
-  PetscReal **pGlobalIdx;
+  PetscReal **pMappingArray;
   ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
   // determine nnz in matrix BNQ row by row

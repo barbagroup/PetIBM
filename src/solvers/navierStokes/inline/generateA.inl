@@ -69,12 +69,6 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
   
-  PetscReal dxMinus, dxPlus, dyMinus, dyPlus;
-
-  PetscReal dt = parameters->dt, // time-increment
-            nu = flow->nu,       // viscosity
-            alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
-
   // get local size of the fluxes
   PetscInt qStart, qEnd, qLocalSize;
   ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
@@ -131,6 +125,7 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
   // assemble matrix A row by row
+  PetscReal dxMinus, dxPlus, dyMinus, dyPlus;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAVecGetArray(uda, uMapping, &uMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
@@ -169,9 +164,9 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-  ierr = MatScale(A, nu*alpha); CHKERRQ(ierr);
-  ierr = MatShift(A, -1.0/dt); CHKERRQ(ierr);
-  ierr = MatScale(A, -1.0); CHKERRQ(ierr);
+  PetscReal alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
+  ierr = MatScale(A, -flow->nu*alpha); CHKERRQ(ierr);
+  ierr = MatShift(A, 1.0/parameters->dt); CHKERRQ(ierr);
   ierr = MatDiagonalScale(A, MHat, RInv);
 
   return 0;
@@ -187,12 +182,6 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   PetscInt i, j, k,                // loop indices
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // startting indices
-
-  PetscReal dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus;
-
-  PetscReal dt = parameters->dt, // time-incremet
-            nu = flow->nu, // viscosity
-            alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
 
   // get local size of the fluxes
   PetscInt qStart, qEnd, qLocalSize;
@@ -273,6 +262,7 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
   // assemble matrix A row by row
+  PetscReal dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAVecGetArray(uda, uMapping, &uMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
@@ -343,9 +333,9 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-  ierr = MatScale(A, nu*alpha); CHKERRQ(ierr);
-  ierr = MatShift(A, -1.0/dt); CHKERRQ(ierr);
-  ierr = MatScale(A, -1.0); CHKERRQ(ierr);
+  PetscReal alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
+  ierr = MatScale(A, -flow->nu*alpha); CHKERRQ(ierr);
+  ierr = MatShift(A, 1.0/parameters->dt); CHKERRQ(ierr);
   ierr = MatDiagonalScale(A, MHat, RInv); CHKERRQ(ierr);
 
   return 0;

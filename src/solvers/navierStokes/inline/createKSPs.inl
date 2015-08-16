@@ -46,6 +46,10 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
   ierr = KSPSetType(ksp1, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp1, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp1); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "KSP info: Velocity system"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
+  ierr = KSPView(ksp1, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
 
   // create KSP for Poisson system
   ierr = KSPCreate(PETSC_COMM_WORLD, &ksp2); CHKERRQ(ierr);
@@ -60,6 +64,10 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
   ierr = KSPSetType(ksp2, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp2, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp2); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "KSP info: Poisson system"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
+  ierr = KSPView(ksp2, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
 
   return 0;
 } // createKSPs

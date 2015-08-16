@@ -39,7 +39,6 @@ public:
   Vec pMapping, uMapping, vMapping, wMapping;
 
   KSP ksp1, ksp2;
-  PC pc1, pc2;
 
   Mat A,
       QT,
@@ -87,26 +86,21 @@ public:
   PetscErrorCode createKSPs();
   // populate flux vectors with initial conditions
   PetscErrorCode initializeFluxes();
+  // add initial perturbation to velocity field
   PetscErrorCode addInitialPerturbation();
   // initialize lambda vector with previously saved data
   PetscErrorCode initializeLambda();
+  
   // generate diagonal matrices M and Rinv
   PetscErrorCode generateDiagonalMatrices();
+  
   // count number of non-zeros in the diagonal and off-diagonal portions of the parallel matrices
   void countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, 
                         PetscInt &d_nnz, PetscInt &o_nnz);
+  
   // generate the matrix A
   PetscErrorCode generateA();
-  // calculate explicit convective and diffusive terms
-  PetscErrorCode calculateExplicitTerms();
-  // assemble velocity boundary conditions vector
-  PetscErrorCode generateBC1();
-  // assemble RHS of intermediate velocity system
-  PetscErrorCode generateRHS1();
-  // assemble boundary conditions vector for the pressure-force system
-  virtual PetscErrorCode generateR2();
-  // assemble RHS of pressure-force system
-  PetscErrorCode generateRHS2();
+  
   // compute matrix \f$ B^N Q \f$
   virtual PetscErrorCode generateBNQ();
   // compute matrix \f$ Q^T B^N Q \f$
@@ -114,8 +108,20 @@ public:
   // calculate and specify to the Krylov solver the null-space of the LHS matrix
   // in the pressure-force system
   virtual PetscErrorCode setNullSpace();
+
+  // assemble RHS of velocity system
+  PetscErrorCode assembleRHSVelocity();
+  // calculate explicit convective and diffusive terms
+  PetscErrorCode calculateExplicitTerms();
   // update values in ghost nodes at the domain boundaries
   PetscErrorCode updateBoundaryGhosts();
+  // assemble velocity boundary conditions vector
+  PetscErrorCode generateBC1();
+
+  // aasemble RHS of Poisson system
+  PetscErrorCode assembleRHSPoisson();
+  // assemble boundary conditions vector for the pressure-force system
+  virtual PetscErrorCode generateR2();
 
   // advance in time
   PetscErrorCode stepTime();
@@ -154,8 +160,6 @@ public:
   // clean up at end of simulation
   PetscErrorCode finalize();
 
-  // specify if data needs to be saved at current time-step
-  PetscBool savePoint();
   // evaluate if the simulation is completed
   PetscBool finished();
 

@@ -32,8 +32,6 @@ PetscErrorCode NavierStokesSolver<2>::generateDiagonalMatrices()
   PetscInt i, j,           // loop indices
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
-  
-  PetscReal dt = parameters->dt; // time-increment
 
   Vec MHatxGlobal, MHatyGlobal;
   ierr = DMCompositeGetAccess(qPack, MHat, &MHatxGlobal, &MHatyGlobal); CHKERRQ(ierr);
@@ -54,9 +52,9 @@ PetscErrorCode NavierStokesSolver<2>::generateDiagonalMatrices()
   {
     for (i=mstart; i<mstart+m; i++)
     {
-      MHatx[j][i] = (i<mesh->nx-1)? 0.5*(mesh->dx[i] + mesh->dx[i+1]) : 0.5*(mesh->dx[i] + mesh->dx[0]);
+      MHatx[j][i] = (i<mesh->nx-1) ? 0.5*(mesh->dx[i]+mesh->dx[i+1]) : 0.5*(mesh->dx[i]+mesh->dx[0]);
       RInvx[j][i] = 1.0/mesh->dy[j];
-      BNx[j][i]   = dt/(MHatx[j][i]*RInvx[j][i]);
+      BNx[j][i]   = parameters->dt/(MHatx[j][i]*RInvx[j][i]);
     }
   }
   ierr = DMDAVecRestoreArray(uda, MHatxGlobal, &MHatx); CHKERRQ(ierr);
@@ -75,9 +73,9 @@ PetscErrorCode NavierStokesSolver<2>::generateDiagonalMatrices()
   {
     for (i=mstart; i<mstart+m; i++)
     {
-      MHaty[j][i] = (j<mesh->ny-1)? 0.5*(mesh->dy[j] + mesh->dy[j+1]) : 0.5*(mesh->dy[j] + mesh->dy[0]);
+      MHaty[j][i] = (j<mesh->ny-1) ? 0.5*(mesh->dy[j]+mesh->dy[j+1]) : 0.5*(mesh->dy[j]+mesh->dy[0]);
       RInvy[j][i] = 1.0/mesh->dx[i];
-      BNy[j][i] = dt/(MHaty[j][i]*RInvy[j][i]);
+      BNy[j][i] = parameters->dt/(MHaty[j][i]*RInvy[j][i]);
     }
   }
   ierr = DMDAVecRestoreArray(vda, MHatyGlobal, &MHaty); CHKERRQ(ierr);
@@ -102,8 +100,6 @@ PetscErrorCode NavierStokesSolver<3>::generateDiagonalMatrices()
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // starting indices
   
-  PetscReal dt = parameters->dt; // time-increment
-  
   Vec MHatxGlobal, MHatyGlobal, MHatzGlobal;
   ierr = DMCompositeGetAccess(qPack, MHat, &MHatxGlobal, &MHatyGlobal, &MHatzGlobal); CHKERRQ(ierr);
   Vec RInvxGlobal, RInvyGlobal, RInvzGlobal;
@@ -125,9 +121,9 @@ PetscErrorCode NavierStokesSolver<3>::generateDiagonalMatrices()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        MHatx[k][j][i] = (i < mesh->nx-1)? 0.5*(mesh->dx[i] + mesh->dx[i+1]) : 0.5*(mesh->dx[i] + mesh->dx[0]);
+        MHatx[k][j][i] = (i < mesh->nx-1) ? 0.5*(mesh->dx[i]+mesh->dx[i+1]) : 0.5*(mesh->dx[i]+mesh->dx[0]);
         RInvx[k][j][i] = 1.0/(mesh->dy[j]*mesh->dz[k]);
-        BNx[k][j][i]   = dt/(MHatx[k][j][i]*RInvx[k][j][i]);
+        BNx[k][j][i]   = parameters->dt/(MHatx[k][j][i]*RInvx[k][j][i]);
       }
     }
   }
@@ -149,9 +145,9 @@ PetscErrorCode NavierStokesSolver<3>::generateDiagonalMatrices()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        MHaty[k][j][i] = (j < mesh->ny-1)? 0.5*(mesh->dy[j] + mesh->dy[j+1]) : 0.5*(mesh->dy[j] + mesh->dy[0]);
-        RInvy[k][j][i] = 1.0/(mesh->dz[k]*mesh->dx[i]);
-        BNy[k][j][i]   = dt/(MHaty[k][j][i]*RInvy[k][j][i]);
+        MHaty[k][j][i] = (j < mesh->ny-1) ? 0.5*(mesh->dy[j]+mesh->dy[j+1]) : 0.5*(mesh->dy[j]+mesh->dy[0]);
+        RInvy[k][j][i] = 1.0/(mesh->dx[i]*mesh->dz[k]);
+        BNy[k][j][i]   = parameters->dt/(MHaty[k][j][i]*RInvy[k][j][i]);
       }
     }
   }
@@ -173,9 +169,9 @@ PetscErrorCode NavierStokesSolver<3>::generateDiagonalMatrices()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        MHatz[k][j][i] = (k < mesh->nz-1)? 0.5*(mesh->dz[k] + mesh->dz[k+1]) : 0.5*(mesh->dz[k] + mesh->dz[0]);
+        MHatz[k][j][i] = (k < mesh->nz-1) ? 0.5*(mesh->dz[k]+mesh->dz[k+1]) : 0.5*(mesh->dz[k]+mesh->dz[0]);
         RInvz[k][j][i] = 1.0/(mesh->dx[i]*mesh->dy[j]);
-        BNz[k][j][i]   = dt/(MHatz[k][j][i]*RInvz[k][j][i]);
+        BNz[k][j][i]   = parameters->dt/(MHatz[k][j][i]*RInvz[k][j][i]);
       }
     }
   }

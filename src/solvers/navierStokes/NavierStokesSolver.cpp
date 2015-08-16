@@ -68,9 +68,6 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
   // KSPs
   ksp1 = PETSC_NULL;
   ksp2 = PETSC_NULL;
-  // PCs
-  pc1 = PETSC_NULL;
-  pc2 = PETSC_NULL;
   // PetscLogStages
   PetscLogStageRegister("initialize", &stageInitialize);
   PetscLogStageRegister("RHSVelocity", &stageRHSVelocitySystem);
@@ -140,97 +137,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 
 
 /**
- * \brief Deallocate memory to avoid memory leaks.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::finalize()
-{
-  PetscErrorCode ierr;
-  
-  // DMs
-  if(pda!=PETSC_NULL) {ierr = DMDestroy(&pda); CHKERRQ(ierr);}
-  if(uda!=PETSC_NULL) {ierr = DMDestroy(&uda); CHKERRQ(ierr);}
-  if(vda!=PETSC_NULL) {ierr = DMDestroy(&vda); CHKERRQ(ierr);}
-  if(wda!=PETSC_NULL) {ierr = DMDestroy(&wda); CHKERRQ(ierr);}
-  if(qPack!=PETSC_NULL){ierr = DMDestroy(&qPack); CHKERRQ(ierr);}
-  if(lambdaPack!=PETSC_NULL){ierr = DMDestroy(&lambdaPack); CHKERRQ(ierr);}
-  
-  // Vecs
-  if(q!=PETSC_NULL)    {ierr = VecDestroy(&q); CHKERRQ(ierr);}
-  if(qStar!=PETSC_NULL){ierr = VecDestroy(&qStar); CHKERRQ(ierr);}
-  
-  if(qxLocal!=PETSC_NULL){ierr = VecDestroy(&qxLocal); CHKERRQ(ierr);}
-  if(qyLocal!=PETSC_NULL){ierr = VecDestroy(&qyLocal); CHKERRQ(ierr);}
-  if(qzLocal!=PETSC_NULL){ierr = VecDestroy(&qzLocal); CHKERRQ(ierr);}
-
-  if(H!=PETSC_NULL)   {ierr = VecDestroy(&H); CHKERRQ(ierr);}
-  if(rn!=PETSC_NULL)  {ierr = VecDestroy(&rn); CHKERRQ(ierr);}
-  if(bc1!=PETSC_NULL) {ierr = VecDestroy(&bc1); CHKERRQ(ierr);}
-  if(rhs1!=PETSC_NULL){ierr = VecDestroy(&rhs1); CHKERRQ(ierr);}
-  if(temp!=PETSC_NULL){ierr = VecDestroy(&temp); CHKERRQ(ierr);}
-  if(lambda!=PETSC_NULL) {ierr = VecDestroy(&lambda); CHKERRQ(ierr);}
-  if(r2!=PETSC_NULL)  {ierr = VecDestroy(&r2); CHKERRQ(ierr);}
-  if(rhs2!=PETSC_NULL){ierr = VecDestroy(&rhs2); CHKERRQ(ierr);}
-
-  if(uMapping!=PETSC_NULL){ierr = VecDestroy(&uMapping); CHKERRQ(ierr);}
-  if(vMapping!=PETSC_NULL){ierr = VecDestroy(&vMapping); CHKERRQ(ierr);}
-  if(wMapping!=PETSC_NULL){ierr = VecDestroy(&wMapping); CHKERRQ(ierr);}
-  if(pMapping!=PETSC_NULL){ierr = VecDestroy(&pMapping); CHKERRQ(ierr);}
-
-  if(MHat!=PETSC_NULL){ierr = VecDestroy(&MHat); CHKERRQ(ierr);}
-  if(RInv!=PETSC_NULL){ierr = VecDestroy(&RInv); CHKERRQ(ierr);}
-  if(BN!=PETSC_NULL)  {ierr = VecDestroy(&BN); CHKERRQ(ierr);}
-
-  // Mats
-  if(A!=PETSC_NULL)    {ierr = MatDestroy(&A); CHKERRQ(ierr);}
-  if(QT!=PETSC_NULL)   {ierr = MatDestroy(&QT); CHKERRQ(ierr);}
-  if(BNQ!=PETSC_NULL)  {ierr = MatDestroy(&BNQ); CHKERRQ(ierr);}
-  if(QTBNQ!=PETSC_NULL){ierr = MatDestroy(&QTBNQ); CHKERRQ(ierr);}
-
-  // KSPs
-  if(ksp1!=PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRQ(ierr);}
-  if(ksp2!=PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRQ(ierr);}
-
-  // Print performance summary to file
-  PetscViewer viewer;
-  std::string filePath = parameters->directory + "/performanceSummary.txt";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = PetscLogView(viewer); CHKERRQ(ierr);
-  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-  return 0;
-} // finalize
-
-
-/**
- * \brief Assembles the RHS of the system for the intermediate fluxes.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::generateRHS1()
-{
-  PetscErrorCode ierr;
-  ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRQ(ierr);
-  ierr = VecPointwiseMult(rhs1, MHat, rhs1); CHKERRQ(ierr);
-
-  return 0;
-} // generateRHS1
-
-
-/**
- * \brief Assembles the RHS of the system for the pressure-forces. 
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::generateRHS2()
-{
-  PetscErrorCode ierr;
-  ierr = VecScale(r2, -1.0); CHKERRQ(ierr);
-  ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRQ(ierr);
-
-  return 0;
-} // generateRHS2
-
-
-/**
  * \brief Adavance in time. Calculates the variables at the next time-step.
  */
 template <PetscInt dim>
@@ -239,28 +145,18 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   PetscErrorCode ierr;
 
   // solve system for intermediate velocity
-  ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
-  ierr = calculateExplicitTerms(); CHKERRQ(ierr);
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
-  ierr = generateBC1(); CHKERRQ(ierr);
-  ierr = generateRHS1(); CHKERRQ(ierr);
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = assembleRHSVelocity(); CHKERRQ(ierr);
   ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
   // solve Poisson system for Lagrange multipliers
   // Navier-Stokes: Lagrange multipliers = pressure
   // Taira-Colonius: Lagrange multipliers = pressure + body forces
-  ierr = PetscLogStagePush(stageRHSPoissonSystem); CHKERRQ(ierr);
-  ierr = generateR2(); CHKERRQ(ierr);
-  ierr = generateRHS2(); CHKERRQ(ierr);
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = assembleRHSPoisson(); CHKERRQ(ierr);
   ierr = solvePoissonSystem(); CHKERRQ(ierr);
 
   // project intermediate velocity field to satisfy divergence-free condition
   // and no-slip condition at immersed boundary (when Taira-Colonius method used)
-  ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
   ierr = projectionStep(); CHKERRQ(ierr);
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);
   
   timeStep++;
 
@@ -269,7 +165,29 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 
 
 /**
- * \brief Solves system for the intermediate fluxes.
+ * \brief Assembles the right hand-side of the velocity system.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::assembleRHSVelocity()
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
+
+  ierr = calculateExplicitTerms(); CHKERRQ(ierr);
+  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
+  ierr = generateBC1(); CHKERRQ(ierr);
+  ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRQ(ierr);
+  ierr = VecPointwiseMult(rhs1, MHat, rhs1); CHKERRQ(ierr);
+
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+  return 0;
+} // assembleRHSVelocity
+
+
+/**
+ * \brief Solves the system for the intermediate fluxes.
  */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
@@ -277,13 +195,16 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
   PetscErrorCode ierr;
 
   ierr = PetscLogStagePush(stageSolveVelocitySystem); CHKERRQ(ierr);
+
   ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRQ(ierr);
+  
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   KSPConvergedReason reason;
   ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
+    ierr = KSPView(ksp1, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
                        "\nERROR: velocity solver diverged due to reason: %d\n", 
                        reason); CHKERRQ(ierr);
@@ -295,6 +216,26 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 
 
 /**
+ * \brief Assembles the right hand-side of the Poisson system
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::assembleRHSPoisson()
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscLogStagePush(stageRHSPoissonSystem); CHKERRQ(ierr);
+
+  ierr = generateR2(); CHKERRQ(ierr);
+  ierr = VecScale(r2, -1.0); CHKERRQ(ierr);
+  ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRQ(ierr);
+  
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);  
+
+  return 0;
+} // assembleRHSPoisson
+
+
+/**
  * \brief Solves Poisson system for the pressure-forces.
  */
 template <PetscInt dim>
@@ -303,13 +244,16 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   PetscErrorCode ierr;
   
   ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
+
   ierr = KSPSolve(ksp2, rhs2, lambda); CHKERRQ(ierr);
+  
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
   
   KSPConvergedReason reason;
   ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
+    ierr = KSPView(ksp2, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
                        "\nERROR: Poisson solver diverged due to reason: %d\n", 
                        reason); CHKERRQ(ierr);
@@ -335,32 +279,16 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::projectionStep()
 {
   PetscErrorCode ierr;
+
+  ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
   
   ierr = MatMult(BNQ, lambda, temp); CHKERRQ(ierr);
   ierr = VecWAXPY(q, -1.0, temp, qStar); CHKERRQ(ierr);
 
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
   return 0;
 } // projectionStep
-
-
-/**
- * \brief Do the data need to be saved at the current time-step?
- */
-template <PetscInt dim>
-PetscBool NavierStokesSolver<dim>::savePoint()
-{
-  return (timeStep%parameters->nsave == 0)? PETSC_TRUE : PETSC_FALSE;
-} // savePoint
-
-
-/**
- * \brief Is the simulation completed?
- */
-template <PetscInt dim>
-PetscBool NavierStokesSolver<dim>::finished()
-{
-  return (timeStep >= parameters->startStep+parameters->nt)? PETSC_TRUE : PETSC_FALSE;
-} // finished
 
 
 /**
@@ -371,7 +299,7 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
 {
   PetscErrorCode ierr;
 
-  PetscLogEvent  GENERATE_QTBNQ;
+  PetscLogEvent GENERATE_QTBNQ;
   ierr = PetscLogEventRegister("generateQTBNQ", 0, &GENERATE_QTBNQ); CHKERRQ(ierr);
   ierr = PetscLogEventBegin(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
@@ -402,7 +330,9 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
  *
  */
 template <PetscInt dim>
-void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, PetscInt rowStart, PetscInt rowEnd, PetscInt &d_nnz, PetscInt &o_nnz)
+void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, 
+                                               PetscInt rowStart, PetscInt rowEnd, 
+                                               PetscInt &d_nnz, PetscInt &o_nnz)
 {
   d_nnz = 0;
   o_nnz = 0;
@@ -411,6 +341,76 @@ void NavierStokesSolver<dim>::countNumNonZeros(PetscInt *cols, size_t numCols, P
     (cols[i]>=rowStart && cols[i]<rowEnd)? d_nnz++ : o_nnz++;
   }
 } // countNumNonZeros
+
+
+/**
+ * \brief Is the simulation completed?
+ */
+template <PetscInt dim>
+PetscBool NavierStokesSolver<dim>::finished()
+{
+  return (timeStep >= parameters->startStep+parameters->nt)? PETSC_TRUE : PETSC_FALSE;
+} // finished
+
+
+/**
+ * \brief Deallocate memory to avoid memory leaks.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::finalize()
+{
+  PetscErrorCode ierr;
+  
+  // DM objects
+  if (pda != PETSC_NULL)       {ierr = DMDestroy(&pda); CHKERRQ(ierr);}
+  if (uda != PETSC_NULL)       {ierr = DMDestroy(&uda); CHKERRQ(ierr);}
+  if (vda != PETSC_NULL)       {ierr = DMDestroy(&vda); CHKERRQ(ierr);}
+  if (wda != PETSC_NULL)       {ierr = DMDestroy(&wda); CHKERRQ(ierr);}
+  if (qPack != PETSC_NULL)     {ierr = DMDestroy(&qPack); CHKERRQ(ierr);}
+  if (lambdaPack != PETSC_NULL){ierr = DMDestroy(&lambdaPack); CHKERRQ(ierr);}
+  // global solution vectors
+  if (q != PETSC_NULL)    {ierr = VecDestroy(&q); CHKERRQ(ierr);}
+  if (qStar != PETSC_NULL){ierr = VecDestroy(&qStar); CHKERRQ(ierr);}
+  // local fluxes vectors
+  if (qxLocal != PETSC_NULL){ierr = VecDestroy(&qxLocal); CHKERRQ(ierr);}
+  if (qyLocal != PETSC_NULL){ierr = VecDestroy(&qyLocal); CHKERRQ(ierr);}
+  if (qzLocal != PETSC_NULL){ierr = VecDestroy(&qzLocal); CHKERRQ(ierr);}
+  // global vectors
+  if (H != PETSC_NULL)     {ierr = VecDestroy(&H); CHKERRQ(ierr);}
+  if (rn != PETSC_NULL)    {ierr = VecDestroy(&rn); CHKERRQ(ierr);}
+  if (bc1 != PETSC_NULL)   {ierr = VecDestroy(&bc1); CHKERRQ(ierr);}
+  if (rhs1 != PETSC_NULL)  {ierr = VecDestroy(&rhs1); CHKERRQ(ierr);}
+  if (temp != PETSC_NULL)  {ierr = VecDestroy(&temp); CHKERRQ(ierr);}
+  if (lambda != PETSC_NULL){ierr = VecDestroy(&lambda); CHKERRQ(ierr);}
+  if (r2 != PETSC_NULL)    {ierr = VecDestroy(&r2); CHKERRQ(ierr);}
+  if (rhs2 != PETSC_NULL)  {ierr = VecDestroy(&rhs2); CHKERRQ(ierr);}
+  // mappings local to global indices
+  if (uMapping != PETSC_NULL){ierr = VecDestroy(&uMapping); CHKERRQ(ierr);}
+  if (vMapping != PETSC_NULL){ierr = VecDestroy(&vMapping); CHKERRQ(ierr);}
+  if (wMapping != PETSC_NULL){ierr = VecDestroy(&wMapping); CHKERRQ(ierr);}
+  if (pMapping != PETSC_NULL){ierr = VecDestroy(&pMapping); CHKERRQ(ierr);}
+  // diagonal matrices
+  if (MHat != PETSC_NULL){ierr = VecDestroy(&MHat); CHKERRQ(ierr);}
+  if (RInv != PETSC_NULL){ierr = VecDestroy(&RInv); CHKERRQ(ierr);}
+  if (BN != PETSC_NULL)  {ierr = VecDestroy(&BN); CHKERRQ(ierr);}
+  // matrices
+  if (A != PETSC_NULL)    {ierr = MatDestroy(&A); CHKERRQ(ierr);}
+  if (QT != PETSC_NULL)   {ierr = MatDestroy(&QT); CHKERRQ(ierr);}
+  if (BNQ != PETSC_NULL)  {ierr = MatDestroy(&BNQ); CHKERRQ(ierr);}
+  if (QTBNQ != PETSC_NULL){ierr = MatDestroy(&QTBNQ); CHKERRQ(ierr);}
+  // KSPs
+  if (ksp1 != PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRQ(ierr);}
+  if (ksp2 != PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRQ(ierr);}
+
+  // print performance summary to file
+  PetscViewer viewer;
+  std::string filePath = parameters->directory + "/performanceSummary.txt";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = PetscLogView(viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+  return 0;
+} // finalize
 
 
 #include "inline/createDMs.inl"

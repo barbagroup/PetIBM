@@ -81,7 +81,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[YMINUS][0].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dy[0])/(0.5*dy[0]+0.5*(dy[0]+dy[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dy[N])/(0.5*(dy[N-1]+dy[N]));
+    coeffPlus = alpha*nu * 2.0/(0.5*dy[N-1])/(0.5*(dy[N-2]+dy[N-1])+0.5*dy[N-1]);
     for (i=mstart; i<mstart+m; i++) // loop over x-direction
     { 
       if (nstart == 0) // bottom boundary on current boundary
@@ -124,7 +124,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[XMINUS][1].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dx[0])/(0.5*dx[0]+0.5*(dx[0]+dx[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dx[M])/(0.5*(dx[M-1]+dx[M])+0.5*dx[M]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dx[M-1])/(0.5*(dx[M-2]+dx[M-1])+0.5*dx[M-1]);
     for (j=nstart; j<nstart+n; j++) //loop over y-direction
     {
       if (mstart == 0) // left boundary on current process
@@ -157,7 +157,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[YMINUS][1].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/dy[0]/(dy[0]+dy[1]);
-    coeffPlus = alpha*nu * 2.0/dy[N]/(dy[N]+dy[N-1]);
+    coeffPlus = alpha*nu * 2.0/dy[N]/(dy[N-1]+dy[N]);
     for (i=mstart; i<mstart+m; i++) // loop over x-direction
     { 
       if (nstart == 0) // bottom boundary on current process
@@ -229,7 +229,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[XMINUS][0].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/dx[0]/(dx[0]+dx[1]);
-    coeffPlus = alpha*nu * 2.0/dx[M]/(dx[M]+dx[M-1]);
+    coeffPlus = alpha*nu * 2.0/dx[M]/(dx[M-1]+dx[M]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
       for (j=nstart; j<nstart+n; j++) // loop over y-direction
@@ -537,7 +537,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[ZMINUS][2].type != PERIODIC) // do not update if z-periodic
   {
     coeffMinus = alpha*nu * 2.0/dz[0]/(dz[0]+dz[1]);
-    coeffPlus = alpha*nu * 2.0/dz[P]/(dz[P]+dz[P-1]);
+    coeffPlus = alpha*nu * 2.0/dz[P]/(dz[P-1]+dz[P]);
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
       for (i=mstart; i<mstart+m; i++) // loop over x-direction

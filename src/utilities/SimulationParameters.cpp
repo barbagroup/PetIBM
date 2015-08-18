@@ -69,8 +69,9 @@ void SimulationParameters::initialize(std::string filePath)
       convection.coefficients.push_back(1.0); // n coefficient
       break;
     case ADAMS_BASHFORTH_2:
-      convection.coefficients.push_back(1.5);  // n+1 coefficient
-      convection.coefficients.push_back(-0.5); // n coefficient
+      convection.coefficients.push_back(0.0);  // n+1 coefficient
+      convection.coefficients.push_back(1.5);  // n coefficient
+      convection.coefficients.push_back(-0.5); // n-1 coefficient
       break;
     default:
       std::cout << "\nERROR: unknown numerical scheme for convective terms.\n";

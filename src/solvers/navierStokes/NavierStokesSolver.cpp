@@ -146,6 +146,7 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 
   // solve system for intermediate velocity
   ierr = assembleRHSVelocity(); CHKERRQ(ierr);
+  ierr = helpers(); CHKERRQ(ierr);
   ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
   // solve Poisson system for Lagrange multipliers
@@ -158,6 +159,9 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   // and no-slip condition at immersed boundary (when Taira-Colonius method used)
   ierr = projectionStep(); CHKERRQ(ierr);
   
+  // code-development helpers: output vectors and matrices
+  // ierr = helpers(); CHKERRQ(ierr);
+
   timeStep++;
 
   return 0;
@@ -205,6 +209,7 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
   if (reason < 0)
   {
     ierr = KSPView(ksp1, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d]", timeStep); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
                        "\nERROR: velocity solver diverged due to reason: %d\n", 
                        reason); CHKERRQ(ierr);
@@ -254,6 +259,7 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   if (reason < 0)
   {
     ierr = KSPView(ksp2, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d]", timeStep); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
                        "\nERROR: Poisson solver diverged due to reason: %d\n", 
                        reason); CHKERRQ(ierr);
@@ -351,6 +357,34 @@ PetscBool NavierStokesSolver<dim>::finished()
 {
   return (timeStep >= parameters->startStep+parameters->nt)? PETSC_TRUE : PETSC_FALSE;
 } // finished
+
+
+/**
+ * \brief Code-development helpers: outputs vectors and matrices to files.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::helpers()
+{
+  PetscErrorCode ierr;
+
+  if (timeStep == parameters->startStep)
+  {
+    PetscBool outputToFiles = PETSC_FALSE;
+    ierr = PetscOptionsBool("-outputs", 
+                            "Outputs vectors and matrices to check implementation", "",
+                            outputToFiles, &outputToFiles, NULL); CHKERRQ(ierr);
+    if (outputToFiles)
+    {
+      ierr = helperOutputVectors(); CHKERRQ(ierr);
+      ierr = helperOutputMatrices(); CHKERRQ(ierr);
+      ierr = finalize();
+      ierr = PetscFinalize(); CHKERRQ(ierr);
+      exit(0);
+    }
+  }
+
+  return 0;
+} // helpers
 
 
 /**

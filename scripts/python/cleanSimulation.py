@@ -33,8 +33,11 @@ def read_inputs():
   parser.add_argument('--no-logs', dest='logs', action='store_false',
                       help='does not remove log files '
                            '(iterationCount, performanceSummary)')
+  parser.add_argument('--no-outputs', dest='outputs', action='store_false',
+                      help='does not remove outputs folder '
+                           '(contains vectors and matrices to help code-development)')
   parser.set_defaults(images=True, data=True, grid=True, solutions=True, 
-                      forces=True, vtk_files=True, logs=True)
+                      forces=True, vtk_files=True, logs=True, outputs=True)
   return parser.parse_args()
 
 
@@ -57,8 +60,10 @@ def main():
   if args.vtk_files:
     paths['vtk_files'] = '{}/vtk_files'.format(args.case_directory)
   if args.logs:
-    paths['logs'] = ('{0}/iterationCount.txt '
+    paths['logs'] = ('{0}/iterationCounts.txt '
                      '{0}/performanceSummary.txt'.format(args.case_directory))
+  if args.outputs:
+    paths['outputs'] = ('{}/outputs'.format(args.case_directory))
   # delete appropriate files/folders
   print('[case-directory] {}'.format(args.case_directory))
   for key, path in paths.iteritems():

@@ -66,6 +66,7 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   PetscErrorCode ierr;
 
   PetscInt i, j,           // loop indices
+           M, N,           // global number of nodes along each direction
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
   
@@ -129,10 +130,11 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   // rows corresponding to fluxes in x-direction
   ierr = DMDAVecGetArray(uda, uMapping, &uMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  ierr = DMDAGetInfo(uda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
-    dyMinus = 0.5 * (mesh->dy[j-1] + mesh->dy[j]);
-    dyPlus = 0.5 * (mesh->dy[j] + mesh->dy[j+1]);
+    dyMinus = (j == 0) ? 0.5*mesh->dy[0] : 0.5*(mesh->dy[j-1]+mesh->dy[j]);
+    dyPlus = (j == N-1) ? 0.5*mesh->dy[N-1] : 0.5*(mesh->dy[j]+mesh->dy[j+1]);
     for (i=mstart; i<mstart+m; i++)
     {
       dxMinus = mesh->dx[i];
@@ -146,14 +148,15 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   // row corresponding to fluxes in y-direction
   ierr = DMDAVecGetArray(vda, vMapping, &vMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  ierr = DMDAGetInfo(vda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
     dyMinus = mesh->dy[j];
     dyPlus = mesh->dy[j+1];
     for (i=mstart; i<mstart+m; i++)
     {
-      dxMinus = 0.5 * (mesh->dx[i-1] + mesh->dx[i]);
-      dxPlus = 0.5 * (mesh->dx[i] + mesh->dx[i+1]);
+      dxMinus = (i == 0) ? 0.5*mesh->dx[0] : 0.5*(mesh->dx[i-1]+mesh->dx[i]);
+      dxPlus = (i == M-1) ? 0.5*mesh->dx[M-1] : 0.5*(mesh->dx[i]+mesh->dx[i+1]);
       getColumnIndices(vMappingArray, i, j, cols);
       getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, values);
       ierr = MatSetValues(A, 1, &cols[0], 5, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -165,7 +168,7 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
   PetscReal alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
-  ierr = MatScale(A, -flow->nu*alpha); CHKERRQ(ierr);
+  ierr = MatScale(A, -alpha*flow->nu); CHKERRQ(ierr);
   ierr = MatShift(A, 1.0/parameters->dt); CHKERRQ(ierr);
   ierr = MatDiagonalScale(A, MHat, RInv);
 
@@ -180,6 +183,7 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   PetscErrorCode ierr;
 
   PetscInt i, j, k,                // loop indices
+           M, N, P,                // global number of nodes along each direction
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // startting indices
 
@@ -266,14 +270,15 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   // rows corresponding to fluxes in x-direction
   ierr = DMDAVecGetArray(uda, uMapping, &uMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetInfo(uda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    dzMinus = 0.5 * (mesh->dz[k-1] + mesh->dz[k]);
-    dzPlus = 0.5 * (mesh->dz[k] + mesh->dz[k+1]);
+    dzMinus = (k == 0) ? 0.5*mesh->dz[0] : 0.5*(mesh->dz[k-1]+mesh->dz[k]);
+    dzPlus = (k == P-1) ? 0.5*mesh->dz[P-1] : 0.5*(mesh->dz[k]+mesh->dz[k+1]);
     for (j=nstart; j<nstart+n; j++)
     {
-      dyMinus = 0.5 * (mesh->dy[j-1] + mesh->dy[j]);
-      dyPlus = 0.5 * (mesh->dy[j] + mesh->dy[j+1]);
+      dyMinus = (j == 0) ? 0.5*mesh->dy[0] : 0.5*(mesh->dy[j-1]+mesh->dy[j]);
+      dyPlus = (j == N-1) ? 0.5*mesh->dy[N-1] : 0.5*(mesh->dy[j]+mesh->dy[j+1]);
       for (i=mstart; i<mstart+m; i++)
       {
         dxMinus = mesh->dx[i];
@@ -288,18 +293,19 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   // rows corresponding to fluxes in y-direction
   ierr = DMDAVecGetArray(vda, vMapping, &vMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetInfo(vda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    dzMinus = 0.5 * (mesh->dz[k-1] + mesh->dz[k]);
-    dzPlus = 0.5 * (mesh->dz[k] + mesh->dz[k+1]);
+    dzMinus = (k == 0) ? 0.5*mesh->dz[0] : 0.5*(mesh->dz[k-1]+mesh->dz[k]);
+    dzPlus = (k == P-1) ? 0.5*mesh->dz[P-1] : 0.5*(mesh->dz[k]+mesh->dz[k+1]);
     for (j=nstart; j<nstart+n; j++)
     {
       dyMinus = mesh->dy[j];
       dyPlus = mesh->dy[j+1];
       for (i=mstart; i<mstart+m; i++)
       {
-        dxMinus = 0.5 * (mesh->dx[i-1] + mesh->dx[i]);
-        dxPlus = 0.5 * (mesh->dx[i] + mesh->dx[i+1]);
+        dxMinus = (i == 0) ? 0.5*mesh->dx[0] : 0.5*(mesh->dx[i-1]+mesh->dx[i]);
+        dxPlus = (i == M-1) ? 0.5*mesh->dx[M-1] : 0.5*(mesh->dx[i]+mesh->dx[i+1]);
         getColumnIndices(vMappingArray, i, j, k, cols);
         getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus, values);
         ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -310,18 +316,19 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   // rows corresponding to fluxes in z-direction
   ierr = DMDAVecGetArray(wda, wMapping, &wMappingArray); CHKERRQ(ierr);
   ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetInfo(wda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
     dzMinus = mesh->dz[k];
     dzPlus = mesh->dz[k+1];
     for (j=nstart; j<nstart+n; j++)
     {
-      dyMinus = 0.5 * (mesh->dy[j-1] + mesh->dy[j]);
-      dyPlus = 0.5 * (mesh->dy[j] + mesh->dy[j+1]);
+      dyMinus = (j == 0) ? 0.5*mesh->dy[0] : 0.5*(mesh->dy[j-1]+mesh->dy[j]);
+      dyPlus = (j == N-1) ? 0.5*mesh->dy[N-1] : 0.5*(mesh->dy[j]+mesh->dy[j+1]);
       for (i=mstart; i<mstart+m; i++)
       {
-        dxMinus = 0.5 * (mesh->dx[i-1] + mesh->dx[i]);
-        dxPlus = 0.5 * (mesh->dx[i] + mesh->dx[i+1]);
+        dxMinus = (i == 0) ? 0.5*mesh->dx[0] : 0.5*(mesh->dx[i-1]+mesh->dx[i]);
+        dxPlus = (i == M-1) ? 0.5*mesh->dx[M-1] : 0.5*(mesh->dx[i]+mesh->dx[i+1]);
         getColumnIndices(wMappingArray, i, j, k, cols);
         getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus, values);
         ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -334,7 +341,7 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
   PetscReal alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
-  ierr = MatScale(A, -flow->nu*alpha); CHKERRQ(ierr);
+  ierr = MatScale(A, -alpha*flow->nu); CHKERRQ(ierr);
   ierr = MatShift(A, 1.0/parameters->dt); CHKERRQ(ierr);
   ierr = MatDiagonalScale(A, MHat, RInv); CHKERRQ(ierr);
 

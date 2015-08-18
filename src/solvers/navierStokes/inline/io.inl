@@ -319,3 +319,113 @@ PetscErrorCode NavierStokesSolver<dim>::writeIterationCounts()
 
   return 0;
 } // writeIterationCounts
+
+
+/**
+ * \brief Code-development helper: outputs vectors to files.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::helperOutputVectors()
+{
+  PetscErrorCode ierr;
+  
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nCode-development: saving vectors to files..."); CHKERRQ(ierr);
+
+  // create the output directory
+  std::string outputDirectory = parameters->directory + "/outputs";
+  mkdir(outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+  PetscViewer viewer;
+  // bc1
+  std::string filePath = outputDirectory + "/bc1.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(bc1, viewer); CHKERRQ(ierr);
+  // H
+  filePath = outputDirectory + "/H.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(H, viewer); CHKERRQ(ierr);
+  // rn
+  filePath = outputDirectory + "/rn.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(rn, viewer); CHKERRQ(ierr);
+  // rhs1
+  filePath = outputDirectory + "/rhs1.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(rhs1, viewer); CHKERRQ(ierr);
+  // q
+  filePath = outputDirectory + "/q.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(q, viewer); CHKERRQ(ierr);
+  // qx, qy
+  Vec qxGlobal, qyGlobal;
+  ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+  filePath = outputDirectory + "/qx.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(qxGlobal, viewer); CHKERRQ(ierr);
+  filePath = outputDirectory + "/qy.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
+  // qxLocal, qyLocal
+  filePath = outputDirectory + "/qxLocal.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(qxLocal, viewer); CHKERRQ(ierr);
+  filePath = outputDirectory + "/qyLocal.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(qyLocal, viewer); CHKERRQ(ierr);
+  // r2
+  filePath = outputDirectory + "/r2.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(r2, viewer); CHKERRQ(ierr);
+  // rhs2
+  filePath = outputDirectory + "/rhs2.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(rhs2, viewer); CHKERRQ(ierr);
+  // lambda
+  filePath = outputDirectory + "/lambda.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = VecView(lambda, viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
+  return 0;
+} // helperOutputVectors
+
+
+/**
+ * \brief Code-development helper: outputs matrices to files.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::helperOutputMatrices()
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nCode-development: saving matrices to files..."); CHKERRQ(ierr);
+
+  // create the output directory
+  std::string outputDirectory = parameters->directory + "/outputs";
+  mkdir(outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+  PetscViewer viewer;
+  // A
+  std::string filePath = outputDirectory + "/A.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = MatView(A, viewer); CHKERRQ(ierr);
+  // QT
+  filePath = outputDirectory + "/QT.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = MatView(QT, viewer); CHKERRQ(ierr);
+  // BNQ
+  filePath = outputDirectory + "/BNQ.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = MatView(BNQ, viewer); CHKERRQ(ierr);
+  // QTBNQ
+  filePath = outputDirectory + "/QTBNQ.output";
+  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+  ierr = MatView(QTBNQ, viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
+  return 0;
+} // helperOutputMatrices

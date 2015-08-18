@@ -63,7 +63,7 @@ public:
 
   Solver velocitySolver, ///< info about the velocity solver
          poissonSolver;  ///< info about the Poisson solver
-  
+
   // constructors
   SimulationParameters();
   SimulationParameters(std::string directory);

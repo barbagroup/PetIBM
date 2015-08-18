@@ -19,6 +19,7 @@
 
 
 /**
+ * \class NavierStokesSolver
  * \brief Solve the incompressible Navier-Stokes equations in a rectangular or
  *        cuboidal domain.
  */
@@ -147,6 +148,13 @@ public:
   // write KSP iteration counts into file
   PetscErrorCode writeIterationCounts();
   
+  // code-development helpers
+  PetscErrorCode helpers();
+  // code-development helper: output vectors to files
+  PetscErrorCode helperOutputVectors();
+  // code-development helper: output matrices to files
+  PetscErrorCode helperOutputMatrices();
+  
 public:
   // constructor
   NavierStokesSolver(CartesianMesh *cartesianMesh, 
@@ -156,9 +164,9 @@ public:
   ~NavierStokesSolver();
 
   // initialize systems
-  PetscErrorCode initialize();
+  virtual PetscErrorCode initialize();
   // clean up at end of simulation
-  PetscErrorCode finalize();
+  virtual PetscErrorCode finalize();
 
   // evaluate if the simulation is completed
   PetscBool finished();

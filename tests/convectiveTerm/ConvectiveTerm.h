@@ -29,9 +29,8 @@ public:
   PetscErrorCode writeRelativeError();
   PetscErrorCode finalize();
 
-  ConvectiveTerm(std::string directory,
-                 CartesianMesh *cartesianMesh,  
-                 FlowDescription *flowDescription, 
+  ConvectiveTerm(CartesianMesh *cartesianMesh,  
+                 FlowDescription<dim> *flowDescription, 
                  SimulationParameters *simulationParameters);
 
 }; // ConvectiveTerm

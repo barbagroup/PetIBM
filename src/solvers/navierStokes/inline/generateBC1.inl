@@ -55,10 +55,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[XMINUS][0].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1x[j][0] += coeffMinus*qx[j][-1]/dy[j];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -67,10 +67,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {     
         switch (flow->boundaries[XPLUS][0].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1x[j][M-1] += coeffPlus*qx[j][M]/dy[j];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -88,10 +88,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[YMINUS][0].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1x[0][i] += coeffMinus*qx[-1][i];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -100,10 +100,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[YPLUS][0].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1x[N-1][i] += coeffPlus*qx[N][i];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -131,10 +131,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[XMINUS][1].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1y[j][0] += coeffMinus*qy[j][-1];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -143,10 +143,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[XPLUS][1].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1y[j][M-1] += coeffPlus*qy[j][M];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -164,10 +164,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[YMINUS][1].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1y[0][i] += coeffMinus*qy[-1][i]/dx[i];
             break;
-          case CONVECTIVE:
           default:
             break;
         }
@@ -176,10 +176,10 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
       {
         switch (flow->boundaries[YPLUS][1].type)
         {
+          case CONVECTIVE:
           case DIRICHLET:
             bc1y[N-1][i] += coeffPlus*qy[N][i]/dx[i];
             break;
-          case CONVECTIVE:
           default:
             break;
         }

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file calculateForce.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method to compute forces acting on the body.
+ * \brief Implementation of the method `calculateForce` of the class `TairaColoniusSolver`.
  */
 
 
@@ -20,9 +20,11 @@ template <>
 PetscErrorCode TairaColoniusSolver<2>::calculateForce()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, 
-           m, n, 
-           mstart, nstart;
+
+  PetscInt i, j,           // loop indices
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
+
   PetscReal forceOnProcess[2];
 
   // get access to the global body forces vector
@@ -75,9 +77,11 @@ template <>
 PetscErrorCode TairaColoniusSolver<3>::calculateForce()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, k,
-           m, n, p,
-           mstart, nstart, pstart;
+
+  PetscInt i, j, k,                // loop indices
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
+  
   PetscReal forceOnProcess[3];
 
   // get access to global body forces vector

@@ -121,37 +121,37 @@ std::string stringFromBoundaryType(BoundaryType type)
 /**
  * \brief Returns the immersed-boundary method as an enum.
  */
-IBMScheme stringToIBMScheme(std::string s)
+IBMethod stringToIBMethod(std::string s)
 {
-  if (s == "NAVIER_STOKES")
+  if (s == "NONE")
     return NAVIER_STOKES;
   if (s == "TAIRA_COLONIUS")
     return TAIRA_COLONIUS;
-  std::cout << "\nERROR: " << s << " - unknown IBM.\n";
-  std::cout << "IBMs available:\n";
-  std::cout << "\tNAVIER_STOKES\n";
-  std::cout << "\tTAIRA_COLONIUS\n" << std::endl;
+  std::cout << "\nERROR: " << s << " - unknown Immersed Boudnary Method.\n";
+  std::cout << "Immersed Boundary methods implemented:\n";
+  std::cout << "\tTAIRA_COLONIUS\n";
+  std::cout << "\tNONE\n" << std::endl;
   exit(0);
-} // stringToIBMScheme
+} // stringToIBMethod
 
 
 /**
  * \brief Returns the immersed-boundary method as a string.
  */
-std::string stringFromIBMScheme(IBMScheme ibmScheme)
+std::string stringFromIBMethod(IBMethod method)
 {
-  switch(ibmScheme)
+  switch(method)
   {
-    case NAVIER_STOKES:
-      return "Navier-Stokes (Perot, 1993)";
-      break;
     case TAIRA_COLONIUS:
       return "Immersed-Boundary Projection method (Taira and Colonius, 2007)";
+      break;
+    case NAVIER_STOKES:
+      return "Navier-Stokes solver (Perot, 1993)";
       break;
     default:
       break;
   }
-} // stringFromIBMScheme
+} // stringFromIBMethod
 
 
 /**

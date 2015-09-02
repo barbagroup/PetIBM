@@ -1,12 +1,12 @@
 /***************************************************************************//**
  * \file setNullSpace.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `setNullSpace` of the class `TairaColoniusSolver`.
  */
 
 
 /**
- * \brief
+ * \brief Sets the nullspace of the modified Poisson system.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::setNullSpace()

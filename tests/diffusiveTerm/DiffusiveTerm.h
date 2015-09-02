@@ -29,9 +29,8 @@ public:
   PetscErrorCode writeRelativeError();
   PetscErrorCode finalize();
 
-  DiffusiveTerm(std::string directory, 
-                CartesianMesh *cartesianMesh, 
-                FlowDescription *flowDescription, 
+  DiffusiveTerm(CartesianMesh *cartesianMesh, 
+                FlowDescription<dim> *flowDescription, 
                 SimulationParameters *simulationParameters);
 
 }; // DiffusiveTerm

@@ -23,6 +23,7 @@
 int main(int argc, char **argv)
 {
   PetscErrorCode ierr;
+
   const PetscInt dim = DIMENSIONS;
 
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
@@ -32,11 +33,10 @@ int main(int argc, char **argv)
   std::string directory(dir);
 
   CartesianMesh cartesianMesh(directory);
-  FlowDescription flowDescription(directory);
+  FlowDescription<dim> flowDescription(directory);
   SimulationParameters simulationParameters(directory);
 
-  std::unique_ptr< ConvectiveTerm<dim> > solver(new ConvectiveTerm<dim>(directory, 
-                                                                        &cartesianMesh, 
+  std::unique_ptr< ConvectiveTerm<dim> > solver(new ConvectiveTerm<dim>(&cartesianMesh, 
                                                                         &flowDescription, 
                                                                         &simulationParameters));
 
@@ -53,4 +53,4 @@ int main(int argc, char **argv)
   ierr = PetscFinalize(); CHKERRQ(ierr);
 
   return ierr;
-}
+} // main

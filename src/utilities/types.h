@@ -77,13 +77,13 @@ std::string stringFromTimeScheme(TimeScheme timeScheme);
 /**
  * \brief Immersed boundary method used to solve the flow.
  */
-enum IBMScheme
+enum IBMethod
 {
-  NAVIER_STOKES,  ///< no immersed bodies (Perot, 1993)
-  TAIRA_COLONIUS  ///< immersed boundary projection method (Taira & Colonius, 2007)
+  TAIRA_COLONIUS, ///< immersed boundary projection method (Taira & Colonius, 2007)
+  NAVIER_STOKES   ///< no immersed boundary (Perot, 1993)
 };
-IBMScheme stringToIBMScheme(std::string s);
-std::string stringFromIBMScheme(IBMScheme ibmScheme);
+IBMethod stringToIBMethod(std::string s);
+std::string stringFromIBMethod(IBMethod method);
 
 
 /**

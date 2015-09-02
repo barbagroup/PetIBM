@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file generateR2.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `generateR2` of the class `TairaColoniusSolver`.
  */
 
 
@@ -20,9 +20,10 @@ template <>
 PetscErrorCode TairaColoniusSolver<2>::generateR2()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, 
-           m, n, 
-           mstart, nstart;
+
+  PetscInt i, j,           // loop indices 
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
 
   ierr = VecSet(r2, 0.0); CHKERRQ(ierr);
   Vec bc2Global;
@@ -35,37 +36,31 @@ PetscErrorCode TairaColoniusSolver<2>::generateR2()
   PetscReal **bc2;
   ierr = DMDAVecGetArray(pda, bc2Global, &bc2); CHKERRQ(ierr);
   ierr = DMDAGetCorners(pda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  // x-faces
-  if (flow->boundaries[XPLUS][0].type != PERIODIC) // don't update if the BC type is periodic
+  // left and right boundaries
+  if (flow->boundaries[XPLUS][0].type != PERIODIC) // do not update if x-periodic
   {
-    //loop over all points on the x-face
-    for (j=nstart; j<nstart+n; j++)
+    for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
-      // -X
-      if (mstart == 0) // if the -X face is in the current process
+      if (mstart == 0) // left boundary on current process
       {
         bc2[j][0] -= qx[j][-1];
       }
-      // +X
-      if (mstart+m-1 == mesh->nx-1) // if the +X face is in the current process
+      if (mstart+m-1 == mesh->nx-1) // right boundary on current process
       {
         bc2[j][mesh->nx-1] += qx[j][mesh->nx-1];
       }
     }
   }
-  // y-faces
-  if (flow->boundaries[YPLUS][1].type != PERIODIC) // don't update if the BC type is periodic
+  // bottom and top boundaries
+  if (flow->boundaries[YPLUS][1].type != PERIODIC) // do not update if y-periodic
   {
-    //loop over all points on the y-face
-    for (i=mstart; i<mstart+m; i++)
+    for (i=mstart; i<mstart+m; i++) // loop over x-direction
     {
-      // -Y
-      if (nstart == 0) // if the -Y face is in the current process
+      if (nstart == 0) // bottom boundary on current process
       {
         bc2[0][i] -= qy[-1][i];
       }
-      // +Y
-      if (nstart+n-1 == mesh->ny-1) // if the +Y face is in the current process
+      if (nstart+n-1 == mesh->ny-1) // top boundary on current process
       {
         bc2[mesh->ny-1][i] += qy[mesh->ny-1][i];
       }
@@ -87,9 +82,10 @@ template <>
 PetscErrorCode TairaColoniusSolver<3>::generateR2()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, k, 
-           m, n, p, 
-           mstart, nstart, pstart;
+
+  PetscInt i, j, k,                // loop indices
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
 
   ierr = VecSet(r2, 0.0); CHKERRQ(ierr);
   Vec bc2Global;
@@ -103,63 +99,54 @@ PetscErrorCode TairaColoniusSolver<3>::generateR2()
   PetscReal ***bc2;
   ierr = DMDAVecGetArray(pda, bc2Global, &bc2); CHKERRQ(ierr);
   ierr = DMDAGetCorners(pda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
-  // x-faces
-  if (flow->boundaries[XPLUS][0].type != PERIODIC) // don't update if the BC type is periodic
+  // left and right boundaries
+  if (flow->boundaries[XPLUS][0].type != PERIODIC) // do not update if x-periodic
   {
-    //loop over all points on the x-face
-    for (k=pstart; k<pstart+p; k++)
+    for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
-      for (j=nstart; j<nstart+n; j++)
+      for (j=nstart; j<nstart+n; j++) // loop over y-direction
       {
-        // -X
-        if (mstart == 0) // if the -X face is in the current process
+        if (mstart == 0) // left boundary on current process
         {
           bc2[k][j][0] -= qx[k][j][-1];
         }
-        // +X
-        if (mstart+m-1 == mesh->nx-1) // if the +X face is in the current process
+        if (mstart+m-1 == mesh->nx-1) // right boundary on current process
         {
           bc2[k][j][mesh->nx-1] += qx[k][j][mesh->nx-1];
         }
       }
     }
   }
-  // y-faces
-  if (flow->boundaries[YPLUS][1].type != PERIODIC) // don't update if the BC type is periodic
+  // bottom and top boundaries
+  if (flow->boundaries[YPLUS][1].type != PERIODIC) // do not update if y-periodic
   {
-    //loop over all points on the y-face
-    for (k=pstart; k<pstart+p; k++)
+    for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
-      for (i=mstart; i<mstart+m; i++)
+      for (i=mstart; i<mstart+m; i++) // loop over x-direction
       {
-        // -Y
-        if (nstart == 0) // if the -Y face is in the current process
+        if (nstart == 0) // bottom boundary on current process
         {
           bc2[k][0][i] -= qy[k][-1][i];
         }
-        // +Y
-        if (nstart+n-1 == mesh->ny-1) // if the +Y face is in the current process
+        if (nstart+n-1 == mesh->ny-1) // top boundary on current process
         {
           bc2[k][mesh->ny-1][i] += qy[k][mesh->ny-1][i];
         }
       }
     }
   }
-  // z-faces
-  if (flow->boundaries[ZPLUS][2].type != PERIODIC) // don't update if the BC type is periodic
+  // back and front boundaries
+  if (flow->boundaries[ZPLUS][2].type != PERIODIC) // do not update if z-periodic
   {
-    //loop over all points on the z-face
-    for (j=nstart; j<nstart+n; j++)
+    for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
-      for (i=mstart; i<mstart+m; i++)
+      for (i=mstart; i<mstart+m; i++) // loop over x-direction
       {
-        // -Z
-        if (pstart == 0) // if the -Z face is in the current process
+        if (pstart == 0) // back boundary on current process
         {
           bc2[0][j][i] -= qz[-1][j][i];
         }
-        // +Z
-        if (pstart+p-1 == mesh->nz-1) // if the +Z face is in the current process
+        if (pstart+p-1 == mesh->nz-1) // front boundary on current process
         {
           bc2[mesh->nz-1][j][i] += qz[mesh->nz-1][j][i];
         }

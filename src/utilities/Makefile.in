@@ -110,7 +110,7 @@ libutilities_a_LIBADD =
 am_libutilities_a_OBJECTS = libutilities_a-CartesianMesh.$(OBJEXT) \
 	libutilities_a-SimulationParameters.$(OBJEXT) \
 	libutilities_a-FlowDescription.$(OBJEXT) \
-	libutilities_a-types.$(OBJEXT)
+	libutilities_a-Body.$(OBJEXT) libutilities_a-types.$(OBJEXT)
 libutilities_a_OBJECTS = $(am_libutilities_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -280,6 +280,7 @@ noinst_LIBRARIES = libutilities.a
 libutilities_a_SOURCES = CartesianMesh.cpp \
                          SimulationParameters.cpp \
                          FlowDescription.cpp \
+                         Body.cpp \
                          types.cpp
 
 libutilities_a_CPPFLAGS = -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
@@ -333,6 +334,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-Body.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-CartesianMesh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-FlowDescription.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-SimulationParameters.Po@am__quote@
@@ -395,6 +397,20 @@ libutilities_a-FlowDescription.obj: FlowDescription.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FlowDescription.cpp' object='libutilities_a-FlowDescription.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-FlowDescription.obj `if test -f 'FlowDescription.cpp'; then $(CYGPATH_W) 'FlowDescription.cpp'; else $(CYGPATH_W) '$(srcdir)/FlowDescription.cpp'; fi`
+
+libutilities_a-Body.o: Body.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-Body.o -MD -MP -MF $(DEPDIR)/libutilities_a-Body.Tpo -c -o libutilities_a-Body.o `test -f 'Body.cpp' || echo '$(srcdir)/'`Body.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_a-Body.Tpo $(DEPDIR)/libutilities_a-Body.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Body.cpp' object='libutilities_a-Body.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-Body.o `test -f 'Body.cpp' || echo '$(srcdir)/'`Body.cpp
+
+libutilities_a-Body.obj: Body.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-Body.obj -MD -MP -MF $(DEPDIR)/libutilities_a-Body.Tpo -c -o libutilities_a-Body.obj `if test -f 'Body.cpp'; then $(CYGPATH_W) 'Body.cpp'; else $(CYGPATH_W) '$(srcdir)/Body.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_a-Body.Tpo $(DEPDIR)/libutilities_a-Body.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Body.cpp' object='libutilities_a-Body.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-Body.obj `if test -f 'Body.cpp'; then $(CYGPATH_W) 'Body.cpp'; else $(CYGPATH_W) '$(srcdir)/Body.cpp'; fi`
 
 libutilities_a-types.o: types.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-types.o -MD -MP -MF $(DEPDIR)/libutilities_a-types.Tpo -c -o libutilities_a-types.o `test -f 'types.cpp' || echo '$(srcdir)/'`types.cpp

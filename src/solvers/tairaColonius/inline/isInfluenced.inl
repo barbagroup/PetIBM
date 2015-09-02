@@ -1,12 +1,13 @@
 /***************************************************************************//**
- * \file isInfluanced.inl
+ * \file isInfluenced.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `isInfluenced` of the class `TairaColoniusSolver`.
  */
 
 
 /**
- * \brief In two dimensions.
+ * \brief Determines of an Eulerian grid point is in the disk of influence of a
+ *        Lagrangian body point.
  */
 template <PetscInt dim>
 PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *disp)
@@ -34,7 +35,8 @@ PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGri
 
 
 /**
- * \brief In three dimensions.
+ * \brief Determines of an Eulerian grid point is in the sphere of influence of a
+ *        Lagrangian body point.
  */
 template <PetscInt dim>
 PetscBool TairaColoniusSolver<dim>::isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *disp)

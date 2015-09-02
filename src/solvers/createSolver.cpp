@@ -18,7 +18,7 @@ std::unique_ptr< NavierStokesSolver<dim> > createSolver(CartesianMesh *cartesian
                                                         FlowDescription<dim> *flowDescription, 
                                                         SimulationParameters *simulationParameters)
 {
-  switch(simulationParameters->ibmScheme)
+  switch(simulationParameters->ibm)
   {
     case NAVIER_STOKES:
       return std::unique_ptr< NavierStokesSolver<dim> >(new NavierStokesSolver<dim>(cartesianMesh, 

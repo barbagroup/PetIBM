@@ -16,12 +16,10 @@
  * \brief Constructor - Initializes pointers.
  */
 template <PetscInt dim>
-ConvectiveTerm<dim>::ConvectiveTerm(std::string directory, 
-                                    CartesianMesh *cartesianMesh, 
-                                    FlowDescription *flowDescription, 
+ConvectiveTerm<dim>::ConvectiveTerm(CartesianMesh *cartesianMesh, 
+                                    FlowDescription<dim> *flowDescription, 
                                     SimulationParameters *simulationParameters) 
-                   : NavierStokesSolver<dim>::NavierStokesSolver(directory, 
-                                                                 cartesianMesh, 
+                   : NavierStokesSolver<dim>::NavierStokesSolver(cartesianMesh, 
                                                                  flowDescription, 
                                                                  simulationParameters)
 {
@@ -41,9 +39,10 @@ PetscErrorCode ConvectiveTerm<dim>::initialize()
   PetscErrorCode ierr;
 
   ierr = NavierStokesSolver<dim>::initialize(); CHKERRQ(ierr);
-  NavierStokesSolver<dim>::simParams->gamma = 1.0;
-  NavierStokesSolver<dim>::simParams->zeta = 0.0;
-  NavierStokesSolver<dim>::simParams->alphaExplicit = 0.0;
+  NavierStokesSolver<dim>::parameters->convection.coefficients[0] = 0.0;
+  NavierStokesSolver<dim>::parameters->convection.coefficients[1] = 1.0;
+  NavierStokesSolver<dim>::parameters->diffusion.coefficients[0] = 0.0;
+  NavierStokesSolver<dim>::parameters->diffusion.coefficients[1] = 0.0;
 
   return ierr;
 } // initialize
@@ -73,10 +72,11 @@ PetscErrorCode ConvectiveTerm<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  PetscInt mBegin, nBegin,  // global indices of local lower-left corner
-           m, n,            // number of local elements in each direction
-           i, j;            // iteration indices
-  PetscReal x, y;           // coordinates of a node
+  PetscInt i, j,           // loop indices
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
+
+  PetscReal x, y; // coordinates of a node
 
   Vec qxGlobal, qyGlobal;
   ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
@@ -84,11 +84,11 @@ PetscErrorCode ConvectiveTerm<2>::initializeFluxes()
   // fluxes in x-direction
   PetscReal **qx;
   ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   PetscReal u;  // value of u-velocity
-  for (j=nBegin; j<nBegin+n; j++)
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = mesh->x[i+1];
       y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -101,11 +101,11 @@ PetscErrorCode ConvectiveTerm<2>::initializeFluxes()
   // fluxes in y-direction
   PetscReal **qy;
   ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   PetscReal v;  // value of v-velocity
-  for (j=nBegin; j<nBegin+n; j++)
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = 0.5*(mesh->x[i]+mesh->x[i+1]);
       y = mesh->y[j+1];
@@ -127,10 +127,11 @@ PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  PetscInt mBegin, nBegin, pBegin,  // global indices of local lower-left corner
-           m, n, p,                 // number of local elements in each direction
-           i, j, k;                 // iteration indices
-  PetscReal x, y, z;                // coordinates of a node
+  PetscInt i, j, k,                // loop indices
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
+
+  PetscReal x, y, z; // coordinates of a node
 
   Vec qxGlobal, qyGlobal, qzGlobal;
   ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
@@ -138,13 +139,13 @@ PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
   // fluxes in x-direction
   PetscReal ***qx;
   ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   PetscReal u;  // value of u-velocity
-  for (k=pBegin; k<pBegin+p; k++)
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = mesh->x[i+1];
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -159,13 +160,13 @@ PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
   // fluxes in y-direction
   PetscReal ***qy;
   ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   PetscReal v;  // value of v-velocity
-  for (k=pBegin; k<pBegin+p; k++)
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = mesh->y[j+1];
@@ -180,13 +181,13 @@ PetscErrorCode ConvectiveTerm<3>::initializeFluxes()
   // fluxes in z-direction
   PetscReal ***qz;
   ierr = DMDAVecGetArray(wda, qzGlobal, &qz); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   PetscReal w;  // value of w-velocity
-  for (k=pBegin; k<pBegin+p; k++)
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -220,16 +221,16 @@ PetscErrorCode ConvectiveTerm<2>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
-  PetscInt mBegin, nBegin,  // global indices of local lower-left node
-           m, n,            // number of local elements in each direction
-           i, j;            // iteration indices
+  PetscInt i, j,           // loop indices
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
+ 
+  PetscReal x, y,       // coordinates of a node
+            velocity,   // velocity value at the node
+            convection; // convective term at the node
   
-  PetscReal x, y,           // coordinates of a node
-            velocity,       // velocity value at the node
-            convection;     // convective term at the node
-  
-  PetscReal dt = simParams->dt,       // time-increment
-            gamma = simParams->gamma; // explicit time-scheme coefficient for convective terms
+  PetscReal dt = parameters->dt,                            // time-increment
+            gamma = parameters->convection.coefficients[1]; // explicit time-scheme coefficient for convective terms
 
   ierr = VecDuplicate(q, &rnExact); CHKERRQ(ierr);
   Vec rnExactXGlobal, rnExactYGlobal;
@@ -238,10 +239,10 @@ PetscErrorCode ConvectiveTerm<2>::calculateExactSolution()
   // exact explicit terms for u-nodes
   PetscReal **rnExactX;
   ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  for (j=nBegin; j<nBegin+n; j++)
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = mesh->x[i+1];
       y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -256,10 +257,10 @@ PetscErrorCode ConvectiveTerm<2>::calculateExactSolution()
   // exact explicit terms for v-nodes
   PetscReal **rnExactY;
   ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  for (j=nBegin; j<nBegin+n; j++)
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = 0.5*(mesh->x[i]+mesh->x[i+1]);
       y = mesh->y[j+1];
@@ -283,16 +284,16 @@ PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
-  PetscInt mBegin, nBegin, pBegin,  // global indices of local lower-left node
-           m, n, p,                 // number of local elements in each direction
-           i, j, k;                 // iteration indices
+  PetscInt i, j, k,                // loop indices
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
   
-  PetscReal x, y, z,                // coordinates of a node
-            velocity,               // velocity value at the node
-            convection;             // convective term at the node
+  PetscReal x, y, z,    // coordinates of a node
+            velocity,   // velocity value at the node
+            convection; // convective term at the node
   
-  PetscReal dt = simParams->dt,       // time-increment
-            gamma = simParams->gamma; // explicit time-scheme coefficient for convective terms
+  PetscReal dt = parameters->dt,                           // time-increment
+            gamma = parameters->convection.coefficients[1]; // explicit time-scheme coefficient for convective terms
 
   ierr = VecDuplicate(q, &rnExact); CHKERRQ(ierr);
   Vec rnExactXGlobal, rnExactYGlobal, rnExactZGlobal;
@@ -301,12 +302,12 @@ PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
   // exact explicit terms for u-nodes
   PetscReal ***rnExactX;
   ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  for (k=pBegin; k<pBegin+p; k++)
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = mesh->x[i+1];
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -324,12 +325,12 @@ PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
   // exact explicit terms for v-nodes
   PetscReal ***rnExactY;
   ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  for (k=pBegin; k<pBegin+p; k++)
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = mesh->y[j+1];
@@ -347,12 +348,12 @@ PetscErrorCode ConvectiveTerm<3>::calculateExactSolution()
   // exact explicit terms for w-nodes
   PetscReal ***rnExactZ;
   ierr = DMDAVecGetArray(wda, rnExactZGlobal, &rnExactZ);
-  ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  for (k=pBegin; k<pBegin+p; k++)
+  ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);

@@ -57,7 +57,7 @@ void SimulationParameters::initialize(std::string filePath)
   nt = node["nt"].as<PetscInt>();
   nsave = node["nsave"].as<PetscInt>(nt);
 
-  ibmScheme = stringToIBMScheme(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
+  ibm = stringToIBMethod(node["ibm"].as<std::string>("NONE"));
 
   convection.scheme = stringToTimeScheme(node["convection"].as<std::string>("EULER_EXPLICIT"));
   diffusion.scheme = stringToTimeScheme(node["diffusion"].as<std::string>("EULER_IMPLICIT"));
@@ -90,6 +90,7 @@ void SimulationParameters::initialize(std::string filePath)
       break;
     case EULER_IMPLICIT:
       diffusion.coefficients.push_back(1.0); // n+1 coefficient
+      diffusion.coefficients.push_back(0.0); // n coefficient
       break;
     case CRANK_NICOLSON:
       diffusion.coefficients.push_back(0.5); // n+1 coefficient
@@ -146,7 +147,7 @@ PetscErrorCode SimulationParameters::printInfo()
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "Time-stepping\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "formulation: %s\n", stringFromIBMScheme(ibmScheme).c_str()); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "formulation: %s\n", stringFromIBMethod(ibm).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "convection: %s\n", stringFromTimeScheme(convection.scheme).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "diffusion: %s\n", stringFromTimeScheme(diffusion.scheme).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "time-increment: %g\n", dt); CHKERRQ(ierr);
@@ -165,7 +166,7 @@ PetscErrorCode SimulationParameters::printInfo()
   ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  switch (ibmScheme)
+  switch (ibm)
   {
     case NAVIER_STOKES:
       ierr = PetscPrintf(PETSC_COMM_WORLD, "Linear system for pressure\n"); CHKERRQ(ierr);

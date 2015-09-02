@@ -56,7 +56,7 @@ public:
            nt,        ///< number of time steps
            nsave;     ///< data-saving interval
   
-  IBMScheme ibmScheme; ///< type of system to be solved
+  IBMethod ibm; ///< type of system to be solved
   
   TimeIntegration convection, ///< time-scheme for the convection term
                   diffusion;  ///< time-scheme for the diffusion term

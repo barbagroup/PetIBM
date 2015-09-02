@@ -2,10 +2,10 @@
 
 - type: simulation
   dt: 0.02
-  startStep: 0
   nt: 500
   nsave: 500
-  timeScheme: [EULER_EXPLICIT, EULER_IMPLICIT]
+  convection: EULER_EXPLICIT
+  diffusion: EULER_IMPLICIT
   linearSolvers:
     - system: velocity
       solver: CG
@@ -14,6 +14,6 @@
       maxIterations: 10000
     - system: Poisson
       solver: CG
-      preconditioner: SMOOTHED_AGGREGATION
+      preconditioner: GAMG
       tolerance: 1.0E-05
       maxIterations: 20000

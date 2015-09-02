@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file generateBodyInfo.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `generateBodyInfo` of the class `TairaColoniusSolver`.
  */
 
 
@@ -20,8 +20,6 @@ template <>
 PetscErrorCode TairaColoniusSolver<2>::generateBodyInfo()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, 
-           m, n;
   
   PetscInt numProcs;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
@@ -30,36 +28,39 @@ PetscErrorCode TairaColoniusSolver<2>::generateBodyInfo()
   numBoundaryPointsOnProcess.resize(numProcs);
   numPhiOnProcess.resize(numProcs);
 
-  globalIndexMapping.resize(x.size());
+  globalIndexMapping.resize(bodies[0].numPoints); // why here?
 
-  const PetscInt *lxp, *lyp;
-  ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, NULL); CHKERRQ(ierr);
+  const PetscInt *plx, *ply;
+  ierr = DMDAGetOwnershipRanges(pda, &plx, &ply, NULL); CHKERRQ(ierr);
+  PetscInt m, n; // number of procs in each dimension
   ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 
   PetscInt xStart, yStart, xEnd, yEnd,
-           procIdx = 0;
+           procIdx;
 
   yStart = 0;
-  for (j=0; j<n; j++)
+  for (PetscInt j=0; j<n; j++)
   {
-    yEnd = yStart + lyp[j];
+    yEnd = yStart + ply[j];
     xStart = 0;
-    for (i=0; i<m; i++)
+    for (PetscInt i=0; i<m; i++)
     {
       procIdx = j*m + i;
-      xEnd = xStart + lxp[i];
-      numPhiOnProcess[procIdx] = lxp[i]*lyp[j];
-      for (size_t l=0; l<x.size(); l++)
+      xEnd = xStart + plx[i];
+      numPhiOnProcess[procIdx] = plx[i]*ply[j];
+      for (PetscInt l=0; l<bodies[0].numPoints; l++)
       {
-        if (x[l] >= mesh->x[xStart] && x[l] < mesh->x[xEnd] && y[l] >= mesh->y[yStart] && y[l] < mesh->y[yEnd])
+        if (bodies[0].X[l] >= mesh->x[xStart] && bodies[0].X[l] < mesh->x[xEnd] 
+            && bodies[0].Y[l] >= mesh->y[yStart] && bodies[0].Y[l] < mesh->y[yEnd])
         {
           numBoundaryPointsOnProcess[procIdx]++;
         }
       }
       boundaryPointIndices[procIdx].reserve(numBoundaryPointsOnProcess[procIdx]);
-      for (size_t l=0; l<x.size(); l++)
+      for (PetscInt l=0; l<bodies[0].numPoints; l++)
       {
-        if (x[l] >= mesh->x[xStart] && x[l] < mesh->x[xEnd] && y[l] >= mesh->y[yStart] && y[l] < mesh->y[yEnd])
+        if (bodies[0].X[l] >= mesh->x[xStart] && bodies[0].X[l] < mesh->x[xEnd] 
+            && bodies[0].Y[l] >= mesh->y[yStart] && bodies[0].Y[l] < mesh->y[yEnd])
         {
           boundaryPointIndices[procIdx].push_back(l);
         }
@@ -78,8 +79,6 @@ template <>
 PetscErrorCode TairaColoniusSolver<3>::generateBodyInfo()
 {
   PetscErrorCode ierr;
-  PetscInt i, j, k, 
-           m, n, p;
 
   PetscInt numProcs;  
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
@@ -88,40 +87,45 @@ PetscErrorCode TairaColoniusSolver<3>::generateBodyInfo()
   numBoundaryPointsOnProcess.resize(numProcs);
   numPhiOnProcess.resize(numProcs);
 
-  globalIndexMapping.resize(x.size());
+  globalIndexMapping.resize(bodies[0].numPoints);
 
-  const PetscInt *lxp, *lyp, *lzp;
-  ierr = DMDAGetOwnershipRanges(pda, &lxp, &lyp, &lzp); CHKERRQ(ierr);
+  const PetscInt *plx, *ply, *plz;
+  ierr = DMDAGetOwnershipRanges(pda, &plx, &ply, &plz); CHKERRQ(ierr);
+  PetscInt m, n, p; // local number of nodes along each direction
   ierr = DMDAGetInfo(pda, NULL, NULL, NULL, NULL, &m, &n, &p, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
 
   PetscInt xStart, yStart, zStart, xEnd, yEnd, zEnd,
            procIdx = 0;
   
   zStart = 0;
-  for (k=0; k<p; k++)
+  for (PetscInt k=0; k<p; k++)
   {
-    zEnd = zStart + lzp[k];
+    zEnd = zStart + plz[k];
     yStart = 0;
-    for (j=0; j<n; j++)
+    for (PetscInt j=0; j<n; j++)
     {
-      yEnd = yStart + lyp[j];
+      yEnd = yStart + ply[j];
       xStart = 0;
-      for (i=0; i<m; i++)
+      for (PetscInt i=0; i<m; i++)
       {
         procIdx = k*m*n + j*m + i;
-        xEnd = xStart + lxp[i];
-        numPhiOnProcess[procIdx] = lxp[i]*lyp[j]*lzp[k];
-        for (size_t l=0; l<x.size(); l++)
+        xEnd = xStart + plx[i];
+        numPhiOnProcess[procIdx] = plx[i]*ply[j]*plz[k];
+        for (PetscInt l=0; l<bodies[0].numPoints; l++)
         {
-          if (x[l] >= mesh->x[xStart] && x[l] < mesh->x[xEnd] && y[l] >= mesh->y[yStart] && y[l] < mesh->y[yEnd] && z[l] >= mesh->z[zStart] && z[l] < mesh->z[zEnd])
+          if (bodies[0].X[l] >= mesh->x[xStart] && bodies[0].X[l] < mesh->x[xEnd] 
+              && bodies[0].Y[l] >= mesh->y[yStart] && bodies[0].Y[l] < mesh->y[yEnd] 
+              && bodies[0].Z[l] >= mesh->z[zStart] && bodies[0].Z[l] < mesh->z[zEnd])
           {
             numBoundaryPointsOnProcess[procIdx]++;
           }
         }
         boundaryPointIndices[procIdx].reserve(numBoundaryPointsOnProcess[procIdx]);
-        for (size_t l=0; l<x.size(); l++)
+        for (PetscInt l=0; l<bodies[0].numPoints; l++)
         {
-          if (x[l] >= mesh->x[xStart] && x[l] < mesh->x[xEnd] && y[l] >= mesh->y[yStart] && y[l] < mesh->y[yEnd] && z[l] >= mesh->z[zStart] && z[l] < mesh->z[zEnd])
+          if (bodies[0].X[l] >= mesh->x[xStart] && bodies[0].X[l] < mesh->x[xEnd] 
+              && bodies[0].Y[l] >= mesh->y[yStart] && bodies[0].Y[l] < mesh->y[yEnd] 
+              && bodies[0].Z[l] >= mesh->z[zStart] && bodies[0].Z[l] < mesh->z[zEnd])
           {
             boundaryPointIndices[procIdx].push_back(l);
           }

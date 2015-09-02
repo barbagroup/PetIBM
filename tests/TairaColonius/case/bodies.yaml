@@ -1,4 +1,4 @@
 # bodies.yaml
 
-- type: circle
-  circleOptions: [0.5, 0.5, 0.25, 51]
+- type: points
+  pointsFile: circleR0.25ds0.03125.body

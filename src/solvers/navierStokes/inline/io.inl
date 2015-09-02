@@ -251,7 +251,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrid()
 {
   PetscErrorCode ierr;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting grid into file... "); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing grid into file... ", timeStep); CHKERRQ(ierr);
 
   PetscInt rank;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
@@ -329,7 +329,7 @@ PetscErrorCode NavierStokesSolver<dim>::helperOutputVectors()
 {
   PetscErrorCode ierr;
   
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nCode-development: saving vectors to files..."); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Code-development: saving vectors to files... ", timeStep); CHKERRQ(ierr);
 
   // create the output directory
   std::string outputDirectory = parameters->directory + "/outputs";
@@ -400,7 +400,7 @@ PetscErrorCode NavierStokesSolver<dim>::helperOutputMatrices()
 {
   PetscErrorCode ierr;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nCode-development: saving matrices to files..."); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Code-development: saving matrices to files... ", timeStep); CHKERRQ(ierr);
 
   // create the output directory
   std::string outputDirectory = parameters->directory + "/outputs";

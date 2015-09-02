@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file TairaColoniusSolver.cpp
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the methods of the class \c TairaColoniusSolver.
+ * \brief Implementation of the methods of the class `TairaColoniusSolver`.
  */
 
 
@@ -13,7 +13,6 @@
 #include <iomanip>
 #include <sys/stat.h>
 
-#include "yaml-cpp/yaml.h"
 #include <petscdmcomposite.h>
 
 
@@ -29,10 +28,9 @@ TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh,
                                                                       simulationParameters)
 {
   bda = PETSC_NULL;
-  ET  = PETSC_NULL;
-  nullSpaceVec     = PETSC_NULL;
+  ET = PETSC_NULL;
+  nullSpaceVec = PETSC_NULL;
   regularizedForce = PETSC_NULL;
-
 } // TairaColoniusSolver
 
 
@@ -46,78 +44,44 @@ TairaColoniusSolver<dim>::~TairaColoniusSolver()
 
 
 /**
- * \brief
+ * \brief Initializes the solver.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initialize()
 {
   PetscErrorCode ierr;
-  ierr = NavierStokesSolver<dim>::printInfo(); CHKERRQ(ierr);
+
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialize); CHKERRQ(ierr);
+
+  ierr = NavierStokesSolver<dim>::printInfo(); CHKERRQ(ierr);
   ierr = initializeBodies(); CHKERRQ(ierr);
   ierr = calculateCellIndices(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::writeGrid(); CHKERRQ(ierr);
+
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   return 0;
 } // initialize
 
 
 /**
- * \brief
+ * \brief Gets the indices of cells owning a body point.
  */
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::finalize()
+PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
 {
   PetscErrorCode ierr;
 
-  ierr = NavierStokesSolver<dim>::finalize();
-
-  // DMs
-  if(bda!=PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
-  // Mats
-  if(ET!=PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
-  // Vecs
-  if(regularizedForce!=PETSC_NULL){ierr = VecDestroy(&regularizedForce); CHKERRQ(ierr);}
-  if(nullSpaceVec!=PETSC_NULL){ierr = VecDestroy(&nullSpaceVec); CHKERRQ(ierr);}
+  for (PetscInt l=0; l<numBodies; l++)
+  {
+    ierr = bodies[l].getCellOwners(NavierStokesSolver<dim>::mesh); CHKERRQ(ierr);
+  }
 
   return 0;
-}  // finalize
-
-
-/**
- * \brief
- */
-template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::createDMs()
-{
-  PetscErrorCode ierr;
-  ierr = NavierStokesSolver<dim>::createDMs(); CHKERRQ(ierr); 
-  ierr = generateBodyInfo(); CHKERRQ(ierr);
-  ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE, x.size(), dim, 0, &numBoundaryPointsOnProcess.front(), &bda); CHKERRQ(ierr);
-  ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
-
-  return 0;
-} // createDMs
-
-
-/**
- * \brief
- */
-template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::createVecs()
-{
-  PetscErrorCode ierr;
-
-  ierr = NavierStokesSolver<dim>::createVecs();
-  ierr = VecDuplicate(NavierStokesSolver<dim>::q, &regularizedForce); CHKERRQ(ierr);
-  ierr = VecDuplicate(NavierStokesSolver<dim>::lambda, &nullSpaceVec); CHKERRQ(ierr);
-
-  return 0;
-} // createVecs
+} // calculateCellIndices
 
 
 /**
@@ -134,7 +98,7 @@ PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
 
 
 /**
- * \bief Two-dimensional discrete delta function.
+ * \brief Two-dimensional discrete delta function.
  */
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal h)
@@ -144,7 +108,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal h)
 
 
 /**
- * \bief Three-dimensional discrete delta function.
+ * \brief Three-dimensional discrete delta function.
  */
 template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
@@ -153,8 +117,30 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 } // delta
 
 
+/**
+ * \brief Destroys PETSc objects.
+ */
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::finalize()
+{
+  PetscErrorCode ierr;
+
+  ierr = NavierStokesSolver<dim>::finalize();
+  // DMs
+  if (bda != PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
+  // Mats
+  if (ET != PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
+  // Vecs
+  if (regularizedForce != PETSC_NULL){ierr = VecDestroy(&regularizedForce); CHKERRQ(ierr);}
+  if (nullSpaceVec != PETSC_NULL)    {ierr = VecDestroy(&nullSpaceVec); CHKERRQ(ierr);}
+
+  return 0;
+}  // finalize
+
+
+#include "inline/createDMs.inl"
+#include "inline/createVecs.inl"
 #include "inline/setNullSpace.inl"
-#include "inline/calculateCellIndices.inl"
 #include "inline/generateBodyInfo.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
@@ -163,6 +149,7 @@ PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z,
 #include "inline/isInfluenced.inl"
 #include "inline/calculateForce.inl"
 #include "inline/io.inl"
+
 
 // dimensions specialization
 template class TairaColoniusSolver<2>;

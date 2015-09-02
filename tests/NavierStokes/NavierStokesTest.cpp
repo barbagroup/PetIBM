@@ -75,7 +75,7 @@ TEST_F(NavierStokesTest, ComparePhi)
   VecNorm(error, NORM_2, &errorNorm);
   VecNorm(lambdaGold, NORM_2, &goldNorm);
 
-  EXPECT_LT(errorNorm/goldNorm, 5e-4);
+  EXPECT_LT(errorNorm/goldNorm, 5.0E-04);
 }
 
 int main(int argc, char **argv)

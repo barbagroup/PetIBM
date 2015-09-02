@@ -1,7 +1,8 @@
 /***************************************************************************//**
  * \file createGlobalMappingBodies.inl
  * \author Anush Krishnan (anush@bu.edu)
- * \brief
+ * \brief Implementation of the method `createGlobalMappingBodies` 
+ *        of the class `TairaColoniusSolver`.
  */
 
 

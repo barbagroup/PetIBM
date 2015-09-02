@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file io.inl
  * \author Olivier Mesnard (mesnardo@gwu), Anush Krishnan (anush@bu.edu)
- * \brief Implementation of I/O methods of the class \c TairaColoniusSolver.
+ * \brief Implementation of I/O methods of the class `TairaColoniusSolver`.
  */
 
 

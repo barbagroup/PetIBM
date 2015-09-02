@@ -15,8 +15,8 @@ class TairaColoniusTest : public ::testing::Test
 {
 public:
   std::string directory;
-  FlowDescription<2> flowDescription;
   CartesianMesh cartesianMesh;
+  FlowDescription<2> flowDescription;
   SimulationParameters simulationParameters;
   std::unique_ptr< NavierStokesSolver<2> > solver;
   Vec lambdaGold, error;
@@ -80,7 +80,7 @@ TEST_F(TairaColoniusTest, ComparePhi)
   VecNorm(error, NORM_2, &errorNorm);
   VecNorm(lambdaGold, NORM_2, &goldNorm);
 
-  EXPECT_LT(errorNorm/goldNorm, 5e-4);
+  EXPECT_LT(errorNorm/goldNorm, 5.0E-04);
 }
 
 int main(int argc, char **argv)

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file NavierStokesSolver.cpp
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the methods of the class \c NavierStokesSolver.
+ * \brief Implementation of the methods of the class `NavierStokesSolver`.
  */
 
 
@@ -18,6 +18,10 @@
 
 /**
  * \brief Constructor: Stores simulation parameters and initializes pointers.
+ *
+ * \param cartesianMesh Contains info about the Cartesian grid.
+ * \param flowDescription Contains info about the fluid and the flow.
+ * \param simulationParameters Contains info about the parameters of the simulation.
  */
 template <PetscInt dim>
 NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh, 
@@ -79,7 +83,7 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
 
 
 /**
- * \brief Destructor of the class \c NavierStokesSolver.
+ * \brief Destructor.
  */
 template <PetscInt dim>
 NavierStokesSolver<dim>::~NavierStokesSolver()
@@ -109,7 +113,7 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
 
 
 /**
- * \brief Initializes data common to \c NavierStokesSolver and its derived classes.
+ * \brief Initializes data common to `NavierStokesSolver` and its derived classes.
  */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
@@ -146,7 +150,6 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 
   // solve system for intermediate velocity
   ierr = assembleRHSVelocity(); CHKERRQ(ierr);
-  // ierr = helpers(); CHKERRQ(ierr);
   ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
   // solve Poisson system for Lagrange multipliers
@@ -220,7 +223,7 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 
 
 /**
- * \brief Assembles the right hand-side of the Poisson system
+ * \brief Assembles the right hand-side of the Poisson system.
  */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::assembleRHSPoisson()

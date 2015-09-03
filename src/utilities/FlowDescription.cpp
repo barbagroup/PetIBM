@@ -24,6 +24,8 @@ FlowDescription<dim>::FlowDescription()
 
 /**
  * \brief Constructor -- Parses the input file `flowDescription.yaml`.
+ *
+ * \param directory Directory of the simulation
  */
 template <PetscInt dim>
 FlowDescription<dim>::FlowDescription(std::string directory)
@@ -46,7 +48,7 @@ FlowDescription<dim>::~FlowDescription()
  *
  * The file is parsed using YAML format.
  *
- * \param filePath path of the file to parse.
+ * \param filePath Path of the file to parse
  */
 template <PetscInt dim>
 void FlowDescription<dim>::initialize(std::string filePath)

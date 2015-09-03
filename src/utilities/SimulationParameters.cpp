@@ -23,7 +23,7 @@ SimulationParameters::SimulationParameters()
 /**
  * \brief Constructor -- Parses the input file `simulationParameters.yaml`.
  *
- * \param dir directory of the simulation.
+ * \param dir Directory of the simulation
  */
 SimulationParameters::SimulationParameters(std::string dir)
 {
@@ -45,7 +45,7 @@ SimulationParameters::~SimulationParameters()
  *
  * The file is parsed using YAML format.
  *
- * \param filePath path of the simulation parameters file
+ * \param filePath Path of the simulation parameters file
  */
 void SimulationParameters::initialize(std::string filePath)
 {

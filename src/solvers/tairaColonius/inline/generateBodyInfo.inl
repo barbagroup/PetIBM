@@ -6,7 +6,7 @@
 
 
 /**
- * \brief
+ * \brief Counts the number of Lagragian points on each process.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::generateBodyInfo()

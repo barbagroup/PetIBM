@@ -23,7 +23,7 @@ CartesianMesh::CartesianMesh()
 /**
  * \brief Constructor -- Parses input file `cartesianMesh.yaml`.
  *
- * \param directory directory of the simulation.
+ * \param directory Directory of the simulation
  */
 CartesianMesh::CartesianMesh(std::string directory)
 {
@@ -42,7 +42,7 @@ CartesianMesh::~CartesianMesh()
 /**
  * \brief Parses the input file using YAML format and discretizes the domain.
  *
- * \param filePath path of the file containing the mesh parameters.
+ * \param filePath Path of the file containing the mesh parameters
  */
 void CartesianMesh::initialize(std::string filePath)
 {

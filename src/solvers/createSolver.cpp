@@ -10,6 +10,10 @@
 /**
  * \brief Creates the appropriate solver.
  *
+ * \param cartesianMesh Contains info about the Cartesian grid
+ * \param flowDescription Contains info about the fluid and the flow
+ * \param simulationParameters Contains info about the parameters of the simulation
+ *
  * If there is no immersed boundary in the domain, a Navier-Stokes solver iis
  * created. Otherwise, Taira and Colonius (2007) solver type is instanciated.
  */

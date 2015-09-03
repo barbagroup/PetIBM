@@ -6,7 +6,7 @@
 
 
 /**
- * \brief Creates the different vecotrs of the solver.
+ * \brief Creates the different vectors of the solver.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createVecs()

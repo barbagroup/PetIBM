@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file NavierStokesSolver.h
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Definition of the class \c NavierStokesSolver.
+ * \brief Definition of the class `NavierStokesSolver`.
  */
 
 

@@ -6,7 +6,8 @@
 
 
 /**
- * \brief
+ * \brief Assembles part of the rhs of the Poisson system 
+ *        (only values that arise from the boundary ghosts).
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::generateR2()

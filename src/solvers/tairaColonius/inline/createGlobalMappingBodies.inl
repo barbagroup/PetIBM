@@ -7,7 +7,7 @@
 
 
 /**
- * \brief
+ * \brief Maps local to global indices.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createGlobalMappingBodies()

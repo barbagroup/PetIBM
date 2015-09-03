@@ -17,7 +17,7 @@
 
 
 /**
- * \brief Constructor of the class \c TairaColoniusSolver.
+ * \brief Constructor. Calls parent's contructor and initializes additioner pointers.
  */
 template <PetscInt dim>
 TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh, 
@@ -35,7 +35,7 @@ TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh,
 
 
 /**
- * \brief Destructor of the class \c TairaColoniusSolver.
+ * \brief Destructor.
  */
 template <PetscInt dim>
 TairaColoniusSolver<dim>::~TairaColoniusSolver()
@@ -91,8 +91,10 @@ template <PetscInt dim>
 PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
 {
   PetscReal r = fabs(x)/h;
-  if(r>1.5) return 0.0;
-  if(r>0.5 && r<=1.5) return 1.0/(6*h)*( 5.0 - 3.0*r - sqrt(-3.0*(1-r)*(1-r) + 1.0) );
+  if (r > 1.5)
+    return 0.0;
+  if (r > 0.5 && r <= 1.5)
+    return 1.0/(6*h)*( 5.0 - 3.0*r - sqrt(-3.0*(1-r)*(1-r) + 1.0) );
   return 1.0/(3*h)*( 1.0 + sqrt(-3.0*r*r + 1.0) );
 } // dhRoma
 

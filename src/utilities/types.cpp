@@ -12,6 +12,8 @@
 
 /**
  * \brief Returns the boundary location as an enum.
+ *
+ * \param s string that describes the boundary location.
  */
 BoundaryLocation stringToBoundaryLocation(std::string s)
 {
@@ -41,6 +43,8 @@ BoundaryLocation stringToBoundaryLocation(std::string s)
 
 /**
  * \brief Returns the boundary location as a string.
+ *
+ * \param location boundary location as an enum.
  */
 std::string stringFromBoundaryLocation(BoundaryLocation location)
 {
@@ -72,6 +76,8 @@ std::string stringFromBoundaryLocation(BoundaryLocation location)
 
 /**
  * \brief Returns the boundary condition type as a enum.
+ *
+ * \param s string that describes the type of boundary condition.
  */
 BoundaryType stringToBoundaryType(std::string s)
 {
@@ -95,6 +101,8 @@ BoundaryType stringToBoundaryType(std::string s)
 
 /**
  * \brief Returns the boundary condition type as a string.
+ *
+ * \param type boundary condition as an enum.
  */
 std::string stringFromBoundaryType(BoundaryType type)
 {
@@ -120,6 +128,8 @@ std::string stringFromBoundaryType(BoundaryType type)
 
 /**
  * \brief Returns the immersed-boundary method as an enum.
+ *
+ * \param s string that describes the immersed-boundary method.
  */
 IBMethod stringToIBMethod(std::string s)
 {
@@ -137,6 +147,8 @@ IBMethod stringToIBMethod(std::string s)
 
 /**
  * \brief Returns the immersed-boundary method as a string.
+ *
+ * \param method immersed-boundary method as an enum.
  */
 std::string stringFromIBMethod(IBMethod method)
 {
@@ -156,6 +168,8 @@ std::string stringFromIBMethod(IBMethod method)
 
 /**
  * \brief Returns the iterative method to use as an enum.
+ * 
+ * \param s string that describes the iterative method.
  */
 IterativeMethod stringToIterativeMethod(std::string s)
 {
@@ -176,6 +190,8 @@ IterativeMethod stringToIterativeMethod(std::string s)
 
 /**
  * \brief Returns the iterative method as a string.
+ * 
+ * \param method the iterative method as an enum.
  */
 std::string stringFromIterativeMethod(IterativeMethod method)
 {
@@ -198,6 +214,8 @@ std::string stringFromIterativeMethod(IterativeMethod method)
 
 /**
  * \brief Returns the type of preconditioner as an enum.
+ *
+ * \param s string that describes the type of preconditioning.
  */
 PreconditionerType stringToPreconditionerType(std::string s)
 {
@@ -218,6 +236,8 @@ PreconditionerType stringToPreconditionerType(std::string s)
 
 /**
  * \brief Returns the type of preconditioner as a string.
+ * 
+ * \param preconditioner the preconditioner as an enum.
  */
 std::string stringFromPreconditionerType(PreconditionerType preconditioner)
 {
@@ -240,6 +260,8 @@ std::string stringFromPreconditionerType(PreconditionerType preconditioner)
 
 /**
  * \brief Returns the time-integration scheme as an enum.
+ *
+ * \param s string that describes the time-integration scheme.
  */
 TimeScheme stringToTimeScheme(std::string s)
 {
@@ -266,6 +288,8 @@ TimeScheme stringToTimeScheme(std::string s)
 
 /**
  * \brief Returns the time-integration scheme as a string.
+ * 
+ * \param scheme time-integration scheme as an enum.
  */
 std::string stringFromTimeScheme(TimeScheme scheme)
 {

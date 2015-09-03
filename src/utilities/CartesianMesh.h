@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file CartesianMesh.h
  * \author Anush Krishnan (anus@bu.edu)
- * \brief Definition of the class \c CartesianMesh.
+ * \brief Definition of the class `CartesianMesh`.
  */
 
 

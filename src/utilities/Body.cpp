@@ -22,7 +22,9 @@ Body<dim>::Body()
 
 
 /**
- * \brief Constructor -- Parses the input file.
+ * \brief Constructor -- Parses the input file `bodies.yaml`.
+ *
+ * \param directory directory of the simulation.
  */
 template <PetscInt dim>
 Body<dim>::Body(std::string directory)
@@ -104,6 +106,8 @@ PetscErrorCode Body<dim>::initialize(std::string filePath)
 
 /**
  * \brief Gets the indices of cells owning a Lagrangian body points.
+ * 
+ * \param mesh Object that contains the information about the Cartesian grid.
  */
 template <PetscInt dim>
 PetscErrorCode Body<dim>::getCellOwners(CartesianMesh *mesh)

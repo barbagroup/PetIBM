@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file SimulationParameters.cpp
  * \author Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the methods of the class \c SimulationParameters.
+ * \brief Implementation of the methods of the class `SimulationParameters`.
  */
 
 
@@ -21,7 +21,9 @@ SimulationParameters::SimulationParameters()
 
 
 /**
- * \brief Constructor -- Parses simulationParameters.yaml.
+ * \brief Constructor -- Parses the input file `simulationParameters.yaml`.
+ *
+ * \param dir directory of the simulation.
  */
 SimulationParameters::SimulationParameters(std::string dir)
 {

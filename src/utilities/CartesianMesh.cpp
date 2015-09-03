@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file CartesianMesh.cpp
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the class \c CartesianMesh.
+ * \brief Implementation of the methods of the class `CartesianMesh`.
  */
 
 
@@ -21,7 +21,9 @@ CartesianMesh::CartesianMesh()
 
 
 /**
- * \brief Constructor -- Parses input file.
+ * \brief Constructor -- Parses input file `cartesianMesh.yaml`.
+ *
+ * \param directory directory of the simulation.
  */
 CartesianMesh::CartesianMesh(std::string directory)
 {
@@ -40,7 +42,7 @@ CartesianMesh::~CartesianMesh()
 /**
  * \brief Parses the input file using YAML format and discretizes the domain.
  *
- * \param filePath path of the file containing the mesh parameters
+ * \param filePath path of the file containing the mesh parameters.
  */
 void CartesianMesh::initialize(std::string filePath)
 {

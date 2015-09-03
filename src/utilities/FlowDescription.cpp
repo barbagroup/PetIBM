@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file FlowDescription.cpp
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the methods of the class \c FlowDescription.
+ * \brief Implementation of the methods of the class `FlowDescription`.
  */
 
 
@@ -23,7 +23,7 @@ FlowDescription<dim>::FlowDescription()
 
 
 /**
- * \brief Constructor -- Parses the input file.
+ * \brief Constructor -- Parses the input file `flowDescription.yaml`.
  */
 template <PetscInt dim>
 FlowDescription<dim>::FlowDescription(std::string directory)

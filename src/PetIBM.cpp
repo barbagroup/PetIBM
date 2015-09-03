@@ -4,12 +4,13 @@
  *                A PETSc-based Immersed Boundary Method code
  *
  * \author Anush Krishnan (anush@bu.edu)
+ *         Olivier Mesnard (mesnardo@gwu.edu)
  */
 
 /***************************************************************************//**
  * \file PetIBM.cpp
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Main source-file of \c PetIBM.
+ * \brief Main source-file of `PetIBM`.
  */
 
 
@@ -26,6 +27,9 @@ int main(int argc,char **argv)
   PetscErrorCode ierr;
   
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n======================\n*** PetIBM - Start ***\n======================\n"); CHKERRQ(ierr);
+
 
   // parse command-line to get simulation directory
   char dir[PETSC_MAX_PATH_LEN];
@@ -50,6 +54,8 @@ int main(int argc,char **argv)
   }
   
   ierr = solver->finalize(); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n=====================\n*** PetIBM - Done ***\n=====================\n"); CHKERRQ(ierr);
 
   ierr = PetscFinalize(); CHKERRQ(ierr);
 

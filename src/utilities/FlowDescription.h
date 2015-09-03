@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file FlowDescription.h
  * \author Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Definition of the class \c FlowDescription.
+ * \brief Definition of the class `FlowDescription`.
  */
 
 
@@ -17,7 +17,7 @@
 
 /**
  * \class FlowDescription
- * \brief Stores information that describes the flow
+ * \brief Stores information that describes the flow.
  */
 template <PetscInt dim>
 class FlowDescription

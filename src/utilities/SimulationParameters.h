@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file SimulationParameters.h
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Definition of the class \c SimulationParameters.
+ * \brief Definition of the class `SimulationParameters`.
  */
 
 
@@ -31,10 +31,10 @@ public:
   class Solver
   {
   public:
-    IterativeMethod method;             ///< iterative method to use
+    IterativeMethod method;            ///< iterative method to use
     PreconditionerType preconditioner; ///< type of preconditioner
-    PetscReal relativeTolerance;     ///< relative tolerance of the solver
-    PetscInt maxIterations;          ///< maximum number of iterations
+    PetscReal relativeTolerance;       ///< relative tolerance of the solver
+    PetscInt maxIterations;            ///< maximum number of iterations
   }; // Solver
 
   /**

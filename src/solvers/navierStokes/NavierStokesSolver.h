@@ -86,7 +86,7 @@ public:
   // set up Krylov solvers used to solve linear systems
   PetscErrorCode createKSPs();
   // populate flux vectors with initial conditions
-  PetscErrorCode initializeFluxes();
+  virtual PetscErrorCode initializeFluxes();
   // add initial perturbation to velocity field
   PetscErrorCode addInitialPerturbation();
   // initialize lambda vector with previously saved data

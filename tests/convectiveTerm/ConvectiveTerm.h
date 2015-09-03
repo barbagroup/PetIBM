@@ -22,7 +22,6 @@ public:
   Vec rnExact;               // exact solution of the explicit convective term
   PetscReal relativeError;   // relative error in the explicit convective term
 
-  PetscErrorCode initialize();
   PetscErrorCode initializeFluxes();
   PetscErrorCode calculateExactSolution();
   PetscErrorCode calculateRelativeError();

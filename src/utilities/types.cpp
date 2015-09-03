@@ -202,7 +202,7 @@ std::string stringFromIterativeMethod(IterativeMethod method)
 PreconditionerType stringToPreconditionerType(std::string s)
 {
   if (s == "NONE")
-    return NONE;
+    return NO_PRECONDITIONER;
   if (s == "DIAGONAL")
     return DIAGONAL;
   if (s == "GAMG")
@@ -223,7 +223,7 @@ std::string stringFromPreconditionerType(PreconditionerType preconditioner)
 {
   switch(preconditioner)
   {
-    case NONE:
+    case NO_PRECONDITIONER:
       return "no preconditioning";
       break;
     case DIAGONAL:
@@ -243,6 +243,8 @@ std::string stringFromPreconditionerType(PreconditionerType preconditioner)
  */
 TimeScheme stringToTimeScheme(std::string s)
 {
+  if (s == "NONE")
+    return NONE;
   if (s == "EULER_EXPLICIT")
     return EULER_EXPLICIT;
   if (s == "EULER_IMPLICIT")
@@ -253,6 +255,7 @@ TimeScheme stringToTimeScheme(std::string s)
     return CRANK_NICOLSON;
   std::cout << "\nERROR: " << s << " - unknown time-integration scheme.\n";
   std::cout << "Time-integration schemes available:\n";
+  std::cout << "\tNONE\n";
   std::cout << "\tEULER_EXPLICIT\n";
   std::cout << "\tEULER_IMPLICIT\n";
   std::cout << "\tADAMS_BASHFORTH_2\n";
@@ -268,6 +271,9 @@ std::string stringFromTimeScheme(TimeScheme scheme)
 {
   switch(scheme)
   {
+    case NONE:
+      return "none";
+      break;
     case EULER_EXPLICIT:
       return "Euler-explicit";
       break;

@@ -65,10 +65,11 @@ std::string stringFromBoundaryLocation(BoundaryLocation location);
  */
 enum TimeScheme
 {
+  NONE,              ///< numerical coefficients set to zero
   EULER_EXPLICIT,    ///< explicit Euler method
   EULER_IMPLICIT,    ///< implicit Euler method
   ADAMS_BASHFORTH_2, ///< second-order Adams-Bashforth scheme
-  CRANK_NICOLSON     ///< Crank-Nicolson scheme
+  CRANK_NICOLSON     ///< second-order Crank-Nicolson scheme
 };
 TimeScheme stringToTimeScheme(std::string);
 std::string stringFromTimeScheme(TimeScheme timeScheme);
@@ -104,9 +105,9 @@ std::string stringFromIterativeMethod(IterativeMethod method);
  */
 enum PreconditionerType
 {
-  NONE,     ///< no preconditioner
-  DIAGONAL, ///< diagonal preconditioner
-  GAMG      ///< gamg with smoothed-aggregation preconditioner
+  NO_PRECONDITIONER,     ///< no preconditioner
+  DIAGONAL,              ///< diagonal preconditioner
+  GAMG                   ///< gamg with smoothed-aggregation preconditioner
 };
 PreconditionerType stringToPreconditionerType(std::string s);
 std::string stringFromPreconditionerType(PreconditionerType precoditioner);

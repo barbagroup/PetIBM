@@ -28,27 +28,6 @@ ConvectiveTerm<dim>::ConvectiveTerm(CartesianMesh *cartesianMesh,
 
 
 /**
- * \brief Initializes the solver for the diffusion equation.
- *
- * The explicit time-intregration coefficients for the convective terms 
- * are set to zero.
- */
-template <PetscInt dim>
-PetscErrorCode ConvectiveTerm<dim>::initialize()
-{
-  PetscErrorCode ierr;
-
-  ierr = NavierStokesSolver<dim>::initialize(); CHKERRQ(ierr);
-  NavierStokesSolver<dim>::parameters->convection.coefficients[0] = 0.0;
-  NavierStokesSolver<dim>::parameters->convection.coefficients[1] = 1.0;
-  NavierStokesSolver<dim>::parameters->diffusion.coefficients[0] = 0.0;
-  NavierStokesSolver<dim>::parameters->diffusion.coefficients[1] = 0.0;
-
-  return ierr;
-} // initialize
-
-
-/**
  * \brief Initializes the fluxes with a sinusoidal solution.
  *
  * In terms of velocity, the initial conditions are:

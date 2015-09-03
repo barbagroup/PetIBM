@@ -64,9 +64,15 @@ void SimulationParameters::initialize(std::string filePath)
   // set time-stepping coefficients for convective terms
   switch (convection.scheme)
   {
+    case NONE:
+      convection.coefficients.push_back(0.0); // n+1 coefficient
+      convection.coefficients.push_back(0.0); // n coefficient
+      convection.coefficients.push_back(0.0); // n-1 coefficient
+      break;
     case EULER_EXPLICIT:
       convection.coefficients.push_back(0.0); // n+1 coefficient
       convection.coefficients.push_back(1.0); // n coefficient
+      convection.coefficients.push_back(0.0); // n-1 coefficient
       break;
     case ADAMS_BASHFORTH_2:
       convection.coefficients.push_back(0.0);  // n+1 coefficient
@@ -76,6 +82,7 @@ void SimulationParameters::initialize(std::string filePath)
     default:
       std::cout << "\nERROR: unknown numerical scheme for convective terms.\n";
       std::cout << "Numerical scheme implemented:\n";
+      std::cout << "\tNONE\n";
       std::cout << "\tEULER_EXPLICIT\n";
       std::cout << "\tADAMS_BASHFORTH_2\n" << std::endl;
       exit(0);
@@ -84,6 +91,10 @@ void SimulationParameters::initialize(std::string filePath)
   // set time-stepping coefficients for diffusive terms
   switch (diffusion.scheme)
   {
+    case NONE:
+      diffusion.coefficients.push_back(0.0); // n+1 coefficient
+      diffusion.coefficients.push_back(0.0); // n coefficient
+      break;
     case EULER_EXPLICIT:
       diffusion.coefficients.push_back(0.0); // n+1 coefficient
       diffusion.coefficients.push_back(1.0); // n coefficient
@@ -99,6 +110,7 @@ void SimulationParameters::initialize(std::string filePath)
     default:
       std::cout << "\nERROR: unknown numerical scheme for diffusive terms.\n";
       std::cout << "Numerical scheme implemented:\n";
+      std::cout << "\tNONE\n";
       std::cout << "\tEULER_EXPLICIT\n";
       std::cout << "\tEULER_IMPLICIT\n";
       std::cout << "\tCRANK_NICOLSON\n" << std::endl;

@@ -5,15 +5,15 @@
   nt: 1
   nsave: 1
   convection: EULER_EXPLICIT
-  diffusion: EULER_EXPLICIT
+  diffusion: NONE
   linearSolvers:
     - system: velocity
       solver: CG
       preconditioner: DIAGONAL
-      tolerance: 1.0E-06
+      tolerance: 1.0E-08
       maxIterations: 10000
     - system: Poisson
       solver: CG
       preconditioner: GAMG
-      tolerance: 1.0E-06
+      tolerance: 1.0E-08
       maxIterations: 20000

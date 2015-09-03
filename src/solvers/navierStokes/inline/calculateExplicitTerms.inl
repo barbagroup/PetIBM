@@ -387,7 +387,7 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
         dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0])    : 0.5*dy[j];
         diffusionTerm = alpha*nu * (  d2udx2(w_W, w_P, w_E, dxMinus, dxPlus)
                                     + d2udx2(w_S, w_P, w_N, dyMinus, dyPlus)
-                                    + d2udx2(v_B, v_P, v_F, dzMinus, dzPlus) );
+                                    + d2udx2(w_B, w_P, w_F, dzMinus, dzPlus) );
         // explicit term
         rz[k][j][i] = w_P/dt - convectionTerm + diffusionTerm;
       }

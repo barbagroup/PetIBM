@@ -22,7 +22,6 @@ public:
   Vec rnExact;  // exact solution of the explicit diffusion term
   PetscReal relativeError;  // relative error in the explicit diffusion term
 
-  PetscErrorCode initialize();
   PetscErrorCode initializeFluxes();
   PetscErrorCode calculateExactSolution();
   PetscErrorCode calculateRelativeError();

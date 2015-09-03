@@ -126,6 +126,12 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
   // assemble matrix A row by row
+  PetscReal *dx = &mesh->dx[0],
+            *dy = &mesh->dy[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny;
+  PetscBool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
+            periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE;
   PetscReal dxMinus, dxPlus, dyMinus, dyPlus;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAVecGetArray(uda, uMapping, &uMappingArray); CHKERRQ(ierr);
@@ -133,12 +139,12 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = DMDAGetInfo(uda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
-    dyMinus = (j == 0) ? 0.5*mesh->dy[0] : 0.5*(mesh->dy[j-1]+mesh->dy[j]);
-    dyPlus = (j == N-1) ? 0.5*mesh->dy[N-1] : 0.5*(mesh->dy[j]+mesh->dy[j+1]);
+    dyMinus = (j > 0) ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
+    dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0]) : 0.5*dy[j];
     for (i=mstart; i<mstart+m; i++)
     {
-      dxMinus = mesh->dx[i];
-      dxPlus = mesh->dx[i+1];
+      dxMinus = dx[i];
+      dxPlus = (i == M-1 && periodicX) ? dx[0] : dx[i+1];
       getColumnIndices(uMappingArray, i, j, cols);
       getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, values);
       ierr = MatSetValues(A, 1, &cols[0], 5, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -151,12 +157,12 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = DMDAGetInfo(vda, NULL, &M, &N, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
-    dyMinus = mesh->dy[j];
-    dyPlus = mesh->dy[j+1];
+    dyMinus = dy[j];
+    dyPlus = (j == N-1 && periodicY) ? dy[0] : dy[j+1];
     for (i=mstart; i<mstart+m; i++)
     {
-      dxMinus = (i == 0) ? 0.5*mesh->dx[0] : 0.5*(mesh->dx[i-1]+mesh->dx[i]);
-      dxPlus = (i == M-1) ? 0.5*mesh->dx[M-1] : 0.5*(mesh->dx[i]+mesh->dx[i+1]);
+      dxMinus = (i > 0) ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
+      dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0]) : 0.5*dx[i];
       getColumnIndices(vMappingArray, i, j, cols);
       getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, values);
       ierr = MatSetValues(A, 1, &cols[0], 5, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -266,6 +272,15 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
   // assemble matrix A row by row
+  PetscBool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
+            periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
+            periodicZ = (flow->boundaries[ZMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE;
+  PetscReal *dx = &mesh->dx[0],
+            *dy = &mesh->dy[0],
+            *dz = &mesh->dz[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny,
+           nz = mesh->nz;
   PetscReal dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAVecGetArray(uda, uMapping, &uMappingArray); CHKERRQ(ierr);
@@ -273,16 +288,16 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = DMDAGetInfo(uda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    dzMinus = (k == 0) ? 0.5*mesh->dz[0] : 0.5*(mesh->dz[k-1]+mesh->dz[k]);
-    dzPlus = (k == P-1) ? 0.5*mesh->dz[P-1] : 0.5*(mesh->dz[k]+mesh->dz[k+1]);
+    dzMinus = (k > 0) ? 0.5*(dz[k-1] + dz[k]) : (periodicZ) ? 0.5*(dz[nz-1] + dz[k]) : 0.5*dz[k];
+    dzPlus = (k < P-1) ? 0.5*(dz[k] + dz[k+1]) : (periodicZ) ? 0.5*(dz[k] + dz[0]) : 0.5*dz[k];
     for (j=nstart; j<nstart+n; j++)
     {
-      dyMinus = (j == 0) ? 0.5*mesh->dy[0] : 0.5*(mesh->dy[j-1]+mesh->dy[j]);
-      dyPlus = (j == N-1) ? 0.5*mesh->dy[N-1] : 0.5*(mesh->dy[j]+mesh->dy[j+1]);
+      dyMinus = (j > 0) ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
+      dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0]) : 0.5*dy[j];
       for (i=mstart; i<mstart+m; i++)
       {
-        dxMinus = mesh->dx[i];
-        dxPlus = mesh->dx[i+1];
+        dxMinus = dx[i];
+        dxPlus = (i == M-1 && periodicX) ? dx[0] : dx[i+1];
         getColumnIndices(uMappingArray, i, j, k, cols);
         getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus, values);
         ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -296,16 +311,16 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = DMDAGetInfo(vda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    dzMinus = (k == 0) ? 0.5*mesh->dz[0] : 0.5*(mesh->dz[k-1]+mesh->dz[k]);
-    dzPlus = (k == P-1) ? 0.5*mesh->dz[P-1] : 0.5*(mesh->dz[k]+mesh->dz[k+1]);
+    dzMinus = (k > 0) ? 0.5*(dz[k-1] + dz[k]) : (periodicZ) ? 0.5*(dz[nz-1] + dz[k]) : 0.5*dz[k];
+    dzPlus = (k < P-1) ? 0.5*(dz[k] + dz[k+1]) : (periodicZ) ? 0.5*(dz[k] + dz[0]) : 0.5*dz[k];
     for (j=nstart; j<nstart+n; j++)
     {
-      dyMinus = mesh->dy[j];
-      dyPlus = mesh->dy[j+1];
+      dyMinus = dy[j];
+      dyPlus = (j == N-1 && periodicY) ? dy[0] : dy[j+1];
       for (i=mstart; i<mstart+m; i++)
       {
-        dxMinus = (i == 0) ? 0.5*mesh->dx[0] : 0.5*(mesh->dx[i-1]+mesh->dx[i]);
-        dxPlus = (i == M-1) ? 0.5*mesh->dx[M-1] : 0.5*(mesh->dx[i]+mesh->dx[i+1]);
+        dxMinus = (i > 0) ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
+        dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0]) : 0.5*dx[i];
         getColumnIndices(vMappingArray, i, j, k, cols);
         getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus, values);
         ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRQ(ierr);
@@ -319,16 +334,16 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = DMDAGetInfo(wda, NULL, &M, &N, &P, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    dzMinus = mesh->dz[k];
-    dzPlus = mesh->dz[k+1];
+    dzMinus = dz[k];
+    dzPlus = (k == P-1 && periodicZ) ? dz[0] : dz[k+1];
     for (j=nstart; j<nstart+n; j++)
     {
-      dyMinus = (j == 0) ? 0.5*mesh->dy[0] : 0.5*(mesh->dy[j-1]+mesh->dy[j]);
-      dyPlus = (j == N-1) ? 0.5*mesh->dy[N-1] : 0.5*(mesh->dy[j]+mesh->dy[j+1]);
+      dyMinus = (j > 0) ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
+      dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0]) : 0.5*dy[j];
       for (i=mstart; i<mstart+m; i++)
       {
-        dxMinus = (i == 0) ? 0.5*mesh->dx[0] : 0.5*(mesh->dx[i-1]+mesh->dx[i]);
-        dxPlus = (i == M-1) ? 0.5*mesh->dx[M-1] : 0.5*(mesh->dx[i]+mesh->dx[i+1]);
+        dxMinus = (i > 0) ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
+        dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0]) : 0.5*dx[i];
         getColumnIndices(wMappingArray, i, j, k, cols);
         getCoefficients(dxMinus, dxPlus, dyMinus, dyPlus, dzMinus, dzPlus, values);
         ierr = MatSetValues(A, 1, &cols[0], 7, cols, values, INSERT_VALUES); CHKERRQ(ierr);

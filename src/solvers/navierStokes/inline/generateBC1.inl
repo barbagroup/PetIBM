@@ -32,6 +32,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 
   PetscReal *dx = &mesh->dx[0],
             *dy = &mesh->dy[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny;
 
   ierr = VecSet(bc1, 0.0); CHKERRQ(ierr);
   Vec bc1xGlobal, bc1yGlobal;
@@ -48,7 +50,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[XMINUS][0].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/dx[0]/(dx[0]+dx[1]);
-    coeffPlus = alpha*nu * 2.0/dx[M]/(dx[M-1]+dx[M]);
+    coeffPlus = alpha*nu * 2.0/dx[nx-1]/(dx[nx-2]+dx[nx-1]);
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
       if (mstart == 0) // left boundary on current process
@@ -81,7 +83,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[YMINUS][0].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dy[0])/(0.5*dy[0]+0.5*(dy[0]+dy[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dy[N-1])/(0.5*(dy[N-2]+dy[N-1])+0.5*dy[N-1]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dy[ny-1])/(0.5*(dy[ny-2]+dy[ny-1])+0.5*dy[ny-1]);
     for (i=mstart; i<mstart+m; i++) // loop over x-direction
     { 
       if (nstart == 0) // bottom boundary on current boundary
@@ -124,7 +126,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[XMINUS][1].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dx[0])/(0.5*dx[0]+0.5*(dx[0]+dx[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dx[M-1])/(0.5*(dx[M-2]+dx[M-1])+0.5*dx[M-1]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dx[nx-1])/(0.5*(dx[nx-2]+dx[nx-1])+0.5*dx[nx-1]);
     for (j=nstart; j<nstart+n; j++) //loop over y-direction
     {
       if (mstart == 0) // left boundary on current process
@@ -157,7 +159,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
   if (flow->boundaries[YMINUS][1].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/dy[0]/(dy[0]+dy[1]);
-    coeffPlus = alpha*nu * 2.0/dy[N]/(dy[N-1]+dy[N]);
+    coeffPlus = alpha*nu * 2.0/dy[ny-1]/(dy[ny-2]+dy[ny-1]);
     for (i=mstart; i<mstart+m; i++) // loop over x-direction
     { 
       if (nstart == 0) // bottom boundary on current process
@@ -209,6 +211,9 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   PetscReal *dx = &mesh->dx[0],
             *dy = &mesh->dy[0],
             *dz = &mesh->dz[0];
+  PetscInt nx = mesh->nx,
+           ny = mesh->ny,
+           nz = mesh->nz;
 
   PetscReal nu = flow->nu; // viscosity
   PetscReal alpha = parameters->diffusion.coefficients[0]; // implicit diffusion coefficient
@@ -229,7 +234,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[XMINUS][0].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/dx[0]/(dx[0]+dx[1]);
-    coeffPlus = alpha*nu * 2.0/dx[M]/(dx[M-1]+dx[M]);
+    coeffPlus = alpha*nu * 2.0/dx[nx-1]/(dx[nx-2]+dx[nx-1]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
       for (j=nstart; j<nstart+n; j++) // loop over y-direction
@@ -238,10 +243,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[XMINUS][0].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1x[k][j][0] += coeffMinus*qx[k][j][-1]/(dy[j]*dz[k]);
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -250,10 +255,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[XPLUS][0].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1x[k][j][M-1] += coeffPlus*qx[k][j][M]/(dy[j]*dz[k]);
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -265,10 +270,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[YMINUS][0].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dy[0])/(0.5*dy[0]+0.5*(dy[0]+dy[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dy[N])/(0.5*(dy[N-1]+dy[N])+0.5*dy[N]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dy[ny-1])/(0.5*(dy[ny-2]+dy[ny-1])+0.5*dy[ny-1]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
-      for (i=mstart; i<mstart+m; i++) // loop over y-direction
+      for (i=mstart; i<mstart+m; i++) // loop over x-direction
       {
         if (nstart == 0) // bottom boundary on current process
         {
@@ -286,10 +291,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[YPLUS][0].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1x[k][N-1][i] += coeffPlus*qx[k][N][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -301,7 +306,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[ZMINUS][0].type != PERIODIC) // do not update if z-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dz[0])/(0.5*dz[0]+0.5*(dz[0]+dz[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dz[P])/(0.5*(dz[P-1]+dz[P])+0.5*dz[P]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dz[nz-1])/(0.5*(dz[nz-2]+dz[nz-1])+0.5*dz[nz-1]);
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
       for (i=mstart; i<mstart+m; i++) // loop over x-direction
@@ -310,10 +315,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[ZMINUS][0].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1x[0][j][i] += coeffMinus*qx[-1][j][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -322,10 +327,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[ZPLUS][0].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1x[P-1][j][i] += coeffPlus*qx[P][j][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -347,7 +352,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[XMINUS][1].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dx[0])/(0.5*dx[0]+0.5*(dx[0]+dx[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dx[M])/(0.5*(dx[M-1]+dx[M])+0.5*dx[M]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dx[nx-1])/(0.5*(dx[nx-2]+dx[nx-1])+0.5*dx[nx-1]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
       for (j=nstart; j<nstart+n; j++) // loop over y-direction
@@ -356,10 +361,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[XMINUS][1].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1y[k][j][0] += coeffMinus*qy[k][j][-1];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -368,10 +373,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[XPLUS][1].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1y[k][j][M-1] += coeffPlus*qy[k][j][M];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -383,7 +388,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[YMINUS][1].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/dy[0]/(dy[0]+dy[1]);
-    coeffPlus = alpha*nu * 2.0/dy[N]/(dy[N-1]+dy[N]);
+    coeffPlus = alpha*nu * 2.0/dy[ny-1]/(dy[ny-2]+dy[ny-1]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
       for (i=mstart; i<mstart+m; i++) // loop over x-direction
@@ -392,10 +397,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[YMINUS][1].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1y[k][0][i] += coeffMinus*qy[k][-1][i]/(dx[i]*dz[k]);
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -404,10 +409,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[YPLUS][1].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1y[k][N-1][i] += coeffPlus*qy[k][N][i]/(dx[i]*dz[k]);
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -419,7 +424,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[ZMINUS][1].type != PERIODIC) // do not update if z-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dz[0])/(0.5*dz[0]+0.5*(dz[0]+dz[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dz[P])/(0.5*(dz[P-1]+dz[P])+0.5*dz[P]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dz[nz-1])/(0.5*(dz[nz-2]+dz[nz-1])+0.5*dz[nz-1]);
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
       for (i=mstart; i<mstart+m; i++) // loop over x-direction
@@ -428,10 +433,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[ZMINUS][1].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1y[0][j][i] += coeffMinus*qy[-1][j][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -440,10 +445,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[ZPLUS][1].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1y[P-1][j][i] += coeffPlus*qy[P][j][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -465,7 +470,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[XMINUS][2].type != PERIODIC) // do not update if x-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dx[0])/(0.5*dx[0]+0.5*(dx[0]+dx[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dx[M])/(0.5*(dx[M-1]+dx[M])+0.5*dx[M]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dx[nx-1])/(0.5*(dx[nx-2]+dx[nx-1])+0.5*dx[nx-1]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
       for (j=nstart; j<nstart+n; j++) // loop over y-direction
@@ -474,10 +479,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[XMINUS][2].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1z[k][j][0] += coeffMinus*qz[k][j][-1];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -486,10 +491,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[XPLUS][2].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1z[k][j][M-1] += coeffPlus*qz[k][j][M];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -501,7 +506,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[YMINUS][2].type != PERIODIC) // do not update if y-periodic
   {
     coeffMinus = alpha*nu * 2.0/(0.5*dy[0])/(0.5*dy[0]+0.5*(dy[0]+dy[1]));
-    coeffPlus = alpha*nu * 2.0/(0.5*dy[N])/(0.5*(dy[N-1]+dy[N])+0.5*dy[N]);
+    coeffPlus = alpha*nu * 2.0/(0.5*dy[ny-1])/(0.5*(dy[ny-2]+dy[ny-1])+0.5*dy[ny-1]);
     for (k=pstart; k<pstart+p; k++) // loop over z-direction
     {
       for (i=mstart; i<mstart+m; i++) // loop over x-direction
@@ -510,10 +515,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[YMINUS][2].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1z[k][0][i] += coeffMinus*qz[k][-1][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -522,10 +527,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[YPLUS][2].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1z[k][N-1][i] += coeffPlus*qz[k][N][i];
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -537,7 +542,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   if (flow->boundaries[ZMINUS][2].type != PERIODIC) // do not update if z-periodic
   {
     coeffMinus = alpha*nu * 2.0/dz[0]/(dz[0]+dz[1]);
-    coeffPlus = alpha*nu * 2.0/dz[P]/(dz[P-1]+dz[P]);
+    coeffPlus = alpha*nu * 2.0/dz[nz-1]/(dz[nz-2]+dz[nz-1]);
     for (j=nstart; j<nstart+n; j++) // loop over y-direction
     {
       for (i=mstart; i<mstart+m; i++) // loop over x-direction
@@ -546,10 +551,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[ZMINUS][2].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1z[0][j][i] += coeffMinus*qz[-1][j][i]/(dx[i]*dy[j]);
               break;
-            case CONVECTIVE:
             default:
               break;
           }
@@ -558,10 +563,10 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
         {
           switch (flow->boundaries[ZPLUS][2].type)
           {
+            case CONVECTIVE:
             case DIRICHLET:
               bc1z[P-1][j][i] += coeffPlus*qz[P][j][i]/(dx[i]*dy[j]);
               break;
-            case CONVECTIVE:
             default:
               break;
           }

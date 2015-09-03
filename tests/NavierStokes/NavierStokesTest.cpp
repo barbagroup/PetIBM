@@ -78,12 +78,19 @@ TEST_F(NavierStokesTest, ComparePhi)
   EXPECT_LT(errorNorm/goldNorm, 5.0E-04);
 }
 
+
+char common_options[] = "-sys2_pc_type gamg \
+                         -sys2_pc_gamg_type agg \
+                         -sys2_pc_gamg_agg_nsmooths 1";
+
+
 int main(int argc, char **argv)
 {
   PetscErrorCode ierr, result;
 
   ::testing::InitGoogleTest(&argc, argv);
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
+  ierr = PetscOptionsInsertString(common_options); CHKERRQ(ierr);
   result = RUN_ALL_TESTS();
   ierr = PetscFinalize(); CHKERRQ(ierr);
 

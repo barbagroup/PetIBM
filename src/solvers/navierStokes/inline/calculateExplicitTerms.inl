@@ -93,27 +93,30 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
   {
     for (i=mstart; i<mstart+m; i++)
     {
-      // velocity values
+      // velocity value at nodes
       u_P = qx[j][i]/dy[j];
-      u_w = 0.5*(u_P + qx[j][i-1]/dy[j]);
-      u_e = 0.5*(u_P + qx[j][i+1]/dy[j]);
-      u_s = (j > 0) ? 0.5*(u_P + qx[j-1][i]/dy[j-1]) : (periodicY) ? 0.5*(u_P + qx[j-1][i]/dy[ny-1]) : qx[j-1][i];
-      u_n = (j < N-1) ? 0.5*(u_P + qx[j+1][i]/dy[j+1]) : (periodicY) ? 0.5*(u_P + qx[j+1][i]/dy[0]) : qx[j+1][i];
-      v_s = 0.5*(qy[j-1][i]/dx[i] + qy[j-1][i+1]/dx[i+1]);
-      v_n = 0.5*(qy[j][i]/dx[i] + qy[j][i+1]/dx[i+1]);
-      // convection term: Hx = d(u^2)/dx + d(uv)/dy
-      HnMinus1 = Hx[j][i];
-      Hx[j][i] = (  (u_e*u_e - u_w*u_w)/(0.5*(dx[i]+dx[i+1])) 
-                  + (v_n*u_n - v_s*u_s)/dy[j] );
-      convectionTerm = gamma*Hx[j][i] + zeta*HnMinus1;
-      // diffusion term: d^2u/dx^2 + d^2u/dy^2
       u_W = qx[j][i-1]/dy[j];
       u_E = qx[j][i+1]/dy[j];
       u_S = (j > 0) ? qx[j-1][i]/dy[j-1] : (periodicY) ? qx[j-1][i]/dy[ny-1] : qx[j-1][i];
       u_N = (j < N-1) ? qx[j+1][i]/dy[j+1] : (periodicY) ? qx[j+1][i]/dy[0] : qx[j+1][i];
+      // interpolated velocity values
+      u_w = 0.5*(u_W + u_P);
+      u_e = 0.5*(u_P + u_E);
+      u_s = (j == 0 && !periodicY) ? u_S : 0.5*(u_S + u_P);
+      u_n = (j == N-1 && !periodicY) ? u_N : 0.5*(u_P + u_N);      
+      dxMinus = dx[i];
+      dxPlus = (i == M-1 && periodicX) ? dx[0] : dx[i+1];
+      v_s = 0.5*(qy[j-1][i]/dxMinus + qy[j-1][i+1]/dxPlus);
+      v_n = 0.5*(qy[j][i]/dxMinus + qy[j][i+1]/dxPlus);
+      // convection term: Hx = d(u^2)/dx + d(uv)/dy
+      HnMinus1 = Hx[j][i];
+      Hx[j][i] = (  (u_e*u_e - u_w*u_w)/(0.5*(dxMinus+dxPlus)) 
+                  + (v_n*u_n - v_s*u_s)/dy[j] );
+      convectionTerm = gamma*Hx[j][i] + zeta*HnMinus1;
+      // diffusion term: d^2u/dx^2 + d^2u/dy^2
       dyMinus = (j > 0) ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
       dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0]) : 0.5*dy[j];
-      diffusionTerm = alpha*nu * (  d2udx2(u_W, u_P, u_E, dx[i], dx[i+1])
+      diffusionTerm = alpha*nu * (  d2udx2(u_W, u_P, u_E, dxMinus, dxPlus)
                                   + d2udx2(u_S, u_P, u_N, dyMinus, dyPlus) );
       // explicit term
       rx[j][i] = u_P/dt - convectionTerm + diffusionTerm;
@@ -132,28 +135,31 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
   {
     for (i=mstart; i<mstart+m; i++)
     {
-      // velocity values
+      // velocity value at nodes
       v_P = qy[j][i]/dx[i];
-      v_w = (i > 0) ? 0.5*(v_P + qy[j][i-1]/dx[i-1]) : (periodicX) ? qy[j][i-1]/dx[nx-1] : qy[j][i-1];
-      v_e = (i < M-1) ? 0.5*(v_P + qy[j][i+1]/dx[i+1]) : (periodicX) ? qy[j][i+1]/dx[0] : qy[j][i+1];
-      v_s = 0.5*(v_P + qy[j-1][i]/dx[i]);
-      v_n = 0.5*(v_P + qy[j+1][i]/dx[i]);
-      u_w = 0.5*(qx[j][i-1]/dy[j] + qx[j+1][i-1]/dy[j+1]);
-      u_e = 0.5*(qx[j][i]/dy[j] + qx[j+1][i]/dy[j+1]);
-      // convection term: Hy = d(uv)/dx + d(v^2)/dy
-      HnMinus1 = Hy[j][i];
-      Hy[j][i] = (  (u_e*v_e - u_w*v_w)/dx[i] 
-                  + (v_n*v_n - v_s*v_s)/(0.5*(dy[j]+dy[j+1])) );
-      convectionTerm = gamma*Hy[j][i] + zeta*HnMinus1;
-      // diffusion term: d^2v/dx^2 + d^2v/dy^2
       v_W = (i > 0) ? qy[j][i-1]/dx[i-1] : (periodicX) ? qy[j][i-1]/dx[nx-1] : qy[j][i-1];
       v_E = (i < M-1) ? qy[j][i+1]/dx[i+1] : (periodicX) ? qy[j][i+1]/dx[0] : qy[j][i+1];
       v_S = qy[j-1][i]/dx[i];
       v_N = qy[j+1][i]/dx[i];
+      // interpolated velocity values
+      v_w = (i == 0 && !periodicX) ? v_W : 0.5*(v_W + v_P);
+      v_e = (i == M-1 && !periodicX) ? v_E : 0.5*(v_P + v_E);
+      v_s = 0.5*(v_S + v_P);
+      v_n = 0.5*(v_P + v_N);
+      dyMinus = dy[j];
+      dyPlus = (j == N-1 && periodicY) ? dy[0] : dy[j+1];
+      u_w = 0.5*(qx[j][i-1]/dyMinus + qx[j+1][i-1]/dyPlus);
+      u_e = 0.5*(qx[j][i]/dyMinus + qx[j+1][i]/dyPlus);
+      // convection term: Hy = d(uv)/dx + d(v^2)/dy
+      HnMinus1 = Hy[j][i];
+      Hy[j][i] = (  (u_e*v_e - u_w*v_w)/dx[i] 
+                  + (v_n*v_n - v_s*v_s)/(0.5*(dyMinus+dyPlus)) );
+      convectionTerm = gamma*Hy[j][i] + zeta*HnMinus1;
+      // diffusion term: d^2v/dx^2 + d^2v/dy^2
       dxMinus = (i > 0) ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
       dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0]) : 0.5*dx[i];
       diffusionTerm = alpha*nu * (  d2udx2(v_W, v_P, v_E, dxMinus, dxPlus)
-                                  + d2udx2(v_S, v_P, v_N, dy[j], dy[j+1]) );
+                                  + d2udx2(v_S, v_P, v_N, dyMinus, dyPlus) );
       // explicit term
       ry[j][i] = v_P/dt - convectionTerm + diffusionTerm;
     }
@@ -237,36 +243,39 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        // velocity values
+        // velocity value at nodes
         u_P = qx[k][j][i]/(dy[j]*dz[k]);
-        u_w = 0.5*(u_P + qx[k][j][i-1]/(dy[j]*dz[k]));
-        u_e = 0.5*(u_P + qx[k][j][i+1]/(dy[j]*dz[k]));
-        u_s = (j > 0) ? 0.5*(u_P + qx[k][j-1][i]/(dy[j-1]*dz[k])) : (periodicY) ? 0.5*(u_P + qx[k][j-1][i]/(dy[N-1]*dz[k])) : qx[k][j-1][i];
-        u_n = (j < N-1) ? 0.5*(u_P + qx[k][j+1][i]/(dy[j+1]*dz[k])) : (periodicY) ? 0.5*(u_P + qx[k][j+1][i]/(dy[0]*dz[k])) : qx[k][j+1][i];
-        u_b = (k > 0) ? 0.5*(u_P + qx[k-1][j][i]/(dy[j]*dz[k-1])) : (periodicZ) ? 0.5*(u_P + qx[k-1][j][i]/(dy[j]*dz[P-1])) : qx[k-1][j][i];
-        u_f = (k < P-1) ? 0.5*(u_P + qx[k+1][j][i]/(dy[j]*dz[k+1])) : (periodicZ) ? 0.5*(u_P + qx[k+1][j][i]/(dy[j]*dz[0])) : qx[k+1][j][i];
-        v_s = 0.5*(qy[k][j-1][i]/(dx[i]*dz[k]) + qy[k][j-1][i+1]/(dx[i+1]*dz[k]));
-        v_n = 0.5*(qy[k][j][i]/(dx[i]*dz[k]) + qy[k][j][i+1]/(dx[i+1]*dz[k]));;
-        w_b = 0.5*(qz[k-1][j][i]/(dx[i]*dy[j]) + qz[k-1][j][i+1]/(dx[i+1]*dy[j]));
-        w_f = 0.5*(qz[k][j][i]/(dx[i]*dy[j]) + qz[k][j][i+1]/(dx[i+1]*dy[j]));
+        u_W = qx[k][j][i-1]/(dy[j]*dz[k]);
+        u_E = qx[k][j][i+1]/(dy[j]*dz[k]);
+        u_S = (j > 0)   ? qx[k][j-1][i]/(dy[j-1]*dz[k]) : (periodicY) ? qx[k][j-1][i]/(dy[ny-1]*dz[k]) : qx[k][j-1][i];
+        u_N = (j < N-1) ? qx[k][j+1][i]/(dy[j+1]*dz[k]) : (periodicY) ? qx[k][j+1][i]/(dy[0]*dz[k])    : qx[k][j+1][i];
+        u_B = (k > 0)   ? qx[k-1][j][i]/(dy[j]*dz[k-1]) : (periodicZ) ? qx[k-1][j][i]/(dy[j]*dz[nz-1]) : qx[k-1][j][i];
+        u_F = (k < P-1) ? qx[k+1][j][i]/(dy[j]*dz[k+1]) : (periodicZ) ? qx[k+1][j][i]/(dy[j]*dz[0])    : qx[k+1][j][i];
+        // interpolated velocity values
+        u_w = 0.5*(u_W + u_P);
+        u_e = 0.5*(u_P + u_E);
+        u_s = (j == 0 && !periodicY)   ? u_S : 0.5*(u_S + u_P);
+        u_n = (j == N-1 && !periodicY) ? u_N : 0.5*(u_P + u_N);
+        u_b = (k == 0 && !periodicZ)   ? u_B : 0.5*(u_B + u_P);
+        u_f = (k == P-1 && !periodicZ) ? u_F : 0.5*(u_P + u_F);
+        dxMinus = dx[i];
+        dxPlus = (i == M-1 && periodicX) ? dx[0] : dx[i+1];
+        v_s = 0.5*(qy[k][j-1][i]/(dxMinus*dz[k]) + qy[k][j-1][i+1]/(dxPlus*dz[k]));
+        v_n = 0.5*(qy[k][j][i]/(dxMinus*dz[k])   + qy[k][j][i+1]/(dxPlus*dz[k]));
+        w_b = 0.5*(qz[k-1][j][i]/(dxMinus*dy[j]) + qz[k-1][j][i+1]/(dxPlus*dy[j]));
+        w_f = 0.5*(qz[k][j][i]/(dxMinus*dy[j])   + qz[k][j][i+1]/(dxPlus*dy[j]));
         // convection term: Hx = d(u^2)/dx + d(uv)/dy + d(uw)/dz
-        HnMinus1 = Hx[j][j][i];
-        Hx[k][j][i] = (  (u_e*u_e - u_w*u_w)/(0.5*(dx[i]+dx[i+1])) 
+        HnMinus1 = Hx[k][j][i];
+        Hx[k][j][i] = (  (u_e*u_e - u_w*u_w)/(0.5*(dxMinus + dxPlus)) 
                        + (v_n*u_n - v_s*u_s)/dy[j]
                        + (w_f*u_f - w_b*u_b)/dz[k] );
         convectionTerm = gamma*Hx[k][j][i] + zeta*HnMinus1;
         // diffusion term: d^2u/dx^2 + d^2u/dy^2 + d^2u/dz^2
-        u_W = qx[k][j][i-1]/(dy[j]*dz[k]);
-        u_E = qx[k][j][i+1]/(dy[j]*dz[k]);
-        u_S = (j > 0) ? qx[k][j-1][i]/(dy[j-1]*dz[k]) : (periodicY) ? qx[k][j-1][i]/(dy[N-1]*dz[k]) : qx[k][j-1][i];
-        u_N = (j < N-1) ? qx[k][j+1][i]/(dy[j+1]*dz[k]) : (periodicY) ? qx[k][j+1][i]/(dy[0]*dz[k]) : qx[k][j+1][i];
-        u_B = (k > 0) ? qx[k-1][j][i]/(dy[j]*dz[k-1]) : (periodicZ) ? qx[k-1][j][i]/(dy[j]*dz[P-1]) : qx[k-1][j][i];
-        u_F = (k < P-1) ? qx[k+1][j][i]/(dy[j]*dz[k+1]) : (periodicZ) ? qx[k+1][j][i]/(dy[j]*dz[0]) : qx[k+1][j][i];
-        dyMinus = (j > 0) ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
-        dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0]) : 0.5*dy[j];
-        dzMinus = (k > 0) ? 0.5*(dz[k-1] + dz[k]) : (periodicZ) ? 0.5*(dz[nz-1] + dz[k]) : 0.5*dz[k];
-        dzPlus = (k < P-1) ? 0.5*(dz[k] + dz[k+1]) : (periodicZ) ? 0.5*(dz[k] + dz[0]) : 0.5*dz[k];
-        diffusionTerm = alpha*nu * (  d2udx2(u_W, u_P, u_E, dx[i], dx[i+1])
+        dyMinus = (j > 0)  ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
+        dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0])    : 0.5*dy[j];
+        dzMinus = (k > 0)  ? 0.5*(dz[k-1] + dz[k]) : (periodicZ) ? 0.5*(dz[nz-1] + dz[k]) : 0.5*dz[k];
+        dzPlus = (k < P-1) ? 0.5*(dz[k] + dz[k+1]) : (periodicZ) ? 0.5*(dz[k] + dz[0])    : 0.5*dz[k];
+        diffusionTerm = alpha*nu * (  d2udx2(u_W, u_P, u_E, dxMinus, dxPlus)
                                     + d2udx2(u_S, u_P, u_N, dyMinus, dyPlus)
                                     + d2udx2(u_B, u_P, u_F, dzMinus, dzPlus) );
         // explicit term
@@ -289,37 +298,40 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        // velocity values
+        // velocity value at nodes
         v_P = qy[k][j][i]/(dx[i]*dz[k]);
-        v_w = (i > 0) ? 0.5*(v_P + qy[k][j][i-1]/(dx[i-1]*dz[k])) : (periodicX) ? 0.5*(v_P + qy[k][j][i-1]/(dx[M-1]*dz[k])) : qy[k][j][i-1];
-        v_e = (i < M-1) ? 0.5*(v_P + qy[k][j][i+1]/(dx[i+1]*dz[k])) : (periodicX) ? 0.5*(v_P + qy[k][j][i+1]/(dx[0]*dz[k])) : qy[k][j][i+1];
-        v_s = 0.5*(v_P + qy[k][j-1][i]/(dx[i]*dz[k]));
-        v_n = 0.5*(v_P + qy[k][j+1][i]/(dx[i]*dz[k]));
-        v_b = (k > 0) ? 0.5*(v_P + qy[k-1][j][i]/(dx[i]*dz[k-1])) : (periodicZ) ? 0.5*(v_P + qy[k-1][j][i]/(dx[i]*dz[P-1])) : qy[k-1][j][i];
-        v_f = (k < P-1) ? 0.5*(v_P + qy[k+1][j][i]/(dx[i]*dz[k+1])) : (periodicZ) ? 0.5*(v_P + qy[k+1][j][i]/(dx[i]*dz[0])) : qy[k+1][j][i];
-        u_w = 0.5*(qx[k][j][i-1]/(dy[j]*dz[k]) + qx[k][j+1][i-1]/(dy[j+1]*dz[k]));
-        u_e = 0.5*(qx[k][j][i]/(dy[j]*dz[k]) + qx[k][j+1][i]/(dy[j+1]*dz[k]));
-        w_b = 0.5*(qz[k-1][j][i]/(dx[i]*dy[j]) + qz[k-1][j+1][i]/(dx[i]*dy[j+1]));
-        w_f = 0.5*(qz[k][j][i]/(dx[i]*dy[j]) + qz[k][j+1][i]/(dx[i]*dy[j+1]));
-        // convection term: Hy = d(vu)/dx + d(v^2)/dy + d(vw)/dz
-        HnMinus1 = Hy[k][j][i];
-        Hy[k][j][i] = (  (u_e*v_e - u_w*v_w)/(0.5*(dx[i]+dx[i+1])) 
-                       + (v_n*v_n - v_s*v_s)/dy[j]
-                       + (w_f*v_f - w_b*v_b)/(0.5*(dz[k]+dz[k+1])) );
-        convectionTerm = gamma*Hy[k][j][i] + zeta*HnMinus1;
-        // diffusion term: d^2v/dx^2 + d^2v/dy^2 + d^2v/dz^2
-        v_W = (i > 0) ? qy[k][j][i-1]/(dx[i-1]*dz[k]) : (periodicX) ? qy[k][j][i-1]/(dx[N-1]*dz[k]) : qy[k][j][i-1];
-        v_E = (i < M-1) ? qy[k][j][i+1]/(dx[i+1]*dz[k]) : (periodicX) ? qy[k][j][i+1]/(dx[0]*dz[k]) : qy[k][j][i+1];
+        v_W = (i > 0)   ? qy[k][j][i-1]/(dx[i-1]*dz[k]) : (periodicX) ? qy[k][j][i-1]/(dx[nx-1]*dz[k]) : qy[k][j][i-1];
+        v_E = (i < M-1) ? qy[k][j][i+1]/(dx[i+1]*dz[k]) : (periodicX) ? qy[k][j][i+1]/(dx[0]*dz[k])    : qy[k][j][i+1];
         v_S = qy[k][j-1][i]/(dx[i]*dz[k]);
         v_N = qy[k][j+1][i]/(dx[i]*dz[k]);
-        v_B = (k > 0) ? qy[k-1][j][i]/(dx[i]*dz[k-1]) : (periodicZ) ? qy[k-1][j][i]/(dx[i]*dz[P-1]) : qy[k-1][j][i];
-        v_F = (k < P-1) ? qy[k+1][j][i]/(dx[i]*dz[k+1]) : (periodicZ) ? qy[k+1][j][i]/(dx[i]*dz[0]) : qy[k+1][j][i];
-        dxMinus = (i > 0) ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
-        dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0]) : 0.5*dx[i];
-        dzMinus = (k > 0) ? 0.5*(dz[k-1] + dz[k]) : (periodicZ) ? 0.5*(dz[nz-1] + dz[k]) : 0.5*dz[k];
-        dzPlus = (k < P-1) ? 0.5*(dz[k] + dz[k+1]) : (periodicZ) ? 0.5*(dz[k] + dz[0]) : 0.5*dz[k];
+        v_B = (k > 0)   ? qy[k-1][j][i]/(dx[i]*dz[k-1]) : (periodicZ) ? qy[k-1][j][i]/(dx[i]*dz[nz-1]) : qy[k-1][j][i];
+        v_F = (k < P-1) ? qy[k+1][j][i]/(dx[i]*dz[k+1]) : (periodicZ) ? qy[k+1][j][i]/(dx[i]*dz[0])    : qy[k+1][j][i];
+        // interpolated velocity values
+        v_w = (i == 0 && !periodicX)   ? v_W : 0.5*(v_W + v_P);
+        v_e = (i == M-1 && !periodicX) ? v_E : 0.5*(v_P + v_E);
+        v_s = 0.5*(v_S + v_P);
+        v_n = 0.5*(v_P + v_N);
+        v_b = (k == 0 && !periodicZ)   ? v_B : 0.5*(v_B + v_P);
+        v_f = (k == P-1 && !periodicZ) ? v_F : 0.5*(v_P + v_F);
+        dyMinus = dy[j];
+        dyPlus = (j == N-1 && periodicY) ? dy[0] : dy[j+1];
+        u_w = 0.5*(qx[k][j][i-1]/(dyMinus*dz[k]) + qx[k][j+1][i-1]/(dyPlus*dz[k]));
+        u_e = 0.5*(qx[k][j][i]/(dyMinus*dz[k]) + qx[k][j+1][i]/(dyPlus*dz[k]));
+        w_b = 0.5*(qz[k-1][j][i]/(dx[i]*dyMinus) + qz[k-1][j+1][i]/(dx[i]*dyPlus));
+        w_f = 0.5*(qz[k][j][i]/(dx[i]*dyMinus) + qz[k][j+1][i]/(dx[i]*dyPlus));
+        // convection term: Hy = d(vu)/dx + d(v^2)/dy + d(vw)/dz
+        HnMinus1 = Hy[k][j][i];
+        Hy[k][j][i] = (  (u_e*v_e - u_w*v_w)/dx[i] 
+                       + (v_n*v_n - v_s*v_s)/(0.5*(dyMinus + dyPlus))
+                       + (w_f*v_f - w_b*v_b)/dz[k] );
+        convectionTerm = gamma*Hy[k][j][i] + zeta*HnMinus1;
+        // diffusion term: d^2v/dx^2 + d^2v/dy^2 + d^2v/dz^2
+        dxMinus = (i > 0)  ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
+        dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0])    : 0.5*dx[i];
+        dzMinus = (k > 0)  ? 0.5*(dz[k-1] + dz[k]) : (periodicZ) ? 0.5*(dz[nz-1] + dz[k]) : 0.5*dz[k];
+        dzPlus = (k < P-1) ? 0.5*(dz[k] + dz[k+1]) : (periodicZ) ? 0.5*(dz[k] + dz[0])    : 0.5*dz[k];
         diffusionTerm = alpha*nu * (  d2udx2(v_W, v_P, v_E, dxMinus, dxPlus)
-                                    + d2udx2(v_S, v_P, v_N, dy[j], dy[j+1])
+                                    + d2udx2(v_S, v_P, v_N, dyMinus, dyPlus)
                                     + d2udx2(v_B, v_P, v_F, dzMinus, dzPlus) );
         // explicit term
         ry[k][j][i] = v_P/dt - convectionTerm + diffusionTerm;
@@ -341,38 +353,41 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
     {
       for (i=mstart; i<mstart+m; i++)
       {
-        // velocity values
+        // velocity value at nodes
         w_P = qz[k][j][i]/(dx[i]*dy[j]);
-        w_w = (i > 0) ? 0.5*(w_P + qz[k][j][i-1]/(dx[i-1]*dy[j])) : (periodicX) ? 0.5*(w_P + qz[k][j][i-1]/(dx[M-1]*dy[j])) : qz[k][j][i-1];
-        w_e = (i < M-1) ? 0.5*(w_P + qz[k][j][i+1]/(dx[i+1]*dy[j])) : (periodicX) ? 0.5*(w_P + qz[k][j][i+1]/(dx[0]*dy[j])) : qz[k][j][i+1];
-        w_s = (j > 0) ? 0.5*(w_P + qz[k][j-1][i]/(dx[i]*dy[j-1])) : (periodicY) ? 0.5*(w_P + qz[k][j-1][i]/(dx[i]*dy[N-1])) : qz[k][j-1][i];
-        w_n = (j < N-1) ? 0.5*(w_P + qz[k][j+1][i]/(dx[i]*dy[j+1])) : (periodicY) ? 0.5*(w_P + qz[k][j+1][i]/(dx[i]*dy[0])) : qz[k][j+1][i];
-        w_b = 0.5*(w_P + qz[k-1][j][i]/(dx[i]*dy[j]));
-        w_f = 0.5*(w_P + qz[k+1][j][i]/(dx[i]*dy[j]));
-        u_w = 0.5*(qx[k][j][i-1]/(dy[j]*dz[k]) + qx[k+1][j][i-1]/(dy[j]*dz[k+1]));
-        u_e = 0.5*(qx[k][j][i]/(dy[j]*dz[k]) + qx[k+1][j][i]/(dy[j]*dz[k+1]));
-        v_s = 0.5*(qy[k][j-1][i]/(dx[i]*dz[k]) + qy[k+1][j-1][i]/(dx[i]*dz[k+1]));
-        v_n = 0.5*(qy[k][j][i]/(dx[i]*dz[k]) + qy[k+1][j][i]/(dx[i]*dz[k+1]));
-        // convection term: Hz = d(wu)/dx + d(wv)/dy + d(w^2)/dz
-        HnMinus1 = Hz[k][j][i];
-        Hz[k][j][i] = (  (u_e*w_e - u_w*w_w)/(0.5*(dx[i]+dx[i+1])) 
-                       + (v_n*w_n - v_s*w_s)/(0.5*(dy[j]+dy[j+1]))
-                       + (w_f*w_f - w_b*w_b)/dz[k] );
-        convectionTerm = gamma*Hz[k][j][i] + zeta*HnMinus1;
-        // diffusion term: d^2w/dx^2 + d^2w/dy^2 + d^2w/dz^2
-        w_W = (i > 0) ? qz[k][j][i-1]/(dx[i-1]*dy[j]) : (periodicX) ? qz[k][j][i-1]/(dx[M-1]*dy[j]) : qz[k][j][i-1];
-        w_E = (i < M-1) ? qz[k][j][i+1]/(dx[i+1]*dy[j]) : (periodicX) ? qz[k][j][i+1]/(dx[0]*dy[j]) : qz[k][j][i+1];
-        w_S = (j > 0) ? qz[k][j-1][i]/(dx[i]*dy[j-1]) : (periodicY) ? qz[k][j-1][i]/(dx[i]*dy[N-1]) : qz[k][j-1][i];
-        w_N = (j < N-1) ? qz[k][j+1][i]/(dx[i]*dy[j+1]) : (periodicY) ? qz[k][j+1][i]/(dx[i]*dy[0]) : qz[k][j+1][i];
+        w_W = (i > 0)   ? qz[k][j][i-1]/(dx[i-1]*dy[j]) : (periodicX) ? qz[k][j][i-1]/(dx[nx-1]*dy[j]) : qz[k][j][i-1];
+        w_E = (i < M-1) ? qz[k][j][i+1]/(dx[i+1]*dy[j]) : (periodicX) ? qz[k][j][i+1]/(dx[0]*dy[j])    : qz[k][j][i+1];
+        w_S = (j > 0)   ? qz[k][j-1][i]/(dx[i]*dy[j-1]) : (periodicY) ? qz[k][j-1][i]/(dx[i]*dy[ny-1]) : qz[k][j-1][i];
+        w_N = (j < N-1) ? qz[k][j+1][i]/(dx[i]*dy[j+1]) : (periodicY) ? qz[k][j+1][i]/(dx[i]*dy[0])    : qz[k][j+1][i];
         w_B = qz[k-1][j][i]/(dx[i]*dy[j]);
         w_F = qz[k+1][j][i]/(dx[i]*dy[j]);
-        dxMinus = (i > 0) ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
-        dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0]) : 0.5*dx[i];
-        dyMinus = (j > 0) ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
-        dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0]) : 0.5*dy[j];
+        // interpolated velocity values
+        w_w = (i == 0 && !periodicX)   ? w_W : 0.5*(w_W + w_P);
+        w_e = (i == M-1 && !periodicX) ? w_E : 0.5*(w_P + w_E);
+        w_s = (j == 0 && !periodicY)   ? w_S : 0.5*(w_S + w_P);
+        w_n = (j == N-1 && !periodicY) ? w_N : 0.5*(w_P + w_N);
+        w_b = 0.5*(w_B + w_P);
+        w_f = 0.5*(w_P + w_F);
+        dzMinus = dz[k];
+        dzPlus = (k == P-1 && periodicZ) ? dz[0] : dz[k+1];
+        u_w = 0.5*(qx[k][j][i-1]/(dy[j]*dzMinus) + qx[k+1][j][i-1]/(dy[j]*dzPlus));
+        u_e = 0.5*(qx[k][j][i]/(dy[j]*dzMinus) + qx[k+1][j][i]/(dy[j]*dzPlus));
+        v_s = 0.5*(qy[k][j-1][i]/(dx[i]*dzMinus) + qy[k+1][j-1][i]/(dx[i]*dzPlus));
+        v_n = 0.5*(qy[k][j][i]/(dx[i]*dzMinus) + qy[k+1][j][i]/(dx[i]*dzPlus));
+        // convection term: Hz = d(wu)/dx + d(wv)/dy + d(w^2)/dz
+        HnMinus1 = Hz[k][j][i];
+        Hz[k][j][i] = (  (u_e*w_e - u_w*w_w)/dx[i] 
+                       + (v_n*w_n - v_s*w_s)/dy[j]
+                       + (w_f*w_f - w_b*w_b)/(0.5*(dzMinus + dzPlus)) );
+        convectionTerm = gamma*Hz[k][j][i] + zeta*HnMinus1;
+        // diffusion term: d^2w/dx^2 + d^2w/dy^2 + d^2w/dz^2
+        dxMinus = (i > 0)  ? 0.5*(dx[i-1] + dx[i]) : (periodicX) ? 0.5*(dx[nx-1] + dx[i]) : 0.5*dx[i];
+        dxPlus = (i < M-1) ? 0.5*(dx[i] + dx[i+1]) : (periodicX) ? 0.5*(dx[i] + dx[0])    : 0.5*dx[i];
+        dyMinus = (j > 0)  ? 0.5*(dy[j-1] + dy[j]) : (periodicY) ? 0.5*(dy[ny-1] + dy[j]) : 0.5*dy[j];
+        dyPlus = (j < N-1) ? 0.5*(dy[j] + dy[j+1]) : (periodicY) ? 0.5*(dy[j] + dy[0])    : 0.5*dy[j];
         diffusionTerm = alpha*nu * (  d2udx2(w_W, w_P, w_E, dxMinus, dxPlus)
                                     + d2udx2(w_S, w_P, w_N, dyMinus, dyPlus)
-                                    + d2udx2(v_B, v_P, v_F, dz[k], dz[k+1]) );
+                                    + d2udx2(v_B, v_P, v_F, dzMinus, dzPlus) );
         // explicit term
         rz[k][j][i] = w_P/dt - convectionTerm + diffusionTerm;
       }

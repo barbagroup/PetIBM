@@ -356,22 +356,28 @@ PetscErrorCode NavierStokesSolver<dim>::helperOutputVectors()
   filePath = outputDirectory + "/q.output";
   ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
   ierr = VecView(q, viewer); CHKERRQ(ierr);
-  // qx, qy
-  Vec qxGlobal, qyGlobal;
-  ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
+  // qx, qy, qz
+  Vec qxGlobal, qyGlobal, qzGlobal;
+  if (dim == 2)
+  {
+    ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);  
+  }
+  else if (dim == 3)
+  {
+    ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
+  }
   filePath = outputDirectory + "/qx.output";
   ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
   ierr = VecView(qxGlobal, viewer); CHKERRQ(ierr);
   filePath = outputDirectory + "/qy.output";
   ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
   ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
-  // qxLocal, qyLocal
-  filePath = outputDirectory + "/qxLocal.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(qxLocal, viewer); CHKERRQ(ierr);
-  filePath = outputDirectory + "/qyLocal.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(qyLocal, viewer); CHKERRQ(ierr);
+  if (dim == 3)
+  {
+    filePath = outputDirectory + "/qz.output";
+    ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
+    ierr = VecView(qzGlobal, viewer); CHKERRQ(ierr);
+  }
   // r2
   filePath = outputDirectory + "/r2.output";
   ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);

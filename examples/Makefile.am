@@ -84,9 +84,9 @@ cylinder2dRe40:
 							-sys2_pc_gamg_agg_nsmooths 1
 
 cylinder2dRe40Periodic:
-	@echo "====================================================================="
-	@echo "2d flow over cylinder at Re=40 (x- and y- periodic) using 4 processes"
-	@echo "====================================================================="
+	@echo "=============================================================="
+	@echo "2d flow over cylinder at Re=40 (y- periodic) using 4 processes"
+	@echo "=============================================================="
 	@$(MPIEXEC) -n 4 $(PETIBM2D) \
 							-directory ./2d/cylinder/Re40PeriodicDomain \
 							-sys2_pc_type gamg \
@@ -354,4 +354,4 @@ memoryCheck3dParallel:
 	@echo "=============================================="
 	@$(MPIEXEC) -n 2 valgrind \
 							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
-							$(PETIBM3D) -directory ./2d/memoryTest							
+							$(PETIBM3D) -directory ./3d/memoryTest							

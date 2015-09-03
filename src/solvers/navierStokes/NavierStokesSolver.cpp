@@ -146,6 +146,7 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 
   // solve system for intermediate velocity
   ierr = assembleRHSVelocity(); CHKERRQ(ierr);
+  // ierr = helpers(); CHKERRQ(ierr);
   ierr = solveIntermediateVelocity(); CHKERRQ(ierr);
 
   // solve Poisson system for Lagrange multipliers

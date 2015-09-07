@@ -45,6 +45,8 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
   ierr = KSPSetInitialGuessNonzero(ksp1, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetType(ksp1, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp1, PETSC_TRUE); CHKERRQ(ierr);
+  std::string petscOptionsFile= parameters->directory + "/solversPetscOptions.info";
+  ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, petscOptionsFile.c_str(), PETSC_FALSE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp1); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "KSP info: Velocity system"); CHKERRQ(ierr);
@@ -63,6 +65,7 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
   ierr = KSPSetInitialGuessNonzero(ksp2, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetType(ksp2, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp2, PETSC_TRUE); CHKERRQ(ierr);
+  ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, petscOptionsFile.c_str(), PETSC_FALSE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp2); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "KSP info: Poisson system"); CHKERRQ(ierr);

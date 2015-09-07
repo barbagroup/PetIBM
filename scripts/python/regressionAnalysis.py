@@ -53,7 +53,7 @@ def define_test_cases(build_directory):
   tests = []
   tests.append(TestCase(description='2d lid-driven cavity flow at Re=100',
                         directory='{}/examples/2d/lidDrivenCavity/Re100'.format(build_directory),
-                        command='make cavity2dRe100Serial'))
+                        command='make lidDrivenCavity2dRe100Serial'))
   tests.append(TestCase(description='2d cylinder flow at Re=40',
                         directory='{}/examples/2d/cylinder/Re40'.format(build_directory),
                         command='make cylinder2dRe40'))
@@ -63,7 +63,7 @@ def define_test_cases(build_directory):
                         periodic=['y']))
   tests.append(TestCase(description='3d cavity flow at Re=100 with x-periodic boundary conditions',
                         directory='{}/examples/3d/lidDrivenCavity/Re100PeriodicX'.format(build_directory),
-                        command='make cavity3dRe100PeriodicX',
+                        command='make liDrivenCavity3dRe100PeriodicX',
                         periodic=['x']))
   return tests
 

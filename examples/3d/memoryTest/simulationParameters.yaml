@@ -6,14 +6,3 @@
   nsave: 1
   convection: ADAMS_BASHFORTH_2
   diffusion: EULER_IMPLICIT
-  linearSolvers:
-    - system: velocity
-      solver: CG
-      preconditioner: DIAGONAL
-      tolerance: 1.0E-05
-      maxIterations: 10000
-    - system: Poisson
-      solver: CG
-      preconditioner: GAMG
-      tolerance: 1.0E-05
-      maxIterations: 20000

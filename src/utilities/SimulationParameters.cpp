@@ -120,33 +120,6 @@ void SimulationParameters::initialize(std::string filePath)
       break;
   }
 
-  const YAML::Node &solvers = node["linearSolvers"];
-  for (unsigned int i=0; i<solvers.size(); i++)
-  {
-    if (solvers[i]["system"].as<std::string>() == "velocity")
-    {
-      velocitySolver.method = stringToIterativeMethod(solvers[i]["solver"].as<std::string>("CG"));
-      velocitySolver.preconditioner = stringToPreconditionerType(solvers[i]["preconditioner"].as<std::string>("DIAGONAL"));
-      velocitySolver.relativeTolerance = solvers[i]["relativeTolerance"].as<PetscReal>(1.0E-05);
-      velocitySolver.maxIterations = solvers[i]["maxIterations"].as<PetscInt>(10000);
-    }
-    else if (solvers[i]["system"].as<std::string>() == "Poisson" || solvers[i]["system"].as<std::string>() == "poisson")
-    {
-      poissonSolver.method = stringToIterativeMethod(solvers[i]["solver"].as<std::string>("CG"));
-      poissonSolver.preconditioner = stringToPreconditionerType(solvers[i]["preconditioner"].as<std::string>("DIAGONAL"));
-      poissonSolver.relativeTolerance = solvers[i]["relativeTolerance"].as<PetscReal>(1.0E-05);
-      poissonSolver.maxIterations = solvers[i]["maxIterations"].as<PetscInt>(10000);
-    }
-    else
-    {
-      std::cout << "\nERROR: " << solvers[i]["system"].as<std::string>() << " - unknown solver name.\n";
-      std::cout << "solver name implemented:\n";
-      std::cout << "\tvelocity (solver for the intermediate velocity)\n";
-      std::cout << "\tpoisson (poisson solver, modified or not)\n" << std::endl;
-      exit(0);
-    }
-  }
-
   PetscPrintf(PETSC_COMM_WORLD, "done.\n");
   
 } // initialize
@@ -168,34 +141,6 @@ PetscErrorCode SimulationParameters::printInfo()
   ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step: %d\n", startStep); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", nt); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval: %d\n", nsave); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Linear system for intermediate velocity\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "method: %s\n", stringFromIterativeMethod(velocitySolver.method).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "preconditioner: %s\n", stringFromPreconditionerType(velocitySolver.preconditioner).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "relative-tolerance: %g\n", velocitySolver.relativeTolerance); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "maximum number of iterations: %d\n", velocitySolver.maxIterations); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  switch (ibm)
-  {
-    case NAVIER_STOKES:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Linear system for pressure\n"); CHKERRQ(ierr);
-      break;
-    case TAIRA_COLONIUS:
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "Linear system for pressure-force\n"); CHKERRQ(ierr);
-      break;
-    default:
-      break;
-  }
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "method: %s\n", stringFromIterativeMethod(poissonSolver.method).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "preconditioner: %s\n", stringFromPreconditionerType(poissonSolver.preconditioner).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "relative-tolerance: %g\n", poissonSolver.relativeTolerance); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "maximum number of iterations: %d\n", poissonSolver.maxIterations); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
 
   return 0;

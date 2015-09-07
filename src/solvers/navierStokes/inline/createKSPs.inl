@@ -33,20 +33,17 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 {
   PetscErrorCode ierr;
 
+  // file with KSP options
+  std::string petscOptionsFile= parameters->directory + "/solversPetscOptions.info";
+  ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, petscOptionsFile.c_str(), PETSC_FALSE); CHKERRQ(ierr);
+
   // create KSP for intermaediate fluxes system
   ierr = KSPCreate(PETSC_COMM_WORLD, &ksp1); CHKERRQ(ierr);
-  ierr = KSPSetOptionsPrefix(ksp1, "sys1_"); CHKERRQ(ierr);
-  ierr = KSPSetTolerances(ksp1, 
-                          parameters->velocitySolver.relativeTolerance, 
-                          PETSC_DEFAULT, 
-                          PETSC_DEFAULT, 
-                          parameters->velocitySolver.maxIterations); CHKERRQ(ierr);
+  ierr = KSPSetOptionsPrefix(ksp1, "velocity_"); CHKERRQ(ierr);
   ierr = KSPSetOperators(ksp1, A, A); CHKERRQ(ierr);
   ierr = KSPSetInitialGuessNonzero(ksp1, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetType(ksp1, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp1, PETSC_TRUE); CHKERRQ(ierr);
-  std::string petscOptionsFile= parameters->directory + "/solversPetscOptions.info";
-  ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, petscOptionsFile.c_str(), PETSC_FALSE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp1); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "KSP info: Velocity system"); CHKERRQ(ierr);
@@ -55,17 +52,11 @@ PetscErrorCode NavierStokesSolver<dim>::createKSPs()
 
   // create KSP for Poisson system
   ierr = KSPCreate(PETSC_COMM_WORLD, &ksp2); CHKERRQ(ierr);
-  ierr = KSPSetOptionsPrefix(ksp2, "sys2_"); CHKERRQ(ierr);
-  ierr = KSPSetTolerances(ksp2, 
-                          parameters->poissonSolver.relativeTolerance, 
-                          PETSC_DEFAULT, 
-                          PETSC_DEFAULT, 
-                          parameters->poissonSolver.maxIterations); CHKERRQ(ierr);
+  ierr = KSPSetOptionsPrefix(ksp2, "poisson_"); CHKERRQ(ierr);
   ierr = KSPSetOperators(ksp2, QTBNQ, QTBNQ); CHKERRQ(ierr);
   ierr = KSPSetInitialGuessNonzero(ksp2, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetType(ksp2, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp2, PETSC_TRUE); CHKERRQ(ierr);
-  ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, petscOptionsFile.c_str(), PETSC_FALSE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp2); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n----------------------------------------\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "KSP info: Poisson system"); CHKERRQ(ierr);

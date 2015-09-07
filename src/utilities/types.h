@@ -86,32 +86,6 @@ enum IBMethod
 IBMethod stringToIBMethod(std::string s);
 std::string stringFromIBMethod(IBMethod method);
 
-
-/**
- * \brief Iterative KSP method.
- */
-enum IterativeMethod
-{
-  CG,     ///< Conjugate-Gradient
-  BCGS,   ///< biCGStab
-  GMRES   ///< GMRES
-};
-IterativeMethod stringToIterativeMethod(std::string s);
-std::string stringFromIterativeMethod(IterativeMethod method);
-
-
-/**
- * \brief Type of preconditioner.
- */
-enum PreconditionerType
-{
-  NO_PRECONDITIONER,     ///< no preconditioner
-  DIAGONAL,              ///< diagonal preconditioner
-  GAMG                   ///< gamg with smoothed-aggregation preconditioner
-};
-PreconditionerType stringToPreconditionerType(std::string s);
-std::string stringFromPreconditionerType(PreconditionerType precoditioner);
-
 #endif
 
 /**

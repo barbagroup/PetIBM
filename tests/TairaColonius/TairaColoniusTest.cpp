@@ -80,7 +80,7 @@ TEST_F(TairaColoniusTest, ComparePhi)
   VecNorm(error, NORM_2, &errorNorm);
   VecNorm(lambdaGold, NORM_2, &goldNorm);
 
-  EXPECT_LT(errorNorm/goldNorm, 5.0E-04);
+  EXPECT_LT(errorNorm/goldNorm, 8.0E-04);
 }
 
 

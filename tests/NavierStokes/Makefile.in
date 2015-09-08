@@ -102,8 +102,6 @@ CONFIG_CLEAN_VPATH_FILES =
 am_navierStokesTest_OBJECTS =  \
 	navierStokesTest-NavierStokesTest.$(OBJEXT)
 navierStokesTest_OBJECTS = $(am_navierStokesTest_OBJECTS)
-navierStokesTest_LINK = $(CXXLD) $(navierStokesTest_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -275,9 +273,8 @@ navierStokesTest_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 														-I$(top_srcdir)/external/gtest-1.7.0/include \
 														-I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
-navierStokesTest_CXXFLAGS = -std=c++0x -pthread
-navierStokesTest_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-												 $(top_builddir)/src/solvers/libsolvers.a \
+navierStokesTest_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+												 $(top_builddir)/src/utilities/libutilities.a \
 												 $(top_builddir)/external/gtest-1.7.0/libgtest.a \
 												 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
@@ -320,7 +317,7 @@ clean-checkPROGRAMS:
 
 navierStokesTest$(EXEEXT): $(navierStokesTest_OBJECTS) $(navierStokesTest_DEPENDENCIES) $(EXTRA_navierStokesTest_DEPENDENCIES) 
 	@rm -f navierStokesTest$(EXEEXT)
-	$(AM_V_CXXLD)$(navierStokesTest_LINK) $(navierStokesTest_OBJECTS) $(navierStokesTest_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(navierStokesTest_OBJECTS) $(navierStokesTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -347,18 +344,18 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 navierStokesTest-NavierStokesTest.o: NavierStokesTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(navierStokesTest_CXXFLAGS) $(CXXFLAGS) -MT navierStokesTest-NavierStokesTest.o -MD -MP -MF $(DEPDIR)/navierStokesTest-NavierStokesTest.Tpo -c -o navierStokesTest-NavierStokesTest.o `test -f 'NavierStokesTest.cpp' || echo '$(srcdir)/'`NavierStokesTest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierStokesTest-NavierStokesTest.o -MD -MP -MF $(DEPDIR)/navierStokesTest-NavierStokesTest.Tpo -c -o navierStokesTest-NavierStokesTest.o `test -f 'NavierStokesTest.cpp' || echo '$(srcdir)/'`NavierStokesTest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/navierStokesTest-NavierStokesTest.Tpo $(DEPDIR)/navierStokesTest-NavierStokesTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='NavierStokesTest.cpp' object='navierStokesTest-NavierStokesTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(navierStokesTest_CXXFLAGS) $(CXXFLAGS) -c -o navierStokesTest-NavierStokesTest.o `test -f 'NavierStokesTest.cpp' || echo '$(srcdir)/'`NavierStokesTest.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierStokesTest-NavierStokesTest.o `test -f 'NavierStokesTest.cpp' || echo '$(srcdir)/'`NavierStokesTest.cpp
 
 navierStokesTest-NavierStokesTest.obj: NavierStokesTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(navierStokesTest_CXXFLAGS) $(CXXFLAGS) -MT navierStokesTest-NavierStokesTest.obj -MD -MP -MF $(DEPDIR)/navierStokesTest-NavierStokesTest.Tpo -c -o navierStokesTest-NavierStokesTest.obj `if test -f 'NavierStokesTest.cpp'; then $(CYGPATH_W) 'NavierStokesTest.cpp'; else $(CYGPATH_W) '$(srcdir)/NavierStokesTest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierStokesTest-NavierStokesTest.obj -MD -MP -MF $(DEPDIR)/navierStokesTest-NavierStokesTest.Tpo -c -o navierStokesTest-NavierStokesTest.obj `if test -f 'NavierStokesTest.cpp'; then $(CYGPATH_W) 'NavierStokesTest.cpp'; else $(CYGPATH_W) '$(srcdir)/NavierStokesTest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/navierStokesTest-NavierStokesTest.Tpo $(DEPDIR)/navierStokesTest-NavierStokesTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='NavierStokesTest.cpp' object='navierStokesTest-NavierStokesTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(navierStokesTest_CXXFLAGS) $(CXXFLAGS) -c -o navierStokesTest-NavierStokesTest.obj `if test -f 'NavierStokesTest.cpp'; then $(CYGPATH_W) 'NavierStokesTest.cpp'; else $(CYGPATH_W) '$(srcdir)/NavierStokesTest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierStokesTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierStokesTest-NavierStokesTest.obj `if test -f 'NavierStokesTest.cpp'; then $(CYGPATH_W) 'NavierStokesTest.cpp'; else $(CYGPATH_W) '$(srcdir)/NavierStokesTest.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

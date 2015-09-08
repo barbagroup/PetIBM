@@ -285,7 +285,6 @@ libsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities \
                         -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
                         -I$(top_srcdir)/external/boost-1.57.0
 
-libsolvers_a_CXXFLAGS = -std=c++0x
 all: all-am
 
 .SUFFIXES:
@@ -375,46 +374,46 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 libsolvers_a-createSolver.o: createSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -MT libsolvers_a-createSolver.o -MD -MP -MF $(DEPDIR)/libsolvers_a-createSolver.Tpo -c -o libsolvers_a-createSolver.o `test -f 'createSolver.cpp' || echo '$(srcdir)/'`createSolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsolvers_a-createSolver.o -MD -MP -MF $(DEPDIR)/libsolvers_a-createSolver.Tpo -c -o libsolvers_a-createSolver.o `test -f 'createSolver.cpp' || echo '$(srcdir)/'`createSolver.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsolvers_a-createSolver.Tpo $(DEPDIR)/libsolvers_a-createSolver.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createSolver.cpp' object='libsolvers_a-createSolver.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -c -o libsolvers_a-createSolver.o `test -f 'createSolver.cpp' || echo '$(srcdir)/'`createSolver.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsolvers_a-createSolver.o `test -f 'createSolver.cpp' || echo '$(srcdir)/'`createSolver.cpp
 
 libsolvers_a-createSolver.obj: createSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -MT libsolvers_a-createSolver.obj -MD -MP -MF $(DEPDIR)/libsolvers_a-createSolver.Tpo -c -o libsolvers_a-createSolver.obj `if test -f 'createSolver.cpp'; then $(CYGPATH_W) 'createSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/createSolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsolvers_a-createSolver.obj -MD -MP -MF $(DEPDIR)/libsolvers_a-createSolver.Tpo -c -o libsolvers_a-createSolver.obj `if test -f 'createSolver.cpp'; then $(CYGPATH_W) 'createSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/createSolver.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsolvers_a-createSolver.Tpo $(DEPDIR)/libsolvers_a-createSolver.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createSolver.cpp' object='libsolvers_a-createSolver.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -c -o libsolvers_a-createSolver.obj `if test -f 'createSolver.cpp'; then $(CYGPATH_W) 'createSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/createSolver.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsolvers_a-createSolver.obj `if test -f 'createSolver.cpp'; then $(CYGPATH_W) 'createSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/createSolver.cpp'; fi`
 
 navierStokes/libsolvers_a-NavierStokesSolver.o: navierStokes/NavierStokesSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -MT navierStokes/libsolvers_a-NavierStokesSolver.o -MD -MP -MF navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Tpo -c -o navierStokes/libsolvers_a-NavierStokesSolver.o `test -f 'navierStokes/NavierStokesSolver.cpp' || echo '$(srcdir)/'`navierStokes/NavierStokesSolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierStokes/libsolvers_a-NavierStokesSolver.o -MD -MP -MF navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Tpo -c -o navierStokes/libsolvers_a-NavierStokesSolver.o `test -f 'navierStokes/NavierStokesSolver.cpp' || echo '$(srcdir)/'`navierStokes/NavierStokesSolver.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Tpo navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierStokes/NavierStokesSolver.cpp' object='navierStokes/libsolvers_a-NavierStokesSolver.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -c -o navierStokes/libsolvers_a-NavierStokesSolver.o `test -f 'navierStokes/NavierStokesSolver.cpp' || echo '$(srcdir)/'`navierStokes/NavierStokesSolver.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierStokes/libsolvers_a-NavierStokesSolver.o `test -f 'navierStokes/NavierStokesSolver.cpp' || echo '$(srcdir)/'`navierStokes/NavierStokesSolver.cpp
 
 navierStokes/libsolvers_a-NavierStokesSolver.obj: navierStokes/NavierStokesSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -MT navierStokes/libsolvers_a-NavierStokesSolver.obj -MD -MP -MF navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Tpo -c -o navierStokes/libsolvers_a-NavierStokesSolver.obj `if test -f 'navierStokes/NavierStokesSolver.cpp'; then $(CYGPATH_W) 'navierStokes/NavierStokesSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/navierStokes/NavierStokesSolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierStokes/libsolvers_a-NavierStokesSolver.obj -MD -MP -MF navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Tpo -c -o navierStokes/libsolvers_a-NavierStokesSolver.obj `if test -f 'navierStokes/NavierStokesSolver.cpp'; then $(CYGPATH_W) 'navierStokes/NavierStokesSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/navierStokes/NavierStokesSolver.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Tpo navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierStokes/NavierStokesSolver.cpp' object='navierStokes/libsolvers_a-NavierStokesSolver.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -c -o navierStokes/libsolvers_a-NavierStokesSolver.obj `if test -f 'navierStokes/NavierStokesSolver.cpp'; then $(CYGPATH_W) 'navierStokes/NavierStokesSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/navierStokes/NavierStokesSolver.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierStokes/libsolvers_a-NavierStokesSolver.obj `if test -f 'navierStokes/NavierStokesSolver.cpp'; then $(CYGPATH_W) 'navierStokes/NavierStokesSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/navierStokes/NavierStokesSolver.cpp'; fi`
 
 tairaColonius/libsolvers_a-TairaColoniusSolver.o: tairaColonius/TairaColoniusSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -MT tairaColonius/libsolvers_a-TairaColoniusSolver.o -MD -MP -MF tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Tpo -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.o `test -f 'tairaColonius/TairaColoniusSolver.cpp' || echo '$(srcdir)/'`tairaColonius/TairaColoniusSolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tairaColonius/libsolvers_a-TairaColoniusSolver.o -MD -MP -MF tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Tpo -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.o `test -f 'tairaColonius/TairaColoniusSolver.cpp' || echo '$(srcdir)/'`tairaColonius/TairaColoniusSolver.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Tpo tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tairaColonius/TairaColoniusSolver.cpp' object='tairaColonius/libsolvers_a-TairaColoniusSolver.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.o `test -f 'tairaColonius/TairaColoniusSolver.cpp' || echo '$(srcdir)/'`tairaColonius/TairaColoniusSolver.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.o `test -f 'tairaColonius/TairaColoniusSolver.cpp' || echo '$(srcdir)/'`tairaColonius/TairaColoniusSolver.cpp
 
 tairaColonius/libsolvers_a-TairaColoniusSolver.obj: tairaColonius/TairaColoniusSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -MT tairaColonius/libsolvers_a-TairaColoniusSolver.obj -MD -MP -MF tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Tpo -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.obj `if test -f 'tairaColonius/TairaColoniusSolver.cpp'; then $(CYGPATH_W) 'tairaColonius/TairaColoniusSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/tairaColonius/TairaColoniusSolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tairaColonius/libsolvers_a-TairaColoniusSolver.obj -MD -MP -MF tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Tpo -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.obj `if test -f 'tairaColonius/TairaColoniusSolver.cpp'; then $(CYGPATH_W) 'tairaColonius/TairaColoniusSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/tairaColonius/TairaColoniusSolver.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Tpo tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tairaColonius/TairaColoniusSolver.cpp' object='tairaColonius/libsolvers_a-TairaColoniusSolver.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(libsolvers_a_CXXFLAGS) $(CXXFLAGS) -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.obj `if test -f 'tairaColonius/TairaColoniusSolver.cpp'; then $(CYGPATH_W) 'tairaColonius/TairaColoniusSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/tairaColonius/TairaColoniusSolver.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.obj `if test -f 'tairaColonius/TairaColoniusSolver.cpp'; then $(CYGPATH_W) 'tairaColonius/TairaColoniusSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/tairaColonius/TairaColoniusSolver.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

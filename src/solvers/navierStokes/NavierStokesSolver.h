@@ -156,12 +156,13 @@ public:
   PetscErrorCode helperOutputMatrices();
   
 public:
-  // constructor
+  // constructors
+  NavierStokesSolver(){ };
   NavierStokesSolver(CartesianMesh *cartesianMesh, 
                      FlowDescription<dim> *flowDescription, 
                      SimulationParameters *simulationParameters);
   // destructor
-  ~NavierStokesSolver();
+  ~NavierStokesSolver(){ };
 
   // initialize systems
   virtual PetscErrorCode initialize();

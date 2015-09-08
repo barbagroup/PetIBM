@@ -107,14 +107,10 @@ am_diffusiveTermTest2d_OBJECTS =  \
 	diffusiveTermTest2d-DiffusiveTerm.$(OBJEXT) \
 	diffusiveTermTest2d-diffusiveTermTest.$(OBJEXT)
 diffusiveTermTest2d_OBJECTS = $(am_diffusiveTermTest2d_OBJECTS)
-diffusiveTermTest2d_LINK = $(CXXLD) $(diffusiveTermTest2d_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_diffusiveTermTest3d_OBJECTS =  \
 	diffusiveTermTest3d-DiffusiveTerm.$(OBJEXT) \
 	diffusiveTermTest3d-diffusiveTermTest.$(OBJEXT)
 diffusiveTermTest3d_OBJECTS = $(am_diffusiveTermTest3d_OBJECTS)
-diffusiveTermTest3d_LINK = $(CXXLD) $(diffusiveTermTest3d_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -289,9 +285,8 @@ diffusiveTermTest2d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 															 -I$(top_srcdir)/src/solvers \
 															 -D DIMENSIONS=2
 
-diffusiveTermTest2d_CXXFLAGS = -std=c++0x
-diffusiveTermTest2d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														$(top_builddir)/src/solvers/libsolvers.a \
+diffusiveTermTest2d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														$(top_builddir)/src/utilities/libutilities.a \
 														$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 diffusiveTermTest3d_SOURCES = DiffusiveTerm.cpp \
@@ -302,9 +297,8 @@ diffusiveTermTest3d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 															 -I$(top_srcdir)/src/solvers \
 															 -D DIMENSIONS=3
 
-diffusiveTermTest3d_CXXFLAGS = -std=c++0x
-diffusiveTermTest3d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														$(top_builddir)/src/solvers/libsolvers.a \
+diffusiveTermTest3d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														$(top_builddir)/src/utilities/libutilities.a \
 														$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 all: all-am
@@ -385,11 +379,11 @@ clean-binPROGRAMS:
 
 diffusiveTermTest2d$(EXEEXT): $(diffusiveTermTest2d_OBJECTS) $(diffusiveTermTest2d_DEPENDENCIES) $(EXTRA_diffusiveTermTest2d_DEPENDENCIES) 
 	@rm -f diffusiveTermTest2d$(EXEEXT)
-	$(AM_V_CXXLD)$(diffusiveTermTest2d_LINK) $(diffusiveTermTest2d_OBJECTS) $(diffusiveTermTest2d_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(diffusiveTermTest2d_OBJECTS) $(diffusiveTermTest2d_LDADD) $(LIBS)
 
 diffusiveTermTest3d$(EXEEXT): $(diffusiveTermTest3d_OBJECTS) $(diffusiveTermTest3d_DEPENDENCIES) $(EXTRA_diffusiveTermTest3d_DEPENDENCIES) 
 	@rm -f diffusiveTermTest3d$(EXEEXT)
-	$(AM_V_CXXLD)$(diffusiveTermTest3d_LINK) $(diffusiveTermTest3d_OBJECTS) $(diffusiveTermTest3d_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(diffusiveTermTest3d_OBJECTS) $(diffusiveTermTest3d_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -419,60 +413,60 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 diffusiveTermTest2d-DiffusiveTerm.o: DiffusiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-DiffusiveTerm.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Tpo -c -o diffusiveTermTest2d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-DiffusiveTerm.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Tpo -c -o diffusiveTermTest2d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Tpo $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DiffusiveTerm.cpp' object='diffusiveTermTest2d-DiffusiveTerm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
 
 diffusiveTermTest2d-DiffusiveTerm.obj: DiffusiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-DiffusiveTerm.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Tpo -c -o diffusiveTermTest2d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-DiffusiveTerm.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Tpo -c -o diffusiveTermTest2d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Tpo $(DEPDIR)/diffusiveTermTest2d-DiffusiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DiffusiveTerm.cpp' object='diffusiveTermTest2d-DiffusiveTerm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
 
 diffusiveTermTest2d-diffusiveTermTest.o: diffusiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-diffusiveTermTest.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Tpo -c -o diffusiveTermTest2d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-diffusiveTermTest.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Tpo -c -o diffusiveTermTest2d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Tpo $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='diffusiveTermTest.cpp' object='diffusiveTermTest2d-diffusiveTermTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
 
 diffusiveTermTest2d-diffusiveTermTest.obj: diffusiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-diffusiveTermTest.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Tpo -c -o diffusiveTermTest2d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest2d-diffusiveTermTest.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Tpo -c -o diffusiveTermTest2d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Tpo $(DEPDIR)/diffusiveTermTest2d-diffusiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='diffusiveTermTest.cpp' object='diffusiveTermTest2d-diffusiveTermTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest2d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
 
 diffusiveTermTest3d-DiffusiveTerm.o: DiffusiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-DiffusiveTerm.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Tpo -c -o diffusiveTermTest3d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-DiffusiveTerm.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Tpo -c -o diffusiveTermTest3d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Tpo $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DiffusiveTerm.cpp' object='diffusiveTermTest3d-DiffusiveTerm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-DiffusiveTerm.o `test -f 'DiffusiveTerm.cpp' || echo '$(srcdir)/'`DiffusiveTerm.cpp
 
 diffusiveTermTest3d-DiffusiveTerm.obj: DiffusiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-DiffusiveTerm.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Tpo -c -o diffusiveTermTest3d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-DiffusiveTerm.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Tpo -c -o diffusiveTermTest3d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Tpo $(DEPDIR)/diffusiveTermTest3d-DiffusiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DiffusiveTerm.cpp' object='diffusiveTermTest3d-DiffusiveTerm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-DiffusiveTerm.obj `if test -f 'DiffusiveTerm.cpp'; then $(CYGPATH_W) 'DiffusiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/DiffusiveTerm.cpp'; fi`
 
 diffusiveTermTest3d-diffusiveTermTest.o: diffusiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-diffusiveTermTest.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Tpo -c -o diffusiveTermTest3d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-diffusiveTermTest.o -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Tpo -c -o diffusiveTermTest3d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Tpo $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='diffusiveTermTest.cpp' object='diffusiveTermTest3d-diffusiveTermTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-diffusiveTermTest.o `test -f 'diffusiveTermTest.cpp' || echo '$(srcdir)/'`diffusiveTermTest.cpp
 
 diffusiveTermTest3d-diffusiveTermTest.obj: diffusiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-diffusiveTermTest.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Tpo -c -o diffusiveTermTest3d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT diffusiveTermTest3d-diffusiveTermTest.obj -MD -MP -MF $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Tpo -c -o diffusiveTermTest3d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Tpo $(DEPDIR)/diffusiveTermTest3d-diffusiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='diffusiveTermTest.cpp' object='diffusiveTermTest3d-diffusiveTermTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(diffusiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(diffusiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o diffusiveTermTest3d-diffusiveTermTest.obj `if test -f 'diffusiveTermTest.cpp'; then $(CYGPATH_W) 'diffusiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/diffusiveTermTest.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

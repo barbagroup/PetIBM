@@ -83,15 +83,6 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
 
 
 /**
- * \brief Destructor.
- */
-template <PetscInt dim>
-NavierStokesSolver<dim>::~NavierStokesSolver()
-{
-} // ~NavierStokesSolver
-
-
-/**
  * \brief Initializes the solver.
  */
 template <PetscInt dim>

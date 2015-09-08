@@ -42,10 +42,10 @@ public:
   Boundary boundaries[2*dim][dim]; ///< boundary conditions of the flow
   
   // contructors
-  FlowDescription();
+  FlowDescription(){ };
   FlowDescription(std::string directory);
   // destructor
-  ~FlowDescription();
+  ~FlowDescription(){ };
   // parse input file and store description of the flow
   void initialize(std::string filePath);
   // run sanity checks about periodic boundary conditions

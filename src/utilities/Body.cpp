@@ -13,15 +13,6 @@
 
 
 /**
- * \brief Constructor.
- */
-template <PetscInt dim>
-Body<dim>::Body()
-{
-} // Body
-
-
-/**
  * \brief Constructor -- Parses the input file `bodies.yaml`.
  *
  * \param directory Directory of the simulation
@@ -31,15 +22,6 @@ Body<dim>::Body(std::string directory)
 {
   initialize(directory + "/bodies.yaml");
 } // Body
-
-
-/**
- * \brief Destructor.
- */
-template <PetscInt dim>
-Body<dim>::~Body()
-{
-} // ~Body
 
 
 /**
@@ -71,7 +53,7 @@ PetscErrorCode Body<dim>::initialize(std::string filePath)
     if (!infile.good())
     {
       ierr = PetscPrintf(PETSC_COMM_WORLD, "\nERROR: File '%s' does not exist\n", pointsFilePath.c_str()); CHKERRQ(ierr);
-      exit(0);
+      exit(1);
     }
     infile >> numPoints;
     X.reserve(numPoints);
@@ -133,7 +115,7 @@ PetscErrorCode Body<dim>::getCellOwners(CartesianMesh *mesh)
     K.push_back(k);
   }
 
-  for (PetscInt l=1; l<X.size(); l++)
+  for (size_t l=1; l<X.size(); l++)
   {
     // x-component
     if (X[l] < X[l-1]) // body point located on left-side of previous one

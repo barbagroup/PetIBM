@@ -29,10 +29,10 @@ public:
   std::vector<PetscInt> I, J, K;
 
   // constructors
-  Body();
-  Body(std::string filePath);
+  Body(){ };
+  Body(std::string directory);
   // destructor
-  ~Body();
+  ~Body(){ };
 
   // parse input file and store coordinates of immersed body
   PetscErrorCode initialize(std::string filePath);

@@ -14,15 +14,6 @@
 
 
 /**
- * \brief Constructor.
- */
-template <PetscInt dim>
-FlowDescription<dim>::FlowDescription()
-{
-} // FlowDescription
-
-
-/**
  * \brief Constructor -- Parses the input file `flowDescription.yaml`.
  *
  * \param directory Directory of the simulation
@@ -32,15 +23,6 @@ FlowDescription<dim>::FlowDescription(std::string directory)
 {
   initialize(directory + "/flowDescription.yaml");
 } // FlowDescription
-
-
-/**
- * \brief Destructor
- */
-template <PetscInt dim>
-FlowDescription<dim>::~FlowDescription()
-{
-} // ~FlowDescription
 
 
 /**
@@ -79,7 +61,7 @@ void FlowDescription<dim>::initialize(std::string filePath)
     exit(0);
   }
   BoundaryLocation location;
-  for (PetscInt i=0; i<bcs.size(); i++)
+  for (size_t i=0; i<bcs.size(); i++)
   {
     location = stringToBoundaryLocation(bcs[i]["location"].as<std::string>());
     boundaries[location][U].type = stringToBoundaryType(bcs[i]["u"][0].as<std::string>());

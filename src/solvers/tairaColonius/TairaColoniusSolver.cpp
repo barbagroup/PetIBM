@@ -35,15 +35,6 @@ TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh,
 
 
 /**
- * \brief Destructor.
- */
-template <PetscInt dim>
-TairaColoniusSolver<dim>::~TairaColoniusSolver()
-{
-} // ~TairaColoniusSolver
-
-
-/**
  * \brief Initializes the solver.
  */
 template <PetscInt dim>

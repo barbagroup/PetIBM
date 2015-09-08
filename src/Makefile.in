@@ -104,16 +104,12 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_petibm2d_OBJECTS = petibm2d-PetIBM.$(OBJEXT)
 petibm2d_OBJECTS = $(am_petibm2d_OBJECTS)
-petibm2d_DEPENDENCIES = utilities/libutilities.a solvers/libsolvers.a \
+petibm2d_DEPENDENCIES = solvers/libsolvers.a utilities/libutilities.a \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
-petibm2d_LINK = $(CXXLD) $(petibm2d_CXXFLAGS) $(CXXFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_petibm3d_OBJECTS = petibm3d-PetIBM.$(OBJEXT)
 petibm3d_OBJECTS = $(am_petibm3d_OBJECTS)
-petibm3d_DEPENDENCIES = utilities/libutilities.a solvers/libsolvers.a \
+petibm3d_DEPENDENCIES = solvers/libsolvers.a utilities/libutilities.a \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
-petibm3d_LINK = $(CXXLD) $(petibm3d_CXXFLAGS) $(CXXFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -326,9 +322,8 @@ petibm2d_CPPFLAGS = -I$(srcdir)/utilities \
                     -I$(srcdir)/solvers \
                     -D DIMENSIONS=2
 
-petibm2d_CXXFLAGS = -std=c++0x
-petibm2d_LDADD = utilities/libutilities.a \
-                 solvers/libsolvers.a \
+petibm2d_LDADD = solvers/libsolvers.a \
+                 utilities/libutilities.a \
                  $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 petibm3d_SOURCES = PetIBM.cpp
@@ -336,9 +331,8 @@ petibm3d_CPPFLAGS = -I$(srcdir)/utilities \
                     -I$(srcdir)/solvers \
                     -D DIMENSIONS=3
 
-petibm3d_CXXFLAGS = -std=c++0x
-petibm3d_LDADD = utilities/libutilities.a \
-                 solvers/libsolvers.a \
+petibm3d_LDADD = solvers/libsolvers.a \
+                 utilities/libutilities.a \
                  $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 all: all-recursive
@@ -419,11 +413,11 @@ clean-binPROGRAMS:
 
 petibm2d$(EXEEXT): $(petibm2d_OBJECTS) $(petibm2d_DEPENDENCIES) $(EXTRA_petibm2d_DEPENDENCIES) 
 	@rm -f petibm2d$(EXEEXT)
-	$(AM_V_CXXLD)$(petibm2d_LINK) $(petibm2d_OBJECTS) $(petibm2d_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(petibm2d_OBJECTS) $(petibm2d_LDADD) $(LIBS)
 
 petibm3d$(EXEEXT): $(petibm3d_OBJECTS) $(petibm3d_DEPENDENCIES) $(EXTRA_petibm3d_DEPENDENCIES) 
 	@rm -f petibm3d$(EXEEXT)
-	$(AM_V_CXXLD)$(petibm3d_LINK) $(petibm3d_OBJECTS) $(petibm3d_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(petibm3d_OBJECTS) $(petibm3d_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -451,32 +445,32 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 petibm2d-PetIBM.o: PetIBM.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(petibm2d_CXXFLAGS) $(CXXFLAGS) -MT petibm2d-PetIBM.o -MD -MP -MF $(DEPDIR)/petibm2d-PetIBM.Tpo -c -o petibm2d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm2d-PetIBM.o -MD -MP -MF $(DEPDIR)/petibm2d-PetIBM.Tpo -c -o petibm2d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm2d-PetIBM.Tpo $(DEPDIR)/petibm2d-PetIBM.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PetIBM.cpp' object='petibm2d-PetIBM.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(petibm2d_CXXFLAGS) $(CXXFLAGS) -c -o petibm2d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm2d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
 
 petibm2d-PetIBM.obj: PetIBM.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(petibm2d_CXXFLAGS) $(CXXFLAGS) -MT petibm2d-PetIBM.obj -MD -MP -MF $(DEPDIR)/petibm2d-PetIBM.Tpo -c -o petibm2d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm2d-PetIBM.obj -MD -MP -MF $(DEPDIR)/petibm2d-PetIBM.Tpo -c -o petibm2d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm2d-PetIBM.Tpo $(DEPDIR)/petibm2d-PetIBM.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PetIBM.cpp' object='petibm2d-PetIBM.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(petibm2d_CXXFLAGS) $(CXXFLAGS) -c -o petibm2d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm2d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
 
 petibm3d-PetIBM.o: PetIBM.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(petibm3d_CXXFLAGS) $(CXXFLAGS) -MT petibm3d-PetIBM.o -MD -MP -MF $(DEPDIR)/petibm3d-PetIBM.Tpo -c -o petibm3d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm3d-PetIBM.o -MD -MP -MF $(DEPDIR)/petibm3d-PetIBM.Tpo -c -o petibm3d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm3d-PetIBM.Tpo $(DEPDIR)/petibm3d-PetIBM.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PetIBM.cpp' object='petibm3d-PetIBM.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(petibm3d_CXXFLAGS) $(CXXFLAGS) -c -o petibm3d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm3d-PetIBM.o `test -f 'PetIBM.cpp' || echo '$(srcdir)/'`PetIBM.cpp
 
 petibm3d-PetIBM.obj: PetIBM.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(petibm3d_CXXFLAGS) $(CXXFLAGS) -MT petibm3d-PetIBM.obj -MD -MP -MF $(DEPDIR)/petibm3d-PetIBM.Tpo -c -o petibm3d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm3d-PetIBM.obj -MD -MP -MF $(DEPDIR)/petibm3d-PetIBM.Tpo -c -o petibm3d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm3d-PetIBM.Tpo $(DEPDIR)/petibm3d-PetIBM.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PetIBM.cpp' object='petibm3d-PetIBM.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(petibm3d_CXXFLAGS) $(CXXFLAGS) -c -o petibm3d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm3d-PetIBM.obj `if test -f 'PetIBM.cpp'; then $(CYGPATH_W) 'PetIBM.cpp'; else $(CYGPATH_W) '$(srcdir)/PetIBM.cpp'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.

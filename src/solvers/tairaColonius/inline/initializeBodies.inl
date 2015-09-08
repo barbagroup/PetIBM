@@ -11,6 +11,7 @@
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
 {
+  numBodies = 1;
   bodies.resize(numBodies);
   for (PetscInt l=0; l<numBodies; l++)
   {

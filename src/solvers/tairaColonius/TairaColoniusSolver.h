@@ -24,7 +24,7 @@ class TairaColoniusSolver : public NavierStokesSolver<dim>
 public:
   DM bda; ///< DMDA object
 
-  PetscInt numBodies = 1;
+  PetscInt numBodies;
   std::vector<Body<dim> > bodies; ///< info about each body immersed
 
   PetscInt numBoundaryPoints; ///< total numbers of Lagrangian body points
@@ -64,12 +64,13 @@ public:
   PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
 
 public:
-  // constructor
+  // constructors
+  TairaColoniusSolver(){ };
   TairaColoniusSolver(CartesianMesh *cartesianMesh, 
                       FlowDescription<dim> *flowDescription, 
                       SimulationParameters *simulationParameters);
   // destructor
-  ~TairaColoniusSolver();
+  ~TairaColoniusSolver(){ };
   PetscErrorCode initialize();
   PetscErrorCode finalize();
 

@@ -102,8 +102,6 @@ CONFIG_CLEAN_VPATH_FILES =
 am_cartesianMeshTest_OBJECTS =  \
 	cartesianMeshTest-CartesianMeshTest.$(OBJEXT)
 cartesianMeshTest_OBJECTS = $(am_cartesianMeshTest_OBJECTS)
-cartesianMeshTest_LINK = $(CXXLD) $(cartesianMeshTest_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -274,7 +272,6 @@ cartesianMeshTest_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 														 -I$(top_srcdir)/external/gtest-1.7.0/include \
 														 -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
-cartesianMeshTest_CXXFLAGS = -std=c++0x -pthread
 cartesianMeshTest_LDADD = $(top_builddir)/src/utilities/libutilities.a \
 													$(top_builddir)/external/gtest-1.7.0/libgtest.a \
 													$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
@@ -318,7 +315,7 @@ clean-checkPROGRAMS:
 
 cartesianMeshTest$(EXEEXT): $(cartesianMeshTest_OBJECTS) $(cartesianMeshTest_DEPENDENCIES) $(EXTRA_cartesianMeshTest_DEPENDENCIES) 
 	@rm -f cartesianMeshTest$(EXEEXT)
-	$(AM_V_CXXLD)$(cartesianMeshTest_LINK) $(cartesianMeshTest_OBJECTS) $(cartesianMeshTest_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(cartesianMeshTest_OBJECTS) $(cartesianMeshTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -345,18 +342,18 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 cartesianMeshTest-CartesianMeshTest.o: CartesianMeshTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(cartesianMeshTest_CXXFLAGS) $(CXXFLAGS) -MT cartesianMeshTest-CartesianMeshTest.o -MD -MP -MF $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Tpo -c -o cartesianMeshTest-CartesianMeshTest.o `test -f 'CartesianMeshTest.cpp' || echo '$(srcdir)/'`CartesianMeshTest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cartesianMeshTest-CartesianMeshTest.o -MD -MP -MF $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Tpo -c -o cartesianMeshTest-CartesianMeshTest.o `test -f 'CartesianMeshTest.cpp' || echo '$(srcdir)/'`CartesianMeshTest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Tpo $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='CartesianMeshTest.cpp' object='cartesianMeshTest-CartesianMeshTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(cartesianMeshTest_CXXFLAGS) $(CXXFLAGS) -c -o cartesianMeshTest-CartesianMeshTest.o `test -f 'CartesianMeshTest.cpp' || echo '$(srcdir)/'`CartesianMeshTest.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cartesianMeshTest-CartesianMeshTest.o `test -f 'CartesianMeshTest.cpp' || echo '$(srcdir)/'`CartesianMeshTest.cpp
 
 cartesianMeshTest-CartesianMeshTest.obj: CartesianMeshTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(cartesianMeshTest_CXXFLAGS) $(CXXFLAGS) -MT cartesianMeshTest-CartesianMeshTest.obj -MD -MP -MF $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Tpo -c -o cartesianMeshTest-CartesianMeshTest.obj `if test -f 'CartesianMeshTest.cpp'; then $(CYGPATH_W) 'CartesianMeshTest.cpp'; else $(CYGPATH_W) '$(srcdir)/CartesianMeshTest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cartesianMeshTest-CartesianMeshTest.obj -MD -MP -MF $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Tpo -c -o cartesianMeshTest-CartesianMeshTest.obj `if test -f 'CartesianMeshTest.cpp'; then $(CYGPATH_W) 'CartesianMeshTest.cpp'; else $(CYGPATH_W) '$(srcdir)/CartesianMeshTest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Tpo $(DEPDIR)/cartesianMeshTest-CartesianMeshTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='CartesianMeshTest.cpp' object='cartesianMeshTest-CartesianMeshTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(cartesianMeshTest_CXXFLAGS) $(CXXFLAGS) -c -o cartesianMeshTest-CartesianMeshTest.obj `if test -f 'CartesianMeshTest.cpp'; then $(CYGPATH_W) 'CartesianMeshTest.cpp'; else $(CYGPATH_W) '$(srcdir)/CartesianMeshTest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianMeshTest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cartesianMeshTest-CartesianMeshTest.obj `if test -f 'CartesianMeshTest.cpp'; then $(CYGPATH_W) 'CartesianMeshTest.cpp'; else $(CYGPATH_W) '$(srcdir)/CartesianMeshTest.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

@@ -12,10 +12,8 @@ convectiveTermTest2d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 																-I$(top_srcdir)/src/solvers \
 																-D DIMENSIONS=2
 
-convectiveTermTest2d_CXXFLAGS = -std=c++0x
-
-convectiveTermTest2d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														 $(top_builddir)/src/solvers/libsolvers.a \
+convectiveTermTest2d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														 $(top_builddir)/src/utilities/libutilities.a \
 														 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 convectiveTermTest3d_SOURCES = ConvectiveTerm.cpp \
@@ -27,10 +25,8 @@ convectiveTermTest3d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 																-I$(top_srcdir)/src/solvers \
 																-D DIMENSIONS=3
 
-convectiveTermTest3d_CXXFLAGS = -std=c++0x
-
-convectiveTermTest3d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														 $(top_builddir)/src/solvers/libsolvers.a \
+convectiveTermTest3d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														 $(top_builddir)/src/utilities/libutilities.a \
 														 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 input_data:

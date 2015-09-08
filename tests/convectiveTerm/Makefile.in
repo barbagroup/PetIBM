@@ -107,14 +107,10 @@ am_convectiveTermTest2d_OBJECTS =  \
 	convectiveTermTest2d-ConvectiveTerm.$(OBJEXT) \
 	convectiveTermTest2d-convectiveTermTest.$(OBJEXT)
 convectiveTermTest2d_OBJECTS = $(am_convectiveTermTest2d_OBJECTS)
-convectiveTermTest2d_LINK = $(CXXLD) $(convectiveTermTest2d_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_convectiveTermTest3d_OBJECTS =  \
 	convectiveTermTest3d-ConvectiveTerm.$(OBJEXT) \
 	convectiveTermTest3d-convectiveTermTest.$(OBJEXT)
 convectiveTermTest3d_OBJECTS = $(am_convectiveTermTest3d_OBJECTS)
-convectiveTermTest3d_LINK = $(CXXLD) $(convectiveTermTest3d_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -289,9 +285,8 @@ convectiveTermTest2d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 																-I$(top_srcdir)/src/solvers \
 																-D DIMENSIONS=2
 
-convectiveTermTest2d_CXXFLAGS = -std=c++0x
-convectiveTermTest2d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														 $(top_builddir)/src/solvers/libsolvers.a \
+convectiveTermTest2d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														 $(top_builddir)/src/utilities/libutilities.a \
 														 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 convectiveTermTest3d_SOURCES = ConvectiveTerm.cpp \
@@ -302,9 +297,8 @@ convectiveTermTest3d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 																-I$(top_srcdir)/src/solvers \
 																-D DIMENSIONS=3
 
-convectiveTermTest3d_CXXFLAGS = -std=c++0x
-convectiveTermTest3d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														 $(top_builddir)/src/solvers/libsolvers.a \
+convectiveTermTest3d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														 $(top_builddir)/src/utilities/libutilities.a \
 														 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 all: all-am
@@ -385,11 +379,11 @@ clean-binPROGRAMS:
 
 convectiveTermTest2d$(EXEEXT): $(convectiveTermTest2d_OBJECTS) $(convectiveTermTest2d_DEPENDENCIES) $(EXTRA_convectiveTermTest2d_DEPENDENCIES) 
 	@rm -f convectiveTermTest2d$(EXEEXT)
-	$(AM_V_CXXLD)$(convectiveTermTest2d_LINK) $(convectiveTermTest2d_OBJECTS) $(convectiveTermTest2d_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(convectiveTermTest2d_OBJECTS) $(convectiveTermTest2d_LDADD) $(LIBS)
 
 convectiveTermTest3d$(EXEEXT): $(convectiveTermTest3d_OBJECTS) $(convectiveTermTest3d_DEPENDENCIES) $(EXTRA_convectiveTermTest3d_DEPENDENCIES) 
 	@rm -f convectiveTermTest3d$(EXEEXT)
-	$(AM_V_CXXLD)$(convectiveTermTest3d_LINK) $(convectiveTermTest3d_OBJECTS) $(convectiveTermTest3d_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(convectiveTermTest3d_OBJECTS) $(convectiveTermTest3d_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -419,60 +413,60 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 convectiveTermTest2d-ConvectiveTerm.o: ConvectiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-ConvectiveTerm.o -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Tpo -c -o convectiveTermTest2d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-ConvectiveTerm.o -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Tpo -c -o convectiveTermTest2d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Tpo $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ConvectiveTerm.cpp' object='convectiveTermTest2d-ConvectiveTerm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
 
 convectiveTermTest2d-ConvectiveTerm.obj: ConvectiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-ConvectiveTerm.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Tpo -c -o convectiveTermTest2d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-ConvectiveTerm.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Tpo -c -o convectiveTermTest2d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Tpo $(DEPDIR)/convectiveTermTest2d-ConvectiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ConvectiveTerm.cpp' object='convectiveTermTest2d-ConvectiveTerm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
 
 convectiveTermTest2d-convectiveTermTest.o: convectiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-convectiveTermTest.o -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Tpo -c -o convectiveTermTest2d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-convectiveTermTest.o -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Tpo -c -o convectiveTermTest2d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Tpo $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='convectiveTermTest.cpp' object='convectiveTermTest2d-convectiveTermTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
 
 convectiveTermTest2d-convectiveTermTest.obj: convectiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-convectiveTermTest.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Tpo -c -o convectiveTermTest2d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest2d-convectiveTermTest.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Tpo -c -o convectiveTermTest2d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Tpo $(DEPDIR)/convectiveTermTest2d-convectiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='convectiveTermTest.cpp' object='convectiveTermTest2d-convectiveTermTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest2d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest2d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
 
 convectiveTermTest3d-ConvectiveTerm.o: ConvectiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-ConvectiveTerm.o -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Tpo -c -o convectiveTermTest3d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-ConvectiveTerm.o -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Tpo -c -o convectiveTermTest3d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Tpo $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ConvectiveTerm.cpp' object='convectiveTermTest3d-ConvectiveTerm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-ConvectiveTerm.o `test -f 'ConvectiveTerm.cpp' || echo '$(srcdir)/'`ConvectiveTerm.cpp
 
 convectiveTermTest3d-ConvectiveTerm.obj: ConvectiveTerm.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-ConvectiveTerm.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Tpo -c -o convectiveTermTest3d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-ConvectiveTerm.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Tpo -c -o convectiveTermTest3d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Tpo $(DEPDIR)/convectiveTermTest3d-ConvectiveTerm.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ConvectiveTerm.cpp' object='convectiveTermTest3d-ConvectiveTerm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-ConvectiveTerm.obj `if test -f 'ConvectiveTerm.cpp'; then $(CYGPATH_W) 'ConvectiveTerm.cpp'; else $(CYGPATH_W) '$(srcdir)/ConvectiveTerm.cpp'; fi`
 
 convectiveTermTest3d-convectiveTermTest.o: convectiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-convectiveTermTest.o -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Tpo -c -o convectiveTermTest3d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-convectiveTermTest.o -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Tpo -c -o convectiveTermTest3d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Tpo $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='convectiveTermTest.cpp' object='convectiveTermTest3d-convectiveTermTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-convectiveTermTest.o `test -f 'convectiveTermTest.cpp' || echo '$(srcdir)/'`convectiveTermTest.cpp
 
 convectiveTermTest3d-convectiveTermTest.obj: convectiveTermTest.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-convectiveTermTest.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Tpo -c -o convectiveTermTest3d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT convectiveTermTest3d-convectiveTermTest.obj -MD -MP -MF $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Tpo -c -o convectiveTermTest3d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Tpo $(DEPDIR)/convectiveTermTest3d-convectiveTermTest.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='convectiveTermTest.cpp' object='convectiveTermTest3d-convectiveTermTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(convectiveTermTest3d_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(convectiveTermTest3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o convectiveTermTest3d-convectiveTermTest.obj `if test -f 'convectiveTermTest.cpp'; then $(CYGPATH_W) 'convectiveTermTest.cpp'; else $(CYGPATH_W) '$(srcdir)/convectiveTermTest.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

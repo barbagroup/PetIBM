@@ -1,8 +1,8 @@
 noinst_LIBRARIES = libutilities.a
 
 libutilities_a_SOURCES = CartesianMesh.cpp \
-                         SimulationParameters.cpp \
                          FlowDescription.cpp \
+                         SimulationParameters.cpp \
                          Body.cpp \
                          types.cpp
 

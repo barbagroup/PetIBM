@@ -8,6 +8,7 @@
 #include "types.h"
 
 #include <iostream>
+#include <stdlib.h>
 
 
 /**
@@ -37,7 +38,7 @@ BoundaryLocation stringToBoundaryLocation(std::string s)
   std::cout << "\tyPlus (or top)\n";
   std::cout << "\tzMinus (or back)\n";
   std::cout << "\tzPlus (or front)\n" << std::endl;
-  exit(0);
+  exit(1);
 } // stringToBoundaryLocation
 
 
@@ -69,6 +70,7 @@ std::string stringFromBoundaryLocation(BoundaryLocation location)
       return "zPlus (front)";
       break;
     default:
+      return "ERROR";
       break;
   }
 } // stringFromBoundaryLocation
@@ -95,7 +97,7 @@ BoundaryType stringToBoundaryType(std::string s)
   std::cout << "\tNEUMANN\n";
   std::cout << "\tCONVECTIVE\n";
   std::cout << "\tPERIODIC\n" << std::endl;
-  exit(0);
+  exit(1);
 } // stringToBoundaryType
 
 
@@ -121,7 +123,8 @@ std::string stringFromBoundaryType(BoundaryType type)
       return "PERIODIC";
       break;
     default:
-    break;
+      return "ERROR";
+      break;
   }
 } // stringFromBoundaryType
 
@@ -141,7 +144,7 @@ IBMethod stringToIBMethod(std::string s)
   std::cout << "Immersed Boundary methods implemented:\n";
   std::cout << "\tTAIRA_COLONIUS\n";
   std::cout << "\tNONE\n" << std::endl;
-  exit(0);
+  exit(1);
 } // stringToIBMethod
 
 
@@ -161,6 +164,7 @@ std::string stringFromIBMethod(IBMethod method)
       return "Navier-Stokes solver (Perot, 1993)";
       break;
     default:
+      return "ERROR";
       break;
   }
 } // stringFromIBMethod
@@ -190,7 +194,7 @@ TimeScheme stringToTimeScheme(std::string s)
   std::cout << "\tEULER_IMPLICIT\n";
   std::cout << "\tADAMS_BASHFORTH_2\n";
   std::cout << "\tCRANK_NICOLSON\n" << std::endl;
-  exit(0);
+  exit(1);
 } // stringToTimeScheme
 
 
@@ -219,6 +223,7 @@ std::string stringFromTimeScheme(TimeScheme scheme)
       return "second-order Crank-Nicolson";
       break;
     default:
+      return "ERROR";
       break;
   }
 } // stringFromTimeScheme

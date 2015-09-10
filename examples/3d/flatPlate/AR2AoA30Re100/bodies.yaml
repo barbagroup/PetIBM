@@ -1,0 +1,4 @@
+# bodies.yaml
+
+- type: points
+  pointsFile: flatPlate_aoa30_ar2_ds0.04.body

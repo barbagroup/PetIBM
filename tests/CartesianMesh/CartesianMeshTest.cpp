@@ -12,129 +12,129 @@
 class CartesianMeshTest : public ::testing::Test
 {
 public:
-  CartesianMesh UniformMesh2d,
-                UniformMesh3d,
-                StretchedMesh3d;
+  CartesianMesh uniformMesh2d,
+                uniformMesh3d,
+                stretchedMesh3d;
 
   CartesianMeshTest()
   {
-    UniformMesh2d.initialize("CartesianMesh/data/UniformMesh2d.yaml");
-    UniformMesh3d.initialize("CartesianMesh/data/UniformMesh3d.yaml");
-    StretchedMesh3d.initialize("CartesianMesh/data/StretchedMesh3d.yaml");
+    uniformMesh2d = CartesianMesh("CartesianMesh/cases/uniformMesh2d");
+    uniformMesh3d = CartesianMesh("CartesianMesh/cases/uniformMesh3d");
+    stretchedMesh3d = CartesianMesh("CartesianMesh/cases/stretchedMesh3d");
   }
 };
 
-TEST_F(CartesianMeshTest, UniformMesh2dSize)
+TEST_F(CartesianMeshTest, uniformMesh2dSize)
 {
-  EXPECT_EQ(UniformMesh2d.nx, 5);
-  EXPECT_EQ(UniformMesh2d.ny, 4);
-  EXPECT_EQ(UniformMesh2d.nz, 0);
+  EXPECT_EQ(uniformMesh2d.nx, 5);
+  EXPECT_EQ(uniformMesh2d.ny, 4);
+  EXPECT_EQ(uniformMesh2d.nz, 0);
 }
 
-TEST_F(CartesianMeshTest, UniformMesh2dCoordinates)
-{
-  PetscReal start;
-
-  start = 0.0;
-  for(auto i=UniformMesh2d.x.begin(); i!=UniformMesh2d.x.end(); i++)
-  {
-    EXPECT_DOUBLE_EQ(*i, start);
-    start+=1.0;
-  }
-  
-  for(auto i=UniformMesh2d.dx.begin(); i!=UniformMesh2d.dx.end(); i++)
-  {
-    EXPECT_DOUBLE_EQ(*i, 1);
-  }
-
-  start = 0.0;
-  for(auto i=UniformMesh2d.y.begin(); i!=UniformMesh2d.y.end(); i++)
-  {
-    EXPECT_DOUBLE_EQ(*i, start);
-    start+=1.0;
-  }
-  
-  for(auto i=UniformMesh2d.dy.begin(); i!=UniformMesh2d.dy.end(); i++)
-  {
-    EXPECT_DOUBLE_EQ(*i, 1);
-  }
-}
-
-TEST_F(CartesianMeshTest, UniformMesh3dSize)
-{
-  EXPECT_EQ(UniformMesh3d.nx, 5);
-  EXPECT_EQ(UniformMesh3d.ny, 4);
-  EXPECT_EQ(UniformMesh3d.nz, 6);
-}
-
-TEST_F(CartesianMeshTest, UniformMesh3dCoordinates)
+TEST_F(CartesianMeshTest, uniformMesh2dCoordinates)
 {
   PetscReal start;
 
   start = 0.0;
-  for(auto i=UniformMesh3d.x.begin(); i!=UniformMesh3d.x.end(); i++)
+  for (auto i=uniformMesh2d.x.begin(); i!=uniformMesh2d.x.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, start);
     start+=1.0;
   }
   
-  for(auto i=UniformMesh3d.dx.begin(); i!=UniformMesh3d.dx.end(); i++)
+  for (auto i=uniformMesh2d.dx.begin(); i!=uniformMesh2d.dx.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, 1);
   }
 
   start = 0.0;
-  for(auto i=UniformMesh3d.y.begin(); i!=UniformMesh3d.y.end(); i++)
+  for (auto i=uniformMesh2d.y.begin(); i!=uniformMesh2d.y.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, start);
     start+=1.0;
   }
   
-  for(auto i=UniformMesh3d.dy.begin(); i!=UniformMesh3d.dy.end(); i++)
-  {
-    EXPECT_DOUBLE_EQ(*i, 1);
-  }
-
-  start = 0.0;
-  for(auto i=UniformMesh3d.z.begin(); i!=UniformMesh3d.z.end(); i++)
-  {
-    EXPECT_DOUBLE_EQ(*i, start);
-    start+=1.0;
-  }
-  
-  for(auto i=UniformMesh3d.dz.begin(); i!=UniformMesh3d.dz.end(); i++)
+  for (auto i=uniformMesh2d.dy.begin(); i!=uniformMesh2d.dy.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, 1);
   }
 }
 
-TEST_F(CartesianMeshTest, StretchedMesh3dSize)
+TEST_F(CartesianMeshTest, uniformMesh3dSize)
 {
-  EXPECT_EQ(StretchedMesh3d.nx, 3);
-  EXPECT_EQ(StretchedMesh3d.ny, 4);
-  EXPECT_EQ(StretchedMesh3d.nz, 5);
+  EXPECT_EQ(uniformMesh3d.nx, 5);
+  EXPECT_EQ(uniformMesh3d.ny, 4);
+  EXPECT_EQ(uniformMesh3d.nz, 6);
 }
 
-TEST_F(CartesianMeshTest, StretchedMesh3dCellWidths)
+TEST_F(CartesianMeshTest, uniformMesh3dCoordinates)
+{
+  PetscReal start;
+
+  start = 0.0;
+  for (auto i=uniformMesh3d.x.begin(); i!=uniformMesh3d.x.end(); i++)
+  {
+    EXPECT_DOUBLE_EQ(*i, start);
+    start+=1.0;
+  }
+  
+  for (auto i=uniformMesh3d.dx.begin(); i!=uniformMesh3d.dx.end(); i++)
+  {
+    EXPECT_DOUBLE_EQ(*i, 1);
+  }
+
+  start = 0.0;
+  for (auto i=uniformMesh3d.y.begin(); i!=uniformMesh3d.y.end(); i++)
+  {
+    EXPECT_DOUBLE_EQ(*i, start);
+    start+=1.0;
+  }
+  
+  for (auto i=uniformMesh3d.dy.begin(); i!=uniformMesh3d.dy.end(); i++)
+  {
+    EXPECT_DOUBLE_EQ(*i, 1);
+  }
+
+  start = 0.0;
+  for (auto i=uniformMesh3d.z.begin(); i!=uniformMesh3d.z.end(); i++)
+  {
+    EXPECT_DOUBLE_EQ(*i, start);
+    start+=1.0;
+  }
+  
+  for (auto i=uniformMesh3d.dz.begin(); i!=uniformMesh3d.dz.end(); i++)
+  {
+    EXPECT_DOUBLE_EQ(*i, 1);
+  }
+}
+
+TEST_F(CartesianMeshTest, stretchedMesh3dSize)
+{
+  EXPECT_EQ(stretchedMesh3d.nx, 3);
+  EXPECT_EQ(stretchedMesh3d.ny, 4);
+  EXPECT_EQ(stretchedMesh3d.nz, 5);
+}
+
+TEST_F(CartesianMeshTest, stretchedMesh3dCellWidths)
 {
   PetscReal cellWidth;
 
   cellWidth = 1.0;
-  for(auto i=StretchedMesh3d.dx.begin(); i!=StretchedMesh3d.dx.end(); i++)
+  for (auto i=stretchedMesh3d.dx.begin(); i!=stretchedMesh3d.dx.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, cellWidth) << "The value should be " << cellWidth << " but is " << *i << std::endl;
     cellWidth*=1.5;
   }
 
   cellWidth = 1.0;
-  for(auto i=StretchedMesh3d.dy.begin(); i!=StretchedMesh3d.dy.end(); i++)
+  for (auto i=stretchedMesh3d.dy.begin(); i!=stretchedMesh3d.dy.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, cellWidth) << "The value should be " << cellWidth << " but is " << *i << std::endl;
     cellWidth*=2.0;
   }
 
   cellWidth = 1.0;
-  for(auto i=StretchedMesh3d.dz.begin(); i!=StretchedMesh3d.dz.end(); i++)
+  for (auto i=stretchedMesh3d.dz.begin(); i!=stretchedMesh3d.dz.end(); i++)
   {
     EXPECT_DOUBLE_EQ(*i, cellWidth) << "The value should be " << cellWidth << " but is " << *i << std::endl;
     cellWidth*=1.1;

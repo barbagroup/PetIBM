@@ -16,9 +16,8 @@
 
 // create appropriate solver depending on method chosen
 template <PetscInt dim>
-std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string folder, 
-                                                        FlowDescription *FD, 
-                                                        SimulationParameters *SP, 
-                                                        CartesianMesh *CM);
+std::unique_ptr< NavierStokesSolver<dim> > createSolver(CartesianMesh *cartesianMesh, 
+                                                        FlowDescription<dim> *flowDescription, 
+                                                        SimulationParameters *simulationParameters);
 
 #endif

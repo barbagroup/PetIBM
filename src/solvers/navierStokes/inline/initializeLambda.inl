@@ -1,11 +1,12 @@
 /***************************************************************************//**
  * \file initializeLambda.inl
  * \author Anush Kirshnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the method to initialize the pressure field.
+ * \brief Implementation of the method `initializeLambda` 
+ *        of the class `NavierStokesSolver`.
  */
 
 /**
- * \brief Initiliazes the lambda vector that contains the pressure.
+ * \brief Initializes the lambda vector that contains the pressure.
  *
  * Only reads the pressure field when the simulation is restarted or when a 
  * custom initial field is used.
@@ -15,7 +16,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeLambda()
 {
   PetscErrorCode ierr;
 
-  if (simParams->startStep > 0 || flowDesc->initialCustomField)
+  if (parameters->startStep > 0 || flow->initialCustomField)
   {
     ierr = readLambda(); CHKERRQ(ierr);
   }

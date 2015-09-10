@@ -13,163 +13,241 @@ examples:
 
 # Two-dimensional examples
 
-cavity2dRe100Serial:
-	@echo "2D lid-driven cavity flow at Re=100 on 1 process."
-	@$(MPIEXEC) -n 1 $(PETIBM2D) \
-							-caseFolder ./2d/lidDrivenCavity/Re100 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity2dRe100Serial:
+	@echo "==================================================="
+	@echo "2d lid-driven cavity flow at Re=100 using 1 process"
+	@echo "==================================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100
 
-cavity2dRe100Parallel:
-	@echo "2D lid-driven cavity flow at Re=100 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/lidDrivenCavity/Re100 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity2dRe100Parallel:
+	@echo "====================================================="
+	@echo "2d lid-driven cavity flow at Re=100 using 4 processes"
+	@echo "====================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100
 
-cavity2dRe100NonUniform:
-	@echo "2D lid-driven cavity flow at Re=100 on 1 process."
-	@$(MPIEXEC) -n 1 $(PETIBM2D) \
-							-caseFolder ./2d/lidDrivenCavity/Re100NonUniform \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity2dRe100NonUniform:
+	@echo "===================================================="
+	@echo "2d lid-driven cavity flow at Re=100 unsing 1 process"
+	@echo "===================================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100NonUniform
 
-cavity2dRe1000:
-	@echo "2D lid-driven cavity flow at Re=1000 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/lidDrivenCavity/Re1000 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity2dRe1000:
+	@echo "======================================================"
+	@echo "2d lid-driven cavity flow at Re=1000 using 4 processes"
+	@echo "======================================================"
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re1000
 
-cavity2dRe3200:
-	@echo "2D lid-driven cavity flow at Re=3200 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/lidDrivenCavity/Re3200 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity2dRe3200:
+	@echo "======================================================"
+	@echo "2d lid-driven cavity flow at Re=3200 using 4 processes"
+	@echo "======================================================"
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re3200
 
-cavity2dRe5000:
-	@echo "2D lid-driven cavity flow at Re=5000 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/lidDrivenCavity/Re5000 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity2dRe5000:
+	@echo "======================================================"
+	@echo "2d lid-driven cavity flow at Re=5000 using 4 processes"
+	@echo "======================================================"
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re5000
 
 cylinder2dRe40:
-	@echo "2D cylinder at Re=40 on 2 processes."
-	@$(MPIEXEC) -n 2 $(PETIBM2D) \
-							-caseFolder ./2d/cylinder/Re40 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "================================================"
+	@echo "2d flow over cylinder at Re=40 using 2 processes"
+	@echo "================================================"
+	@$(MPIEXEC) -n 2 $(PETIBM2D) -directory ./2d/cylinder/Re40
 
 cylinder2dRe40Periodic:
-	@echo "2D cylinder at Re=40 with periodic boundary conditions on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/cylinder/Re40PeriodicDomain \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "=============================================================="
+	@echo "2d flow over cylinder at Re=40 (y- periodic) using 4 processes"
+	@echo "=============================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re40PeriodicDomain
 
 cylinder2dRe150:
-	@echo "2D cylinder at Re=150 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/cylinder/Re150 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "================================================="
+	@echo "2d flow over cylinder at Re=150 using 4 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re150
 
 cylinder2dRe250:
-	@echo "2D cylinder at Re=250 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/cylinder/Re250 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "================================================="
+	@echo "2d flow over cylinder at Re=250 using 4 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re250
 
 cylinder2dRe550:
-	@echo "2D cylinder at Re=550 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/cylinder/Re550 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "================================================="
+	@echo "2d flow over cylinder at Re=550 using 4 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re550
 
 cylinder2dRe3000:
-	@echo "2D cylinder at Re=3000 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM2D) \
-							-caseFolder ./2d/cylinder/Re3000 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "=================================================="
+	@echo "2d flow over cylinder at Re=3000 using 4 processes"
+	@echo "=================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re3000
 
 memoryCheck2dSerial:
-	@echo "Checking memory leak on a 2d-case on 1 process..."
+	@echo "============================================"
+	@echo "Check memory leak on 2d-case using 1 process"
+	@echo "============================================"
 	@$(MPIEXEC) -n 1 valgrind \
 							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
-							$(PETIBM2D) -caseFolder ./2d/memoryTest
+							$(PETIBM2D) -directory ./2d/memoryTest
 
 memoryCheck2dParallel:
-	@echo "Checking memory leak on a 2d-case on 2 process..."
+	@echo "=============================================="
+	@echo "Check memory leak on 2d-case using 2 processes"
+	@echo "=============================================="
 	@$(MPIEXEC) -n 2 valgrind \
 							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
-							$(PETIBM2D) -caseFolder ./2d/memoryTest
+							$(PETIBM2D) -directory ./2d/memoryTest
 
 memoryCheck2dBodySerial:
-	@echo "Checking memory leak on a 2d-case with an immersed body on 1 process..."
+	@echo "==============================================================="
+	@echo "Check memory leak on 2d-case with immersed-body using 1 process"
+	@echo "==============================================================="
 	@$(MPIEXEC) -n 1 valgrind \
 							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
-							$(PETIBM2D) -caseFolder ./2d/memoryTestBody
+							$(PETIBM2D) -directory ./2d/memoryTestBody
+
+convergence2d:
+	@echo "================================="
+	@echo "Two-dimensional convergence tests"
+	@echo "================================="
+	@$(MAKE) lidDrivenCavity2d20
+	@$(MAKE) lidDrivenCavity2d30
+	@$(MAKE) taylorGreenVortex2d20
+	@$(MAKE) taylorGreenVortex2d25
+	@$(MAKE) taylorGreenVortex2d30
+
+lidDrivenCavity2d20:
+	@echo "================================="
+	@echo "2d lid-driven cavity flow (20x20)"
+	@echo "================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/20
+	@echo "================================="
+	@echo "2d lid-driven cavity flow (60x60)"
+	@echo "================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/60
+	@echo "==================================="
+	@echo "2d lid-driven cavity flow (180x180)"
+	@echo "==================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/180
+	@echo "==================================="
+	@echo "2d lid-driven cavity flow (540x540)"
+	@echo "==================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/540
+
+lidDrivenCavity2d30:
+	@echo "================================="
+	@echo "2d lid-driven cavity flow (30x30)"
+	@echo "================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/30
+	@echo "================================="
+	@echo "2d lid-driven cavity flow (90x90)"
+	@echo "================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/90
+	@echo "==================================="
+	@echo "2d lid-driven cavity flow (270x270)"
+	@echo "==================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/270
+	@echo "==================================="
+	@echo "2d lid-driven cavity flow (810x810)"
+	@echo "==================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/810
+
+taylorGreenVortex2d20:
+	@echo "=============================="
+	@echo "2d Taylor-Green vortex (20x20)"
+	@echo "=============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/20
+	@echo "=============================="
+	@echo "2d Taylor-Green vortex (60x60)"
+	@echo "=============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/60
+	@echo "================================"
+	@echo "2d Taylor-Green vortex (180x180)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/180
+	@echo "================================"
+	@echo "2d Taylor-Green vortex (540x540)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/540
+
+taylorGreenVortex2d25:
+	@echo "=============================="
+	@echo "2d Taylor-Green vortex (25x25)"
+	@echo "=============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/25
+	@echo "=============================="
+	@echo "2d Taylor-Green vortex (75x75)"
+	@echo "=============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/75
+	@echo "================================"
+	@echo "2d Taylor-Green vortex (225x225)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/225
+	@echo "================================"
+	@echo "2d Taylor-Green vortex (675x675)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/675
+
+taylorGreenVortex2d30:
+	@echo "=============================="
+	@echo "2d Taylor-Green vortex (30x30)"
+	@echo "=============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/30
+	@echo "=============================="
+	@echo "2d Taylor-Green vortex (90x90)"
+	@echo "=============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/90
+	@echo "================================"
+	@echo "2d Taylor-Green vortex (270x270)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/270
+	@echo "================================"
+	@echo "2d Taylor-Green vortex (810x810)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/810
 
 
 # Three-dimensional examples
 
-cavity3dRe100PeriodicX:
-	@echo "3D lid-driven cavity flow at Re=100 with periodic boundary conditions in the x-direction on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM3D) \
-							-caseFolder ./3d/lidDrivenCavity/Re100PeriodicX \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity3dRe100PeriodicX:
+	@echo "=================================================================="
+	@echo "3d lid-driven cavity flow at Re=100 (x-periodic) using 4 processes"
+	@echo "=================================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicX
 
-cavity3dRe100PeriodicY:
-	@echo "3D lid-driven cavity flow at Re=100 with periodic boundary conditions in the y-direction on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM3D) \
-							-caseFolder ./3d/lidDrivenCavity/Re100PeriodicY \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity3dRe100PeriodicY:
+	@echo "=================================================================="
+	@echo "3d lid-driven cavity flow at Re=100 (y-periodic) using 4 processes"
+	@echo "=================================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicY
 
-cavity3dRe100PeriodicZ:
-	@echo "3D lid-driven cavity flow at Re=100 with periodic boundary conditions in the z-direction on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM3D) \
-							-caseFolder ./3d/lidDrivenCavity/Re100PeriodicZ \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+lidDrivenCavity3dRe100PeriodicZ:
+	@echo "=================================================================="
+	@echo "3d lid-driven cavity flow at Re=100 (z-periodic) using 4 processes"
+	@echo "=================================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicZ
 
 cylinder3dRe40:
-	@echo "3D cylinder at Re=40 on 4 processes."
-	@$(MPIEXEC) -n 4 $(PETIBM3D) \
-							-caseFolder ./3d/cylinder/Re40 \
-							-sys2_pc_type gamg \
-							-sys2_pc_gamg_type agg \
-							-sys2_pc_gamg_agg_nsmooths 1
+	@echo "================================================"
+	@echo "3d flow over cylinder at Re=40 using 4 processes"
+	@echo "================================================"
+	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/cylinder/Re40
 
 memoryCheck3dSerial:
-	@echo "Checking memory leak on a 3d-case on 1 process..."
+	@echo "============================================"
+	@echo "Check memory leak on 3d-case using 1 process"
+	@echo "============================================"
 	@$(MPIEXEC) -n 1 valgrind \
 							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
-							$(PETIBM3D) -caseFolder ./3d/memoryTest
+							$(PETIBM3D) -directory ./3d/memoryTest
 
 memoryCheck3dParallel:
-	@echo "Checking memory leak on a 3d-case on 2 process..."
+	@echo "=============================================="
+	@echo "Check memory leak on 3d-case using 2 processes"
+	@echo "=============================================="
 	@$(MPIEXEC) -n 2 valgrind \
 							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
-							$(PETIBM3D) -caseFolder ./2d/memoryTest							
+							$(PETIBM3D) -directory ./3d/memoryTest							

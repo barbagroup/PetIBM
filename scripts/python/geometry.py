@@ -482,8 +482,8 @@ class Circle(Geometry2d):
     elif not self.n:
       self.n = int(math.ceil(2.0*math.pi*self.radius/self.ds))
     theta = numpy.linspace(0.0, 2.0*math.pi, self.n+1)
-    x = self.radius*numpy.cos(theta)[:-1]
-    y = self.radius*numpy.sin(theta)[:-1]
+    x = self.center.x + self.radius*numpy.cos(theta)[:-1]
+    y = self.center.y + self.radius*numpy.sin(theta)[:-1]
     self.points = [Point(x[i], y[i]) for i in xrange(x.size)]
     self.points_initial = copy.deepcopy(self.points)
 

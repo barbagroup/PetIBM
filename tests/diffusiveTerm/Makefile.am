@@ -12,10 +12,8 @@ diffusiveTermTest2d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 															 -I$(top_srcdir)/src/solvers \
 															 -D DIMENSIONS=2
 
-diffusiveTermTest2d_CXXFLAGS = -std=c++0x
-
-diffusiveTermTest2d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														$(top_builddir)/src/solvers/libsolvers.a \
+diffusiveTermTest2d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														$(top_builddir)/src/utilities/libutilities.a \
 														$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 diffusiveTermTest3d_SOURCES = DiffusiveTerm.cpp \
@@ -27,10 +25,8 @@ diffusiveTermTest3d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 															 -I$(top_srcdir)/src/solvers \
 															 -D DIMENSIONS=3
 
-diffusiveTermTest3d_CXXFLAGS = -std=c++0x
-
-diffusiveTermTest3d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-														$(top_builddir)/src/solvers/libsolvers.a \
+diffusiveTermTest3d_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
+														$(top_builddir)/src/utilities/libutilities.a \
 														$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 input_data:
@@ -44,24 +40,16 @@ tests:
 	@echo "Running 2D diffusive-term tests..."
 	@mkdir -p  data
 	@$(RM) data/relativeErrors2d.dat
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -caseFolder ./cases/2d/6 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -caseFolder ./cases/2d/12 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -caseFolder ./cases/2d/24 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -caseFolder ./cases/2d/48 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -directory ./cases/2d/6
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -directory ./cases/2d/12
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -directory ./cases/2d/24
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest2d -directory ./cases/2d/48
 	@echo "Running 3D diffusive-term tests..."
 	@$(RM) -f data/relativeErrors3d.dat
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -caseFolder ./cases/3d/6 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -caseFolder ./cases/3d/12 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -caseFolder ./cases/3d/24 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -caseFolder ./cases/3d/48 \
-							-sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -directory ./cases/3d/6
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -directory ./cases/3d/12
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -directory ./cases/3d/24
+	@$(MPIEXEC) -n 1 ./diffusiveTermTest3d -directory ./cases/3d/48
 	@echo "Plotting grid convergence for diffusive-term tests..."
 	@python plotGridConvergence.py
 

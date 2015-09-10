@@ -10,41 +10,41 @@
 /**
  * \brief Creates the appropriate solver.
  *
+ * \param cartesianMesh Contains info about the Cartesian grid
+ * \param flowDescription Contains info about the fluid and the flow
+ * \param simulationParameters Contains info about the parameters of the simulation
+ *
  * If there is no immersed boundary in the domain, a Navier-Stokes solver iis
  * created. Otherwise, Taira and Colonius (2007) solver type is instanciated.
  */
 template <PetscInt dim>
-std::unique_ptr< NavierStokesSolver<dim> > createSolver(std::string folder, 
-                                                        FlowDescription *FD, 
-                                                        SimulationParameters *SP, 
-                                                        CartesianMesh *CM)
+std::unique_ptr< NavierStokesSolver<dim> > createSolver(CartesianMesh *cartesianMesh, 
+                                                        FlowDescription<dim> *flowDescription, 
+                                                        SimulationParameters *simulationParameters)
 {
-  if(FD->dimensions!=dim)
-  {
-    PetscPrintf(PETSC_COMM_WORLD, "ERROR: Check the number of dimensions in the input files.\n");
-    exit(0);
-  }
-  switch(SP->solverType)
+  switch(simulationParameters->ibm)
   {
     case NAVIER_STOKES:
-      return std::unique_ptr< NavierStokesSolver<dim> >(new NavierStokesSolver<dim>(folder, 
-                                                                                    FD, SP, CM));
+      return std::unique_ptr< NavierStokesSolver<dim> >(new NavierStokesSolver<dim>(cartesianMesh, 
+                                                                                    flowDescription, 
+                                                                                    simulationParameters));
       break;
     case TAIRA_COLONIUS:
-      return std::unique_ptr< TairaColoniusSolver<dim> >(new TairaColoniusSolver<dim>(folder, 
-                                                                                      FD, SP, CM));
+      return std::unique_ptr< TairaColoniusSolver<dim> >(new TairaColoniusSolver<dim>(cartesianMesh, 
+                                                                                      flowDescription, 
+                                                                                      simulationParameters));
       break;
     default:
-      PetscPrintf(PETSC_COMM_WORLD, "Unrecognized solver!\n");
+      PetscPrintf(PETSC_COMM_WORLD, "ERROR: Unrecognized solver.\n");
       return NULL;
   }
 } // createSolver
 
-template std::unique_ptr< NavierStokesSolver<2> > createSolver(std::string folder, 
-                                                               FlowDescription *FD, 
-                                                               SimulationParameters *SP, 
-                                                               CartesianMesh *CM);
-template std::unique_ptr< NavierStokesSolver<3> > createSolver(std::string folder, 
-                                                               FlowDescription *FD, 
-                                                               SimulationParameters *SP, 
-                                                               CartesianMesh *CM);
+
+// dimensions specialization
+template std::unique_ptr< NavierStokesSolver<2> > createSolver(CartesianMesh *cartesianMesh, 
+                                                               FlowDescription<2> *flowDescription, 
+                                                               SimulationParameters *simulationParameters); 
+template std::unique_ptr< NavierStokesSolver<3> > createSolver(CartesianMesh *cartesianMesh, 
+                                                               FlowDescription<3> *flowDescription, 
+                                                               SimulationParameters *simulationParameters);

@@ -8,30 +8,49 @@
 #if !defined(TYPES_H)
 #define TYPES_H
 
+#include <string>
+
+
+/**
+ * \brief Velocity components.
+ */
+enum VelocityComponent
+{
+  U, ///< x-direction
+  V, ///< y-direction
+  W  ///< z-direction
+};
+
 
 /**
  * \brief Type of boundary condition.
  */
-enum BCType
+enum BoundaryType
 {
   DIRICHLET,  ///< Dirichlet
   NEUMANN,    ///< Neumann
   CONVECTIVE, ///< Convective
   PERIODIC    ///< Periodic
 };
+BoundaryType stringToBoundaryType(std::string s);
+std::string stringFromBoundaryType(BoundaryType type);
+
 
 /**
- * \brief The boundary of concern.
+ * \brief Location of the boundary.
  */
-enum Boundary
+enum BoundaryLocation
 {
   XMINUS, ///< left
   XPLUS,  ///< right
   YMINUS, ///< bottom
   YPLUS,  ///< top
-  ZMINUS, ///< front
-  ZPLUS   ///< back
+  ZMINUS, ///< back
+  ZPLUS   ///< front
 };
+BoundaryLocation stringToBoundaryLocation(std::string s);
+std::string stringFromBoundaryLocation(BoundaryLocation location);
+
 
 /**
  * \brief Numerical scheme used to discretize the time derivative.
@@ -44,32 +63,28 @@ enum Boundary
  * and the value at the next time step (which we want to determine) is
  * \f$ u^{n+1} \f$. \f$ u^{n-1} \f$ is the value at the previous time step.
  */
-enum TimeSteppingScheme
+enum TimeScheme
 {
+  NONE,              ///< numerical coefficients set to zero
   EULER_EXPLICIT,    ///< explicit Euler method
   EULER_IMPLICIT,    ///< implicit Euler method
   ADAMS_BASHFORTH_2, ///< second-order Adams-Bashforth scheme
-  CRANK_NICOLSON     ///< Crank-Nicolson scheme
+  CRANK_NICOLSON     ///< second-order Crank-Nicolson scheme
 };
+TimeScheme stringToTimeScheme(std::string);
+std::string stringFromTimeScheme(TimeScheme timeScheme);
+
 
 /**
  * \brief Immersed boundary method used to solve the flow.
  */
-enum SolverType
+enum IBMethod
 {
-  NAVIER_STOKES,  ///< no immersed bodies
-  TAIRA_COLONIUS  ///< immersed boundary projection method (Taira & Colonius, 2007)
+  TAIRA_COLONIUS, ///< immersed boundary projection method (Taira & Colonius, 2007)
+  NAVIER_STOKES   ///< no immersed boundary (Perot, 1993)
 };
-
-/**
- * \brief Type of preconditioner.
- */
-enum PreconditionerType
-{
-  NONE,                ///< no preconditioner
-  DIAGONAL,            ///< diagonal preconditioner
-  SMOOTHED_AGGREGATION ///< smoothed-aggregation preconditioner
-};
+IBMethod stringToIBMethod(std::string s);
+std::string stringFromIBMethod(IBMethod method);
 
 #endif
 

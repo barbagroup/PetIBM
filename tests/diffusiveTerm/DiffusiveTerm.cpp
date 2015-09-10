@@ -16,31 +16,16 @@
  * \brief Constructor - Initializes pointers.
  */
 template <PetscInt dim>
-DiffusiveTerm<dim>::DiffusiveTerm(std::string folder, 
-                                  FlowDescription *FD, 
-                                  SimulationParameters *SP, 
-                                  CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
+DiffusiveTerm<dim>::DiffusiveTerm(CartesianMesh *cartesianMesh, 
+                                  FlowDescription<dim> *flowDescription, 
+                                  SimulationParameters *simulationParameters) 
+                  : NavierStokesSolver<dim>::NavierStokesSolver(cartesianMesh, 
+                                                                flowDescription, 
+                                                                simulationParameters)
 {
   rnExact = PETSC_NULL;
-}
+} // DiffusiveTerm
 
-/**
- * \brief Initializes the solver for the diffusive term.
- *
- * The explicit time-intregration coefficients for the convective terms 
- * are set to zero.
- */
-template <PetscInt dim>
-PetscErrorCode DiffusiveTerm<dim>::initialize()
-{
-  PetscErrorCode ierr;
-
-  ierr = NavierStokesSolver<dim>::initialize(); CHKERRQ(ierr);
-  NavierStokesSolver<dim>::simParams->gamma = 0.0;
-  NavierStokesSolver<dim>::simParams->zeta = 0.0;
-
-  return ierr;
-}
 
 /**
  * \brief Initializes the fluxes with a sinusoidal solution.
@@ -57,17 +42,20 @@ template <PetscInt dim>
 PetscErrorCode DiffusiveTerm<dim>::initializeFluxes()
 {
   return 0;
-}
+} // initializeFluxes
 
+
+// two-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  PetscInt mBegin, nBegin,  // global indices of local lower-left corner
-           m, n,            // number of local elements in each direction
-           i, j;            // iteration indices
-  PetscReal x, y;           // coordinates of a node
+  PetscInt i, j,           // loop indices
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
+
+  PetscReal x, y; // coordinates of a node
 
   Vec qxGlobal, qyGlobal;
   ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
@@ -75,11 +63,11 @@ PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
   // fluxes in x-direction
   PetscReal **qx;
   ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   PetscReal u;  // value of u-velocity
-  for (j=nBegin; j<nBegin+n; j++)
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = mesh->x[i+1];
       y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -92,11 +80,11 @@ PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
   // fluxes in y-direction
   PetscReal **qy;
   ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   PetscReal v;  // value of v-velocity
-  for (j=nBegin; j<nBegin+n; j++)
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = 0.5*(mesh->x[i]+mesh->x[i+1]);
       y = mesh->y[j+1];
@@ -109,17 +97,20 @@ PetscErrorCode DiffusiveTerm<2>::initializeFluxes()
   ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // initializeFluxes
 
+
+// three-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
 {
   PetscErrorCode ierr;
 
-  PetscInt mBegin, nBegin, pBegin,  // global indices of local lower-left corner
-           m, n, p,                 // number of local elements in each direction
-           i, j, k;                 // iteration indices
-  PetscReal x, y, z;                // coordinates of a node
+  PetscInt i, j, k,                // loop indices
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
+
+  PetscReal x, y, z; // coordinates of a node
 
   Vec qxGlobal, qyGlobal, qzGlobal;
   ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
@@ -127,13 +118,13 @@ PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
   // fluxes in x-direction
   PetscReal ***qx;
   ierr = DMDAVecGetArray(uda, qxGlobal, &qx); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   PetscReal u;  // value of u-velocity
-  for (k=pBegin; k<pBegin+p; k++)
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = mesh->x[i+1];
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -148,13 +139,13 @@ PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
   // fluxes in y-direction
   PetscReal ***qy;
   ierr = DMDAVecGetArray(vda, qyGlobal, &qy); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   PetscReal v;  // value of v-velocity
-  for (k=pBegin; k<pBegin+p; k++)
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = mesh->y[j+1];
@@ -169,13 +160,13 @@ PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
   // fluxes in z-direction
   PetscReal ***qz;
   ierr = DMDAVecGetArray(wda, qzGlobal, &qz); CHKERRQ(ierr);
-  ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
+  ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   PetscReal w;  // value of w-velocity
-  for (k=pBegin; k<pBegin+p; k++)
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -190,7 +181,8 @@ PetscErrorCode DiffusiveTerm<3>::initializeFluxes()
   ierr = DMCompositeRestoreAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // initializeFluxes
+
 
 /**
  * \brief Computes the exact solution explicit diffusive terms.
@@ -199,24 +191,26 @@ template <PetscInt dim>
 PetscErrorCode DiffusiveTerm<dim>::calculateExactSolution()
 {
   return 0;
-}
+} // calculateExactSolution
 
+
+// two-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
-  PetscInt mBegin, nBegin,  // global indices of local lower-left node
-           m, n,            // number of local elements in each direction
-           i, j;            // iteration indices
+  PetscInt i, j,           // loop indices
+           m, n,           // local number of nodes along each direction
+           mstart, nstart; // starting indices
   
-  PetscReal x, y,           // coordinates of a node
-            velocity,       // velocity value at the node
-            diffusion;      // value of the diffusive term at the node
+  PetscReal x, y,      // coordinates of a node
+            velocity,  // velocity value at the node
+            diffusion; // value of the diffusive term at the node
   
-  PetscReal nu = flowDesc->nu,                // viscosity
-            dt = simParams->dt,               // time-increment
-            alpha = simParams->alphaExplicit; // explicit time-scheme coefficient for diffusive terms
+  PetscReal nu = flow->nu,                                 // viscosity
+            dt = parameters->dt,                           // time-increment
+            alpha = parameters->diffusion.coefficients[1]; // explicit time-scheme coefficient for diffusive terms
 
   ierr = VecDuplicate(q, &rnExact); CHKERRQ(ierr);
   Vec rnExactXGlobal, rnExactYGlobal;
@@ -225,10 +219,10 @@ PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
   // exact explicit terms for u-nodes
   PetscReal **rnExactX;
   ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  for (j=nBegin; j<nBegin+n; j++)
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = mesh->x[i+1];
       y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -242,10 +236,10 @@ PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
   // exact explicit terms for v-nodes
   PetscReal **rnExactY;
   ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, NULL, &m, &n, NULL); CHKERRQ(ierr);
-  for (j=nBegin; j<nBegin+n; j++)
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
+  for (j=nstart; j<nstart+n; j++)
   {
-    for (i=mBegin; i<mBegin+m; i++)
+    for (i=mstart; i<mstart+m; i++)
     {
       x = 0.5*(mesh->x[i]+mesh->x[i+1]);
       y = mesh->y[j+1];
@@ -259,24 +253,26 @@ PetscErrorCode DiffusiveTerm<2>::calculateExactSolution()
   ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // calculateExactSolution
 
+
+// three-dimensional specialization
 template <>
 PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
 {
   PetscErrorCode ierr;
   
-  PetscInt mBegin, nBegin, pBegin,  // global indices of local lower-left node
-           m, n, p,                 // number of local elements in each direction
-           i, j, k;                 // iteration indices
+  PetscInt i, j, k,                // loop indices
+           m, n, p,                // local number of nodes along each direction
+           mstart, nstart, pstart; // starting indices
   
-  PetscReal x, y, z,                // coordinates of a node
-            velocity,               // velocity value at the node
-            diffusion;              // value of the diffusive term at the node
+  PetscReal x, y, z,   // coordinates of a node
+            velocity,  // velocity value at the node
+            diffusion; // value of the diffusive term at the node
   
-  PetscReal nu = flowDesc->nu,                // viscosity
-            dt = simParams->dt,               // time-increment
-            alpha = simParams->alphaExplicit; // explicit time-scheme coefficient for diffusive terms
+  PetscReal nu = flow->nu,                                 // viscosity
+            dt = parameters->dt,                           // time-increment
+            alpha = parameters->diffusion.coefficients[1]; // explicit time-scheme coefficient for diffusive terms
 
   ierr = VecDuplicate(q, &rnExact); CHKERRQ(ierr);
   Vec rnExactXGlobal, rnExactYGlobal, rnExactZGlobal;
@@ -285,12 +281,12 @@ PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
   // exact explicit terms for u-nodes
   PetscReal ***rnExactX;
   ierr = DMDAVecGetArray(uda, rnExactXGlobal, &rnExactX);
-  ierr = DMDAGetCorners(uda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  for (k=pBegin; k<pBegin+p; k++)
+  ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = mesh->x[i+1];
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -306,12 +302,12 @@ PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
   // exact explicit terms for v-nodes
   PetscReal ***rnExactY;
   ierr = DMDAVecGetArray(vda, rnExactYGlobal, &rnExactY);
-  ierr = DMDAGetCorners(vda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  for (k=pBegin; k<pBegin+p; k++)
+  ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = mesh->y[j+1];
@@ -327,12 +323,12 @@ PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
   // exact explicit terms for w-nodes
   PetscReal ***rnExactZ;
   ierr = DMDAVecGetArray(wda, rnExactZGlobal, &rnExactZ);
-  ierr = DMDAGetCorners(wda, &mBegin, &nBegin, &pBegin, &m, &n, &p); CHKERRQ(ierr);
-  for (k=pBegin; k<pBegin+p; k++)
+  ierr = DMDAGetCorners(wda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
+  for (k=pstart; k<pstart+p; k++)
   {
-    for (j=nBegin; j<nBegin+n; j++)
+    for (j=nstart; j<nstart+n; j++)
     {
-      for (i=mBegin; i<mBegin+m; i++)
+      for (i=mstart; i<mstart+m; i++)
       {
         x = 0.5*(mesh->x[i]+mesh->x[i+1]);
         y = 0.5*(mesh->y[j]+mesh->y[j+1]);
@@ -348,7 +344,8 @@ PetscErrorCode DiffusiveTerm<3>::calculateExactSolution()
   ierr = DMCompositeRestoreAccess(qPack, rnExact, &rnExactXGlobal, &rnExactYGlobal, &rnExactZGlobal); CHKERRQ(ierr);
 
   return ierr;
-}
+} // calculateExactSolution
+
 
 /**
  * \brief Computes the relative L2 norm of the difference between the numerical
@@ -367,7 +364,8 @@ PetscErrorCode DiffusiveTerm<dim>::calculateRelativeError()
   relativeError = l2NormDifference/l2NormExact;
 
   return ierr;
-}
+} // calculateRelativeError
+
 
 /**
  * \brief Writes the number of cells and the relative error in a file.
@@ -397,7 +395,8 @@ PetscErrorCode DiffusiveTerm<dim>::writeRelativeError()
   }
 
   return ierr;
-}
+} // writeRelativeError
+
 
 /**
  * \brief Frees memory to avoid memory leaks
@@ -414,7 +413,9 @@ PetscErrorCode DiffusiveTerm<dim>::finalize()
   ierr = NavierStokesSolver<dim>::finalize(); CHKERRQ(ierr);
   
   return ierr;
-}
+} // finalize
 
+
+// template class specialization
 template class DiffusiveTerm<2>;
 template class DiffusiveTerm<3>;

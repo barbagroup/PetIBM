@@ -1,10 +1,9 @@
 # flowDescription.yaml
 
 - type: flow
-  dimensions: 3
   nu: 0.004
   initialVelocity: [1.0, 0.0, 0.0]
-  initialPerturbation: [0.1, 0.0, 0.1]
+  initialPerturbation: [0.1, 0.1]
   boundaryConditions:
     - location: xMinus
       u: [DIRICHLET, 1.0]

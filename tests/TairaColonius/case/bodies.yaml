@@ -1,0 +1,4 @@
+# bodies.yaml
+
+- type: points
+  pointsFile: circleR0.25ds0.03125.body

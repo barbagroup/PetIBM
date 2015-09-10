@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file TairaColoniusSolver.h
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Definition of the class \c TairaColoniusSolver.
+ * \brief Definition of the class `TairaColoniusSolver`.
  */
 
 
@@ -9,6 +9,8 @@
 #define TAIRA_COLONIUS_SOLVER_H
 
 #include "navierStokes/NavierStokesSolver.h"
+
+#include "Body.h"
 
 
 /**
@@ -20,16 +22,20 @@ template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
 public:
+  DM bda; ///< DMDA object
+
+  PetscInt numBodies;
+  std::vector<Body<dim> > bodies; ///< info about each body immersed
+
+  PetscInt numBoundaryPoints; ///< total numbers of Lagrangian body points
+
   PetscInt  startGlobalIndex;
-  DM        bda;
   Mat       ET;
   PetscReal force[3];
   Vec       nullSpaceVec, regularizedForce;
 
   std::ofstream forcesFile;
 
-  std::vector<PetscReal> x, y, z;
-  std::vector<PetscInt>  I, J, K;
   std::vector<PetscInt>  globalIndexMapping;
   std::vector<PetscInt>  numBoundaryPointsOnProcess;
   std::vector<PetscInt>  numPhiOnProcess;
@@ -58,22 +64,15 @@ public:
   PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
 
 public:
+  // constructors
+  TairaColoniusSolver(){ };
+  TairaColoniusSolver(CartesianMesh *cartesianMesh, 
+                      FlowDescription<dim> *flowDescription, 
+                      SimulationParameters *simulationParameters);
+  // destructor
+  ~TairaColoniusSolver(){ };
   PetscErrorCode initialize();
   PetscErrorCode finalize();
-
-  TairaColoniusSolver(std::string folder, FlowDescription *FD, SimulationParameters *SP, CartesianMesh *CM) : NavierStokesSolver<dim>::NavierStokesSolver(folder, FD, SP, CM)
-  {
-    bda = PETSC_NULL;
-    ET  = PETSC_NULL;
-    nullSpaceVec     = PETSC_NULL;
-    regularizedForce = PETSC_NULL;
-  }
-  
-  // name of the solver
-  virtual std::string name()
-  {
-    return "Taira and Colonius";
-  }
 
 }; // TairaColoniusSolver
 

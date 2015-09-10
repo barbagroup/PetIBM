@@ -1,7 +1,6 @@
 # flowDescription.yaml
 
 - type: flow
-  dimensions: 3
   nu: 3.33E-03
   initialVelocity: [1.0, 0.0, 0.0]
   boundaryConditions:

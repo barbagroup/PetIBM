@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * \file SimulationParameters.cpp
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the methods of the class \c SimulationParameters.
+ * \author Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+ * \brief Implementation of the methods of the class `SimulationParameters`.
  */
 
 
@@ -13,149 +13,135 @@
 
 
 /**
- * \brief Converts \c std::string to \c TimeSteppingScheme.
+ * \brief Constructor.
  */
-TimeSteppingScheme timeSchemeFromString(std::string s)
-{
-  if (s == "EULER_EXPLICIT")
-    return EULER_EXPLICIT;
-  if (s == "EULER_IMPLICIT")
-    return EULER_IMPLICIT;
-  if (s == "ADAMS_BASHFORTH_2")
-    return ADAMS_BASHFORTH_2;
-  if (s == "CRANK_NICOLSON")
-    return CRANK_NICOLSON;
-  return EULER_EXPLICIT;
-} // timeSchemeFromString
-
-/**
- * \brief Converts \c std::string to \c SolverType.
- */
-SolverType solverTypeFromString(std::string s)
-{
-  if (s == "NAVIER_STOKES")
-    return NAVIER_STOKES;
-  if (s == "TAIRA_COLONIUS")
-    return TAIRA_COLONIUS;
-  return NAVIER_STOKES;
-} // solverTypeFromString
-
 SimulationParameters::SimulationParameters()
 {
 } // SimulationParameters
 
+
 /**
- * \brief Constructor -- Parses simulationParameters.yaml
+ * \brief Constructor -- Parses the input file `simulationParameters.yaml`.
+ *
+ * \param dir Directory of the simulation
  */
-SimulationParameters::SimulationParameters(std::string fileName)
+SimulationParameters::SimulationParameters(std::string dir)
 {
-  initialize(fileName);
+  directory = dir;
+  initialize(directory + "/simulationParameters.yaml");
 } // SimulationParameters
+
+
+/**
+ * \brief Destructor.
+ */
+SimulationParameters::~SimulationParameters()
+{
+} // ~SimulationParameters
+
 
 /**
  * \brief Parses file containing the simulation parameters.
  *
  * The file is parsed using YAML format.
  *
- * \param fileName path of the simulation parameters file
+ * \param filePath Path of the simulation parameters file
  */
-void SimulationParameters::initialize(std::string fileName)
+void SimulationParameters::initialize(std::string filePath)
 {
-  PetscInt    rank;
+  PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
   
-  MPI_Comm_rank(PETSC_COMM_WORLD, &rank); // get rank of current process
-  
-  if (rank == 0) // read the input file only on process 0
+  YAML::Node nodes(YAML::LoadFile(filePath));
+  const YAML::Node &node = nodes[0];
+
+  dt = node["dt"].as<PetscReal>();
+  startStep = node["startStep"].as<PetscInt>(0);
+  nt = node["nt"].as<PetscInt>();
+  nsave = node["nsave"].as<PetscInt>(nt);
+
+  ibm = stringToIBMethod(node["ibm"].as<std::string>("NONE"));
+
+  convection.scheme = stringToTimeScheme(node["convection"].as<std::string>("EULER_EXPLICIT"));
+  diffusion.scheme = stringToTimeScheme(node["diffusion"].as<std::string>("EULER_IMPLICIT"));
+  // set time-stepping coefficients for convective terms
+  switch (convection.scheme)
   {
-    YAML::Node nodes(YAML::LoadFile(fileName));
-    const YAML::Node &node = nodes[0];
-
-    dt = node["dt"].as<PetscReal>();
-    startStep = node["startStep"].as<PetscInt>(0);
-    nt = node["nt"].as<PetscInt>();
-    nsave = node["nsave"].as<PetscInt>(nt);
-
-    solverType = solverTypeFromString(node["ibmScheme"].as<std::string>("NAVIER_STOKES"));
-    convectionScheme = timeSchemeFromString(node["timeScheme"][0].as<std::string>("EULER_EXPLICIT"));
-    diffusionScheme  = timeSchemeFromString(node["timeScheme"][1].as<std::string>("EULER_IMPLICIT"));
-
-    // set the time-stepping coefficients for the different schemes
-    switch (convectionScheme)
-    {
-      case EULER_EXPLICIT:
-        gamma = 1.0;
-        zeta = 0.0;
-        break;
-      case ADAMS_BASHFORTH_2:
-        gamma = 1.5;
-        zeta = -0.5;
-        break;
-      default:
-        gamma = 1.0;
-        zeta = 0.0;
-        break;
-    }
-    switch (diffusionScheme)
-    {
-      case EULER_EXPLICIT:
-        alphaExplicit = 1.0;
-        alphaImplicit = 0.0;
-        break;
-      case EULER_IMPLICIT:
-        alphaExplicit = 0.0;
-        alphaImplicit = 1.0;
-        break;
-      case CRANK_NICOLSON:
-        alphaExplicit = 0.5;
-        alphaImplicit = 0.5;
-        break;
-      default:
-        alphaExplicit = 1.0;
-        alphaImplicit = 0.0;
-        break;
-    }
-
-    const YAML::Node &systems = node["linearSolvers"];
-    std::string name, solver, preconditioner;
-    for (unsigned int i=0; i<systems.size(); i++)
-    {
-      name = systems[i]["system"].as<std::string>();
-      solver = systems[i]["solver"].as<std::string>("CG");
-      preconditioner = systems[i]["preconditioner"].as<std::string>("DIAGONAL");
-
-      // set the simulation parameters
-      if (name == "velocity")
-      {
-        velocitySolveTolerance = systems[i]["tolerance"].as<PetscReal>(1.0E-05);
-        velocitySolveMaxIts = systems[i]["maxIterations"].as<PetscInt>(10000);
-      }
-      else if (name == "Poisson")
-      {
-        PoissonSolveTolerance = systems[i]["tolerance"].as<PetscReal>(1.0E-05);
-        PoissonSolveMaxIts = systems[i]["maxIterations"].as<PetscInt>(10000);
-      }
-    }
+    case NONE:
+      convection.coefficients.push_back(0.0); // n+1 coefficient
+      convection.coefficients.push_back(0.0); // n coefficient
+      convection.coefficients.push_back(0.0); // n-1 coefficient
+      break;
+    case EULER_EXPLICIT:
+      convection.coefficients.push_back(0.0); // n+1 coefficient
+      convection.coefficients.push_back(1.0); // n coefficient
+      convection.coefficients.push_back(0.0); // n-1 coefficient
+      break;
+    case ADAMS_BASHFORTH_2:
+      convection.coefficients.push_back(0.0);  // n+1 coefficient
+      convection.coefficients.push_back(1.5);  // n coefficient
+      convection.coefficients.push_back(-0.5); // n-1 coefficient
+      break;
+    default:
+      std::cout << "\nERROR: unknown numerical scheme for convective terms.\n";
+      std::cout << "Numerical scheme implemented:\n";
+      std::cout << "\tNONE\n";
+      std::cout << "\tEULER_EXPLICIT\n";
+      std::cout << "\tADAMS_BASHFORTH_2\n" << std::endl;
+      exit(0);
+      break;
   }
-  MPI_Barrier(PETSC_COMM_WORLD);
+  // set time-stepping coefficients for diffusive terms
+  switch (diffusion.scheme)
+  {
+    case NONE:
+      diffusion.coefficients.push_back(0.0); // n+1 coefficient
+      diffusion.coefficients.push_back(0.0); // n coefficient
+      break;
+    case EULER_EXPLICIT:
+      diffusion.coefficients.push_back(0.0); // n+1 coefficient
+      diffusion.coefficients.push_back(1.0); // n coefficient
+      break;
+    case EULER_IMPLICIT:
+      diffusion.coefficients.push_back(1.0); // n+1 coefficient
+      diffusion.coefficients.push_back(0.0); // n coefficient
+      break;
+    case CRANK_NICOLSON:
+      diffusion.coefficients.push_back(0.5); // n+1 coefficient
+      diffusion.coefficients.push_back(0.5); // n coefficient
+      break;
+    default:
+      std::cout << "\nERROR: unknown numerical scheme for diffusive terms.\n";
+      std::cout << "Numerical scheme implemented:\n";
+      std::cout << "\tNONE\n";
+      std::cout << "\tEULER_EXPLICIT\n";
+      std::cout << "\tEULER_IMPLICIT\n";
+      std::cout << "\tCRANK_NICOLSON\n" << std::endl;
+      exit(0);
+      break;
+  }
+
+  PetscPrintf(PETSC_COMM_WORLD, "done.\n");
   
-  // broadcast parameters to all processes
-  MPI_Bcast(&dt, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&nt, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&nsave, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&startStep, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  
-  MPI_Bcast(&gamma, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&zeta, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&alphaExplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&alphaImplicit, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  
-  MPI_Bcast(&solverType, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  
-  MPI_Bcast(&convectionScheme, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&diffusionScheme, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  
-  MPI_Bcast(&velocitySolveTolerance, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&PoissonSolveTolerance, 1, MPIU_REAL, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&velocitySolveMaxIts, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
-  MPI_Bcast(&PoissonSolveMaxIts, 1, MPIU_INT, 0, PETSC_COMM_WORLD);
 } // initialize
+
+
+/**
+ * \brief Prints info about the initial and boundary conditions of the flow.
+ */
+PetscErrorCode SimulationParameters::printInfo()
+{
+  PetscErrorCode ierr;
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "Time-stepping\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "formulation: %s\n", stringFromIBMethod(ibm).c_str()); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "convection: %s\n", stringFromTimeScheme(convection.scheme).c_str()); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "diffusion: %s\n", stringFromTimeScheme(diffusion.scheme).c_str()); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "time-increment: %g\n", dt); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step: %d\n", startStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", nt); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval: %d\n", nsave); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+
+  return 0;
+} // printInfo

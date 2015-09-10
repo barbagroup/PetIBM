@@ -4,12 +4,13 @@
  *                A PETSc-based Immersed Boundary Method code
  *
  * \author Anush Krishnan (anush@bu.edu)
+ *         Olivier Mesnard (mesnardo@gwu.edu)
  */
 
 /***************************************************************************//**
  * \file PetIBM.cpp
  * \author Anush Krishnan (anush@bu.edu)
- * \brief Main source-file of \c PetIBM.
+ * \brief Main source-file of `PetIBM`.
  */
 
 
@@ -22,20 +23,27 @@
 
 int main(int argc,char **argv)
 {
-  PetscErrorCode ierr;
   const PetscInt dim = DIMENSIONS;
-  char           caseFolder[PETSC_MAX_PATH_LEN];
+  PetscErrorCode ierr;
   
   ierr = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(ierr);
 
-  ierr = PetscOptionsGetString(NULL, "-caseFolder", caseFolder, sizeof(caseFolder), NULL); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n======================\n*** PetIBM - Start ***\n======================\n"); CHKERRQ(ierr);
 
-  std::string          folder(caseFolder);
-  FlowDescription      FD(folder+"/flowDescription.yaml");
-  CartesianMesh        CM(folder+"/cartesianMesh.yaml");
-  SimulationParameters SP(folder+"/simulationParameters.yaml");
 
-  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(folder, &FD, &SP, &CM);
+  // parse command-line to get simulation directory
+  char dir[PETSC_MAX_PATH_LEN];
+  ierr = PetscOptionsGetString(NULL, "-directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
+  std::string directory(dir);
+
+  // read different input files
+  CartesianMesh cartesianMesh(directory);
+  FlowDescription<dim> flowDescription(directory);
+  SimulationParameters simulationParameters(directory);
+
+  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&cartesianMesh,
+                                                                        &flowDescription, 
+                                                                        &simulationParameters);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
   
@@ -47,6 +55,9 @@ int main(int argc,char **argv)
   
   ierr = solver->finalize(); CHKERRQ(ierr);
 
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n=====================\n*** PetIBM - Done ***\n=====================\n"); CHKERRQ(ierr);
+
   ierr = PetscFinalize(); CHKERRQ(ierr);
+
   return 0;
 } // main

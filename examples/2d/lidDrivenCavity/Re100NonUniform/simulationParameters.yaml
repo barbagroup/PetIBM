@@ -2,18 +2,7 @@
 
 - type: simulation
   dt: 0.02
-  startStep: 0
   nt: 1000
   nsave: 1000
-  timeScheme: [ADAMS_BASHFORTH_2, CRANK_NICOLSON]
-  linearSolvers:
-    - system: velocity
-      solver: CG
-      preconditioner: DIAGONAL
-      tolerance: 1.0E-05
-      maxIterations: 10000
-    - system: Poisson
-      solver: CG
-      preconditioner: SMOOTHED_AGGREGATION
-      tolerance: 1.0E-05
-      maxIterations: 20000
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON

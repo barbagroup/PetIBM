@@ -2,19 +2,8 @@
 
 - type: simulation
   dt: 0.0025
-  startStep: 0
   nt: 1200
   nsave: 200
-  timeScheme: [ADAMS_BASHFORTH_2, CRANK_NICOLSON]
-  ibmScheme: TAIRA_COLONIUS
-  linearSolvers:
-    - system: velocity
-      solver: CG
-      preconditioner: DIAGONAL
-      tolerance: 1.0E-05
-      maxIterations: 10000
-    - system: Poisson
-      solver: CG
-      preconditioner: SMOOTHED_AGGREGATION
-      tolerance: 1.0E-05
-      maxIterations: 20000
+  ibm: TAIRA_COLONIUS
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON

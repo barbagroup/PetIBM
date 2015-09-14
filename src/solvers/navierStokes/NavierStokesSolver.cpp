@@ -362,9 +362,12 @@ PetscErrorCode NavierStokesSolver<dim>::helpers()
   if (timeStep == parameters->startStep+1)
   {
     PetscBool outputToFiles = PETSC_FALSE;
+
+    ierr = PetscOptionsBegin(PETSC_COMM_WORLD, nullptr, nullptr, nullptr); CHKERRQ(ierr);
     ierr = PetscOptionsBool("-outputs", 
                             "Outputs vectors and matrices to check implementation", "",
                             outputToFiles, &outputToFiles, NULL); CHKERRQ(ierr);
+    ierr = PetscOptionsEnd(); CHKERRQ(ierr);
     if (outputToFiles)
     {
       ierr = helperOutputVectors(); CHKERRQ(ierr);

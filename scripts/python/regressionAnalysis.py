@@ -63,7 +63,7 @@ def define_test_cases(build_directory):
                         periodic=['y']))
   tests.append(TestCase(description='3d cavity flow at Re=100 with x-periodic boundary conditions',
                         directory='{}/examples/3d/lidDrivenCavity/Re100PeriodicX'.format(build_directory),
-                        command='make liDrivenCavity3dRe100PeriodicX',
+                        command='make lidDrivenCavity3dRe100PeriodicX',
                         periodic=['x']))
   return tests
 

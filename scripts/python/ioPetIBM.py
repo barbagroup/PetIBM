@@ -12,6 +12,11 @@ import numpy
 sys.path.append(os.path.join(os.environ['PETSC_DIR'], 'bin', 'pythonscripts'))
 import PetscBinaryIO
 
+#reduce is no longer a builtin in Python 3
+#but has been added to the functools package
+if sys.version_info[0] >= 3:
+    from functools import reduce
+
 
 class Field(object):
   """Contains information about a field (pressure for example)."""

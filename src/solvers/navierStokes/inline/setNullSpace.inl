@@ -18,10 +18,10 @@ PetscErrorCode NavierStokesSolver<dim>::setNullSpace()
 {
 	PetscErrorCode ierr;
 	
-  MatNullSpace nsp;
+	MatNullSpace nsp;
 	ierr = MatNullSpaceCreate(PETSC_COMM_WORLD, PETSC_TRUE, 0, NULL, &nsp); CHKERRQ(ierr);
-	ierr = KSPSetNullSpace(ksp2, nsp);
-	ierr = MatNullSpaceDestroy(&nsp);
+	ierr = KSPSetNullSpace(ksp2, nsp); CHKERRQ(ierr);
+	ierr = MatNullSpaceDestroy(&nsp); CHKERRQ(ierr);
 
 	return 0;
 } // setNullSpace

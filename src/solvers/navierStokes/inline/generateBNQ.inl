@@ -81,6 +81,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
   ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(BNQ, 0, d_nnz); CHKERRQ(ierr);
   ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate d_nnz and o_nnz
   ierr = PetscFree(d_nnz); CHKERRQ(ierr);
@@ -215,6 +216,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
   ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(BNQ, 0, d_nnz); CHKERRQ(ierr);
   ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate d_nnz and o_nnz
   ierr = PetscFree(d_nnz); CHKERRQ(ierr);

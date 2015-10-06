@@ -158,12 +158,14 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(BNQ, 0, BNQ_d_nnz); CHKERRQ(ierr);
   ierr = MatMPIAIJSetPreallocation(BNQ, 0, BNQ_d_nnz, 0, BNQ_o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
   // ET
   ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
   ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
   ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(ET, 0, ET_d_nnz); CHKERRQ(ierr);
   ierr = MatMPIAIJSetPreallocation(ET, 0, ET_d_nnz, 0, ET_o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(ET, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate nnz arrays
   // BNQ
@@ -466,12 +468,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(BNQ, 0, BNQ_d_nnz); CHKERRQ(ierr);
   ierr = MatMPIAIJSetPreallocation(BNQ, 0, BNQ_d_nnz, 0, BNQ_o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
   // ET
   ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
   ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
   ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(ET, 0, ET_d_nnz); CHKERRQ(ierr);
   ierr = MatMPIAIJSetPreallocation(ET, 0, ET_d_nnz, 0, ET_o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(ET, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate nnz arrays
   // BNQ

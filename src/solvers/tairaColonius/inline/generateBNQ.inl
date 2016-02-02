@@ -26,8 +26,8 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
            mstart, nstart; // starting indices
   
   PetscInt localIdx, procIdx;
-  PetscInt row, cols[2], BNQ_col, ET_col, value;
-  PetscReal values[2] = {-1.0, 1.0};
+  PetscInt row, cols[2], BNQ_col, ET_col;
+  PetscReal values[2] = {-1.0, 1.0}, value;
   PetscReal disp[2];
   PetscReal xCoord, yCoord, h;
   
@@ -202,7 +202,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
             if (isInfluenced(xCoord, yCoord, bodies[0].X[*l], bodies[0].Y[*l], 1.5*h, disp))
             {
               BNQ_col  = globalIndexMapping[*l];
-              value= h*delta(disp[0], disp[1], h);
+              value = h*delta(disp[0], disp[1], h);
               ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
               ET_col  = globalIndexMapping[*l] - numPhi;
               ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
@@ -281,8 +281,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
            mstart, nstart, pstart; // starting indices
 
   PetscInt localIdx, procIdx;
-  PetscInt row, cols[2], BNQ_col, ET_col, value;
-  PetscReal values[2] = {-1.0, 1.0};
+  PetscInt row, cols[2], BNQ_col, ET_col;
+  PetscReal values[2] = {-1.0, 1.0}, value;
   PetscReal disp[3];
   PetscReal xCoord, yCoord, zCoord, h;
   

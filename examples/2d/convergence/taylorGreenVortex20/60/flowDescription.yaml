@@ -1,7 +1,6 @@
 # flowDescription.yaml
 
-- type: flow
-  nu: 0.01
+- nu: 0.01
   initialVelocity: [0.0, 0.0]
   initialPerturbation: [1.0, 1.0]
   boundaryConditions:

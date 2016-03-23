@@ -1,0 +1,41 @@
+# cartesianMesh.yaml
+
+- direction: x
+  start: -4.0
+  subDomains:
+    - end: -0.5
+      cells: 50
+      stretchRatio: 0.970308558121
+    - end: 0.7
+      cells: 40
+      stretchRatio: 1.0
+    - end: 6.1
+      cells: 63
+      stretchRatio: 1.0298
+
+- direction: y
+  start: -5.0
+  subDomains:
+    - end: -0.6
+      cells: 15
+      stretchRatio: 0.769763682549
+    - end: 0.6
+      cells: 40
+      stretchRatio: 1.0
+    - end: 5.0
+      cells: 15
+      stretchRatio: 1.2991
+
+- direction: z
+  start: -5.0
+  subDomains:
+    - end: -1.2
+      cells: 14
+      stretchRatio: 0.769822940724
+    - end: 1.2
+      cells: 80
+      stretchRatio: 1.0
+    - end: 5.0
+      cells: 14
+      stretchRatio: 1.299
+

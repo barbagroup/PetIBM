@@ -116,7 +116,6 @@ convergence2d:
 	@$(MAKE) lidDrivenCavity2d20
 	@$(MAKE) lidDrivenCavity2d30
 	@$(MAKE) taylorGreenVortex2d20
-	@$(MAKE) taylorGreenVortex2d25
 	@$(MAKE) taylorGreenVortex2d30
 
 lidDrivenCavity2d20:
@@ -173,24 +172,6 @@ taylorGreenVortex2d20:
 	@echo "================================"
 	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/540
 
-taylorGreenVortex2d25:
-	@echo "=============================="
-	@echo "2d Taylor-Green vortex (25x25)"
-	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/25
-	@echo "=============================="
-	@echo "2d Taylor-Green vortex (75x75)"
-	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/75
-	@echo "================================"
-	@echo "2d Taylor-Green vortex (225x225)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/225
-	@echo "================================"
-	@echo "2d Taylor-Green vortex (675x675)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex25/675
-
 taylorGreenVortex2d30:
 	@echo "=============================="
 	@echo "2d Taylor-Green vortex (30x30)"
@@ -229,6 +210,78 @@ lidDrivenCavity3dRe100PeriodicZ:
 	@echo "3d lid-driven cavity flow at Re=100 (z-periodic) using 4 processes"
 	@echo "=================================================================="
 	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicZ
+
+sphere3dRe50:
+	@echo "================================================"
+	@echo "3d flow over a sphere at Re=50 using 8 processes"
+	@echo "================================================"
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re50
+
+sphere3dRe100:
+	@echo "================================================="
+	@echo "3d flow over a sphere at Re=100 using 8 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re100
+
+sphere3dRe150:
+	@echo "================================================="
+	@echo "3d flow over a sphere at Re=150 using 8 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re150
+
+sphere3dRe200:
+	@echo "================================================="
+	@echo "3d flow over a sphere at Re=200 using 8 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re200
+
+flatPlate3dRe100AR2dx04:
+	@echo "==============================================================="
+	@echo "3d flow over an inclined flat-plate (AR=2) at Re=100 using 8 processes"
+	@echo "grid-spacing in uniform region: dx=0.04"
+	@echo "==============================================================="
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA0AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA10AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA20AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA30AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA40AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA50AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA60AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA70AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA80AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA90AR2
+
+flatPlate3dRe100AR2dx03:
+	@echo "==============================================================="
+	@echo "3d flow over an inclined flat-plate (AR=2) at Re=100 using 8 processes"
+	@echo "grid-spacing in uniform region: dx=0.03"
+	@echo "==============================================================="
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA0AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA10AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA20AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA30AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA40AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA50AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA60AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA70AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA80AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA90AR2
+
+flatPlate3dRe100AR2dx025:
+	@echo "==============================================================="
+	@echo "3d flow over an inclined flat-plate (AR=2) at Re=100 using 8 processes"
+	@echo "grid-spacing in uniform region: dx=0.025"
+	@echo "==============================================================="
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA0AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA10AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA20AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA30AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA40AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA50AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA60AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA70AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA80AR2
+	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA90AR2
 
 cylinder3dRe40:
 	@echo "================================================"

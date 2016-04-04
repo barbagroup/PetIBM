@@ -1,0 +1,5 @@
+--solution MovingVortices 0.0
+--bottom-left 0.0 0.0
+--top-right 1.0 1.0
+--n 270 270
+--periodic x y

@@ -1,0 +1,7 @@
+# simulationParameters.yaml
+
+- dt: 5.0E-05
+  nt: 10000
+  nsave: 1000
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON

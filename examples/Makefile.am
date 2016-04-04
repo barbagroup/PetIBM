@@ -115,8 +115,10 @@ convergence2d:
 	@echo "================================="
 	@$(MAKE) lidDrivenCavity2d20
 	@$(MAKE) lidDrivenCavity2d30
-	@$(MAKE) taylorGreenVortex2d20
-	@$(MAKE) taylorGreenVortex2d30
+	@$(MAKE) decayingVortices2d20
+	@$(MAKE) decayingVortices2d30
+	@$(MAKE) translatingVortices2d20
+	@$(MAKE) translatingVortices2d30
 
 lidDrivenCavity2d20:
 	@echo "================================="
@@ -135,6 +137,10 @@ lidDrivenCavity2d20:
 	@echo "2d lid-driven cavity flow (540x540)"
 	@echo "==================================="
 	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/540
+	@echo "====================================="
+	@echo "2d lid-driven cavity flow (1620x1620)"
+	@echo "====================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/1620
 
 lidDrivenCavity2d30:
 	@echo "================================="
@@ -153,43 +159,82 @@ lidDrivenCavity2d30:
 	@echo "2d lid-driven cavity flow (810x810)"
 	@echo "==================================="
 	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/810
+	@echo "====================================="
+	@echo "2d lid-driven cavity flow (2430x2430)"
+	@echo "====================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/2430
 
-taylorGreenVortex2d20:
+decayingVortices2d20:
 	@echo "=============================="
 	@echo "2d Taylor-Green vortex (20x20)"
 	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/20
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/20
 	@echo "=============================="
 	@echo "2d Taylor-Green vortex (60x60)"
 	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/60
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/60
 	@echo "================================"
 	@echo "2d Taylor-Green vortex (180x180)"
 	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/180
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/180
 	@echo "================================"
 	@echo "2d Taylor-Green vortex (540x540)"
 	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex20/540
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/540
 
-taylorGreenVortex2d30:
+decayingVortices2d30:
 	@echo "=============================="
 	@echo "2d Taylor-Green vortex (30x30)"
 	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/30
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/30
 	@echo "=============================="
 	@echo "2d Taylor-Green vortex (90x90)"
 	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/90
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/90
 	@echo "================================"
 	@echo "2d Taylor-Green vortex (270x270)"
 	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/270
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/270
 	@echo "================================"
 	@echo "2d Taylor-Green vortex (810x810)"
 	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/taylorGreenVortex30/810
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/810
 
+translatingVortices2d20:
+	@echo "==============================="
+	@echo "2d translating vortices (20x20)"
+	@echo "==============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/20
+	@echo "==============================="
+	@echo "2d translating vortices (60x60)"
+	@echo "==============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/60
+	@echo "================================="
+	@echo "2d translating vortices (180x180)"
+	@echo "================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/180
+	@echo "================================"
+	@echo "2d translatingVortices (540x540)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/540
+
+translatingVortices2d30:
+	@echo "==============================="
+	@echo "2d translating vortices (30x30)"
+	@echo "==============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/30
+	@echo "==============================="
+	@echo "2d translating vortices (90x90)"
+	@echo "==============================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/90
+	@echo "================================="
+	@echo "2d translating vortices (270x270)"
+	@echo "================================="
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/270
+	@echo "================================"
+	@echo "2d translatingVortices (810x810)"
+	@echo "================================"
+	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/810
 
 # Three-dimensional examples
 

@@ -77,7 +77,7 @@ PetscErrorCode NavierStokesSolver<2>::addInitialPerturbation()
   ierr = DMDAGetCorners(vda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
-    Y = 2.0*PETSC_PI*frequency * (mesh->y[j]-mesh->y[0]) / (mesh->y[mesh->ny]-mesh->y[0]);
+    Y = 2.0*PETSC_PI*frequency * (mesh->y[j+1]-mesh->y[0]) / (mesh->y[mesh->ny]-mesh->y[0]);
     for (i=mstart; i<mstart+m; i++)
     {
       X = 2.0*PETSC_PI*frequency * (0.5*(mesh->x[i]+mesh->x[i+1])-mesh->x[0]) / (mesh->x[mesh->nx]-mesh->x[0]);    
@@ -138,7 +138,7 @@ PetscErrorCode NavierStokesSolver<3>::addInitialPerturbation()
     Z = 2.0*PETSC_PI*frequency * (0.5*(mesh->z[k]+mesh->z[k+1])-mesh->z[0]) / (mesh->z[mesh->nz]-mesh->z[0]);
     for (j=nstart; j<nstart+n; j++)
     {
-      Y = 2.0*PETSC_PI*frequency * (mesh->y[j]-mesh->y[0]) / (mesh->y[mesh->ny]-mesh->y[0]);
+      Y = 2.0*PETSC_PI*frequency * (mesh->y[j+1]-mesh->y[0]) / (mesh->y[mesh->ny]-mesh->y[0]);
       for (i=mstart; i<mstart+m; i++)
       {
         X = 2.0*PETSC_PI*frequency * (0.5*(mesh->x[i]+mesh->x[i+1])-mesh->x[0]) / (mesh->x[mesh->nx]-mesh->x[0]);    

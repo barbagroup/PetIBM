@@ -268,13 +268,13 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrid()
       streamFile << mesh->nx << '\t' << mesh->ny << '\t' << mesh->nz << '\n';
     }
     for (std::vector<PetscReal>::const_iterator i=mesh->x.begin(); i!=mesh->x.end(); ++i)
-      streamFile << *i << '\n';
+      streamFile << std::setprecision(16) << *i << '\n';
     for (std::vector<PetscReal>::const_iterator i=mesh->y.begin(); i!=mesh->y.end(); ++i)
-      streamFile << *i << '\n';
+      streamFile << std::setprecision(16) << *i << '\n';
     if (dim == 3)
     {  
       for (std::vector<PetscReal>::const_iterator i=mesh->z.begin(); i!=mesh->z.end(); ++i)
-        streamFile << *i << '\n';
+        streamFile << std::setprecision(16) << *i << '\n';
     }
     streamFile.close();
   }

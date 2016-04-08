@@ -1,7 +1,6 @@
 # simulationParameters.yaml
 
-- type: simulation
-  dt: 0.01
+- dt: 0.01
   nt: 8000
   nsave: 800
   ibm: TAIRA_COLONIUS

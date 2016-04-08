@@ -1,7 +1,6 @@
 # flowDescription.yaml
 
-- type: flow
-  nu: 0.001
+- nu: 0.001
   initialVelocity: [0.0, 0.0]
   boundaryConditions:
     - location: xMinus

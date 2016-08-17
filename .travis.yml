@@ -33,9 +33,5 @@ script:
   - make check
   - make install
 
-branches:
-  only:
-    - develop
-
 notifications:
   email: false

@@ -1,4 +1,4 @@
-include $(PETSC_DIR)/conf/variables
+include $(PETSC_DIR)/lib/petsc/conf/variables
 
 PETIBM2D = $(top_builddir)/src/petibm2d
 PETIBM3D = $(top_builddir)/src/petibm3d
@@ -90,7 +90,7 @@ memoryCheck2dSerial:
 	@echo "Check memory leak on 2d-case using 1 process"
 	@echo "============================================"
 	@$(MPIEXEC) -n 1 valgrind \
-							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
+							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM2D) -directory ./2d/memoryTest
 
 memoryCheck2dParallel:
@@ -98,7 +98,7 @@ memoryCheck2dParallel:
 	@echo "Check memory leak on 2d-case using 2 processes"
 	@echo "=============================================="
 	@$(MPIEXEC) -n 2 valgrind \
-							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
+							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM2D) -directory ./2d/memoryTest
 
 memoryCheck2dBodySerial:
@@ -106,7 +106,7 @@ memoryCheck2dBodySerial:
 	@echo "Check memory leak on 2d-case with immersed-body using 1 process"
 	@echo "==============================================================="
 	@$(MPIEXEC) -n 1 valgrind \
-							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
+							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM2D) -directory ./2d/memoryTestBody
 
 convergence2d:
@@ -339,7 +339,7 @@ memoryCheck3dSerial:
 	@echo "Check memory leak on 3d-case using 1 process"
 	@echo "============================================"
 	@$(MPIEXEC) -n 1 valgrind \
-							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
+							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM3D) -directory ./3d/memoryTest
 
 memoryCheck3dParallel:
@@ -347,5 +347,5 @@ memoryCheck3dParallel:
 	@echo "Check memory leak on 3d-case using 2 processes"
 	@echo "=============================================="
 	@$(MPIEXEC) -n 2 valgrind \
-							--tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
+							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM3D) -directory ./3d/memoryTest							

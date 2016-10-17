@@ -362,9 +362,7 @@ PetscErrorCode NavierStokesSolver<dim>::helpers()
   if (timeStep == parameters->startStep+1)
   {
     PetscBool outputToFiles = PETSC_FALSE;
-    ierr = PetscOptionsBool("-outputs", 
-                            "Outputs vectors and matrices to check implementation", "",
-                            outputToFiles, &outputToFiles, NULL); CHKERRQ(ierr);
+    ierr = PetscOptionsGetBool(NULL, NULL, "-outputs", &outputToFiles, NULL); CHKERRQ(ierr);
     if (outputToFiles)
     {
       ierr = helperOutputVectors(); CHKERRQ(ierr);
@@ -427,13 +425,6 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
   // KSPs
   if (ksp1 != PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRQ(ierr);}
   if (ksp2 != PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRQ(ierr);}
-
-  // print performance summary to file
-  PetscViewer viewer;
-  std::string filePath = parameters->directory + "/performanceSummary.txt";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = PetscLogView(viewer); CHKERRQ(ierr);
-  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   return 0;
 } // finalize

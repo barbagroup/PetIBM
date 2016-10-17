@@ -1,30 +1,37 @@
-After installation, the PetIBM executables (`petibm2d` and `petibm3d`) are copied into the sub-folder `bin` of your build directory. They will used to run cases in two and three dimensions.
+Once the installation completed, the PetIBM executables (`petibm2d` and `petibm3d`) should be located into the sub-folder `bin` of your build directory.
+They will used to run cases in two and three dimensions.
+For simplicity, we define `BUILD_DIR` to be the build directory of PetIBM and create the variables `PETIBM2D = $BUILD_DIR/bin/petibm2d` and `PETIBM2D = $BUILD_DIR/bin/petibm3d`
 
 
-## Run in Serial
+## Run PetIBM using one processor
 
 To simulate a 2d flow in serial, run the following command from your PetIBM build directory:
 
-    > bin/petibm2d -caseFolder path/to/folder
+    $PETIBM2D -directory path/to/simulation/directory
 
-For example, to compute the 2d flow over a circular cylinder at Reynolds number 40, specify the folder in which the input files for that particular case are present:
+A bunch of examples are provided in PetIBM, located in the folder `examples` of the PetIBM directory.
+From your PetIBM build directory (`cd $BUILD_DIR`), go into the sub-folder `examples` and run:
 
-    > bin/petibm2d -caseFolder examples/2d/cylinder/Re40
+    make examples
+
+This copies the examples provided in PetIBM to the current build directory.
+
+For example, to compute the 2d flow over a circular cylinder at Reynolds number 40, specify the folder in which the input files are present:
+
+    $PETIBM2D -directory $BUILD_DIR/examples/2d/cylinder/Re40
 
 
-## Run in Parallel
+## Run PetIBM in Parallel
 
 To run the code in parallel, use `mpiexec` from you build directory:
 
-    > mpiexec -n 4 bin/petibm2d -caseFolder examples/2d/cylinder/Re40
+    mpiexec -n 4 $PETIBM2D -directory $BUILD_DIR/examples/2d/cylinder/Re40
 
 The above command runs the code using 4 MPI processes (specified via the `-n` flag). The folder containing `mpiexec` and other MPI compilers should be provided while installing PETSc using the command line option `--with-mpi-dir`.
 
 If you installed MPI using the `--download-mpich` flag in the configure step of your PETSc installation, then the correct path to the executable is `$PETSC_DIR/$PETSC_ARCH/bin/mpiexec`:
 
-    > $PETSC_DIR/$PETSC_ARCH/bin/mpiexec -n 4 bin/petibm2d -caseFolder examples/2d/cylinder/Re40
-
-Visit the [PETSc Installation](http://www.mcs.anl.gov/petsc/documentation/installation.html#mpi) page for more information on how to install PETSc with MPI.
+    $PETSC_DIR/$PETSC_ARCH/bin/mpiexec -n 4 $BUILD_DIR/bin/petibm2d -directory $BUILD_DIR/examples/2d/cylinder/Re40
 
 
 ## Run using a `make` rule
@@ -41,20 +48,4 @@ And use `$(MPIEXEC)` to run in parallel. This variable stores the correct path o
 
 And call it from the command-line:
 
-    > make cylinder2dRe40
-
-
-## Command line options
-
-Only one command-line parameter is mandatory, which is the flag `-caseFolder` followed by the directory of the simulation, which contains the input files (`.yaml` files).
-
-To run the case of flow in a lid-driven square cavity at Reynolds number 100 with two processes, use the following command within your build directory:
-
-    > mpiexec -n 2 bin/petibm2d -caseFolder examples/2d/lidDrivenCavity/Re100
-
-Any of the PETSc command line options can be passed to the program. To set the options related to the Krylov solver used to calculate the intermediate velocity, use the prefix `sys1_`. For example, to use a relative tolerance of `1.0E-06` to test for convergence:
-
-    > mpiexec -n 2 bin/petibm2d -caseFolder examples/2d/lidDrivenCavity/Re100 -sys1_ksp_rtol 1.0E-06
-    > mpiexec -n 4 bin/petibm2d -caseFolder examples/2d/lidDrivenCavity/Re100 -sys2_pc_type gamg -sys2_pc_gamg_type agg -sys2_pc_gamg_agg_nsmooths 1
-
-Options for the linear solver that computes the pressure and body forces can be specified with the prefix `sys2_`. The following options must be passed to use the smoothed aggregation preconditioner for this step:
+    make cylinder2dRe40

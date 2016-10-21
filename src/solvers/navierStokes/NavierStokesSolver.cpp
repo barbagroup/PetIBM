@@ -202,10 +202,11 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
   ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d]", timeStep); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\nERROR: velocity solver diverged due to reason: %d\n", 
-                       reason); CHKERRQ(ierr);
+                       "\n[time-step %d] ERROR: Velocity solver diverged due to reason: %d\n", 
+                       timeStep, reason); CHKERRQ(ierr);
+    ierr = finalize();
+    ierr = PetscFinalize(); CHKERRQ(ierr);
     exit(0);
   }
 
@@ -251,10 +252,11 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d]", timeStep); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\nERROR: Poisson solver diverged due to reason: %d\n", 
-                       reason); CHKERRQ(ierr);
+                       "\n[time-step %d] ERROR: Poisson solver diverged due to reason: %d\n", 
+                       timeStep, reason); CHKERRQ(ierr);
+    ierr = finalize();
+    ierr = PetscFinalize(); CHKERRQ(ierr);
     exit(0);
   }
 

@@ -16,3 +16,4 @@
 -poisson_pc_type gamg
 -poisson_pc_gamg_type agg
 -poisson_pc_gamg_agg_nsmooths 1
+-poisson_mg_levels_ksp_type cg

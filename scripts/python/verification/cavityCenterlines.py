@@ -61,8 +61,8 @@ def main(args):
           '3200': {'u': 3, 'v': 9},
           '5000': {'u': 4, 'v': 10},
           '10000': {'u': 5, 'v': 11}}
-  experimental_file = os.path.join(os.environ['PETIBM_DIR'],
-                                   'validation_data',
+  experimental_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                   'data',
                                    'cavity-GGS82.txt')
 
   print('[case directory] {}'.format(args.directory))

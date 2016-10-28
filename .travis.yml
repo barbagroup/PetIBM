@@ -26,7 +26,7 @@ script:
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++11"
+  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++0x"
   - make all
   - make check
   - make install

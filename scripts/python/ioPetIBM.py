@@ -38,7 +38,7 @@ class Field(object):
     self.values = values
 
 
-def get_time_steps(self, time_steps_range=None, directory=os.getcwd()):
+def get_time_steps(time_steps_range=None, directory=os.getcwd()):
   """
   Returns a list of the time-steps to post-process.
   If the range is not provided, the method lists the time-step folders
@@ -59,8 +59,6 @@ def get_time_steps(self, time_steps_range=None, directory=os.getcwd()):
                  time_steps_range[1] + 1,
                  time_steps_range[2])
   else:
-    if not directory:
-      directory = self.directory
     return sorted(int(folder) for folder in os.listdir(directory)
                   if folder[0] == '0')
 

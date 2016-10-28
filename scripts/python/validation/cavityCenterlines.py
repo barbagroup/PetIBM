@@ -62,7 +62,7 @@ def main(args):
           '5000': {'u': 4, 'v': 10},
           '10000': {'u': 5, 'v': 11}}
   experimental_file = os.path.join(os.environ['PETIBM_DIR'],
-                                   'validation_data'
+                                   'validation_data',
                                    'cavity-GGS82.txt')
 
   print('[case directory] {}'.format(args.directory))
@@ -88,7 +88,8 @@ def main(args):
     os.makedirs(data_directory)
 
   # get velocity field
-  u, v = ioPetIBM.read_velocity(args.directory, args.time_step, grid)
+  u, v = ioPetIBM.read_velocity(args.time_step, grid,
+                                directory=args.directory)
 
   # load default style for figures
   pyplot.style.use(os.path.join(os.environ['PETIBM_DIR'],
@@ -99,6 +100,7 @@ def main(args):
 
   # plot and write u-velocity along y-centerline
   print('\nPlot u-velocity along vertical centerline ...')
+  pyplot.grid(True)
   pyplot.xlabel('y',)
   pyplot.ylabel('u-velocity along vertical centerline')
   if nx % 2 == 0:
@@ -133,6 +135,7 @@ def main(args):
 
   # plot and write v-velocity along x-centerline
   print('\nPlot v-velocity along horizontal centerline ...')
+  pyplot.grid(True)
   pyplot.xlabel('x')
   pyplot.ylabel('v-velocity along horizontal centerline')
   if ny % 2 == 0:

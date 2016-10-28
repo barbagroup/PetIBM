@@ -1,7 +1,4 @@
-# file: style_PetIBM.mplstyle
-# author: Olivier Mesnard (mesnardo@gwu.edu)
-# description: style sheet for Matplotlib figures.
-
+# Style sheet for Matplotlib figures.
 
 font.family : serif
 font.style : normal

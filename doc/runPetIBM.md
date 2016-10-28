@@ -14,7 +14,7 @@ From your PetIBM build directory (`cd $BUILD_DIR`), go into the sub-folder `exam
 
     make examples
 
-This copies the examples provided in PetIBM to the current build directory.
+This rule copies the examples provided in PetIBM to the current build directory.
 
 For example, to compute the 2d flow over a circular cylinder at Reynolds number 40, specify the folder in which the input files are present:
 

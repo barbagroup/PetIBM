@@ -33,7 +33,7 @@ The debug mode is recommended during development, while the optimized mode shoul
 Get and unpack PETSc:
 
     cd $HOME/sfw
-    mkdir -p petsc/3.5.2
+    mkdir -p petsc/3.7.4
     wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.7.4.tar.gz
     tar -xvf petsc-lite-3.7.4.tar.gz -C petsc/3.7.4 --strip-components=1
     cd petsc/3.7.4

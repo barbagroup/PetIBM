@@ -17,16 +17,27 @@ The program runs for `2000` time-steps, and saves the numerical solution at the 
 We may now post-process the results:
 
     python $PETIBM_DIR/scripts/python/plotFields2d.py \
-        --case 2d/lidDrivenCavity/Re100
+        --directory 2d/lidDrivenCavity/Re100
 
 The command-line above, generates the contours of the velocity components, the pressure field and the vorticity field after `2000` time-steps. The figures are saved as `.png` files in the sub-folder `images` of the simulation directory.
 
-Here are the figures generated:
+We have also a Python script to compare the velocity at mid-cavity with numerical data from Ghia et al. (1982).
+
+    python $PETIBM_DIR/scripts/python/verification/cavityCenterlines.py \
+        --directory 2d/lidDrivenCavity/Re100 \
+        --Re 100
+
+The script plots the horizontal velocity along a vertical gridline at mid-cavity and the the vertical velocity along an horizontal gridline at mid-cavity.
+The figures are saved as `.png` files in the sub-folder `images` of the simulation directory.
+
+Here are the figures we obtained:
 
 ![cavityRe100Pressure](./images/lidDrivenCavity2dRe100/pressure0002000.png)
 ![cavityRe100UVelocity](./images/lidDrivenCavity2dRe100/uVelocity0002000.png)
 ![cavityRe100VVelocity](./images/lidDrivenCavity2dRe100/vVelocity0002000.png)
 ![cavityRe100Vorticity](./images/lidDrivenCavity2dRe100/vorticity0002000.png)
+![cavityRe100UVelocityCenterline](./images/lidDrivenCavity2dRe100/uVelocityCenterlineRe100_32x32.png)
+![cavityRe100VVelocityCenterline](./images/lidDrivenCavity2dRe100/vVelocityCenterlineRe100_32x32.png)
 
 
 ## 2D flow over a circular cylinder at Re=40
@@ -46,7 +57,7 @@ To run this example using `2` MPI processes, navigate to your PetIBM build direc
 You may now post-process the results:
 
     python $PETIBM_DIR/scripts/python/plotFields2d.py \
-        --case 2d/cylinder/Re40 \
+        --directory 2d/cylinder/Re40 \
         --bottom-left -2.0 -2.0 \
         --top-right 4.0 2.0 \
         --no-velocity \
@@ -55,7 +66,7 @@ You may now post-process the results:
 
 The command-line above generates the contours within the box `[-2.0, 4.0]x[-2.0, 2.0]` of the pressure field, the vorticity field (between `-1.0` and `1.0` using `101` contours), excluding the velocity fields, at each time-step saved.
 
-Here are the figures generated after `2000` time-steps of flow simulation:
+Here are the figures we obtained after `2000` time-steps of flow simulation:
 
 ![cylinderRe40Pressure](./images/cylinder2dRe40/pressure0002000.png)
 ![cylinderRe40Vorticity](./images/cylinder2dRe40/vorticity0002000.png)

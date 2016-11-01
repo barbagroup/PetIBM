@@ -87,7 +87,7 @@ void SimulationParameters::initialize(std::string filePath)
       std::cout << "\tNONE\n";
       std::cout << "\tEULER_EXPLICIT\n";
       std::cout << "\tADAMS_BASHFORTH_2\n" << std::endl;
-      exit(0);
+      exit(1);
       break;
   }
   // set time-stepping coefficients for diffusive terms
@@ -116,7 +116,7 @@ void SimulationParameters::initialize(std::string filePath)
       std::cout << "\tEULER_EXPLICIT\n";
       std::cout << "\tEULER_IMPLICIT\n";
       std::cout << "\tCRANK_NICOLSON\n" << std::endl;
-      exit(0);
+      exit(1);
       break;
   }
 

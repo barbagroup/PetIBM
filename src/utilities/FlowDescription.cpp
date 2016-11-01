@@ -58,7 +58,7 @@ void FlowDescription<dim>::initialize(std::string filePath)
   {
     std::cout << "\nError: number of dimensions is inconsistent.\n";
     std::cout << "Check boundary conditions in flowDescription.yaml.\n" << std::endl;
-    exit(0);
+    exit(1);
   }
   BoundaryLocation location;
   for (size_t i=0; i<bcs.size(); i++)
@@ -143,7 +143,7 @@ void FlowDescription<dim>::checkPeriodicity()
   {
     std::cout << "\nERROR: Boundary conditions are inconsistent.\n";
     std::cout << "Check boundary conditions in flowDescription.yaml.\n" << std::endl;
-    exit(0);
+    exit(1);
   }
 
   return;

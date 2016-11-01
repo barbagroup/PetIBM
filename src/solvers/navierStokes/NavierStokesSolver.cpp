@@ -207,7 +207,7 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
                        timeStep, reason); CHKERRQ(ierr);
     ierr = finalize();
     ierr = PetscFinalize(); CHKERRQ(ierr);
-    exit(0);
+    exit(1);
   }
 
   return 0;
@@ -257,7 +257,7 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
                        timeStep, reason); CHKERRQ(ierr);
     ierr = finalize();
     ierr = PetscFinalize(); CHKERRQ(ierr);
-    exit(0);
+    exit(1);
   }
 
   return 0;

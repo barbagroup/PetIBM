@@ -202,11 +202,12 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
   ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d]", timeStep); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\nERROR: velocity solver diverged due to reason: %d\n", 
-                       reason); CHKERRQ(ierr);
-    exit(0);
+                       "\n[time-step %d] ERROR: Velocity solver diverged due to reason: %d\n", 
+                       timeStep, reason); CHKERRQ(ierr);
+    ierr = finalize();
+    ierr = PetscFinalize(); CHKERRQ(ierr);
+    exit(1);
   }
 
   return 0;
@@ -251,11 +252,12 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d]", timeStep); CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\nERROR: Poisson solver diverged due to reason: %d\n", 
-                       reason); CHKERRQ(ierr);
-    exit(0);
+                       "\n[time-step %d] ERROR: Poisson solver diverged due to reason: %d\n", 
+                       timeStep, reason); CHKERRQ(ierr);
+    ierr = finalize();
+    ierr = PetscFinalize(); CHKERRQ(ierr);
+    exit(1);
   }
 
   return 0;
@@ -362,9 +364,7 @@ PetscErrorCode NavierStokesSolver<dim>::helpers()
   if (timeStep == parameters->startStep+1)
   {
     PetscBool outputToFiles = PETSC_FALSE;
-    ierr = PetscOptionsBool("-outputs", 
-                            "Outputs vectors and matrices to check implementation", "",
-                            outputToFiles, &outputToFiles, NULL); CHKERRQ(ierr);
+    ierr = PetscOptionsGetBool(NULL, NULL, "-outputs", &outputToFiles, NULL); CHKERRQ(ierr);
     if (outputToFiles)
     {
       ierr = helperOutputVectors(); CHKERRQ(ierr);
@@ -427,13 +427,6 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
   // KSPs
   if (ksp1 != PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRQ(ierr);}
   if (ksp2 != PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRQ(ierr);}
-
-  // print performance summary to file
-  PetscViewer viewer;
-  std::string filePath = parameters->directory + "/performanceSummary.txt";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = PetscLogView(viewer); CHKERRQ(ierr);
-  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   return 0;
 } // finalize

@@ -22,7 +22,7 @@ PetscErrorCode TairaColoniusSolver<dim>::setNullSpace()
   ierr = DMCompositeRestoreAccess(NavierStokesSolver<dim>::lambdaPack, nullSpaceVec,  &phiPortion, NULL); CHKERRQ(ierr);
   MatNullSpace nsp;
   ierr = MatNullSpaceCreate(PETSC_COMM_WORLD, PETSC_FALSE, 1, &nullSpaceVec, &nsp); CHKERRQ(ierr);
-  ierr = KSPSetNullSpace(NavierStokesSolver<dim>::ksp2, nsp);
+  ierr = MatSetNullSpace(NavierStokesSolver<dim>::QTBNQ, nsp);
   ierr = MatNullSpaceDestroy(&nsp);
 
   return 0;

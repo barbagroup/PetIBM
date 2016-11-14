@@ -1,77 +1,108 @@
-#!/usr/bin/env/ python
-
-# file: cleanSimulation.py
-# author: Olivier Mesnard (mesnardo@gwu.edu)
-# description: Clean a PetIBM simulation.
-
+"""
+Cleans a PetIBM simulation (deleting the numerical solution).
+"""
 
 import os
+import shutil
 import argparse
 
 
-def read_inputs():
-  """Parses the command-line."""
-  # create parser
-  parser = argparse.ArgumentParser(description='Clean PetIBM case',
-                        formatter_class= argparse.ArgumentDefaultsHelpFormatter)
-  # fill parser with arguments
-  parser.add_argument('--case', dest='case_directory', type=str, 
+def parse_command_line():
+  """
+  Parses the command-line.
+
+  Returns
+  -------
+  args: namespace
+    The arguments parsed from the command-line.
+  """
+  formatter_class = argparse.ArgumentDefaultsHelpFormatter
+  parser = argparse.ArgumentParser(description='Cleans a PetIBM simulation',
+                                   formatter_class=formatter_class)
+  parser.add_argument('--directory',
+                      dest='directory',
+                      type=str,
                       default=os.getcwd(),
                       help='directory of the PetIBM simulation')
-  parser.add_argument('--no-images', dest='images', action='store_false',
-                      help='does not remove the images folder')
-  parser.add_argument('--no-data', dest='data', action='store_false',
-                      help='does not remove the data folder')
-  parser.add_argument('--no-grid', dest='grid', action='store_false',
-                      help='does not remove the grid file')
-  parser.add_argument('--no-solutions', dest='solutions', action='store_false',
-                      help='does not remove the numrical solution folders')
-  parser.add_argument('--no-forces', dest='forces', action='store_false',
-                      help='does not remove the forces data file')
-  parser.add_argument('--no-vtk', dest='vtk_files', action='store_false',
-                      help='does not remove .vtk_files folder')
-  parser.add_argument('--no-logs', dest='logs', action='store_false',
-                      help='does not remove log files '
-                           '(iterationCount, performanceSummary)')
-  parser.add_argument('--no-outputs', dest='outputs', action='store_false',
-                      help='does not remove outputs folder '
-                           '(contains vectors and matrices to help code-development)')
-  parser.set_defaults(images=True, data=True, grid=True, solutions=True, 
-                      forces=True, vtk_files=True, logs=True, outputs=True)
+  parser.add_argument('--no-images',
+                      dest='images',
+                      action='store_false',
+                      help='do not remove the images folder')
+  parser.add_argument('--no-data',
+                      dest='data',
+                      action='store_false',
+                      help='do not remove the data folder')
+  parser.add_argument('--no-grid',
+                      dest='grid',
+                      action='store_false',
+                      help='do not remove the file grid.dat')
+  parser.add_argument('--no-solutions',
+                      dest='solutions',
+                      action='store_false',
+                      help='do not remove the numerical solution folders')
+  parser.add_argument('--no-forces',
+                      dest='forces',
+                      action='store_false',
+                      help='do not remove the forces.txt')
+  parser.add_argument('--no-vtk',
+                      dest='vtk_files',
+                      action='store_false',
+                      help='do not remove .vtk_files folder')
+  parser.add_argument('--no-iters',
+                      dest='iters',
+                      action='store_false',
+                      help='do not remove the file iterationCounts.txt')
+  parser.add_argument('--no-tensors',
+                      dest='tensors',
+                      action='store_false',
+                      help='do not remove the folder containing the tensors')
+  parser.set_defaults(images=True, data=True, grid=True, solutions=True,
+                      forces=True, vtk_files=True, iters=True, tensors=True)
   return parser.parse_args()
 
 
-def main():
-  """Cleans a PetIBM simulation."""
-  # parse command-line
-  args = read_inputs()
-  # get different paths to delete
-  paths = {}
+def main(args):
+  """
+  Cleans a PetIBM simulation.
+
+  Parameters
+  ----------
+  args: namespace
+    Arguments parsed from the command-line.
+  """
+  def remove_file(path):
+    if os.path.isfile(path):
+      os.remove(path)
+
+  def remove_folder(path):
+    if os.path.isdir(path):
+      shutil.rmtree(path)
+
   if args.images:
-    paths['images'] = '{}/images'.format(args.case_directory)
+    remove_folder(os.path.join(args.directory, 'images'))
   if args.data:
-    paths['data'] = '{}/data'.format(args.case_directory)
+    remove_folder(os.path.join(args.directory, 'data'))
   if args.grid:
-    paths['grid'] = '{}/grid.txt'.format(args.case_directory)
+    remove_file(os.path.join(args.directory, 'grid.dat'))
+    remove_file(os.path.join(args.directory, 'grid.txt'))
   if args.solutions:
-    paths['solutions'] = '{}/0*'.format(args.case_directory)
+    folders = [os.path.join(args.directory, folder)
+               for folder in os.listdir(args.directory)
+               if folder.startswith('0')]
+    for folder in folders:
+      remove_folder(folder)
   if args.forces:
-    paths['forces'] = '{}/forces.txt'.format(args.case_directory)
+    remove_file(os.path.join(args.directory, 'forces.txt'))
   if args.vtk_files:
-    paths['vtk_files'] = '{}/vtk_files'.format(args.case_directory)
-  if args.logs:
-    paths['logs'] = ('{0}/iterationCounts.txt '
-                     '{0}/performanceSummary.txt'.format(args.case_directory))
-  if args.outputs:
-    paths['outputs'] = ('{}/outputs'.format(args.case_directory))
-  # delete appropriate files/folders
-  print('[case-directory] {}'.format(args.case_directory))
-  for key, path in paths.iteritems():
-    print('\t-> removing {} ...'.format(key))
-    os.system('rm -rf {}'.format(path))
+    remove_folder(os.path.join(args.directory, 'vtk_files'))
+  if args.iters:
+    remove_file(os.path.join(args.directory, 'iterationCounts.txt'))
+  if args.tensors:
+    remove_folder(os.path.join(args.directory, 'tensors'))
 
 
 if __name__ == '__main__':
   print('\n[{}] START\n'.format(os.path.basename(__file__)))
-  main()
+  args = parse_command_line()
+  main(args)
   print('\n[{}] END\n'.format(os.path.basename(__file__)))

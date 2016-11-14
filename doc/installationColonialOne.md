@@ -7,109 +7,94 @@ General instructions to build PETSc can be found [here](http://www.mcs.anl.gov/p
 
 #### Build PETSc
 
-Log in to Colonial One with your approved username and password. List all modules available on the cluster using:
-
-    > module avail
-
-Load the `mpich-3.1.4` module:
-
-    > module load mpich/3.1.4
+Log in to Colonial One with your approved username and password.4
 
 Get and unpack PETSc:
 
-    > cd $HOME/sfw
-    > mkdir -p petsc/3.5.2
-    > wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.5.2.tar.gz
-    > tar -xvf petsc-lite-3.5.2.tar.gz -C petsc/3.5.2 --strip-components=1
-    > cd petsc/3.5.2
+    cd $HOME/sfw
+    mkdir -p petsc/3.7.4
+    wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.7.4.tar.gz
+    tar -xvf petsc-lite-3.7.4.tar.gz -C petsc/3.7.4 --strip-components=1
+    cd petsc/3.7.4
 
 Configure and build an debugging version of PETSc:
 
-    > export PETSC_DIR=$HOME/sfw/petsc/3.5.2
-    > export PETSC_ARCH=linux-dbg
-    > ./configure --PETSC_ARCH=$PETSC_ARCH \
-    --with-mpi-dir=/c1/apps/mpich/3.1.4 \
-    --with-blas-lib=/c1/apps/blas/gcc/1/lib64/libblas.a \
-    --with-lapack-lib=/c1/apps/lapack/gcc/3.4.1/lib/liblapack.a \
-    --with-shared-libraries=0
-    > make all
-    > make test
+    export PETSC_DIR=$HOME/sfw/petsc/3.7.4
+    export PETSC_ARCH=linux-dbg
+    ./configure \
+        --PETSC_ARCH=$PETSC_ARCH \
+        --with-mpi-dir=/c1/apps/openmpi/1.8/gcc/4.9.2 \
+        --with-gcc-dir=/c1/apps/gcc/4.9.2 \
+        --download-fblaslapack \
+        --with-shared-libraries \
+        --with-debugging=1 \
+        --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0"
+    make all
+    make test
 
 Configure and build an optimized version of PETSc:
 
-    > export PETSC_DIR=$HOME/sfw/petsc/3.5.2
-    > export PETSC_ARCH=linux-opt
-    > ./configure --PETSC_ARCH=$PETSC_ARCH \
-    --with-debugging=0 \
-    --COPTFLAGS=-O3 --CXXOPTFLAGS=-O3 --FOPTFLAGS=-O3 \
-    --with-mpi-dir=/c1/apps/mpich/3.1.4 \
-    --with-blas-lib=/c1/apps/blas/gcc/1/lib64/libblas.a \
-    --with-lapack-lib=/c1/apps/lapack/gcc/3.4.1/lib/liblapack.a \
-    --with-shared-libraries=0
-    > make all
-    > make test
+    export PETSC_DIR=$HOME/sfw/petsc/3.7.4
+    export PETSC_ARCH=linux-opt
+    ./configure \
+        --PETSC_ARCH=$PETSC_ARCH \
+        --with-mpi-dir=/c1/apps/openmpi/1.8/gcc/4.9.2 \
+        --with-gcc-dir=/c1/apps/gcc/4.9.2 \
+        --download-fblaslapack \
+        --with-shared-libraries \
+        --with-debugging=0 \
+        --COPTFLAGS="-O3" --CXXOPTFLAGS="-O3" --FOPTFLAGS="-O3"
+    make all
+    make test
 
-The debugging mode is recommended when deceloping the code. For production runs, you should the optimized mode.
-
-
-#### Get Boost
-
-The parser used in PetIBM to go through the input files requires some Boost header files.
-If the Boost library is not already installed on your machine, you may type the following command-lines:
-
-    > cd $HOME/sfw
-    > mkdir -p boost/1.57.0
-    > wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.gz
-    > tar -xvf boost_1_57_0.tar.gz -C boost/1.57.0 --strip-components=1
-
-That's it! We only need some header files from the Boost library.
+The debugging mode is recommended when developing the code. For production runs, you should the optimized mode.
 
 
 #### Build PetIBM
 
 Create a local copy of the PetIBM repository:
 
-    > cd $HOME/sfw
-    > mkdir petibm && cd petibm
-    > git clone https://github.com/barbagroup/PetIBM.git
-    > export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
+    cd $HOME/sfw
+    mkdir petibm && cd petibm
+    git clone https://github.com/barbagroup/PetIBM.git
+    export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
 
 You can set the environment variable `PETIBM_DIR` to your `$HOME/.bashrc` or `$HOME/.bash_profile` files by adding the line:
 
-    > export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
+    export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
 
 and restart you terminal or  source the file:
 
-    > source $HOME/.bashrc
+    source $HOME/.bashrc
 
 Note: if you are using C shell, use the `setenv` command instead of `export`.
 
 
 Configure and build PetIBM using the optimized PETSc build:
 
-    > export PETSC_DIR=$HOME/sfw/petsc/3.5.2
-    > export PETSC_ARCH=linux-opt
-    > mkdir petibm-linux-opt && cd petibm-linux-opt
-    > $PETIBM_DIR/configure --prefix=$HOME/sfw/petibm/petibm-linux-opt \
-    --with-boost=$HOME/sfw/boost/1.57.0 \
-    CC=/c1/apps/mpich/3.1.4/bin/mpicc \
-    CXX=/c1/apps/mpich/3.1.4/bin/mpicxx
-    > make all
-    > make check
-    > make install
+    export PETSC_DIR=$HOME/sfw/petsc/3.7.4
+    export PETSC_ARCH=linux-opt
+    mkdir petibm-linux-opt && cd petibm-linux-opt
+    $PETIBM_DIR/configure \
+        --prefix=$HOME/sfw/petibm/petibm-linux-opt \
+        CXX="/c1/apps/openmpi/1.8/gcc/4.9.2/bin/mpicxx" \
+        CXXFLAGS="-g -O3 -std=c++11"
+    make all
+    make check
+    make install
 
 You may also want to build a debugging version:
 
-    > export PETSC_DIR=$HOME/sfw/petsc/3.5.2
-    > export PETSC_ARCH=linux-dbg
-    > mkdir petibm-linux-dbg && cd petibm-linux-dbg
-    > $PETIBM_DIR/configure --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
-    --with-boost=$HOME/sfw/boost/1.57.0 \
-    CC=/c1/apps/mpich/3.1.4/bin/mpicc \
-    CXX=/c1/apps/mpich/3.1.4/bin/mpicxx
-    > make all
-    > make check
-    > make install
+    export PETSC_DIR=$HOME/sfw/petsc/3.7.4
+    export PETSC_ARCH=linux-dbg
+    mkdir petibm-linux-dbg && cd petibm-linux-dbg
+    $PETIBM_DIR/configure \
+        --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
+        CXX="/c1/apps/openmpi/1.8/gcc/4.9.2/bin/mpicxx" \
+        CXXFLAGS="-g -O0 -std=c++11"
+    make all
+    make check
+    make install
 
 
 #### Submitting jobs
@@ -118,25 +103,25 @@ General instructions to submit jobs to Colonial One can be found [here](https://
 
 Navigate to your simulation directory, for instance `$HOME/sfw/petibm/petibm-linux-opt/examples/2d/cylinder/Re40`, where we are going to create a submission script:
 
-    > cd $HOME/sfw/petibm/petibm-linux-opt/examples/2d/cylinder/Re40
-    > vim runPetIBM2d.sh
+    cd $HOME/sfw/petibm/petibm-linux-opt/examples/2d/cylinder/Re40
+    vim runPetIBM2d.sh
 
 In the submission script, you should make sure to load the required modules before calling the executable. Here is what could look like a submission script if I want to simulation the 2d cylinder case at Reynolds number `40`, using `4` MPI processes on a single node, on the `short` partition, with a time-limit of `15` minutes:
 
+```
     #!/bin/sh
 
     #SBATCH --job-name="cylinder2dRe40_n4"
-    #SBATCH --output=log_cylinder2dRe40_n4.out
-    #SBATCH --error=log_cylinder2dRe40_n4.err
+    #SBATCH --output=log%j.out
+    #SBATCH --error=log%j.err
     #SBATCH --partition=short
     #SBATCH --time=00:15:00
     #SBATCH -n 4
 
-    module load mpich/3.1.4
-
-    mpirun $HOME/sfw/petibm-linux-opt/bin/petibm2d -caseFolder $PWD \
-            {+ PETSc command-line arguments}
+    module load openmpi/1.8/gcc/4.9.2
+    mpiexec $HOME/sfw/petibm-linux-opt/bin/petibm2d [optional PETSc command-line arguments]
+```
 
 Then, you can submit your job to the `short` partition:
 
-    > sbatch runPetIBM2d.sh
+    sbatch runPetIBM2d.sh

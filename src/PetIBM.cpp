@@ -33,8 +33,12 @@ int main(int argc,char **argv)
 
   // parse command-line to get simulation directory
   char dir[PETSC_MAX_PATH_LEN];
-  ierr = PetscOptionsGetString(NULL, "-directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
-  std::string directory(dir);
+  PetscBool found;
+  ierr = PetscOptionsGetString(NULL, NULL, "-directory", dir, sizeof(dir), &found); CHKERRQ(ierr);
+  std::string directory(".");
+  if (found)
+    directory = dir;
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "directory: %s\n", directory.c_str()); CHKERRQ(ierr);
 
   // read different input files
   CartesianMesh cartesianMesh(directory);

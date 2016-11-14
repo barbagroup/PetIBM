@@ -1,6 +1,4 @@
-# file: .travis.yml
-# author: Olivier Mesnard (mesnardo@gwu.edu)
-# brief: PetIBM Travis CI.
+# PetIBM Travis CI.
 
 os: linux
 
@@ -13,11 +11,11 @@ before_install:
 
 install:
   - export PETIBM_DIR=$PWD
-  # install PETSc-3.5.2
+  # install PETSc-3.7.4
   - cd ..
-  - wget "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.5.2.tar.gz" -O /tmp/petsc-lite-3.5.2.tar.gz
-  - tar xfz /tmp/petsc-lite-3.5.2.tar.gz
-  - cd petsc-3.5.2
+  - wget "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.7.4.tar.gz" -O /tmp/petsc-lite-3.7.4.tar.gz
+  - tar xfz /tmp/petsc-lite-3.7.4.tar.gz
+  - cd petsc-3.7.4
   - export PETSC_DIR=$PWD
   - export PETSC_ARCH=arch-dbg
   - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=gcc --with-cxx=g++ --with-fc=gfortran --download-fblaslapack --download-mpich
@@ -28,7 +26,7 @@ script:
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-std=c++0x"
+  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++0x"
   - make all
   - make check
   - make install

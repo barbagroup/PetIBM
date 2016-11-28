@@ -133,14 +133,12 @@ public:
   // project velocity onto divergence-free field with satisfaction of the no-splip condition
   PetscErrorCode projectionStep();
 
-  // print info about simulation
-  PetscErrorCode printInfo();
   // read fluxes from files
   PetscErrorCode readFluxes();
   // read pressure field from file
   virtual PetscErrorCode readLambda();
-  // write grid coordinates into file
-  PetscErrorCode writeGrid();
+  // write grid stations of the different field variables into HDF5 files
+  PetscErrorCode writeGrids();
   // write fluxes into files
   PetscErrorCode writeFluxes();
   // write pressure field into file

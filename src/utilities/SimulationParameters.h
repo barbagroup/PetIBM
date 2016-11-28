@@ -43,6 +43,8 @@ public:
            nt,        ///< number of time steps
            nsave;     ///< data-saving interval
   
+  std::string fileFormat;  ///< output format to use
+
   IBMethod ibm; ///< type of system to be solved
   
   TimeIntegration convection, ///< time-scheme for the convection term

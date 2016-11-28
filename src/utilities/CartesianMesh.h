@@ -8,6 +8,8 @@
 #if !defined(CARTESIAN_MESH_H)
 #define CARTESIAN_MESH_H
 
+#include "types.h"
+
 #include <string>
 #include <vector>
 
@@ -39,6 +41,9 @@ public:
   ~CartesianMesh();
   // parse input file and create Cartesian mesh
   void initialize(std::string filePath);
+  // write grid points into file
+  PetscErrorCode write(std::string filePath);
+  PetscErrorCode write(std::string filePath, StaggeredMode mode);
   // print information about Cartesian mesh
   PetscErrorCode printInfo();
 

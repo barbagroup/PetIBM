@@ -4,21 +4,9 @@
  * \brief Implementation of I/O methods of the class NavierStokesSolver.
  */
 
+#include "types.h"
 
-/**
- * \brief Prints information about the simulation.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::printInfo()
-{
-  PetscErrorCode ierr;
-
-  ierr = mesh->printInfo(); CHKERRQ(ierr);
-  ierr = flow->printInfo(); CHKERRQ(ierr);
-  ierr = parameters->printInfo(); CHKERRQ(ierr);
-  
-  return 0;
-} // printInfo
+#include <petscviewerhdf5.h>
 
 
 /**
@@ -29,9 +17,9 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
 {
   PetscErrorCode ierr;
 
-  PetscViewer viewer;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading fluxes from file... ", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Reading fluxes from file... ",
+                     timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
@@ -49,24 +37,50 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes()
   {
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
   }
+
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string fileExtension;
+  if (parameters->fileFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (parameters->fileFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
   
   // read fluxes in x-direction
-  std::string filePath = solutionDirectory + "/qx.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+  std::string filePath = solutionDirectory + "/qx." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) qxGlobal, "qx"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecLoad(qxGlobal, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   // read fluxes in y-direction
-  filePath = solutionDirectory + "/qy.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+  filePath = solutionDirectory + "/qy." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) qyGlobal, "qy"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecLoad(qyGlobal, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   if (dim == 3)
   {
     // read fluxes in z-direction
-    filePath = solutionDirectory + "/qz.dat";
-    ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+    filePath = solutionDirectory + "/qz." + fileExtension;
+    ierr = PetscObjectSetName((PetscObject) qzGlobal, "qz"); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+    ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     ierr = VecLoad(qzGlobal, viewer); CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
   }
@@ -94,9 +108,9 @@ PetscErrorCode NavierStokesSolver<dim>::readLambda()
 {
   PetscErrorCode ierr;
 
-  PetscViewer viewer;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading pressure from file... ", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Reading pressure from file... ",
+                     timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
@@ -107,9 +121,27 @@ PetscErrorCode NavierStokesSolver<dim>::readLambda()
   Vec phi;
   ierr = DMCompositeGetAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
 
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string fileExtension;
+  if (parameters->fileFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (parameters->fileFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
   // read pressure field
-  std::string filePath = solutionDirectory + "/phi.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+  std::string filePath = solutionDirectory + "/phi." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) phi, "phi"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecLoad(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
@@ -142,6 +174,36 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 
 
 /**
+ * \brief Writes grid stations of the different field variables in HDF5 files.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::writeGrids()
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Writing grids into files... ",
+                     timeStep); CHKERRQ(ierr);
+
+  std::string filePath = parameters->directory + "/grid_qx.h5";
+  ierr = mesh->write(filePath, STAGGERED_MODE_X); CHKERRQ(ierr);
+  filePath = parameters->directory + "/grid_qy.h5";
+  ierr = mesh->write(filePath, STAGGERED_MODE_Y); CHKERRQ(ierr);
+  if (dim == 3)
+  {
+    filePath = parameters->directory + "/grid_qz.h5";
+    ierr = mesh->write(filePath, STAGGERED_MODE_Z); CHKERRQ(ierr);
+  }
+  filePath = parameters->directory + "/grid_phi.h5";
+  ierr = mesh->write(filePath, CELL_CENTERED); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
+  return 0;
+} // writeGrids
+
+
+/**
  * \brief Writes fluxes into files located in the time-step directory.
  */
 template <PetscInt dim>
@@ -149,9 +211,9 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
 {
   PetscErrorCode ierr;
 
-  PetscViewer viewer;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing fluxes into file... ", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Writing fluxes into file... ",
+                     timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
@@ -171,23 +233,49 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes()
     ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
   }
 
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string fileExtension;
+  if (parameters->fileFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (parameters->fileFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
   // write fluxes in x-direction
-  std::string filePath = solutionDirectory + "/qx.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+  std::string filePath = solutionDirectory + "/qx." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) qxGlobal, "qx"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecView(qxGlobal, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   // write fluxes in y-direction
-  filePath = solutionDirectory + "/qy.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+  filePath = solutionDirectory + "/qy." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) qyGlobal, "qy"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   if (dim == 3)
   {
     // write fluxes in z-direction
-    filePath = solutionDirectory + "/qz.dat";
-    ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+    filePath = solutionDirectory + "/qz." + fileExtension;
+    ierr = PetscObjectSetName((PetscObject) qzGlobal, "qz"); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+    ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     ierr = VecView(qzGlobal, viewer); CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
   }
@@ -215,9 +303,9 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda()
 {
   PetscErrorCode ierr;
 
-  PetscViewer viewer;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing pressure into file... ", timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Writing pressure into file... ",
+                     timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
@@ -229,9 +317,27 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda()
   Vec phi;
   ierr = DMCompositeGetAccess(lambdaPack, lambda, &phi); CHKERRQ(ierr);
 
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string fileExtension;
+  if (parameters->fileFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (parameters->fileFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
   // write pressure field
-  std::string filePath = solutionDirectory + "/phi.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+  std::string filePath = solutionDirectory + "/phi." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) phi, "phi"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecView(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
@@ -241,48 +347,6 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda()
 
   return 0;
 } // writeLambda
-
-
-/**
- * \brief Writes the grid into file.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::writeGrid()
-{
-  PetscErrorCode ierr;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing grid into file... ", timeStep); CHKERRQ(ierr);
-
-  PetscInt rank;
-  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
-
-  if (rank == 0)
-  {
-    std::ofstream streamFile(parameters->directory + "/grid.txt");
-    if (dim == 2)
-    {
-      streamFile << mesh->nx << '\t' << mesh->ny << '\n';
-    }
-    else if (dim == 3)
-    {
-      streamFile << mesh->nx << '\t' << mesh->ny << '\t' << mesh->nz << '\n';
-    }
-    for (std::vector<PetscReal>::const_iterator i=mesh->x.begin(); i!=mesh->x.end(); ++i)
-      streamFile << std::setprecision(16) << *i << '\n';
-    for (std::vector<PetscReal>::const_iterator i=mesh->y.begin(); i!=mesh->y.end(); ++i)
-      streamFile << std::setprecision(16) << *i << '\n';
-    if (dim == 3)
-    {  
-      for (std::vector<PetscReal>::const_iterator i=mesh->z.begin(); i!=mesh->z.end(); ++i)
-        streamFile << std::setprecision(16) << *i << '\n';
-    }
-    streamFile.close();
-  }
-  
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n", timeStep); CHKERRQ(ierr);
-
-  return 0;
-} // writeGrid
 
 
 /**

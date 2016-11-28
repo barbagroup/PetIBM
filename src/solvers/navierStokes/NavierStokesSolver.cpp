@@ -92,10 +92,8 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
 
   ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
   
-  ierr = printInfo(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
-  ierr = writeGrid(); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -110,6 +108,8 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 {
   PetscErrorCode ierr;
+
+  ierr = writeGrids(); CHKERRQ(ierr);
 
   ierr = createVecs(); CHKERRQ(ierr);
   

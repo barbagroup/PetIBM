@@ -44,13 +44,11 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
 
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialize); CHKERRQ(ierr);
 
-  ierr = NavierStokesSolver<dim>::printInfo(); CHKERRQ(ierr);
   ierr = initializeBodies(); CHKERRQ(ierr);
   ierr = calculateCellIndices(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
-  ierr = NavierStokesSolver<dim>::writeGrid(); CHKERRQ(ierr);
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 

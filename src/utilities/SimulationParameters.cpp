@@ -58,6 +58,7 @@ void SimulationParameters::initialize(std::string filePath)
   startStep = node["startStep"].as<PetscInt>(0);
   nt = node["nt"].as<PetscInt>();
   nsave = node["nsave"].as<PetscInt>(nt);
+  fileFormat = node["fileFormat"].as<std::string>("binary");
 
   ibm = stringToIBMethod(node["ibm"].as<std::string>("NONE"));
 
@@ -141,6 +142,7 @@ PetscErrorCode SimulationParameters::printInfo()
   ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step: %d\n", startStep); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", nt); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval: %d\n", nsave); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "file format: %s\n", fileFormat.c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
 
   return 0;

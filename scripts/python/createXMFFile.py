@@ -14,8 +14,7 @@ def parse_command_line():
   print('\nParsing command-line ...'),
   # create parser
   formatter_class = argparse.ArgumentDefaultsHelpFormatter
-  parser = argparse.ArgumentParser(description='Plots the instantaneous '
-                                               'forces',
+  parser = argparse.ArgumentParser(description='Creates a XMF file',
                                    formatter_class=formatter_class)
   # fill parser with arguments
   parser.add_argument('--directory', dest='directory',
@@ -106,7 +105,8 @@ def main():
     topology_type = '3DRectMesh'
     geometry_type = 'VXVYVZ'
     components = ('x', 'y', 'z')
-  number_of_elements = ' '.join(str(n) for n in args.grid_size)
+  number_of_elements = ' '.join(str(n) for n in args.grid_size[::-1])
+  precision = '8'
   # create an xmf block for each time-step saved
   for it, time_value in time_values:
     grid = ET.SubElement(grid_time_series, 'Grid',
@@ -124,7 +124,7 @@ def main():
       dataitem = ET.SubElement(geometry, 'DataItem',
                                Dimensions=str(n),
                                NumberType='Float',
-                               Precision='4',
+                               Precision=precision,
                                Format='HDF')
       dataitem.text = '{}:/{}'.format(os.path.join(args.directory,
                                                    args.grid_file), d)
@@ -137,7 +137,7 @@ def main():
       dataitem = ET.SubElement(attribute, 'DataItem',
                                Dimensions=number_of_elements,
                                NumberType='Float',
-                               Precision='4',
+                               Precision=precision,
                                Format='HDF')
       variable_file_path = os.path.join(args.directory,
                                         '{:0>7}'.format(it),

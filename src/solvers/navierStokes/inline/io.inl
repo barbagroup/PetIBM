@@ -185,16 +185,20 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrids()
                      "\n[time-step %d] Writing grids into files... ",
                      timeStep); CHKERRQ(ierr);
 
-  std::string filePath = parameters->directory + "/grid_qx.h5";
+  // create subfolder `grids`
+  std::string subfolder = parameters->directory + "/grids";
+  mkdir(subfolder.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+  std::string filePath = subfolder + "/grid_qx.h5";
   ierr = mesh->write(filePath, STAGGERED_MODE_X); CHKERRQ(ierr);
-  filePath = parameters->directory + "/grid_qy.h5";
+  filePath = subfolder + "/grid_qy.h5";
   ierr = mesh->write(filePath, STAGGERED_MODE_Y); CHKERRQ(ierr);
   if (dim == 3)
   {
-    filePath = parameters->directory + "/grid_qz.h5";
+    filePath = subfolder + "/grid_qz.h5";
     ierr = mesh->write(filePath, STAGGERED_MODE_Z); CHKERRQ(ierr);
   }
-  filePath = parameters->directory + "/grid_phi.h5";
+  filePath = subfolder + "/grid_phi.h5";
   ierr = mesh->write(filePath, CELL_CENTERED); CHKERRQ(ierr);
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);

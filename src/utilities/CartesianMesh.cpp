@@ -224,13 +224,13 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
   PetscReal value;
   PetscViewer viewer;
   Vec xs, ys, zs;
-
   PetscInt rank;
+
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
   if (rank == 0)
   {
-    ierr = PetscViewerHDF5Open(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerHDF5Open(PETSC_COMM_SELF, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
     // stations along a gridline in the x-direction
     if (mode == STAGGERED_MODE_X)
     {
@@ -239,7 +239,7 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
       {
         value = x[i+1];
         ierr = VecSetValue(xs, i, value, INSERT_VALUES); CHKERRQ(ierr);
-      }  
+      }
     }
     else
     {

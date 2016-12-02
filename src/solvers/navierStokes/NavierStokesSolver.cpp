@@ -109,7 +109,10 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 {
   PetscErrorCode ierr;
 
-  ierr = writeGrids(); CHKERRQ(ierr);
+  if (parameters->fileFormat == "hdf5")
+  {
+    ierr = writeGrids(); CHKERRQ(ierr);
+  }
 
   ierr = createVecs(); CHKERRQ(ierr);
   

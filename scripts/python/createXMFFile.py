@@ -85,6 +85,8 @@ def main():
   # time at which solution was saved
   with open(args.times_file, 'r') as infile:
     time_values = numpy.genfromtxt(infile, dtype=None)
+  if time_values.size == 1:
+    time_values = numpy.array([time_values])
   # start xmf tree
   xdmf = ET.Element('Xdmf',
                     Version='2.2')

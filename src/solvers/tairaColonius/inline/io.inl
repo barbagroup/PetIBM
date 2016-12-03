@@ -12,9 +12,10 @@ template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::readLambda()
 {
   PetscErrorCode ierr;
-  PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Reading pressure and body forces from file... ", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Reading pressure and body forces from file... ",
+                     NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
 
   // get solution directory: 7 characters long, time-step preprend by leading zeros
   std::stringstream ss;
@@ -25,18 +26,39 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
   Vec phi, fTilde;
   ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string fileExtension;
+  if (NavierStokesSolver<dim>::parameters->fileFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (NavierStokesSolver<dim>::parameters->fileFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
   // read pressure field
-  std::string filePath = solutionDirectory + "/phi.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+  std::string filePath = solutionDirectory + "/phi." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) phi, "phi"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecLoad(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
 
   // read body forces iff restarting the simulation
   if (NavierStokesSolver<dim>::timeStep > 0)
   {
-    filePath = solutionDirectory + "/fTilde.dat";
-    ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_READ, &viewer); CHKERRQ(ierr);
+    filePath = solutionDirectory + "/fTilde." + fileExtension;
+    ierr = PetscObjectSetName((PetscObject) fTilde, "fTilde"); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+    ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     ierr = VecLoad(fTilde, viewer); CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
   }
@@ -73,9 +95,10 @@ template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
 {
   PetscErrorCode ierr;
-  PetscViewer viewer;
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Writing pressure and body forces into file... ", NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Writing pressure and body forces into file... ",
+                     NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
 
   // create the solution directory
   std::stringstream ss;
@@ -87,15 +110,37 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
   Vec phi, fTilde;
   ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string fileExtension;
+  if (NavierStokesSolver<dim>::parameters->fileFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (NavierStokesSolver<dim>::parameters->fileFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
   // write pressure field
-  std::string filePath = solutionDirectory + "/phi.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+  std::string filePath = solutionDirectory + "/phi." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) phi, "phi"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecView(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
   // write body forces
-  filePath = solutionDirectory + "/fTilde.dat";
-  ierr = PetscViewerBinaryOpen(PETSC_COMM_WORLD, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+  filePath = solutionDirectory + "/fTilde." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) fTilde, "fTilde"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecView(fTilde, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 

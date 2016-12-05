@@ -54,7 +54,6 @@ int main(int argc,char **argv)
                                                                         &parameters);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
-  ierr = solver->writeData(); CHKERRQ(ierr);
   
   while(!solver->finished())
   {

@@ -16,6 +16,9 @@ The simulation parameters do not depend on the dimensionality of the problem, an
       ibm: TAIRA_COLONIUS
       convection: ADAMS_BASHFORTH_2
       diffusion: CRANK_NICOLSON
+      outputFormat: binary
+      outputFlux: true
+      outputVelocity: true
 
 
 ## File options
@@ -27,3 +30,6 @@ The simulation parameters do not depend on the dimensionality of the problem, an
 * `ibm`: (optional) specifies the immersed boundary method used in the simulation. Currently, the only immersed boundary method available in PetIBM is `TAIRA_COLONIUS`. If no immersed boundary are present in the computational domain, once should remove this line.
 * `convection`: (optional, default: `EULER_EXPLICIT`) specifies the time-scheme to use for the convective terms of the momentum equation. In PetIBM, the convective terms can be temporally discretized using an explicit Euler method (`EULER_EXPLICIT`, default value) or a second-order Adams-Bashforth scheme (`ADAMS_BASHFORTH_2`).
 * `diffusion`: (optional, default: `EULER_IMPLICIT`) specifies the time-scheme to use for the diffusive terms of the momentum equation. In PetIBM, the diffusive terms can be  treated explicitly (`EULER_EXPLICIT`), implicitly (`EULER_IMPLICIT`, default), or using a second-order Crank-Nicolson scheme (`CRANK_NICOLSON`).
+* `outputFormat`: (optional, default: `binary`) specifies the format of the output files in which the numerical solution is stored. Right now, two formats are supported: `binary` and `hdf5`.
+* `outputFlux`: (optional, default: `true`) writes the flux variable into files when set to `true`.
+* `outputVelocity`: (optional, default: `false`) writes the velocity variable into files when set to `true`.

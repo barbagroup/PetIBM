@@ -44,6 +44,8 @@ public:
            nsave;     ///< data-saving interval
   
   std::string fileFormat;  ///< output format to use
+  PetscBool outputFlux,     ///< boolean to output the flux components
+            outputVelocity; ///< boolean to output the velocity components
 
   IBMethod ibm; ///< type of system to be solved
   

@@ -28,8 +28,15 @@ PetscErrorCode NavierStokesSolver<dim>::readData()
   ss << parameters->directory << "/" << std::setfill('0') << std::setw(7) << timeStep;
   std::string solutionDirectory = ss.str();
 
-  ierr = readFluxes(solutionDirectory); CHKERRQ(ierr);
-  ierr = writeLambda(solutionDirectory); CHKERRQ(ierr);
+  if (parameters->outputFlux)
+  {
+    ierr = readFluxes(solutionDirectory); CHKERRQ(ierr);
+  }
+  else if (parameters->outputVelocity)
+  {
+    ierr = readVelocities(solutionDirectory); CHKERRQ(ierr);
+  }
+  ierr = readLambda(solutionDirectory); CHKERRQ(ierr);
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
 
@@ -275,8 +282,14 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
     std::string solutionDirectory = ss.str();
     mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
-    ierr = writeFluxes(solutionDirectory); CHKERRQ(ierr);
-    ierr = writeVelocities(solutionDirectory); CHKERRQ(ierr);
+    if (parameters->outputFlux)
+    {
+      ierr = writeFluxes(solutionDirectory); CHKERRQ(ierr);
+    }
+    if (parameters->outputVelocity)
+    {
+      ierr = writeVelocities(solutionDirectory); CHKERRQ(ierr);
+    }
     ierr = writeLambda(solutionDirectory); CHKERRQ(ierr);
 
     ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);

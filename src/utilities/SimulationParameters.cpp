@@ -60,6 +60,15 @@ void SimulationParameters::initialize(std::string filePath)
   nsave = node["nsave"].as<PetscInt>(nt);
   
   outputFormat = node["outputFormat"].as<std::string>("binary");
+#ifndef PETSC_HAVE_HDF5
+  if (outputFormat == "hdf5")
+  {
+    PetscPrintf(PETSC_COMM_WORLD,
+                "\nERROR: PETSc has not been built with HDF5 available; "
+                "you cannot use `outputFormat: hdf5`\n");
+    exit(1);
+  }
+#endif
   outputFlux = (node["outputFlux"].as<bool>(true)) ? PETSC_TRUE : PETSC_FALSE;
   outputVelocity = (node["outputVelocity"].as<bool>(false)) ? PETSC_TRUE : PETSC_FALSE;
 

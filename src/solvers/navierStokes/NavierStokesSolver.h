@@ -139,8 +139,10 @@ public:
   PetscErrorCode readVelocities(std::string directory);
   // read pressure field from file
   virtual PetscErrorCode readLambda(std::string directory);
+#ifdef PETSC_HAVE_HDF5
   // write grid stations of the different field variables into HDF5 files
   PetscErrorCode writeGrids();
+#endif
   // write fluxes into files
   PetscErrorCode writeFluxes(std::string directory);
   // write velocity components into files

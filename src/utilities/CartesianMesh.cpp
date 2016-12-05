@@ -212,6 +212,7 @@ PetscErrorCode CartesianMesh::write(std::string filePath)
 } // write
 
 
+#ifdef PETSC_HAVE_HDF5
 /**
  * \brief Writes the grid stations into a HDF5 file.
  *
@@ -305,6 +306,7 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
 
   return 0;
 } // write
+#endif
 
 
 /**

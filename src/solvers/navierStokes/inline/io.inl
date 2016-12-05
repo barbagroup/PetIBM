@@ -299,6 +299,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 } // writeData
 
 
+#ifdef PETSC_HAVE_HDF5
 /**
  * \brief Writes grid stations of the different field variables in HDF5 files.
  */
@@ -328,6 +329,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrids()
 
   PetscFunctionReturn(0);
 } // writeGrids
+#endif
 
 
 /**

@@ -43,7 +43,9 @@ public:
   void initialize(std::string filePath);
   // write grid points into file
   PetscErrorCode write(std::string filePath);
+#ifdef PETSC_HAVE_HDF5
   PetscErrorCode write(std::string filePath, StaggeredMode mode);
+#endif
   // print information about Cartesian mesh
   PetscErrorCode printInfo();
 

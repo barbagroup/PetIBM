@@ -134,15 +134,19 @@ public:
   PetscErrorCode projectionStep();
 
   // read fluxes from files
-  PetscErrorCode readFluxes();
+  PetscErrorCode readFluxes(std::string directory);
+  // read velocity components from files
+  PetscErrorCode readVelocities(std::string directory);
   // read pressure field from file
-  virtual PetscErrorCode readLambda();
+  virtual PetscErrorCode readLambda(std::string directory);
   // write grid stations of the different field variables into HDF5 files
   PetscErrorCode writeGrids();
   // write fluxes into files
-  PetscErrorCode writeFluxes();
+  PetscErrorCode writeFluxes(std::string directory);
+  // write velocity components into files
+  PetscErrorCode writeVelocities(std::string directory);
   // write pressure field into file
-  virtual PetscErrorCode writeLambda();
+  virtual PetscErrorCode writeLambda(std::string directory);
   // write KSP iteration counts into file
   PetscErrorCode writeIterationCounts();
   

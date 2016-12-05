@@ -6,29 +6,22 @@
 
 
 /**
- * \brief Reads the pressure field and body forces from saved numerical solution file.
+ * \brief Reads the pressure field and body forces from files.
+ *
+ * \param directory Directory where to read the solutions.
  */
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::readLambda()
+PetscErrorCode TairaColoniusSolver<dim>::readLambda(std::string directory)
 {
   PetscErrorCode ierr;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD,
-                     "\n[time-step %d] Reading pressure and body forces from file... ",
-                     NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
-
-  // get solution directory: 7 characters long, time-step preprend by leading zeros
-  std::stringstream ss;
-  ss << NavierStokesSolver<dim>::parameters->directory << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
-  std::string solutionDirectory = ss.str();
-
-  // get access to the pressure vector from the composite vector
   Vec phi, fTilde;
-  ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
-
   PetscViewer viewer;
   PetscViewerType viewerType;
-  std::string fileExtension;
+  std::string filePath, fileExtension;
+
+  PetscFunctionBeginUser;
+
+  // define the type of viewer and the file extension
   if (NavierStokesSolver<dim>::parameters->fileFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
@@ -39,9 +32,11 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
   }
+  
+  ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
   // read pressure field
-  std::string filePath = solutionDirectory + "/phi." + fileExtension;
+  filePath = directory + "/phi." + fileExtension;
   ierr = PetscObjectSetName((PetscObject) phi, "phi"); CHKERRQ(ierr);
   ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
   ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
@@ -49,11 +44,10 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
   ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecLoad(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-  // read body forces iff restarting the simulation
+  // read body forces if restarting the simulation
   if (NavierStokesSolver<dim>::timeStep > 0)
   {
-    filePath = solutionDirectory + "/fTilde." + fileExtension;
+    filePath = directory + "/fTilde." + fileExtension;
     ierr = PetscObjectSetName((PetscObject) fTilde, "fTilde"); CHKERRQ(ierr);
     ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
     ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
@@ -65,54 +59,44 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda()
 
   ierr = DMCompositeRestoreAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
-
-  return 0;
+  PetscFunctionReturn(0);
 } // readLambda
 
 
 /**
- * \brief Writes the numerical solution into respective files.
+ * \brief Writes the numerical solution into files.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::writeData()
 {
   PetscErrorCode ierr;
 
+  PetscFunctionBeginUser;
+
   ierr = calculateForce(); CHKERRQ(ierr);
   ierr = writeForces(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::writeData(); CHKERRQ(ierr);
 
-  return 0;
+  PetscFunctionReturn(0);
 } // writeData
 
 
 /**
- * \brief Writes the pressure field and the body forces into files 
- *        located in solution directory.
+ * \brief Writes the pressure field and the body forces into files.
+ *
+ * \param directory Directory where to write the solutions.
  */
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
+PetscErrorCode TairaColoniusSolver<dim>::writeLambda(std::string directory)
 {
   PetscErrorCode ierr;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD,
-                     "\n[time-step %d] Writing pressure and body forces into file... ",
-                     NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
-
-  // create the solution directory
-  std::stringstream ss;
-  ss << NavierStokesSolver<dim>::parameters->directory << "/" << std::setfill('0') << std::setw(7) << NavierStokesSolver<dim>::timeStep;
-  std::string solutionDirectory = ss.str();
-  mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
-  // get access to the pressure vector from the composite vector
   Vec phi, fTilde;
-  ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
-
   PetscViewer viewer;
   PetscViewerType viewerType;
-  std::string fileExtension;
+  std::string filePath, fileExtension;
+
+  PetscFunctionBeginUser;
+
   if (NavierStokesSolver<dim>::parameters->fileFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
@@ -124,8 +108,10 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
     fileExtension = "dat";
   }
 
+  ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
+
   // write pressure field
-  std::string filePath = solutionDirectory + "/phi." + fileExtension;
+  filePath = directory + "/phi." + fileExtension;
   ierr = PetscObjectSetName((PetscObject) phi, "phi"); CHKERRQ(ierr);
   ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
   ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
@@ -133,9 +119,8 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
   ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
   ierr = VecView(phi, viewer); CHKERRQ(ierr);
   ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
   // write body forces
-  filePath = solutionDirectory + "/fTilde." + fileExtension;
+  filePath = directory + "/fTilde." + fileExtension;
   ierr = PetscObjectSetName((PetscObject) fTilde, "fTilde"); CHKERRQ(ierr);
   ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
   ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
@@ -146,9 +131,7 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda()
 
   ierr = DMCompositeRestoreAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, &phi, &fTilde); CHKERRQ(ierr);
 
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
-
-  return 0;
+  PetscFunctionReturn(0);
 } // writeLambda
 
 

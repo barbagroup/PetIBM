@@ -66,6 +66,7 @@ void SimulationParameters::initialize(std::string filePath)
     PetscPrintf(PETSC_COMM_WORLD,
                 "\nERROR: PETSc has not been built with HDF5 available; "
                 "you cannot use `outputFormat: hdf5`\n");
+    MPI_Barrier(PETSC_COMM_WORLD);
     exit(1);
   }
 #endif

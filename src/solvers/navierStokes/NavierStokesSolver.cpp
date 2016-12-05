@@ -130,16 +130,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 
   if (parameters->startStep > 0 || flow->initialCustomField)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\n[time-step %d] Reading numerical solution from files... ",
-                       timeStep); CHKERRQ(ierr);
-    std::stringstream ss;
-    ss << parameters->directory << "/" << std::setfill('0') << std::setw(7) << parameters->startStep;
-    std::string solutionDirectory = ss.str();
-    ierr = readFluxes(solutionDirectory); CHKERRQ(ierr);
-    ierr = readLambda(solutionDirectory); CHKERRQ(ierr);
-
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+    ierr = readData(); CHKERRQ(ierr);
   }
   else
   {

@@ -176,6 +176,8 @@ public:
 
   // write numerical solution into respective files
   virtual PetscErrorCode writeData();
+  // read numerical solution from files
+  PetscErrorCode readData();
 
 }; // NavierStokesSolver
 

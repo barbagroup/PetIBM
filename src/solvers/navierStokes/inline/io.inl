@@ -10,6 +10,34 @@
 
 
 /**
+ * \brief Reads the numerical solution from files.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::readData()
+{
+  PetscErrorCode ierr;
+
+  PetscFunctionBeginUser;
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD,
+                     "\n[time-step %d] Reading numerical solution from files... ",
+                     timeStep); CHKERRQ(ierr);
+
+  // get solution directory
+  std::stringstream ss;
+  ss << parameters->directory << "/" << std::setfill('0') << std::setw(7) << timeStep;
+  std::string solutionDirectory = ss.str();
+
+  ierr = readFluxes(solutionDirectory); CHKERRQ(ierr);
+  ierr = writeLambda(solutionDirectory); CHKERRQ(ierr);
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+
+  PetscFunctionReturn(0);
+} // readData
+
+
+/**
  * \brief Read flux fields from files.
  *
  * \param directory Directory where to read the flux fields.

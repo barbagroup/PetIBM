@@ -111,7 +111,7 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 
   PetscFunctionBeginUser;
 
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     ierr = writeGrids(); CHKERRQ(ierr);
   }

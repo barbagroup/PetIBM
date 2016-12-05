@@ -43,7 +43,7 @@ public:
            nt,        ///< number of time steps
            nsave;     ///< data-saving interval
   
-  std::string fileFormat;  ///< output format to use
+  std::string outputFormat;  ///< output format to use
   PetscBool outputFlux,     ///< boolean to output the flux components
             outputVelocity; ///< boolean to output the velocity components
 

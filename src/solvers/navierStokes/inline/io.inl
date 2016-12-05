@@ -61,12 +61,12 @@ PetscErrorCode NavierStokesSolver<dim>::readFluxes(std::string directory)
   PetscFunctionBeginUser;
 
   // get type of viewer depending on output format prescribed
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (parameters->fileFormat == "binary")
+  else if (parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
@@ -142,12 +142,12 @@ PetscErrorCode NavierStokesSolver<dim>::readVelocities(std::string directory)
   PetscFunctionBeginUser;
 
   // define the type of viewer and the file extension
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (parameters->fileFormat == "binary")
+  else if (parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
@@ -229,12 +229,12 @@ PetscErrorCode NavierStokesSolver<dim>::readLambda(std::string directory)
   PetscFunctionBeginUser;
 
   // define the type of viewer and the file extension
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (parameters->fileFormat == "binary")
+  else if (parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
@@ -347,12 +347,12 @@ PetscErrorCode NavierStokesSolver<dim>::writeFluxes(std::string directory)
   PetscFunctionBeginUser;
 
   // define the type of viewer and the file extension
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (parameters->fileFormat == "binary")
+  else if (parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
@@ -428,12 +428,12 @@ PetscErrorCode NavierStokesSolver<dim>::writeVelocities(std::string directory)
   PetscFunctionBeginUser;
 
   // define the type of viewer and the file extension
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (parameters->fileFormat == "binary")
+  else if (parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
@@ -515,12 +515,12 @@ PetscErrorCode NavierStokesSolver<dim>::writeLambda(std::string directory)
   PetscFunctionBeginUser;
 
   // define the type of viewer and the file extension
-  if (parameters->fileFormat == "hdf5")
+  if (parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (parameters->fileFormat == "binary")
+  else if (parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";

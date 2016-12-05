@@ -22,12 +22,12 @@ PetscErrorCode TairaColoniusSolver<dim>::readLambda(std::string directory)
   PetscFunctionBeginUser;
 
   // define the type of viewer and the file extension
-  if (NavierStokesSolver<dim>::parameters->fileFormat == "hdf5")
+  if (NavierStokesSolver<dim>::parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (NavierStokesSolver<dim>::parameters->fileFormat == "binary")
+  else if (NavierStokesSolver<dim>::parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";
@@ -97,12 +97,12 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda(std::string directory)
 
   PetscFunctionBeginUser;
 
-  if (NavierStokesSolver<dim>::parameters->fileFormat == "hdf5")
+  if (NavierStokesSolver<dim>::parameters->outputFormat == "hdf5")
   {
     viewerType = PETSCVIEWERHDF5;
     fileExtension = "h5";
   }
-  else if (NavierStokesSolver<dim>::parameters->fileFormat == "binary")
+  else if (NavierStokesSolver<dim>::parameters->outputFormat == "binary")
   {
     viewerType = PETSCVIEWERBINARY;
     fileExtension = "dat";

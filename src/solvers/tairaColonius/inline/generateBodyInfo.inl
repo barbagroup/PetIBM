@@ -21,7 +21,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBodyInfo()
 {
   PetscErrorCode ierr;
   
-  PetscInt numProcs;
+  PetscMPIInt numProcs;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
   boundaryPointIndices.resize(numProcs);
@@ -80,7 +80,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBodyInfo()
 {
   PetscErrorCode ierr;
 
-  PetscInt numProcs;  
+  PetscMPIInt numProcs;  
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
   boundaryPointIndices.resize(numProcs);

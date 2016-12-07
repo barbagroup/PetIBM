@@ -378,7 +378,7 @@ PetscErrorCode DiffusiveTerm<dim>::writeRelativeError()
 {
   PetscErrorCode ierr;
 
-  PetscInt rank;
+  PetscMPIInt rank;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
   if (rank == 0)
   {

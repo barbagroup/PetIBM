@@ -35,7 +35,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
   ierr = PetscLogEventBegin(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
   
-  PetscInt numProcs;
+  PetscMPIInt numProcs;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
   
   // get ownership range of q
@@ -292,7 +292,7 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
   ierr = PetscLogEventBegin(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
   
-  PetscInt numProcs;
+  PetscMPIInt numProcs;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
   
   // get ownership range of q

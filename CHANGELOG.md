@@ -10,6 +10,9 @@
 
 * Compatibility with PETSc-3.7 (last tested 3.7.4; cannot use 3.5 and 3.6 anymore).
 * A change log.
+* Possibility to output the numerical solution in HDF5 format.
+* Possibility to output the flux and/or velocity variables.
+* Python script `createXMFFile.py` that generates a `.xmf` file to let VisIt know how to read the HDF5 files.
 
 ### Changed
 

@@ -41,15 +41,20 @@ int main(int argc,char **argv)
   ierr = PetscPrintf(PETSC_COMM_WORLD, "directory: %s\n", directory.c_str()); CHKERRQ(ierr);
 
   // read different input files
-  CartesianMesh cartesianMesh(directory);
-  FlowDescription<dim> flowDescription(directory);
-  SimulationParameters simulationParameters(directory);
+  CartesianMesh mesh(directory);
+  ierr = mesh.printInfo(); CHKERRQ(ierr);
+  ierr = mesh.write(directory+"/grid.txt");
+  FlowDescription<dim> flow(directory);
+  ierr = flow.printInfo(); CHKERRQ(ierr);
+  SimulationParameters parameters(directory);
+  ierr = parameters.printInfo(); CHKERRQ(ierr);
 
-  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&cartesianMesh,
-                                                                        &flowDescription, 
-                                                                        &simulationParameters);
+  std::unique_ptr< NavierStokesSolver<dim> > solver = createSolver<dim>(&mesh,
+                                                                        &flow,
+                                                                        &parameters);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nInitialization complete!\n"); CHKERRQ(ierr);
   
   while(!solver->finished())
   {

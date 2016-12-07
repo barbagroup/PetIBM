@@ -92,10 +92,8 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
 
   ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
   
-  ierr = printInfo(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
-  ierr = writeGrid(); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -111,11 +109,16 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
 {
   PetscErrorCode ierr;
 
+  PetscFunctionBeginUser;
+
+#ifdef PETSC_HAVE_HDF5
+  if (parameters->outputFormat == "hdf5")
+  {
+    ierr = writeGrids(); CHKERRQ(ierr);
+  }
+#endif
+
   ierr = createVecs(); CHKERRQ(ierr);
-  
-  ierr = initializeFluxes(); CHKERRQ(ierr);
-  ierr = initializeLambda(); CHKERRQ(ierr);
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
   ierr = createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
@@ -127,12 +130,23 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   ierr = createKSPs(); CHKERRQ(ierr);
   ierr = setNullSpace(); CHKERRQ(ierr);
 
-  return 0;
+  if (parameters->startStep > 0 || flow->initialCustomField)
+  {
+    ierr = readData(); CHKERRQ(ierr);
+  }
+  else
+  {
+    ierr = initializeFluxes(); CHKERRQ(ierr);
+    ierr = initializeLambda(); CHKERRQ(ierr);
+  }
+  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
+
+  PetscFunctionReturn(0);
 } // initializeCommon
 
 
 /**
- * \brief Adavance in time. Calculates the variables at the next time-step.
+ * \brief Advance in time. Calculates the variables at the next time-step.
  */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::stepTime()

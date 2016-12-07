@@ -86,6 +86,18 @@ enum IBMethod
 IBMethod stringToIBMethod(std::string s);
 std::string stringFromIBMethod(IBMethod method);
 
+
+/**
+ * \brief Staggered mode to define the location of mesh points.
+ */
+enum StaggeredMode
+{
+  STAGGERED_MODE_X,  ///< x-component of staggered quantity
+  STAGGERED_MODE_Y,  ///< y-component of staggered quantity
+  STAGGERED_MODE_Z,  ///< z-component of staggered quantity
+  CELL_CENTERED      ///< cell-centered quantity
+};
+
 #endif
 
 /**

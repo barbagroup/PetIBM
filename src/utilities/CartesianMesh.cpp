@@ -8,8 +8,11 @@
 #include "CartesianMesh.h"
 
 #include <fstream>
+#include <iomanip>
 
 #include "yaml-cpp/yaml.h"
+#include <petscvec.h>
+#include <petscviewerhdf5.h>
 
 
 /**
@@ -164,6 +167,146 @@ void CartesianMesh::initialize(std::string filePath)
   PetscPrintf(PETSC_COMM_WORLD, "done.\n");
 
 } // initialize
+
+
+/**
+ * \brief Writes grid points into file.
+ *
+ * \param filePath Path of the file to write
+ */
+PetscErrorCode CartesianMesh::write(std::string filePath)
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting grid into file... "); CHKERRQ(ierr);
+
+  PetscInt rank;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+
+  if (rank == 0)
+  {
+    std::ofstream streamFile(filePath);
+    if (nz == 0)
+    {
+      streamFile << nx << '\t' << ny << '\n';
+    }
+    else
+    {
+      streamFile << nx << '\t' << ny << '\t' << nz << '\n';
+    }
+    for (std::vector<PetscReal>::const_iterator i=x.begin(); i!=x.end(); ++i)
+      streamFile << std::setprecision(16) << *i << '\n';
+    for (std::vector<PetscReal>::const_iterator i=y.begin(); i!=y.end(); ++i)
+      streamFile << std::setprecision(16) << *i << '\n';
+    if (nz > 0)
+    {  
+      for (std::vector<PetscReal>::const_iterator i=z.begin(); i!=z.end(); ++i)
+        streamFile << std::setprecision(16) << *i << '\n';
+    }
+    streamFile.close();
+  }
+  
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
+  return 0;
+} // write
+
+
+#ifdef PETSC_HAVE_HDF5
+/**
+ * \brief Writes the grid stations into a HDF5 file.
+ *
+ * \param filePath Path of the file to write
+ * \param mode Staggered mode to define locations of a variable points
+ */
+PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
+{
+  PetscErrorCode ierr;
+  PetscReal value;
+  PetscViewer viewer;
+  Vec xs, ys, zs;
+  PetscInt rank;
+
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+
+  if (rank == 0)
+  {
+    ierr = PetscViewerHDF5Open(PETSC_COMM_SELF, filePath.c_str(), FILE_MODE_WRITE, &viewer); CHKERRQ(ierr);
+    // stations along a gridline in the x-direction
+    if (mode == STAGGERED_MODE_X)
+    {
+      ierr = VecCreateSeq(PETSC_COMM_SELF, nx-1, &xs); CHKERRQ(ierr);
+      for (int i=0; i<nx-1; i++)
+      {
+        value = x[i+1];
+        ierr = VecSetValue(xs, i, value, INSERT_VALUES); CHKERRQ(ierr);
+      }
+    }
+    else
+    {
+      ierr = VecCreateSeq(PETSC_COMM_SELF, nx, &xs); CHKERRQ(ierr);
+      for (int i=0; i<nx; i++)
+      {
+        value = 0.5 * (x[i] + x[i+1]);
+        ierr = VecSetValue(xs, i, value, INSERT_VALUES); CHKERRQ(ierr);
+      }  
+    }
+    ierr = PetscObjectSetName((PetscObject) xs, "x"); CHKERRQ(ierr);
+    ierr = VecView(xs, viewer); CHKERRQ(ierr);
+    ierr = VecDestroy(&xs); CHKERRQ(ierr);
+    // stations along a gridline in the y-direction
+    if (mode == STAGGERED_MODE_Y)
+    {
+      ierr = VecCreateSeq(PETSC_COMM_SELF, ny-1, &ys); CHKERRQ(ierr);
+      for (int i=0; i<ny-1; i++)
+      {
+        value = y[i+1];
+        ierr = VecSetValue(ys, i, value, INSERT_VALUES); CHKERRQ(ierr);
+      }  
+    }
+    else
+    {
+      ierr = VecCreateSeq(PETSC_COMM_SELF, ny, &ys); CHKERRQ(ierr);
+      for (int i=0; i<ny; i++)
+      {
+        value = 0.5 * (y[i] + y[i+1]);
+        ierr = VecSetValue(ys, i, value, INSERT_VALUES); CHKERRQ(ierr);
+      }  
+    }
+    ierr = PetscObjectSetName((PetscObject) ys, "y"); CHKERRQ(ierr);
+    ierr = VecView(ys, viewer); CHKERRQ(ierr);
+    ierr = VecDestroy(&ys); CHKERRQ(ierr);
+    if (nz > 0)
+    {
+      // stations along a gridline in the z-direction
+      if (mode == STAGGERED_MODE_Z)
+      {
+        ierr = VecCreateSeq(PETSC_COMM_SELF, nz-1, &zs); CHKERRQ(ierr);
+        for (int i=0; i<nz-1; i++)
+        {
+          value = z[i+1];
+          ierr = VecSetValue(zs, i, value, INSERT_VALUES); CHKERRQ(ierr);
+        }  
+      }
+      else
+      {
+        ierr = VecCreateSeq(PETSC_COMM_SELF, nz, &zs); CHKERRQ(ierr);
+        for (int i=0; i<nz; i++)
+        {
+          value = 0.5 * (z[i] + z[i+1]);
+          ierr = VecSetValue(zs, i, value, INSERT_VALUES); CHKERRQ(ierr);
+        }  
+      }
+      ierr = PetscObjectSetName((PetscObject) zs, "z"); CHKERRQ(ierr);
+      ierr = VecView(zs, viewer); CHKERRQ(ierr);
+      ierr = VecDestroy(&zs); CHKERRQ(ierr);
+    }
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  }
+
+  return 0;
+} // write
+#endif
 
 
 /**

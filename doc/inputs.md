@@ -4,7 +4,6 @@ A simulation directory must contain some input files in order to run the program
 
 * The file [[cartesianMesh.yaml]] is required to generate a structured Cartesian grid (uniform or stretched).
 
-
 * The file [[simulationParameters.yaml]] contains the parameters related to the time-scheme. They include the number of time-steps, the time-increment, the saving time-step interval, the starting time-step, the name of the immersed-boundary method to use (if body present in the domain), as well as the temporal scheme for the convective and diffusive terms of the momentum equation.
 
 The following files are optional:

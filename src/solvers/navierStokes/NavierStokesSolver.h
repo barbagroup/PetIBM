@@ -133,18 +133,22 @@ public:
   // project velocity onto divergence-free field with satisfaction of the no-splip condition
   PetscErrorCode projectionStep();
 
-  // print info about simulation
-  PetscErrorCode printInfo();
   // read fluxes from files
-  PetscErrorCode readFluxes();
+  PetscErrorCode readFluxes(std::string directory);
+  // read velocity components from files
+  PetscErrorCode readVelocities(std::string directory);
   // read pressure field from file
-  virtual PetscErrorCode readLambda();
-  // write grid coordinates into file
-  PetscErrorCode writeGrid();
+  virtual PetscErrorCode readLambda(std::string directory);
+#ifdef PETSC_HAVE_HDF5
+  // write grid stations of the different field variables into HDF5 files
+  PetscErrorCode writeGrids();
+#endif
   // write fluxes into files
-  PetscErrorCode writeFluxes();
+  PetscErrorCode writeFluxes(std::string directory);
+  // write velocity components into files
+  PetscErrorCode writeVelocities(std::string directory);
   // write pressure field into file
-  virtual PetscErrorCode writeLambda();
+  virtual PetscErrorCode writeLambda(std::string directory);
   // write KSP iteration counts into file
   PetscErrorCode writeIterationCounts();
   
@@ -174,6 +178,8 @@ public:
 
   // write numerical solution into respective files
   virtual PetscErrorCode writeData();
+  // read numerical solution from files
+  PetscErrorCode readData();
 
 }; // NavierStokesSolver
 

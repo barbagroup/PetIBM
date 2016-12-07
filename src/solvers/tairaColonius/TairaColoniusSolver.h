@@ -52,9 +52,9 @@ public:
   PetscErrorCode createGlobalMappingBodies();
   PetscErrorCode calculateForce();
   
-  PetscErrorCode readLambda();
+  PetscErrorCode readLambda(std::string directory);
   PetscErrorCode writeData();
-  PetscErrorCode writeLambda();
+  PetscErrorCode writeLambda(std::string directory);
   PetscErrorCode writeForces();
 
   PetscReal dhRoma(PetscReal x, PetscReal h);

@@ -22,7 +22,7 @@ PetscErrorCode TairaColoniusSolver<2>::createGlobalMappingBodies()
 {
   PetscErrorCode ierr;
 
-  PetscInt numProcs;
+  PetscMPIInt numProcs;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
   PetscInt globalIndex = 0;
@@ -46,7 +46,7 @@ PetscErrorCode TairaColoniusSolver<3>::createGlobalMappingBodies()
 {
   PetscErrorCode ierr;
 
-  PetscInt numProcs;
+  PetscMPIInt numProcs;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
 
   PetscInt globalIndex = 0;

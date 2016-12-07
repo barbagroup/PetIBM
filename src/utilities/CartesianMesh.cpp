@@ -180,7 +180,7 @@ PetscErrorCode CartesianMesh::write(std::string filePath)
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\nWriting grid into file... "); CHKERRQ(ierr);
 
-  PetscInt rank;
+  PetscMPIInt rank;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
   if (rank == 0)
@@ -225,7 +225,7 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
   PetscReal value;
   PetscViewer viewer;
   Vec xs, ys, zs;
-  PetscInt rank;
+  PetscMPIInt rank;
 
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 

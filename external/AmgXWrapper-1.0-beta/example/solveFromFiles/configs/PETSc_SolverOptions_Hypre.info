@@ -1,0 +1,28 @@
+-ksp_type cg
+-ksp_atol 1e-12
+-ksp_rtol 1e-14
+-ksp_max_it 10000
+
+-pc_type hypre
+-pc_hypre_type boomeramg
+-pc_hypre_boomeramg_cycle_type V
+-pc_hypre_boomeramg_max_levels 100
+-pc_hypre_boomeramg_max_iter 1
+-pc_hypre_boomeramg_tol 0.0
+-pc_hypre_boomeramg_truncfactor 0.0
+-pc_hypre_boomeramg_P_max 0
+-pc_hypre_boomeramg_agg_nl 0
+-pc_hypre_boomeramg_agg_num_paths 1
+-pc_hypre_boomeramg_strong_threshold 0.25
+-pc_hypre_boomeramg_max_row_sum 1.0
+-pc_hypre_boomeramg_grid_sweeps_down 1
+-pc_hypre_boomeramg_grid_sweeps_up 1
+-pc_hypre_boomeramg_grid_sweeps_coarse 1
+-pc_hypre_boomeramg_relax_type_all Jacobi
+-pc_hypre_boomeramg_relax_type_coarse Gaussian-elimination
+-pc_hypre_boomeramg_relax_weight_all 1.0
+-pc_hypre_boomeramg_outer_relax_weight_all 1.0
+-pc_hypre_boomeramg_measure_type local
+-pc_hypre_boomeramg_coarsen_type HMIS
+-pc_hypre_boomeramg_interp_type ext+i-cc
+

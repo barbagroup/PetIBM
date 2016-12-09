@@ -90,7 +90,10 @@ bin_PROGRAMS = diffusiveTermTest2d$(EXEEXT) \
 	diffusiveTermTest3d$(EXEEXT)
 subdir = tests/diffusiveTerm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/configure_doxygen.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
+	$(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_cuda.m4 \
+	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
@@ -175,6 +178,7 @@ CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -187,6 +191,7 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CUDA_DIR = @CUDA_DIR@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -219,6 +224,7 @@ OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
+PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
 PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -226,6 +232,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@

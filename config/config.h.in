@@ -34,6 +34,18 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `amgxsh' library (-lamgxsh). */
+#undef HAVE_LIBAMGXSH
+
+/* Define to 1 if you have the `cublas' library (-lcublas). */
+#undef HAVE_LIBCUBLAS
+
+/* Define to 1 if you have the `cudart' library (-lcudart). */
+#undef HAVE_LIBCUDART
+
+/* Define to 1 if you have the `cusparse' library (-lcusparse). */
+#undef HAVE_LIBCUSPARSE
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -196,6 +208,10 @@
 #ifndef __cplusplus
 #undef inline
 #endif
+
+/* Define to the type of a signed integer type of width exactly 64 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int64_t
 
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc

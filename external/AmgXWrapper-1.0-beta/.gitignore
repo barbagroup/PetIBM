@@ -1,0 +1,65 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IPython notebook checkpoints
+**/.ipynb_checkpoints/
+
+# Python compiled files
+*.pyc
+
+# YouCompleteMe file
+.ycm_extra_conf.py
+
+# clang complete file
+.clang_complete
+
+# Vim backup file
+*~
+.*.swp
+
+# cmake files other than CMakeLists.txt
+**/CMakeCache.txt
+**/CMakeFiles/
+**/Makefile
+**/*.cmake
+**/bin
+**/*.log
+**/*.vts
+
+# AmgX log file
+**/.logamgx
+
+# PETSc compilation
+**/forBenchmarks
+
+# benchmarks extra file
+tests/benchmarks/configs
+tests/benchmarks/logs
+tests/benchmarks/results
+tests/benchmarks/errors

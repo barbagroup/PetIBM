@@ -26,9 +26,9 @@ lidDrivenCavity2dRe100Parallel:
 	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100
 
 lidDrivenCavity2dRe100NonUniform:
-	@echo "===================================================="
-	@echo "2d lid-driven cavity flow at Re=100 unsing 1 process"
-	@echo "===================================================="
+	@echo "==================================================="
+	@echo "2d lid-driven cavity flow at Re=100 using 1 process"
+	@echo "==================================================="
 	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100NonUniform
 
 lidDrivenCavity2dRe1000:

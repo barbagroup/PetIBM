@@ -86,6 +86,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 check_PROGRAMS = navierStokesTest$(EXEEXT)
+@WITH_AMGXWRAPPER_TRUE@am__append_1 = -I$(top_srcdir)/external/AmgXWrapper-1.0-beta/src
+@WITH_AMGXWRAPPER_TRUE@am__append_2 = $(top_builddir)/external/AmgXWrapper-1.0-beta/libamgxwrapper.a
 subdir = tests/NavierStokes
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -277,15 +279,15 @@ top_srcdir = @top_srcdir@
 navierStokesTest_SOURCES = NavierStokesTest.cpp
 navierStokesTest_DEPENDENCIES = input_data
 navierStokesTest_CPPFLAGS = -I$(top_srcdir)/src/utilities \
-														-I$(top_srcdir)/src/solvers \
-														-I$(top_srcdir)/external/gtest-1.7.0/include \
-														-I$(top_srcdir)/external/yaml-cpp-0.5.1/include
-
+	-I$(top_srcdir)/src/solvers \
+	-I$(top_srcdir)/external/gtest-1.7.0/include \
+	-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
+	$(am__append_1)
 navierStokesTest_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
-												 $(top_builddir)/src/utilities/libutilities.a \
-												 $(top_builddir)/external/gtest-1.7.0/libgtest.a \
-												 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
-
+	$(top_builddir)/src/utilities/libutilities.a \
+	$(top_builddir)/external/gtest-1.7.0/libgtest.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_2)
 all: all-am
 
 .SUFFIXES:

@@ -11,8 +11,10 @@
 #include "CartesianMesh.h"
 #include "FlowDescription.h"
 #include "SimulationParameters.h"
+#include "solvers/solver.h"
 
 #include <fstream>
+#include <memory>
 
 #include <petscdmda.h>
 #include <petscksp.h>
@@ -39,7 +41,7 @@ public:
   Vec qxLocal, qyLocal, qzLocal;
   Vec pMapping, uMapping, vMapping, wMapping;
 
-  KSP ksp1, ksp2;
+  Solver *velocity, *poisson;
 
   Mat A,
       QT,
@@ -83,8 +85,8 @@ public:
   PetscErrorCode createLocalToGlobalMappingsFluxes();
   // create mapping from local pressure variable to global lambda vector
   PetscErrorCode createLocalToGlobalMappingsLambda();
-  // set up Krylov solvers used to solve linear systems
-  PetscErrorCode createKSPs();
+  // create the solvers for the linear systems
+  PetscErrorCode createSolvers();
   // populate flux vectors with initial conditions
   virtual PetscErrorCode initializeFluxes();
   // add initial perturbation to velocity field

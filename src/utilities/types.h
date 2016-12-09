@@ -98,6 +98,18 @@ enum StaggeredMode
   CELL_CENTERED      ///< cell-centered quantity
 };
 
+
+/**
+ * \brief Data type describing the executing space of linear solvers
+ */
+enum ExecuteType
+{
+    GPU, ///< GPU-based solver. Currently only AmgX solvers exist.
+    CPU  ///< CPU-based solver, i.e. PETSc solvers
+};
+ExecuteType stringToExecuteType(std::string);
+std::string stringFromExecuteType(ExecuteType exeType);
+
 #endif
 
 /**

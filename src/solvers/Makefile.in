@@ -86,6 +86,11 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+@WITH_AMGXWRAPPER_TRUE@am__append_1 = -I$(top_srcdir)/external/AmgXWrapper-1.0-beta/src \
+@WITH_AMGXWRAPPER_TRUE@                         -I$(CUDA_DIR)/include \
+@WITH_AMGXWRAPPER_TRUE@                         -I$(AMGX_DIR)/examples \
+@WITH_AMGXWRAPPER_TRUE@                         -D HAVE_AMGX
+
 subdir = src/solvers
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -289,10 +294,7 @@ libsolvers_a_SOURCES = createSolver.cpp \
                        navierStokes/NavierStokesSolver.cpp \
                        tairaColonius/TairaColoniusSolver.cpp
 
-libsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities \
-                        -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-                        -I$(top_srcdir)/external/boost-1.57.0
-
+libsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities $(am__append_1)
 all: all-am
 
 .SUFFIXES:

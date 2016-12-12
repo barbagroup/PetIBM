@@ -628,8 +628,8 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 WITH_AMGXWRAPPER_FALSE
 WITH_AMGXWRAPPER_TRUE
-CUDA_DIR
 AMGX_DIR
+CUDA_DIR
 PACKAGE_LDFLAGS
 PACKAGE_LIBS
 PACKAGE_CPPFLAGS
@@ -749,9 +749,9 @@ with_doxygen
 with_petsc_dir
 with_petsc_arch
 with_amgx
-with_amgx_dir
 with_cuda
 with_cuda_dir
+with_amgx_dir
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1409,10 +1409,10 @@ Optional Packages:
   --with-petsc-dir=PATH   set PETSc directory
   --with-petsc-arch=PATH  set PETSc arch folder
 
-  --with-amgx=PATH        set AmgX directory
-  --with-amgx-dir=PATH    set AmgX directory
   --with-cuda=PATH        set CUDA directory
   --with-cuda-dir=PATH    set CUDA directory
+  --with-amgx=PATH        set AmgX directory
+  --with-amgx-dir=PATH    set AmgX directory
 
 Some influential environment variables:
   CC          C compiler command
@@ -6553,157 +6553,6 @@ if test "${with_amgx+set}" = set; then :
   withval=$with_amgx;
 
 echo
-echo "================================="
-echo "Configuring optional package AmgX"
-echo "================================="
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-
-# check for presence of `--with-amgx=PATH`
-
-# Check whether --with-amgx was given.
-if test "${with_amgx+set}" = set; then :
-  withval=$with_amgx; if test ! -d "$withval" ; then
-               as_fn_error $? "it is necessary to specify an existing directory
-                             when using --with-amgx=PATH" "$LINENO" 5
-             fi
-             WITH_AMGX=yes
-             AMGX_DIR=$withval
-else
-  WITH_AMGX=no
-fi
-
-# check for presence of `--with-amgx-dir=PATH` if `--with-amgx=PATH` was not used
-if test "x$WITH_AMGX" = xno; then :
-
-# Check whether --with-amgx-dir was given.
-if test "${with_amgx_dir+set}" = set; then :
-  withval=$with_amgx_dir; if test ! -d "$withval" ; then
-                     as_fn_error $? "it is necessary to specify an existing directory
-                                   when using --with-amgx-dir=PATH" "$LINENO" 5
-                   fi
-                   WITH_AMGX=yes
-                   AMGX_DIR=$withval
-else
-  WITH_AMGX=no
-fi
-
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: using AMGX_DIR: $AMGX_DIR" >&5
-$as_echo "$as_me: using AMGX_DIR: $AMGX_DIR" >&6;}
-
-AMGX_INC_PATH=-I`find $AMGX_DIR -name amgx_c.h | sed -e 's/\/amgx_c.h//g'`
-AMGX_LIB_PATH=-L`find $AMGX_DIR -name libamgxsh.so | sed -e 's/\/libamgxsh.so//g'`
-AMGX_LIBRARY=-lamgxsh
-
-CPPFLAGS="$AMGX_INC_PATH $CPPFLAGS"
-
-LDFLAGS="$AMGX_LIB_PATH $LDFLAGS"
-
-LIBS="$AMGX_LIBRARY $LIBS"
-
-
-# check for presence of header file amgx_c.h
-ac_fn_cxx_check_header_mongrel "$LINENO" "amgx_c.h" "ac_cv_header_amgx_c_h" "$ac_includes_default"
-if test "x$ac_cv_header_amgx_c_h" = xyes; then :
-
-else
-  as_fn_error $? "could not find header file amgx_c.h" "$LINENO" 5
-fi
-
-
-# check for presence of library amgxh
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgxsh" >&5
-$as_echo_n "checking for AMGX_initialize in -lamgxsh... " >&6; }
-if ${ac_cv_lib_amgxsh_AMGX_initialize+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lamgxsh  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char AMGX_initialize ();
-int
-main ()
-{
-return AMGX_initialize ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_amgxsh_AMGX_initialize=yes
-else
-  ac_cv_lib_amgxsh_AMGX_initialize=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_amgxsh_AMGX_initialize" >&5
-$as_echo "$ac_cv_lib_amgxsh_AMGX_initialize" >&6; }
-if test "x$ac_cv_lib_amgxsh_AMGX_initialize" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBAMGXSH 1
-_ACEOF
-
-  LIBS="-lamgxsh $LIBS"
-
-else
-  as_fn_error $? "could not find library amgxsh" "$LINENO" 5
-fi
-
-
-#PACKAGE_CPPFLAGS_PREPEND($AMGX_INC_PATH)
-PACKAGE_LDFLAGS="$AMGX_LIB_PATH $PACKAGE_LDFLAGS"
-
-PACKAGE_LIBS="$AMGX_LIBRARY $PACKAGE_LIBS"
-
-
-
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
-
-AMGX_DIR=$AMGX_DIR
-
-
-echo
-
-
-
-
-echo
 echo "========================"
 echo "Check version of OpenMPI"
 echo "========================"
@@ -7081,6 +6930,157 @@ CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
 
 
 CUDA_DIR=$CUDA_DIR
+
+
+echo
+
+
+
+
+echo
+echo "================================="
+echo "Configuring optional package AmgX"
+echo "================================="
+
+
+PACKAGE_save_CFLAGS=$CFLAGS
+PACKAGE_save_CPPFLAGS=$CPPFLAGS
+PACKAGE_save_CXXFLAGS=$CXXFLAGS
+PACKAGE_save_FCFLAGS=$FCFLAGS
+PACKAGE_save_LDFLAGS=$LDFLAGS
+PACKAGE_save_FCLIBS=$FCLIBS
+PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
+CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
+CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
+CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
+FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
+LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
+LIBS="$PACKAGE_LIBS $LIBS"
+FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
+CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
+
+
+# check for presence of `--with-amgx=PATH`
+
+# Check whether --with-amgx was given.
+if test "${with_amgx+set}" = set; then :
+  withval=$with_amgx; if test ! -d "$withval" ; then
+               as_fn_error $? "it is necessary to specify an existing directory
+                             when using --with-amgx=PATH" "$LINENO" 5
+             fi
+             WITH_AMGX=yes
+             AMGX_DIR=$withval
+else
+  WITH_AMGX=no
+fi
+
+# check for presence of `--with-amgx-dir=PATH` if `--with-amgx=PATH` was not used
+if test "x$WITH_AMGX" = xno; then :
+
+# Check whether --with-amgx-dir was given.
+if test "${with_amgx_dir+set}" = set; then :
+  withval=$with_amgx_dir; if test ! -d "$withval" ; then
+                     as_fn_error $? "it is necessary to specify an existing directory
+                                   when using --with-amgx-dir=PATH" "$LINENO" 5
+                   fi
+                   WITH_AMGX=yes
+                   AMGX_DIR=$withval
+else
+  WITH_AMGX=no
+fi
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AMGX_DIR: $AMGX_DIR" >&5
+$as_echo "$as_me: using AMGX_DIR: $AMGX_DIR" >&6;}
+
+AMGX_INC_PATH=-I`find $AMGX_DIR -name amgx_c.h | sed -e 's/\/amgx_c.h//g'`
+AMGX_LIB_PATH=-L`find $AMGX_DIR -name libamgxsh.so | sed -e 's/\/libamgxsh.so//g'`
+AMGX_LIBRARY=-lamgxsh
+
+CPPFLAGS="$AMGX_INC_PATH $CPPFLAGS"
+
+LDFLAGS="$AMGX_LIB_PATH $LDFLAGS"
+
+LIBS="$AMGX_LIBRARY $LIBS"
+
+
+# check for presence of header file amgx_c.h
+ac_fn_cxx_check_header_mongrel "$LINENO" "amgx_c.h" "ac_cv_header_amgx_c_h" "$ac_includes_default"
+if test "x$ac_cv_header_amgx_c_h" = xyes; then :
+
+else
+  as_fn_error $? "could not find header file amgx_c.h" "$LINENO" 5
+fi
+
+
+# check for presence of library amgxh
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgxsh" >&5
+$as_echo_n "checking for AMGX_initialize in -lamgxsh... " >&6; }
+if ${ac_cv_lib_amgxsh_AMGX_initialize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lamgxsh  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char AMGX_initialize ();
+int
+main ()
+{
+return AMGX_initialize ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_amgxsh_AMGX_initialize=yes
+else
+  ac_cv_lib_amgxsh_AMGX_initialize=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_amgxsh_AMGX_initialize" >&5
+$as_echo "$ac_cv_lib_amgxsh_AMGX_initialize" >&6; }
+if test "x$ac_cv_lib_amgxsh_AMGX_initialize" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBAMGXSH 1
+_ACEOF
+
+  LIBS="-lamgxsh $LIBS"
+
+else
+  as_fn_error $? "could not find library amgxsh" "$LINENO" 5
+fi
+
+
+#PACKAGE_CPPFLAGS_PREPEND($AMGX_INC_PATH)
+PACKAGE_LDFLAGS="$AMGX_LIB_PATH $PACKAGE_LDFLAGS"
+
+PACKAGE_LIBS="$AMGX_LIBRARY $PACKAGE_LIBS"
+
+
+
+CFLAGS=$PACKAGE_save_CFLAGS
+CPPFLAGS=$PACKAGE_save_CPPFLAGS
+CXXFLAGS=$PACKAGE_save_CXXFLAGS
+FCFLAGS=$PACKAGE_save_FCFLAGS
+LDFLAGS=$PACKAGE_save_LDFLAGS
+LIBS=$PACKAGE_save_LIBS
+FCLIBS=$PACKAGE_save_FCLIBS
+CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
+
+
+AMGX_DIR=$AMGX_DIR
 
 
 echo

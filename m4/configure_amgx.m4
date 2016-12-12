@@ -22,18 +22,6 @@ AC_ARG_WITH([amgx],
              WITH_AMGX=yes
              AMGX_DIR=$withval],
             [WITH_AMGX=no])
-# check for presence of `--with-amgx-dir=PATH` if `--with-amgx=PATH` was not used
-AS_IF([test "x$WITH_AMGX" = xno],
-      [AC_ARG_WITH([amgx-dir],
-                  AS_HELP_STRING([--with-amgx-dir=PATH],
-                                 [set AmgX directory]),
-                  [if test ! -d "$withval" ; then
-                     AC_MSG_ERROR([it is necessary to specify an existing directory 
-                                   when using --with-amgx-dir=PATH])
-                   fi
-                   WITH_AMGX=yes
-                   AMGX_DIR=$withval],
-                  [WITH_AMGX=no])])
 
 AC_MSG_NOTICE([using AMGX_DIR: $AMGX_DIR])
 
@@ -53,7 +41,7 @@ AC_CHECK_LIB([amgxsh],
              [AMGX_initialize], ,
              AC_MSG_ERROR([could not find library amgxsh]))
 
-#PACKAGE_CPPFLAGS_PREPEND($AMGX_INC_PATH)
+PACKAGE_CPPFLAGS_PREPEND($AMGX_INC_PATH)
 PACKAGE_LDFLAGS_PREPEND($AMGX_LIB_PATH)
 PACKAGE_LIBS_PREPEND($AMGX_LIBRARY)
 

@@ -750,8 +750,6 @@ with_petsc_dir
 with_petsc_arch
 with_amgx
 with_cuda
-with_cuda_dir
-with_amgx_dir
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1410,9 +1408,7 @@ Optional Packages:
   --with-petsc-arch=PATH  set PETSc arch folder
 
   --with-cuda=PATH        set CUDA directory
-  --with-cuda-dir=PATH    set CUDA directory
   --with-amgx=PATH        set AmgX directory
-  --with-amgx-dir=PATH    set AmgX directory
 
 Some influential environment variables:
   CC          C compiler command
@@ -6701,17 +6697,6 @@ if test "${with_cuda+set}" = set; then :
              CUDA_DIR=$withval
 fi
 
-# check for presence of `--with-cuda-dir=PATH`
-
-# Check whether --with-cuda-dir was given.
-if test "${with_cuda_dir+set}" = set; then :
-  withval=$with_cuda_dir; if test ! -d "$withval" ; then
-               as_fn_error $? "it is necessary to specify an existing directory
-                             when using --with-cuda-dir=PATH" "$LINENO" 5
-             fi
-             CUDA_DIR=$withval
-fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: using CUDA: $CUDA_DIR" >&5
 $as_echo "$as_me: using CUDA: $CUDA_DIR" >&6;}
@@ -6912,7 +6897,8 @@ else
 fi
 
 
-#PACKAGE_CPPFLAGS_PREPEND($CUDA_INC_PATH)
+PACKAGE_CPPFLAGS="$CUDA_INC_PATH $PACKAGE_CPPFLAGS"
+
 PACKAGE_LDFLAGS="$CUDA_LIB_PATH $PACKAGE_LDFLAGS"
 
 PACKAGE_LIBS="$CUDA_LIBRARY $PACKAGE_LIBS"
@@ -6974,22 +6960,6 @@ else
   WITH_AMGX=no
 fi
 
-# check for presence of `--with-amgx-dir=PATH` if `--with-amgx=PATH` was not used
-if test "x$WITH_AMGX" = xno; then :
-
-# Check whether --with-amgx-dir was given.
-if test "${with_amgx_dir+set}" = set; then :
-  withval=$with_amgx_dir; if test ! -d "$withval" ; then
-                     as_fn_error $? "it is necessary to specify an existing directory
-                                   when using --with-amgx-dir=PATH" "$LINENO" 5
-                   fi
-                   WITH_AMGX=yes
-                   AMGX_DIR=$withval
-else
-  WITH_AMGX=no
-fi
-
-fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: using AMGX_DIR: $AMGX_DIR" >&5
 $as_echo "$as_me: using AMGX_DIR: $AMGX_DIR" >&6;}
@@ -7063,7 +7033,8 @@ else
 fi
 
 
-#PACKAGE_CPPFLAGS_PREPEND($AMGX_INC_PATH)
+PACKAGE_CPPFLAGS="$AMGX_INC_PATH $PACKAGE_CPPFLAGS"
+
 PACKAGE_LDFLAGS="$AMGX_LIB_PATH $PACKAGE_LDFLAGS"
 
 PACKAGE_LIBS="$AMGX_LIBRARY $PACKAGE_LIBS"

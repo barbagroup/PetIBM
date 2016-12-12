@@ -20,15 +20,6 @@ AC_ARG_WITH([cuda],
                              when using --with-cuda=PATH])
              fi
              CUDA_DIR=$withval])
-# check for presence of `--with-cuda-dir=PATH`
-AC_ARG_WITH([cuda-dir],
-            AS_HELP_STRING([--with-cuda-dir=PATH],
-                           [set CUDA directory]),
-            [if test ! -d "$withval" ; then
-               AC_MSG_ERROR([it is necessary to specify an existing directory 
-                             when using --with-cuda-dir=PATH])
-             fi
-             CUDA_DIR=$withval])
 
 AC_MSG_NOTICE([using CUDA: $CUDA_DIR])
 
@@ -69,7 +60,7 @@ AC_CHECK_LIB([cublas], [cublasGetVersion], ,
 AC_CHECK_LIB([cusparse], [cusparseGetVersion], ,
              AC_MSG_ERROR([could not find library cusparse]))
 
-#PACKAGE_CPPFLAGS_PREPEND($CUDA_INC_PATH)
+PACKAGE_CPPFLAGS_PREPEND($CUDA_INC_PATH)
 PACKAGE_LDFLAGS_PREPEND($CUDA_LIB_PATH)
 PACKAGE_LIBS_PREPEND($CUDA_LIBRARY)
 

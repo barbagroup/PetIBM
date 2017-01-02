@@ -415,6 +415,9 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
   if (BNQ != PETSC_NULL)  {ierr = MatDestroy(&BNQ); CHKERRQ(ierr);}
   if (QTBNQ != PETSC_NULL){ierr = MatDestroy(&QTBNQ); CHKERRQ(ierr);}
 
+  delete velocity;
+  delete poisson;
+
   return 0;
 } // finalize
 

@@ -20,7 +20,9 @@ class KSPSolver : public Solver
 {
 public:
   KSPSolver(std::string p, std::string f): prefix(p), options(f) { };
-  virtual ~KSPSolver(){ };
+  virtual ~KSPSolver(){
+    KSPDestroy(&ksp);
+  };
 
   PetscErrorCode create(const Mat &A);
   PetscErrorCode solve(Vec &x, Vec &b);

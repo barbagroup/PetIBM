@@ -8,6 +8,7 @@ examples:
 	@if test "$(top_srcdir)" != "$(top_builddir)" ; then \
 		cp -r $(top_srcdir)/examples/2d $(PWD) ; \
 		cp -r $(top_srcdir)/examples/3d $(PWD) ; \
+		cp -r $(top_srcdir)/examples/GPU $(PWD) ; \
 	fi ;
 
 
@@ -349,3 +350,23 @@ memoryCheck3dParallel:
 	@$(MPIEXEC) -n 2 valgrind \
 							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM3D) -directory ./3d/memoryTest							
+
+# GPU examples
+
+cylinder2dRe40GPU:
+	@echo "================================================"
+	@echo "2d flow over cylinder at Re=40 using 2 processes"
+	@echo "================================================"
+	@$(MPIEXEC) -n 2 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re40
+
+cylinder2dRe550GPU:
+	@echo "================================================="
+	@echo "2d flow over cylinder at Re=550 using 4 processes"
+	@echo "================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re550
+
+cylinder2dRe3000GPU:
+	@echo "=================================================="
+	@echo "2d flow over cylinder at Re=3000 using 4 processes"
+	@echo "=================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re3000

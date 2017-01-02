@@ -70,3 +70,28 @@ Here are the figures we obtained after `2000` time-steps of flow simulation:
 
 ![cylinderRe40Pressure](./images/cylinder2dRe40/pressure0002000.png)
 ![cylinderRe40Vorticity](./images/cylinder2dRe40/vorticity0002000.png)
+
+
+### Optional: using a GPU to solve the Poisson system with AmgX
+
+If you have built PetIBM with AmgXWrapper, here are the command-lines to use to solve the same problem except that the Poisson system is now solved on a single CUDA-capable GPU device:
+
+    cd examples
+    make examples
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:<path-to-amgx-lib>"
+    export CUDA_VISIBLE_DEVICES=0
+    make cylinder2dRe40GPU
+
+For example, if AmgX is located in the directory `$HOME/src`, replace `<path-to-amgx-lib>` with `$HOME/src/amgx/lib`.
+
+Here, we are using a single GPU denoted by index `0`.
+
+To plot the vorticity contours after 2000 time-steps, use the following command-line:
+
+    python $PETIBM_DIR/scripts/python/plotFields2d.py \
+        --directory GPU/2d/cylinder/Re40 \
+        --bottom-left -2.0 -2.0 \
+        --top-right 4.0 2.0 \
+        --no-velocity \
+        --pressure-range -1.0 0.5 101 \
+        --vorticity-range -1.0 1.0 101

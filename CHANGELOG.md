@@ -13,6 +13,8 @@
 * Possibility to output the numerical solution in HDF5 format.
 * Possibility to output the flux and/or velocity variables.
 * Python script `createXMFFile.py` that generates a `.xmf` file to let VisIt know how to read the HDF5 files.
+* [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) as an optional external package (version v1.0-beta).
+* Examples to solve the 2D flow around a circular cylinder using AmgX.
 
 ### Changed
 

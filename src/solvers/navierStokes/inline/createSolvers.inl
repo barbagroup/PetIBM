@@ -23,15 +23,19 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
       options = parameters->directory + "/solversPetscOptions.info";
       velocity = new KSPSolver(prefix, options);
       break;
-#ifdef HAVE_AMGX
     case GPU:
+#ifdef HAVE_AMGX
       options = parameters->directory + "/solversAmgXOptions_v.info";
       velocity = new AMGXSolver(options);
-      break;
+#else HAVE_AMGX
+      ierr = PetscPrintf(PETSC_COMM_WORLD,
+                         "\nERROR: AmgX not available; vSolveType should be set to 'CPU'.\n");
+      exit(1);
 #endif
+      break;
     default:
       ierr = PetscPrintf(PETSC_COMM_WORLD,
-                         "ERROR: vSolveType should be either 'CPU' or 'GPU'.");
+                         "\nERROR: vSolveType should be either 'CPU' or 'GPU'.\n");
       exit(1);
   }
   velocity->create(A);
@@ -43,15 +47,19 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
       options = parameters->directory + "/solversPetscOptions.info";
       poisson = new KSPSolver(prefix, options);
       break;
-#ifdef HAVE_AMGX
     case GPU:
+#ifdef HAVE_AMGX
       options = parameters->directory + "/solversAmgXOptions_p.info";
       poisson = new AMGXSolver(options);
-      break;
+#else HAVE_AMGX
+      ierr = PetscPrintf(PETSC_COMM_WORLD,
+                         "\nERROR: AmgX not available; pSolveType should be set to 'CPU'.\n");
+      exit(1);
 #endif
+      break;
     default:
       ierr = PetscPrintf(PETSC_COMM_WORLD,
-                         "ERROR: pSolveType should be either 'CPU' or 'GPU'.");
+                         "\nERROR: pSolveType should be either 'CPU' or 'GPU'.\n");
       exit(1);
   }
   poisson->create(QTBNQ);

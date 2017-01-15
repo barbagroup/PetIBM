@@ -19,6 +19,8 @@ The simulation parameters do not depend on the dimensionality of the problem, an
       outputFormat: binary
       outputFlux: true
       outputVelocity: true
+      vSolveType: CPU
+      pSolveType: CPU
 
 
 ## File options
@@ -33,3 +35,5 @@ The simulation parameters do not depend on the dimensionality of the problem, an
 * `outputFormat`: (optional, default: `binary`) specifies the format of the output files in which the numerical solution is stored. Right now, two formats are supported: `binary` and `hdf5`.
 * `outputFlux`: (optional, default: `true`) writes the flux variable into files when set to `true`.
 * `outputVelocity`: (optional, default: `false`) writes the velocity variable into files when set to `true`.
+* `vSolveType`: (optional, default: `CPU`) to define which hardware to use to solve the iterative velocity system. Note: the `GPU` option is available only if PetIBM has been built with AmgXWrapper (see installation instructions for details about how to configure and build PetIBM with AmgXWrapper).
+* `pSolveType`: (optional, default: `CPU`) to define which hardware to use to solve the iterative Poisson system. Note: the `GPU` option is available only if PetIBM has been built with AmgXWrapper (see installation instructions for details about how to configure and build PetIBM with AmgXWrapper).

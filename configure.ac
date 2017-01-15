@@ -31,10 +31,11 @@ CONFIGURE_DOXYGEN
 AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_SIZE_T
+AC_TYPE_INT64_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # check for header files
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h stddef.h stdlib.h string.h strings.h sys/time.h sys/timeb.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h stddef.h stdlib.h string.h strings.h sys/param.h sys/time.h sys/timeb.h unistd.h wchar.h wctype.h])
 
 # check for library functions
 AC_FUNC_FORK
@@ -46,6 +47,10 @@ AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday memset mkdir munmap 
 # check for optional and required third-party libraries
 PACKAGE_INITIALIZE_ENVIRONMENT
 CONFIGURE_PETSC
+AC_ARG_WITH([amgx],, [CHECK_VERSION_OPENMPI
+                      CONFIGURE_CUDA
+                      CONFIGURE_AMGX])
+AM_CONDITIONAL([WITH_AMGXWRAPPER], [test "x$WITH_AMGX" = xyes])
 PACKAGE_SETUP_ENVIRONMENT
 
 # list of Makefiles to generate
@@ -56,6 +61,7 @@ AC_CONFIG_FILES([Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.7.0/Makefile
+                 external/AmgXWrapper-1.0-beta/Makefile
                  tests/Makefile
                  tests/CartesianMesh/Makefile
                  tests/NavierStokes/Makefile
@@ -74,13 +80,8 @@ AC_MSG_NOTICE([PetIBM appears to have been configured successfully
 
 Prefix: '${prefix}'
 
-
 CXX: ${CXX}
 CXXFLAGS: ${CXXFLAGS}
-
-CC: ${CC}
-CFLAGS: ${CFLAGS}
-
 LDFLAGS: ${LDFLAGS}
 
 LIBS: ${LIBS}

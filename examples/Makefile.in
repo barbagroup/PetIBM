@@ -87,7 +87,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 subdir = examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/configure_doxygen.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
+	$(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_cuda.m4 \
+	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
@@ -121,6 +124,7 @@ am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -133,6 +137,7 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CUDA_DIR = @CUDA_DIR@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -165,6 +170,7 @@ OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
+PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
 PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -172,6 +178,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
@@ -417,6 +424,7 @@ examples:
 	@if test "$(top_srcdir)" != "$(top_builddir)" ; then \
 		cp -r $(top_srcdir)/examples/2d $(PWD) ; \
 		cp -r $(top_srcdir)/examples/3d $(PWD) ; \
+		cp -r $(top_srcdir)/examples/GPU $(PWD) ; \
 	fi ;
 
 # Two-dimensional examples
@@ -434,9 +442,9 @@ lidDrivenCavity2dRe100Parallel:
 	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100
 
 lidDrivenCavity2dRe100NonUniform:
-	@echo "===================================================="
-	@echo "2d lid-driven cavity flow at Re=100 unsing 1 process"
-	@echo "===================================================="
+	@echo "==================================================="
+	@echo "2d lid-driven cavity flow at Re=100 using 1 process"
+	@echo "==================================================="
 	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100NonUniform
 
 lidDrivenCavity2dRe1000:
@@ -757,6 +765,26 @@ memoryCheck3dParallel:
 	@$(MPIEXEC) -n 2 valgrind \
 							--tool=memcheck --leak-check=full --track-origins=yes \
 							$(PETIBM3D) -directory ./3d/memoryTest							
+
+# GPU examples
+
+cylinder2dRe40GPU:
+	@echo "================================================================"
+	@echo "2d flow over cylinder at Re=40 using 2 processes and AmgX solver"
+	@echo "================================================================"
+	@$(MPIEXEC) -n 2 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re40
+
+cylinder2dRe550GPU:
+	@echo "================================================================="
+	@echo "2d flow over cylinder at Re=550 using 4 processes and AmgX solver"
+	@echo "================================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re550
+
+cylinder2dRe3000GPU:
+	@echo "=================================================================="
+	@echo "2d flow over cylinder at Re=3000 using 4 processes and AmgX solver"
+	@echo "=================================================================="
+	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re3000
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

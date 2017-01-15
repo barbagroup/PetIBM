@@ -1,0 +1,10 @@
+# simulationParameters.yaml
+
+- dt: 0.0025
+  nt: 1200
+  nsave: 200
+  ibm: TAIRA_COLONIUS
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON
+  vSolveType: CPU
+  pSolveType: GPU

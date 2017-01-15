@@ -128,6 +128,30 @@ You may also want to build a optimized version:
     make install
 
 
+## Optional package: AmgXWrapper
+
+We offer the possibility to solve the iterative systems (velocity and/or Poisson) on CUDA-capable devices using [AmgX](https://developer.nvidia.com/amgx) (version `1.2.0-build108`).
+
+For this task, we use the package [`AmgXWrapper`](https://github.com/barbagroup/AmgXWrapper) (version `v1.0-beta` bundled with PetIBM).
+
+AmgX depends on OpenMPI-1.8 and CUDA-6.5 and is available to CUDA Registered Developers [here](https://developer.nvidia.com/amgx).
+
+For example, to build an optimized version of PetIBM with AmgXWrapper:
+
+    export PETSC_DIR=$HOME/sfw/petsc/3.7.4
+    export PETSC_ARCH=linux-opt
+    mkdir petibm-linux-opt && cd petibm-linux-opt
+    $PETIBM_DIR/configure \
+        --prefix=$HOME/sfw/petibm/petibm-linux-opt \
+        CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
+        CXXFLAGS="-g -O3 -std=c++11" \
+        --with-amgx="$HOME/sfw/amgx" \
+        --with-cuda="/usr/local/cuda-6.5"
+    make all
+    make check
+    make install
+
+
 ## Contributing and reporting bugs
 
 To report bugs, please use the GitHub issue tracking system.

@@ -570,8 +570,8 @@ PetscErrorCode NavierStokesSolver<dim>::writeIterationCounts()
     {
       iterationCountsFile.open(filePath.c_str(), std::ios::out | std::ios::app);
     }
-    ierr = KSPGetIterationNumber(ksp1, &countVelocitySolver); CHKERRQ(ierr);
-    ierr = KSPGetIterationNumber(ksp2, &countPoissonSolver); CHKERRQ(ierr);
+    ierr = velocity->getIters(countVelocitySolver); CHKERRQ(ierr);
+    ierr = poisson->getIters(countPoissonSolver); CHKERRQ(ierr);
     iterationCountsFile << timeStep << '\t' \
                         << countVelocitySolver << '\t' \
                         << countPoissonSolver << std::endl;

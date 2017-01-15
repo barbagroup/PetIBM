@@ -52,6 +52,9 @@ public:
   TimeIntegration convection, ///< time-scheme for the convection term
                   diffusion;  ///< time-scheme for the diffusion term
 
+  ExecuteType vSolveType, ///< hardware to use for the velocity solver
+              pSolveType; ///< hardware to use for the Poisson solver
+
   // constructors
   SimulationParameters();
   SimulationParameters(std::string directory);

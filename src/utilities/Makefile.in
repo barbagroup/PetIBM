@@ -86,9 +86,17 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+@WITH_AMGXWRAPPER_TRUE@am__append_1 = solvers/amgxsolver.cpp
+@WITH_AMGXWRAPPER_TRUE@am__append_2 = -I$(top_srcdir)/external/AmgXWrapper-1.0-beta/src \
+@WITH_AMGXWRAPPER_TRUE@                           -I$(CUDA_DIR)/include \
+@WITH_AMGXWRAPPER_TRUE@                           -I$(AMGX_DIR)/examples
+
 subdir = src/utilities
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/configure_doxygen.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
+	$(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_cuda.m4 \
+	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
@@ -107,10 +115,16 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libutilities_a_AR = $(AR) $(ARFLAGS)
 libutilities_a_LIBADD =
+am__libutilities_a_SOURCES_DIST = CartesianMesh.cpp \
+	FlowDescription.cpp SimulationParameters.cpp Body.cpp \
+	types.cpp solvers/kspsolver.cpp solvers/amgxsolver.cpp
+am__dirstamp = $(am__leading_dot)dirstamp
+@WITH_AMGXWRAPPER_TRUE@am__objects_1 = solvers/libutilities_a-amgxsolver.$(OBJEXT)
 am_libutilities_a_OBJECTS = libutilities_a-CartesianMesh.$(OBJEXT) \
 	libutilities_a-FlowDescription.$(OBJEXT) \
 	libutilities_a-SimulationParameters.$(OBJEXT) \
-	libutilities_a-Body.$(OBJEXT) libutilities_a-types.$(OBJEXT)
+	libutilities_a-Body.$(OBJEXT) libutilities_a-types.$(OBJEXT) \
+	solvers/libutilities_a-kspsolver.$(OBJEXT) $(am__objects_1)
 libutilities_a_OBJECTS = $(am_libutilities_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -146,7 +160,7 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libutilities_a_SOURCES)
-DIST_SOURCES = $(libutilities_a_SOURCES)
+DIST_SOURCES = $(am__libutilities_a_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -174,6 +188,7 @@ CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -186,6 +201,7 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CUDA_DIR = @CUDA_DIR@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -218,6 +234,7 @@ OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
+PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
 PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -225,6 +242,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
@@ -278,15 +296,12 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libutilities.a
-libutilities_a_SOURCES = CartesianMesh.cpp \
-                         FlowDescription.cpp \
-                         SimulationParameters.cpp \
-                         Body.cpp \
-                         types.cpp
-
-libutilities_a_CPPFLAGS = -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-                          -I$(top_srcdir)/external/boost-1.57.0
-
+libutilities_a_SOURCES = CartesianMesh.cpp FlowDescription.cpp \
+	SimulationParameters.cpp Body.cpp types.cpp \
+	solvers/kspsolver.cpp $(am__append_1)
+libutilities_a_CPPFLAGS =  \
+	-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
+	-I$(top_srcdir)/external/boost-1.57.0 $(am__append_2)
 all: all-am
 
 .SUFFIXES:
@@ -323,6 +338,16 @@ $(am__aclocal_m4_deps):
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+solvers/$(am__dirstamp):
+	@$(MKDIR_P) solvers
+	@: > solvers/$(am__dirstamp)
+solvers/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) solvers/$(DEPDIR)
+	@: > solvers/$(DEPDIR)/$(am__dirstamp)
+solvers/libutilities_a-kspsolver.$(OBJEXT): solvers/$(am__dirstamp) \
+	solvers/$(DEPDIR)/$(am__dirstamp)
+solvers/libutilities_a-amgxsolver.$(OBJEXT): solvers/$(am__dirstamp) \
+	solvers/$(DEPDIR)/$(am__dirstamp)
 
 libutilities.a: $(libutilities_a_OBJECTS) $(libutilities_a_DEPENDENCIES) $(EXTRA_libutilities_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libutilities.a
@@ -331,6 +356,7 @@ libutilities.a: $(libutilities_a_OBJECTS) $(libutilities_a_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f solvers/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -340,6 +366,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-FlowDescription.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-SimulationParameters.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-types.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@solvers/$(DEPDIR)/libutilities_a-amgxsolver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@solvers/$(DEPDIR)/libutilities_a-kspsolver.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -426,6 +454,34 @@ libutilities_a-types.obj: types.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='types.cpp' object='libutilities_a-types.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-types.obj `if test -f 'types.cpp'; then $(CYGPATH_W) 'types.cpp'; else $(CYGPATH_W) '$(srcdir)/types.cpp'; fi`
+
+solvers/libutilities_a-kspsolver.o: solvers/kspsolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT solvers/libutilities_a-kspsolver.o -MD -MP -MF solvers/$(DEPDIR)/libutilities_a-kspsolver.Tpo -c -o solvers/libutilities_a-kspsolver.o `test -f 'solvers/kspsolver.cpp' || echo '$(srcdir)/'`solvers/kspsolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) solvers/$(DEPDIR)/libutilities_a-kspsolver.Tpo solvers/$(DEPDIR)/libutilities_a-kspsolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='solvers/kspsolver.cpp' object='solvers/libutilities_a-kspsolver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o solvers/libutilities_a-kspsolver.o `test -f 'solvers/kspsolver.cpp' || echo '$(srcdir)/'`solvers/kspsolver.cpp
+
+solvers/libutilities_a-kspsolver.obj: solvers/kspsolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT solvers/libutilities_a-kspsolver.obj -MD -MP -MF solvers/$(DEPDIR)/libutilities_a-kspsolver.Tpo -c -o solvers/libutilities_a-kspsolver.obj `if test -f 'solvers/kspsolver.cpp'; then $(CYGPATH_W) 'solvers/kspsolver.cpp'; else $(CYGPATH_W) '$(srcdir)/solvers/kspsolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) solvers/$(DEPDIR)/libutilities_a-kspsolver.Tpo solvers/$(DEPDIR)/libutilities_a-kspsolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='solvers/kspsolver.cpp' object='solvers/libutilities_a-kspsolver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o solvers/libutilities_a-kspsolver.obj `if test -f 'solvers/kspsolver.cpp'; then $(CYGPATH_W) 'solvers/kspsolver.cpp'; else $(CYGPATH_W) '$(srcdir)/solvers/kspsolver.cpp'; fi`
+
+solvers/libutilities_a-amgxsolver.o: solvers/amgxsolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT solvers/libutilities_a-amgxsolver.o -MD -MP -MF solvers/$(DEPDIR)/libutilities_a-amgxsolver.Tpo -c -o solvers/libutilities_a-amgxsolver.o `test -f 'solvers/amgxsolver.cpp' || echo '$(srcdir)/'`solvers/amgxsolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) solvers/$(DEPDIR)/libutilities_a-amgxsolver.Tpo solvers/$(DEPDIR)/libutilities_a-amgxsolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='solvers/amgxsolver.cpp' object='solvers/libutilities_a-amgxsolver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o solvers/libutilities_a-amgxsolver.o `test -f 'solvers/amgxsolver.cpp' || echo '$(srcdir)/'`solvers/amgxsolver.cpp
+
+solvers/libutilities_a-amgxsolver.obj: solvers/amgxsolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT solvers/libutilities_a-amgxsolver.obj -MD -MP -MF solvers/$(DEPDIR)/libutilities_a-amgxsolver.Tpo -c -o solvers/libutilities_a-amgxsolver.obj `if test -f 'solvers/amgxsolver.cpp'; then $(CYGPATH_W) 'solvers/amgxsolver.cpp'; else $(CYGPATH_W) '$(srcdir)/solvers/amgxsolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) solvers/$(DEPDIR)/libutilities_a-amgxsolver.Tpo solvers/$(DEPDIR)/libutilities_a-amgxsolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='solvers/amgxsolver.cpp' object='solvers/libutilities_a-amgxsolver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o solvers/libutilities_a-amgxsolver.obj `if test -f 'solvers/amgxsolver.cpp'; then $(CYGPATH_W) 'solvers/amgxsolver.cpp'; else $(CYGPATH_W) '$(srcdir)/solvers/amgxsolver.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -539,6 +595,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f solvers/$(DEPDIR)/$(am__dirstamp)
+	-rm -f solvers/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -548,7 +606,7 @@ clean: clean-am
 clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) solvers/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -594,7 +652,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) solvers/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

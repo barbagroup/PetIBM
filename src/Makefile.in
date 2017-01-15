@@ -87,9 +87,14 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = petibm2d$(EXEEXT) petibm3d$(EXEEXT)
+@WITH_AMGXWRAPPER_TRUE@am__append_1 = $(top_builddir)/external/AmgXWrapper-1.0-beta/libamgxwrapper.a
+@WITH_AMGXWRAPPER_TRUE@am__append_2 = $(top_builddir)/external/AmgXWrapper-1.0-beta/libamgxwrapper.a
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/configure_doxygen.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
+	$(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_cuda.m4 \
+	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
@@ -105,11 +110,13 @@ PROGRAMS = $(bin_PROGRAMS)
 am_petibm2d_OBJECTS = petibm2d-PetIBM.$(OBJEXT)
 petibm2d_OBJECTS = $(am_petibm2d_OBJECTS)
 petibm2d_DEPENDENCIES = solvers/libsolvers.a utilities/libutilities.a \
-	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_1)
 am_petibm3d_OBJECTS = petibm3d-PetIBM.$(OBJEXT)
 petibm3d_OBJECTS = $(am_petibm3d_OBJECTS)
 petibm3d_DEPENDENCIES = solvers/libsolvers.a utilities/libutilities.a \
-	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_2)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -214,6 +221,7 @@ am__relativize = \
   done; \
   reldir="$$dir2"
 ACLOCAL = @ACLOCAL@
+AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -226,6 +234,7 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CUDA_DIR = @CUDA_DIR@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -258,6 +267,7 @@ OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
+PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
 PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -265,6 +275,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
@@ -323,19 +334,17 @@ petibm2d_CPPFLAGS = -I$(srcdir)/utilities \
                     -I$(srcdir)/solvers \
                     -D DIMENSIONS=2
 
-petibm2d_LDADD = solvers/libsolvers.a \
-                 utilities/libutilities.a \
-                 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
-
+petibm2d_LDADD = solvers/libsolvers.a utilities/libutilities.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_1)
 petibm3d_SOURCES = PetIBM.cpp
 petibm3d_CPPFLAGS = -I$(srcdir)/utilities \
                     -I$(srcdir)/solvers \
                     -D DIMENSIONS=3
 
-petibm3d_LDADD = solvers/libsolvers.a \
-                 utilities/libutilities.a \
-                 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
-
+petibm3d_LDADD = solvers/libsolvers.a utilities/libutilities.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_2)
 all: all-recursive
 
 .SUFFIXES:

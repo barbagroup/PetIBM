@@ -69,9 +69,9 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
   BN = PETSC_NULL;
   RInv = PETSC_NULL;
   MHat = PETSC_NULL;
-  // KSPs
-  ksp1 = PETSC_NULL;
-  ksp2 = PETSC_NULL;
+  // solvers
+  velocity = PETSC_NULL;
+  poisson = PETSC_NULL;
   // PetscLogStages
   PetscLogStageRegister("initialize", &stageInitialize);
   PetscLogStageRegister("RHSVelocity", &stageRHSVelocitySystem);
@@ -127,8 +127,8 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   ierr = generateA(); CHKERRQ(ierr);
   ierr = generateBNQ(); CHKERRQ(ierr);
   ierr = generateQTBNQ(); CHKERRQ(ierr);
-  ierr = createKSPs(); CHKERRQ(ierr);
   ierr = setNullSpace(); CHKERRQ(ierr);
+  ierr = createSolvers(); CHKERRQ(ierr);
 
   if (parameters->startStep > 0 || flow->initialCustomField)
   {
@@ -208,21 +208,9 @@ PetscErrorCode NavierStokesSolver<dim>::solveIntermediateVelocity()
 
   ierr = PetscLogStagePush(stageSolveVelocitySystem); CHKERRQ(ierr);
 
-  ierr = KSPSolve(ksp1, rhs1, qStar); CHKERRQ(ierr);
+  ierr = velocity->solve(qStar, rhs1); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
-
-  KSPConvergedReason reason;
-  ierr = KSPGetConvergedReason(ksp1, &reason); CHKERRQ(ierr);
-  if (reason < 0)
-  {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\n[time-step %d] ERROR: Velocity solver diverged due to reason: %d\n", 
-                       timeStep, reason); CHKERRQ(ierr);
-    ierr = finalize();
-    ierr = PetscFinalize(); CHKERRQ(ierr);
-    exit(1);
-  }
 
   return 0;
 } // solveIntermediateVelocity
@@ -258,21 +246,9 @@ PetscErrorCode NavierStokesSolver<dim>::solvePoissonSystem()
   
   ierr = PetscLogStagePush(stageSolvePoissonSystem); CHKERRQ(ierr);
 
-  ierr = KSPSolve(ksp2, rhs2, lambda); CHKERRQ(ierr);
+  ierr = poisson->solve(lambda, rhs2); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
-  
-  KSPConvergedReason reason;
-  ierr = KSPGetConvergedReason(ksp2, &reason); CHKERRQ(ierr);
-  if (reason < 0)
-  {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\n[time-step %d] ERROR: Poisson solver diverged due to reason: %d\n", 
-                       timeStep, reason); CHKERRQ(ierr);
-    ierr = finalize();
-    ierr = PetscFinalize(); CHKERRQ(ierr);
-    exit(1);
-  }
 
   return 0;
 } // solvePoissonSystem
@@ -438,9 +414,9 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
   if (QT != PETSC_NULL)   {ierr = MatDestroy(&QT); CHKERRQ(ierr);}
   if (BNQ != PETSC_NULL)  {ierr = MatDestroy(&BNQ); CHKERRQ(ierr);}
   if (QTBNQ != PETSC_NULL){ierr = MatDestroy(&QTBNQ); CHKERRQ(ierr);}
-  // KSPs
-  if (ksp1 != PETSC_NULL){ierr = KSPDestroy(&ksp1); CHKERRQ(ierr);}
-  if (ksp2 != PETSC_NULL){ierr = KSPDestroy(&ksp2); CHKERRQ(ierr);}
+
+  delete velocity;
+  delete poisson;
 
   return 0;
 } // finalize
@@ -448,7 +424,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
-#include "inline/createKSPs.inl"
+#include "inline/createSolvers.inl"
 #include "inline/setNullSpace.inl"
 #include "inline/createLocalToGlobalMappingsFluxes.inl"
 #include "inline/createLocalToGlobalMappingsLambda.inl"

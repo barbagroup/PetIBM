@@ -1,0 +1,10 @@
+# solversPetscOptions.info
+
+# Velocity solver: prefix `-velocity_`
+-velocity_ksp_type bcgs
+-velocity_ksp_rtol 1.0E-05
+-velocity_ksp_atol 0.0
+-velocity_ksp_max_it 10000
+-velocity_pc_type jacobi
+-velocity_pc_jacobi_type diagonal
+

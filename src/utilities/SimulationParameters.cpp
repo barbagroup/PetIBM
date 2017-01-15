@@ -59,6 +59,9 @@ void SimulationParameters::initialize(std::string filePath)
   nt = node["nt"].as<PetscInt>();
   nsave = node["nsave"].as<PetscInt>(nt);
   
+  vSolveType = stringToExecuteType(node["vSolveType"].as<std::string>("CPU"));
+  pSolveType = stringToExecuteType(node["pSolveType"].as<std::string>("CPU"));
+
   outputFormat = node["outputFormat"].as<std::string>("binary");
 #ifndef PETSC_HAVE_HDF5
   if (outputFormat == "hdf5")
@@ -146,7 +149,7 @@ PetscErrorCode SimulationParameters::printInfo()
 {
   PetscErrorCode ierr;
   ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Time-stepping\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "Simulation parameters\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "formulation: %s\n", stringFromIBMethod(ibm).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "convection: %s\n", stringFromTimeScheme(convection.scheme).c_str()); CHKERRQ(ierr);
@@ -155,6 +158,8 @@ PetscErrorCode SimulationParameters::printInfo()
   ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step: %d\n", startStep); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", nt); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval: %d\n", nsave); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "velocity solver type: %s\n", stringFromExecuteType(vSolveType).c_str()); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "Poisson solver type: %s\n", stringFromExecuteType(pSolveType).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "output format: %s\n", outputFormat.c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "output flux: %D\n", outputFlux); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "output velocity: %D\n", outputVelocity); CHKERRQ(ierr);

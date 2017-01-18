@@ -41,9 +41,9 @@ PetscErrorCode KSPSolver::solve(Vec &x, Vec &b)
   ierr = KSPGetConvergedReason(ksp, &reason); CHKERRQ(ierr);
   if (reason < 0)
   {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "\nERROR: Velocity solver diverged due to reason: %d\n", 
-                       reason); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, 
+            "\nERROR: %s solver diverged due to reason: %d\n", 
+            prefix.substr(0, prefix.size()-1).c_str(), reason); CHKERRQ(ierr);
     ierr = PetscFinalize(); CHKERRQ(ierr);
     exit(1);
   }

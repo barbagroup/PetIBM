@@ -68,8 +68,6 @@ PetscErrorCode NavierStokesSolver<2>::initializeFluxes()
     ierr = addInitialPerturbation(); CHKERRQ(ierr);
   }
 
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
-
   PetscFunctionReturn(0);
 } // initializeFluxes
 
@@ -142,8 +140,6 @@ PetscErrorCode NavierStokesSolver<3>::initializeFluxes()
   {
     ierr = addInitialPerturbation(); CHKERRQ(ierr);
   }
-  
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // initializeFluxes

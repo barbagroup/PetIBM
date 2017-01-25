@@ -268,6 +268,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   
   ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) ET, NULL, "-ET_mat_view"); CHKERRQ(ierr);
+
   return 0;
 } // generateBNQ
 
@@ -630,6 +634,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
   
   ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) ET, NULL, "-ET_mat_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateBNQ

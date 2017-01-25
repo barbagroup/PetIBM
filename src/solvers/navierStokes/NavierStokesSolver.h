@@ -139,6 +139,8 @@ public:
   PetscErrorCode readFluxes(std::string directory);
   // read velocity components from files
   PetscErrorCode readVelocities(std::string directory);
+  // read convective terms from files
+  PetscErrorCode readConvectiveTerms(std::string directory);
   // read pressure field from file
   virtual PetscErrorCode readLambda(std::string directory);
 #ifdef PETSC_HAVE_HDF5
@@ -149,17 +151,12 @@ public:
   PetscErrorCode writeFluxes(std::string directory);
   // write velocity components into files
   PetscErrorCode writeVelocities(std::string directory);
+  // write convective terms into files
+  PetscErrorCode writeConvectiveTerms(std::string directory);
   // write pressure field into file
   virtual PetscErrorCode writeLambda(std::string directory);
   // write KSP iteration counts into file
   PetscErrorCode writeIterationCounts();
-  
-  // code-development helpers
-  PetscErrorCode helpers();
-  // code-development helper: output vectors to files
-  PetscErrorCode helperOutputVectors();
-  // code-development helper: output matrices to files
-  PetscErrorCode helperOutputMatrices();
   
 public:
   // constructors

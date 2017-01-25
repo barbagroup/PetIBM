@@ -178,6 +178,8 @@ PetscErrorCode NavierStokesSolver<2>::generateA()
   ierr = MatShift(A, 1.0/parameters->dt); CHKERRQ(ierr);
   ierr = MatDiagonalScale(A, MHat, RInv);
 
+  ierr = PetscObjectViewFromOptions((PetscObject) A, NULL, "-A_mat_view"); CHKERRQ(ierr);
+
   return 0;
 } // generateA
 
@@ -359,6 +361,8 @@ PetscErrorCode NavierStokesSolver<3>::generateA()
   ierr = MatScale(A, -alpha*flow->nu); CHKERRQ(ierr);
   ierr = MatShift(A, 1.0/parameters->dt); CHKERRQ(ierr);
   ierr = MatDiagonalScale(A, MHat, RInv); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) A, NULL, "-A_mat_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateA

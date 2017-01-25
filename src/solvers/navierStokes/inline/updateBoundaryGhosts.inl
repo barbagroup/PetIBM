@@ -49,8 +49,11 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
            m, n,           // local number of values in each direction
            mstart, nstart; // starting indices of values on process
   PetscReal dt = parameters->dt,
-            startStep = parameters->startStep;
+            startStep = parameters->startStep + 100;
   PetscReal beta; // convective speed
+
+  // copy global fluxes vector to local vectors
+  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
 
   // fluxes in x-direction
   PetscReal **qx;
@@ -272,6 +275,9 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
   PetscReal dt = parameters->dt,               // time-increment
             startStep = parameters->startStep; // starting time-step
   PetscReal beta; // convective speed
+
+  // copy global fluxes vector to local vectors
+  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
   // fluxes in x-direction
   PetscReal ***qx;

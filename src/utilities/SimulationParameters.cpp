@@ -58,6 +58,7 @@ void SimulationParameters::initialize(std::string filePath)
   startStep = node["startStep"].as<PetscInt>(0);
   nt = node["nt"].as<PetscInt>();
   nsave = node["nsave"].as<PetscInt>(nt);
+  nrestart = node["nrestart"].as<PetscInt>(nt);
   
   vSolveType = stringToExecuteType(node["vSolveType"].as<std::string>("CPU"));
   pSolveType = stringToExecuteType(node["pSolveType"].as<std::string>("CPU"));
@@ -158,6 +159,7 @@ PetscErrorCode SimulationParameters::printInfo()
   ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step: %d\n", startStep); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", nt); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval: %d\n", nsave); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "restart-interval: %d\n", nrestart); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "velocity solver type: %s\n", stringFromExecuteType(vSolveType).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "Poisson solver type: %s\n", stringFromExecuteType(pSolveType).c_str()); CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD, "output format: %s\n", outputFormat.c_str()); CHKERRQ(ierr);

@@ -37,6 +37,10 @@ PetscErrorCode NavierStokesSolver<dim>::readData()
     ierr = readVelocities(solutionDirectory); CHKERRQ(ierr);
   }
   ierr = readLambda(solutionDirectory); CHKERRQ(ierr);
+  if (parameters->startStep > 0)
+  {
+    ierr = readConvectiveTerms(solutionDirectory); CHKERRQ(ierr);
+  }
 
   ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
 
@@ -213,6 +217,87 @@ PetscErrorCode NavierStokesSolver<dim>::readVelocities(std::string directory)
 
 
 /**
+ * \brief Reads convective terms.
+ *
+ * \param directory Directory where to read the convective terms
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::readConvectiveTerms(std::string directory)
+{
+  PetscErrorCode ierr;
+  Vec HxGlobal, HyGlobal, HzGlobal;
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string filePath, fileExtension;
+
+  PetscFunctionBeginUser;
+
+  // get type of viewer depending on output format prescribed
+  if (parameters->outputFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (parameters->outputFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
+  if (dim == 2)
+  {
+    ierr = DMCompositeGetAccess(qPack, H, &HxGlobal, &HyGlobal); CHKERRQ(ierr);
+  }
+  else if (dim == 3)
+  {
+    ierr = DMCompositeGetAccess(qPack, q, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+  }
+  
+  // read convective terms in x-direction
+  filePath = directory + "/Hx." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) HxGlobal, "Hx"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+  ierr = VecLoad(HxGlobal, viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  // read convective terms in y-direction
+  filePath = directory + "/Hy." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) HyGlobal, "Hy"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+  ierr = VecLoad(HyGlobal, viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  if (dim == 3)
+  {
+    // read convective terms in z-direction
+    filePath = directory + "/Hz." + fileExtension;
+    ierr = PetscObjectSetName((PetscObject) HzGlobal, "Hz"); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+    ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+    ierr = VecLoad(HzGlobal, viewer); CHKERRQ(ierr);
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  }
+
+  if (dim == 2)
+  {
+    ierr = DMCompositeRestoreAccess(qPack, H, &HxGlobal, &HyGlobal); CHKERRQ(ierr);
+  }
+  else if (dim == 3)
+  {
+    ierr = DMCompositeRestoreAccess(qPack, H, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+  }
+  
+  PetscFunctionReturn(0);
+} // readConvectiveTerms
+
+
+/**
  * \brief Reads the pressure field from file.
  *
  * \param directory Directory where to read the pressure field.
@@ -270,7 +355,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 
   ierr = writeIterationCounts(); CHKERRQ(ierr);
 
-  if (timeStep%parameters->nsave == 0)
+  if (timeStep%parameters->nsave == 0 || timeStep%parameters->nrestart == 0)
   {
     ierr = PetscPrintf(PETSC_COMM_WORLD,
                        "\n[time-step %d] Writing numerical solution into files... ",
@@ -291,6 +376,10 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
       ierr = writeVelocities(solutionDirectory); CHKERRQ(ierr);
     }
     ierr = writeLambda(solutionDirectory); CHKERRQ(ierr);
+    if (timeStep%parameters->nrestart == 0)
+    {
+      ierr = writeConvectiveTerms(solutionDirectory); CHKERRQ(ierr);
+    }
 
     ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
   }
@@ -501,6 +590,87 @@ PetscErrorCode NavierStokesSolver<dim>::writeVelocities(std::string directory)
 
 
 /**
+ * \brief Writes the convective terms into files.
+ *
+ * \param directory Directory where to write the convective terms.
+ */
+template <PetscInt dim>
+PetscErrorCode NavierStokesSolver<dim>::writeConvectiveTerms(std::string directory)
+{
+  PetscErrorCode ierr;
+  Vec HxGlobal, HyGlobal, HzGlobal;
+  PetscViewer viewer;
+  PetscViewerType viewerType;
+  std::string filePath, fileExtension;
+
+  PetscFunctionBeginUser;
+
+  // define the type of viewer and the file extension
+  if (parameters->outputFormat == "hdf5")
+  {
+    viewerType = PETSCVIEWERHDF5;
+    fileExtension = "h5";
+  }
+  else if (parameters->outputFormat == "binary")
+  {
+    viewerType = PETSCVIEWERBINARY;
+    fileExtension = "dat";
+  }
+
+  if (dim == 2)
+  {
+    ierr = DMCompositeGetAccess(qPack, H, &HxGlobal, &HyGlobal); CHKERRQ(ierr);
+  }
+  else if (dim == 3)
+  {
+    ierr = DMCompositeGetAccess(qPack, H, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+  }
+
+  // convective terms in x-direction
+  filePath = directory + "/Hx." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) HxGlobal, "Hx"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+  ierr = VecView(HxGlobal, viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  // convective terms in y-direction
+  filePath = directory + "/Hy." + fileExtension;
+  ierr = PetscObjectSetName((PetscObject) HyGlobal, "Hy"); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+  ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+  ierr = VecView(HyGlobal, viewer); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  if (dim == 3)
+  {
+    // convective terms in z-direction
+    filePath = directory + "/Hz." + fileExtension;
+    ierr = PetscObjectSetName((PetscObject) HzGlobal, "Hz"); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr); 
+    ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+    ierr = VecView(HzGlobal, viewer); CHKERRQ(ierr);
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  }
+
+  if (dim == 2)
+  {
+    ierr = DMCompositeRestoreAccess(qPack, H, &HxGlobal, &HyGlobal); CHKERRQ(ierr);
+  }
+  else if (dim == 3)
+  {
+    ierr = DMCompositeRestoreAccess(qPack, H, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+  }
+
+  PetscFunctionReturn(0);
+} // writeConvectiveTerms
+
+
+/**
  * \brief Writes the pressure field into file.
  *
  * \param directory Directory where to write the pressure field.
@@ -580,119 +750,3 @@ PetscErrorCode NavierStokesSolver<dim>::writeIterationCounts()
 
   return 0;
 } // writeIterationCounts
-
-
-/**
- * \brief Code-development helper: outputs vectors to files.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::helperOutputVectors()
-{
-  PetscErrorCode ierr;
-  
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Code-development: saving vectors to files... ", timeStep); CHKERRQ(ierr);
-
-  // create the output directory
-  std::string outputDirectory = parameters->directory + "/outputs";
-  mkdir(outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
-  PetscViewer viewer;
-  // bc1
-  std::string filePath = outputDirectory + "/bc1.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(bc1, viewer); CHKERRQ(ierr);
-  // H
-  filePath = outputDirectory + "/H.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(H, viewer); CHKERRQ(ierr);
-  // rn
-  filePath = outputDirectory + "/rn.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(rn, viewer); CHKERRQ(ierr);
-  // rhs1
-  filePath = outputDirectory + "/rhs1.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(rhs1, viewer); CHKERRQ(ierr);
-  // q
-  filePath = outputDirectory + "/q.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(q, viewer); CHKERRQ(ierr);
-  // qx, qy, qz
-  Vec qxGlobal, qyGlobal, qzGlobal;
-  if (dim == 2)
-  {
-    ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal); CHKERRQ(ierr);  
-  }
-  else if (dim == 3)
-  {
-    ierr = DMCompositeGetAccess(qPack, q, &qxGlobal, &qyGlobal, &qzGlobal); CHKERRQ(ierr);
-  }
-  filePath = outputDirectory + "/qx.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(qxGlobal, viewer); CHKERRQ(ierr);
-  filePath = outputDirectory + "/qy.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(qyGlobal, viewer); CHKERRQ(ierr);
-  if (dim == 3)
-  {
-    filePath = outputDirectory + "/qz.output";
-    ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-    ierr = VecView(qzGlobal, viewer); CHKERRQ(ierr);
-  }
-  // r2
-  filePath = outputDirectory + "/r2.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(r2, viewer); CHKERRQ(ierr);
-  // rhs2
-  filePath = outputDirectory + "/rhs2.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(rhs2, viewer); CHKERRQ(ierr);
-  // lambda
-  filePath = outputDirectory + "/lambda.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = VecView(lambda, viewer); CHKERRQ(ierr);
-  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
-
-  return 0;
-} // helperOutputVectors
-
-
-/**
- * \brief Code-development helper: outputs matrices to files.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::helperOutputMatrices()
-{
-  PetscErrorCode ierr;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n[time-step %d] Code-development: saving matrices to files... ", timeStep); CHKERRQ(ierr);
-
-  // create the output directory
-  std::string outputDirectory = parameters->directory + "/outputs";
-  mkdir(outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
-  PetscViewer viewer;
-  // A
-  std::string filePath = outputDirectory + "/A.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = MatView(A, viewer); CHKERRQ(ierr);
-  // QT
-  filePath = outputDirectory + "/QT.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = MatView(QT, viewer); CHKERRQ(ierr);
-  // BNQ
-  filePath = outputDirectory + "/BNQ.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = MatView(BNQ, viewer); CHKERRQ(ierr);
-  // QTBNQ
-  filePath = outputDirectory + "/QTBNQ.output";
-  ierr = PetscViewerASCIIOpen(PETSC_COMM_WORLD, filePath.c_str(), &viewer); CHKERRQ(ierr);
-  ierr = MatView(QTBNQ, viewer); CHKERRQ(ierr);
-  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
-
-  return 0;
-} // helperOutputMatrices

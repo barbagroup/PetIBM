@@ -69,9 +69,6 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
 
   PetscBool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
             periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE;
-
-  // copy global fluxes vector to local vectors
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
   
   Vec HxGlobal, HyGlobal;
   ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRQ(ierr);
@@ -221,9 +218,6 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
   PetscBool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
             periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
             periodicZ = (flow->boundaries[ZMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE;
-
-  // copy global fluxes vector to local vectors
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
   Vec HxGlobal, HyGlobal, HzGlobal;  
   ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);

@@ -52,9 +52,6 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
             startStep = parameters->startStep;
   PetscReal beta; // convective speed
 
-  // copy global fluxes vector to local vectors
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
-
   // fluxes in x-direction
   PetscReal **qx;
   ierr = DMDAVecGetArray(uda, qxLocal, &qx); CHKERRQ(ierr);
@@ -275,9 +272,6 @@ PetscErrorCode NavierStokesSolver<3>::updateBoundaryGhosts()
   PetscReal dt = parameters->dt,               // time-increment
             startStep = parameters->startStep; // starting time-step
   PetscReal beta; // convective speed
-
-  // copy global fluxes vector to local vectors
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
   // fluxes in x-direction
   PetscReal ***qx;

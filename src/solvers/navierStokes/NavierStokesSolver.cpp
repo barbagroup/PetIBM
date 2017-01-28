@@ -139,7 +139,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
     ierr = initializeFluxes(); CHKERRQ(ierr);
     ierr = initializeLambda(); CHKERRQ(ierr);
   }
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // initializeCommon
@@ -152,6 +151,17 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
   PetscErrorCode ierr;
+
+  // update ghost points
+  if (dim == 2)
+  {
+    ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
+  }
+  else
+  {
+    ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
+  }
+  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   // solve system for intermediate velocity
   ierr = assembleRHSVelocity(); CHKERRQ(ierr);
@@ -184,7 +194,6 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSVelocity()
   ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
 
   ierr = calculateExplicitTerms(); CHKERRQ(ierr);
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
   ierr = generateBC1(); CHKERRQ(ierr);
   ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRQ(ierr);
   ierr = VecPointwiseMult(rhs1, MHat, rhs1); CHKERRQ(ierr);

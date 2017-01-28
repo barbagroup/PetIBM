@@ -50,7 +50,8 @@ public:
   PetscErrorCode generateBNQ();
   PetscErrorCode generateR2();
   PetscErrorCode createGlobalMappingBodies();
-  PetscErrorCode calculateForce();
+  PetscErrorCode calculateForces();
+  PetscErrorCode calculateForcesTC();
   
   PetscErrorCode readLambda(std::string directory);
   PetscErrorCode writeData();

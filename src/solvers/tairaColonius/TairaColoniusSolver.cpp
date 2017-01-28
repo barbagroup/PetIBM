@@ -138,7 +138,7 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
 #include "inline/initializeBodies.inl"
 #include "inline/createGlobalMappingBodies.inl"
 #include "inline/isInfluenced.inl"
-#include "inline/calculateForce.inl"
+#include "inline/calculateForces.inl"
 #include "inline/io.inl"
 
 

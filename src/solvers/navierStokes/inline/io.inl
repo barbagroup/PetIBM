@@ -250,7 +250,7 @@ PetscErrorCode NavierStokesSolver<dim>::readConvectiveTerms(std::string director
   }
   else if (dim == 3)
   {
-    ierr = DMCompositeGetAccess(qPack, q, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
+    ierr = DMCompositeGetAccess(qPack, H, &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
   }
   
   // read convective terms in x-direction

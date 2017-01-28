@@ -49,7 +49,7 @@ PetscErrorCode NavierStokesSolver<2>::updateBoundaryGhosts()
            m, n,           // local number of values in each direction
            mstart, nstart; // starting indices of values on process
   PetscReal dt = parameters->dt,
-            startStep = parameters->startStep + 100;
+            startStep = parameters->startStep;
   PetscReal beta; // convective speed
 
   // copy global fluxes vector to local vectors

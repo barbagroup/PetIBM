@@ -13,14 +13,19 @@
 
 
 /**
- * \brief Constructor -- Parses the input file `bodies.yaml`.
+ * \brief Constructor -- Parses the YAMLinput file containing bodies information.
  *
- * \param directory Directory of the simulation
+ * \param filePath Path of the file to parse with YAML-CPP
  */
 template <PetscInt dim>
-Body<dim>::Body(std::string directory)
+Body<dim>::Body(std::string filePath)
 {
-  initialize(directory + "/bodies.yaml");
+  char path[PETSC_MAX_PATH_LEN];
+  PetscBool found;
+  PetscOptionsGetString(NULL, NULL, "-bodies", path, sizeof(path), &found);
+  if (found)
+    filePath = std::string(path);
+  initialize(filePath);
 } // Body
 
 

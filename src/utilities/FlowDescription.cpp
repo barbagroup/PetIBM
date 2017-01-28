@@ -14,14 +14,19 @@
 
 
 /**
- * \brief Constructor -- Parses the input file `flowDescription.yaml`.
+ * \brief Constructor -- Parses the YAML input file with the flow description.
  *
- * \param directory Directory of the simulation
+ * \param filePath Path the file to parse with YAML-CPP
  */
 template <PetscInt dim>
-FlowDescription<dim>::FlowDescription(std::string directory)
+FlowDescription<dim>::FlowDescription(std::string filePath)
 {
-  initialize(directory + "/flowDescription.yaml");
+  char path[PETSC_MAX_PATH_LEN];
+  PetscBool found;
+  PetscOptionsGetString(NULL, NULL, "-flow_description", path, sizeof(path), &found);
+  if (found)
+    filePath = std::string(path);
+  initialize(filePath);
 } // FlowDescription
 
 

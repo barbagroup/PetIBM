@@ -30,7 +30,7 @@ public:
 
   // constructors
   Body(){ };
-  Body(std::string directory);
+  Body(std::string filePath);
   // destructor
   ~Body(){ };
 

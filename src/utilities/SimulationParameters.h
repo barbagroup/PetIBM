@@ -58,7 +58,7 @@ public:
 
   // constructors
   SimulationParameters();
-  SimulationParameters(std::string directory);
+  SimulationParameters(std::string dir, std::string filePath);
   // destructor
   ~SimulationParameters();
   // parse input file and store simulation parameters

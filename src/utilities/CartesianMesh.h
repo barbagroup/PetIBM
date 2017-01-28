@@ -36,7 +36,7 @@ public:
 
   // constructors
   CartesianMesh();
-  CartesianMesh(std::string directory);
+  CartesianMesh(std::string filePath);
   // destructor
   ~CartesianMesh();
   // parse input file and create Cartesian mesh

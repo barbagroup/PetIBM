@@ -15,7 +15,7 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
   bodies.resize(numBodies);
   for (PetscInt l=0; l<numBodies; l++)
   {
-    bodies[l] = Body<dim>(NavierStokesSolver<dim>::parameters->directory);
+    bodies[l] = Body<dim>(NavierStokesSolver<dim>::parameters->directory+"/bodies.yaml");
   }
 
   return 0;

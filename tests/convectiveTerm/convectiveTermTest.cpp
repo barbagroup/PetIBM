@@ -32,9 +32,9 @@ int main(int argc, char **argv)
   ierr = PetscOptionsGetString(NULL, "-directory", dir, sizeof(dir), NULL); CHKERRQ(ierr);
   std::string directory(dir);
 
-  CartesianMesh cartesianMesh(directory);
-  FlowDescription<dim> flowDescription(directory);
-  SimulationParameters simulationParameters(directory);
+  CartesianMesh cartesianMesh(directory+"/cartesianMesh.yaml");
+  FlowDescription<dim> flowDescription(directory+"/flowDescription.yaml");
+  SimulationParameters simulationParameters(directory, directory+"/simulationParameters.yaml");
 
   std::unique_ptr< ConvectiveTerm<dim> > solver(new ConvectiveTerm<dim>(&cartesianMesh, 
                                                                         &flowDescription, 

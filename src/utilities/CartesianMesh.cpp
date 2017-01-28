@@ -24,13 +24,18 @@ CartesianMesh::CartesianMesh()
 
 
 /**
- * \brief Constructor -- Parses input file `cartesianMesh.yaml`.
+ * \brief Constructor -- Parses the YAML input file with the mesh information.
  *
- * \param directory Directory of the simulation
+ * \param filePath Path of the file to parse with YAML-CPP
  */
-CartesianMesh::CartesianMesh(std::string directory)
+CartesianMesh::CartesianMesh(std::string filePath)
 {
-  initialize(directory + "/cartesianMesh.yaml");
+  char path[PETSC_MAX_PATH_LEN];
+  PetscBool found;
+  PetscOptionsGetString(NULL, NULL, "-cartesian_mesh", path, sizeof(path), &found);
+  if (found)
+    filePath = std::string(path);
+  initialize(filePath);
 } // CartesianMesh
 
 

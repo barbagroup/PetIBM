@@ -43,7 +43,7 @@ public:
   
   // contructors
   FlowDescription(){ };
-  FlowDescription(std::string directory);
+  FlowDescription(std::string filePath);
   // destructor
   ~FlowDescription(){ };
   // parse input file and store description of the flow

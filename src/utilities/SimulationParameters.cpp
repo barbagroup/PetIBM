@@ -21,14 +21,20 @@ SimulationParameters::SimulationParameters()
 
 
 /**
- * \brief Constructor -- Parses the input file `simulationParameters.yaml`.
+ * \brief Constructor -- Parses the YAMLinput file with the simulation parameters.
  *
  * \param dir Directory of the simulation
+ * \param filePath Path of the file to parse with YAML-CPP
  */
-SimulationParameters::SimulationParameters(std::string dir)
+SimulationParameters::SimulationParameters(std::string dir, std::string filePath)
 {
   directory = dir;
-  initialize(directory + "/simulationParameters.yaml");
+  char path[PETSC_MAX_PATH_LEN];
+  PetscBool found;
+  PetscOptionsGetString(NULL, NULL, "-simulation_parameters", path, sizeof(path), &found);
+  if (found)
+    filePath = std::string(path);
+  initialize(filePath);
 } // SimulationParameters
 
 

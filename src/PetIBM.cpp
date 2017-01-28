@@ -54,7 +54,7 @@ int main(int argc,char **argv)
                                                                         &parameters);
   
   ierr = solver->initialize(); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nInitialization complete!\n"); CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nInitialization complete!\n\n"); CHKERRQ(ierr);
   
   while(!solver->finished())
   {

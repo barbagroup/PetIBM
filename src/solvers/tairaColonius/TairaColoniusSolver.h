@@ -43,7 +43,6 @@ public:
   
   PetscErrorCode initializeBodies();
   PetscErrorCode generateBodyInfo();
-  PetscErrorCode calculateCellIndices();
   PetscErrorCode createDMs();
   PetscErrorCode createVecs();
   PetscErrorCode setNullSpace();

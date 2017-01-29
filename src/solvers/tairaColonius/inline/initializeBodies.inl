@@ -31,14 +31,16 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
   for (PetscInt i=0; i<numBodies; i++)
   {
     const YAML::Node &node = nodes[i];
+    bodies[i] = Body<dim>();
     std::string type = node["type"].as<std::string>();
     if (type == "points")
     {
       size_t last = filePath.find_last_of("/");
       std::string directory = filePath.substr(0, last+1);
       std::string pointsFilePath = directory + node["pointsFile"].as<std::string>();
-      bodies[i] = Body<dim>(pointsFilePath);
+      ierr = bodies[i].readFromFile(pointsFilePath); CHKERRQ(ierr);
     }
+    ierr = bodies[i].getCellOwners(NavierStokesSolver<dim>::mesh); CHKERRQ(ierr);
   }
 
   PetscFunctionReturn(0);

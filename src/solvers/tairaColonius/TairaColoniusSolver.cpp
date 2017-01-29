@@ -45,7 +45,6 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialize); CHKERRQ(ierr);
 
   ierr = initializeBodies(); CHKERRQ(ierr);
-  ierr = calculateCellIndices(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
@@ -54,23 +53,6 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
 
   return 0;
 } // initialize
-
-
-/**
- * \brief Gets the indices of cells owning a body point.
- */
-template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
-{
-  PetscErrorCode ierr;
-
-  for (PetscInt l=0; l<numBodies; l++)
-  {
-    ierr = bodies[l].getCellOwners(NavierStokesSolver<dim>::mesh); CHKERRQ(ierr);
-  }
-
-  return 0;
-} // calculateCellIndices
 
 
 /**

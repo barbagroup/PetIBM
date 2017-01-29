@@ -1,7 +1,5 @@
-/***************************************************************************//**
+/*! Definition of the class `Body`.
  * \file Body.h
- * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Definition of the class `Body`.
  */
 
 
@@ -36,8 +34,14 @@ public:
 
   // parse input file and store coordinates of immersed body
   PetscErrorCode initialize(std::string filePath);
+  // read boundary coordinates from give file
+  PetscErrorCode readFromFile(std::string filePath);
   // get indices of cells owning a Lagrangian body point
   PetscErrorCode getCellOwners(CartesianMesh *mesh);
+  // count number of points in a given box
+  PetscErrorCode countNumberPointsInBox(PetscReal (&box)[2*dim], PetscInt &n);
+  // get index of points inside a given box
+  PetscErrorCode getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> indices);
   // print info related to body
   PetscErrorCode printInfo();
 

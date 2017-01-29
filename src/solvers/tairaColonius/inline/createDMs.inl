@@ -18,6 +18,7 @@ PetscErrorCode TairaColoniusSolver<dim>::createDMs()
   ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE, 
                       bodies[0].numPoints, dim, 0, &numBoundaryPointsOnProcess.front(), 
                       &bda); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) bda, NULL, "-bda_dmda_view"); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
 
   return 0;

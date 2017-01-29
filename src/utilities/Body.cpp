@@ -28,6 +28,69 @@ Body<dim>::Body(std::string filePath)
   initialize(filePath);
 } // Body
 
+/*!
+ * \brief Constructor -- Reads the boundary coordinates from a given file.
+ *
+ * \param filePath Path of the file containing the boundary coordinates.
+ */
+// template <PetscInt dim>
+// Body<dim>::Body(std::string filePath)
+// {
+//   readFromFile(filePath);
+// } // Body
+
+
+/*!
+ * \brief Reads the boundary coordinates from a given file.
+ *
+ * \param filePath Path of the file containing the boundary coordinates.
+ */
+template <PetscInt dim>
+PetscErrorCode Body<dim>::readFromFile(std::string filePath)
+{
+  PetscErrorCode ierr;
+  PetscFunctionBeginUser;
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nReading file %s... ", filePath.c_str()); CHKERRQ(ierr);
+
+  std::ifstream infile(filePath.c_str());
+  if (!infile.good())
+  {
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "\nERROR: File '%s' does not exist\n", filePath.c_str()); CHKERRQ(ierr);
+    exit(1);
+  }
+  infile >> numPoints;
+  X.reserve(numPoints);
+  Y.reserve(numPoints);
+  PetscInt x, y;
+  if (dim == 2)
+  {
+    for (PetscInt i=0; i<numPoints; i++)
+    {
+      infile >> x >> y;
+      X.push_back(x);
+      Y.push_back(y);
+    }
+  }
+  else if (dim == 3)
+  {
+    PetscInt z;
+    Z.reserve(numPoints);
+    for (PetscInt i=0; i<numPoints; i++)
+    {
+      infile >> x >> y >> z;
+      X.push_back(x);
+      Y.push_back(y);
+      Z.push_back(z);
+    }
+  }
+  infile.close();
+
+  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
+
+  PetscFunctionReturn(0);
+} // readFromFile
+
 
 /**
  * \brief Parses the input file and stores information about the flow.
@@ -165,6 +228,102 @@ PetscErrorCode Body<dim>::getCellOwners(CartesianMesh *mesh)
 
   return 0;
 } // getCellOwners
+
+
+/*!
+ * \brief Counts the number of points in a given box.
+ *
+ * \param box Box defined by (xmin, xmax, ymin, ymax, zmin, zmax).
+ *
+ * \returns The number of points in the box.
+ */
+template <PetscInt dim>
+PetscErrorCode Body<dim>::countNumberPointsInBox(PetscReal (&box)[2*dim], PetscInt &n)
+{
+  return 0;
+} // countNumberPointsInBox
+
+// two-dimensional specialization
+template <>
+PetscErrorCode Body<2>::countNumberPointsInBox(PetscReal (&box)[4], PetscInt &n)
+{
+  PetscFunctionBeginUser;
+
+  for (PetscInt i=0; i<numPoints; i++)
+  {
+    if (box[0] <= X[i] && X[i] < box[1] &&
+        box[2] <= Y[i] && Y[i] < box[3])
+      n++;
+  }
+
+  PetscFunctionReturn(0);
+} // countNumberPointsInBox
+
+
+// three-dimensional specialization
+template <>
+PetscErrorCode Body<3>::countNumberPointsInBox(PetscReal (&box)[6], PetscInt &n)
+{
+  PetscFunctionBeginUser;
+
+  for (PetscInt i=0; i<numPoints; i++)
+  {
+    if (box[0] <= X[i] && X[i] < box[1] &&
+        box[2] <= Y[i] && Y[i] < box[3] &&
+        box[4] <= Z[i] && Z[i] < box[5])
+      n++;
+  }
+
+  PetscFunctionReturn(0);
+} // countNumberPointsInBox
+
+
+/*!
+ * \brief Gets the index of points inside a given box.
+ *
+ * \param box Box defined by (xmin, xmax, ymin, ymax, zmax, zmin).
+ * \param indices The vector of indices to fill.
+ */
+template <PetscInt dim>
+PetscErrorCode Body<dim>::getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> indices)
+{
+  return 0;
+} // getIndexPointsInBox
+
+
+// two-dimensional specialization
+template <>
+PetscErrorCode Body<2>::getIndexPointsInBox(PetscReal (&box)[4], std::vector<PetscInt> indices)
+{
+  PetscFunctionBeginUser;
+
+  for (PetscInt i=0; i<numPoints; i++)
+  {
+    if (box[0] <= X[i] && X[i] < box[1] &&
+        box[2] <= Y[i] && Y[i] < box[3])
+      indices.push_back(i);
+  }
+
+  PetscFunctionReturn(0);
+} // getIndexPointsInBox
+
+
+// three-dimensional specialization
+template <>
+PetscErrorCode Body<3>::getIndexPointsInBox(PetscReal (&box)[6], std::vector<PetscInt> indices)
+{
+  PetscFunctionBeginUser;
+
+  for (PetscInt i=0; i<numPoints; i++)
+  {
+    if (box[0] <= X[i] && X[i] < box[1] &&
+        box[2] <= Y[i] && Y[i] < box[3] &&
+        box[4] <= Z[i] && Z[i] < box[5])
+      indices.push_back(i);
+  }
+
+  PetscFunctionReturn(0);
+} // getIndexPointsInBox
 
 
 // dimensions specialization

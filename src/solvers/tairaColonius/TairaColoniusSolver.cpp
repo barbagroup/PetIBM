@@ -79,7 +79,7 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
 #include "inline/setNullSpace.inl"
-#include "inline/generateBodyInfo.inl"
+#include "inline/getBodyInfo.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/initializeBodies.inl"

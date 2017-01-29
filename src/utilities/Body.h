@@ -39,7 +39,7 @@ public:
   // count number of points in a given box
   PetscErrorCode countNumberPointsInBox(PetscReal (&box)[2*dim], PetscInt &n);
   // get index of points inside a given box
-  PetscErrorCode getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> indices);
+  PetscErrorCode getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> &indices);
   // print info related to body
   PetscErrorCode printInfo();
 

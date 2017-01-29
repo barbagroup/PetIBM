@@ -42,7 +42,9 @@ public:
   std::vector< std::vector<PetscInt> > boundaryPointIndices;
   
   PetscErrorCode initializeBodies();
-  PetscErrorCode generateBodyInfo();
+  PetscErrorCode getBodyInfo(Body<dim> body,
+                             std::vector<PetscInt> &localNumberPoints,
+                             std::vector<std::vector<PetscInt> > &localIndexPoints);
   PetscErrorCode createDMs();
   PetscErrorCode createVecs();
   PetscErrorCode setNullSpace();

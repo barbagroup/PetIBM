@@ -207,7 +207,7 @@ PetscErrorCode Body<3>::countNumberPointsInBox(PetscReal (&box)[6], PetscInt &n)
  * \param indices The vector of indices to fill.
  */
 template <PetscInt dim>
-PetscErrorCode Body<dim>::getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> indices)
+PetscErrorCode Body<dim>::getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> &indices)
 {
   return 0;
 } // getIndexPointsInBox
@@ -215,7 +215,7 @@ PetscErrorCode Body<dim>::getIndexPointsInBox(PetscReal (&box)[2*dim], std::vect
 
 // two-dimensional specialization
 template <>
-PetscErrorCode Body<2>::getIndexPointsInBox(PetscReal (&box)[4], std::vector<PetscInt> indices)
+PetscErrorCode Body<2>::getIndexPointsInBox(PetscReal (&box)[4], std::vector<PetscInt> &indices)
 {
   PetscFunctionBeginUser;
 
@@ -232,7 +232,7 @@ PetscErrorCode Body<2>::getIndexPointsInBox(PetscReal (&box)[4], std::vector<Pet
 
 // three-dimensional specialization
 template <>
-PetscErrorCode Body<3>::getIndexPointsInBox(PetscReal (&box)[6], std::vector<PetscInt> indices)
+PetscErrorCode Body<3>::getIndexPointsInBox(PetscReal (&box)[6], std::vector<PetscInt> &indices)
 {
   PetscFunctionBeginUser;
 

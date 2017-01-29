@@ -32,8 +32,6 @@ public:
   // destructor
   ~Body(){ };
 
-  // parse input file and store coordinates of immersed body
-  PetscErrorCode initialize(std::string filePath);
   // read boundary coordinates from give file
   PetscErrorCode readFromFile(std::string filePath);
   // get indices of cells owning a Lagrangian body point

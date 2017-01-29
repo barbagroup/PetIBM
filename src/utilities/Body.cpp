@@ -12,32 +12,16 @@
 #include "yaml-cpp/yaml.h"
 
 
-/**
- * \brief Constructor -- Parses the YAMLinput file containing bodies information.
- *
- * \param filePath Path of the file to parse with YAML-CPP
- */
-template <PetscInt dim>
-Body<dim>::Body(std::string filePath)
-{
-  char path[PETSC_MAX_PATH_LEN];
-  PetscBool found;
-  PetscOptionsGetString(NULL, NULL, "-bodies", path, sizeof(path), &found);
-  if (found)
-    filePath = std::string(path);
-  initialize(filePath);
-} // Body
-
 /*!
  * \brief Constructor -- Reads the boundary coordinates from a given file.
  *
  * \param filePath Path of the file containing the boundary coordinates.
  */
-// template <PetscInt dim>
-// Body<dim>::Body(std::string filePath)
-// {
-//   readFromFile(filePath);
-// } // Body
+template <PetscInt dim>
+Body<dim>::Body(std::string filePath)
+{
+  readFromFile(filePath);
+} // Body
 
 
 /*!
@@ -62,7 +46,7 @@ PetscErrorCode Body<dim>::readFromFile(std::string filePath)
   infile >> numPoints;
   X.reserve(numPoints);
   Y.reserve(numPoints);
-  PetscInt x, y;
+  PetscReal x, y;
   if (dim == 2)
   {
     for (PetscInt i=0; i<numPoints; i++)
@@ -74,7 +58,7 @@ PetscErrorCode Body<dim>::readFromFile(std::string filePath)
   }
   else if (dim == 3)
   {
-    PetscInt z;
+    PetscReal z;
     Z.reserve(numPoints);
     for (PetscInt i=0; i<numPoints; i++)
     {
@@ -90,68 +74,6 @@ PetscErrorCode Body<dim>::readFromFile(std::string filePath)
 
   PetscFunctionReturn(0);
 } // readFromFile
-
-
-/**
- * \brief Parses the input file and stores information about the flow.
- *
- * The file is parsed using YAML format.
- *
- * \param filePath Path of the file to parse
- */
-template <PetscInt dim>
-PetscErrorCode Body<dim>::initialize(std::string filePath)
-{
-  PetscErrorCode ierr;
-
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str()); CHKERRQ(ierr);
-
-  YAML::Node nodes = YAML::LoadFile(filePath);
-  const YAML::Node &node = nodes[0];
-
-  std::string type = node["type"].as<std::string>();
-
-  if (type == "points")
-  {
-    PetscReal x, y, z;
-    size_t last = filePath.find_last_of("/");
-    std::string directory = filePath.substr(0, last+1);
-    std::string pointsFilePath = directory + node["pointsFile"].as<std::string>();
-    std::ifstream infile(pointsFilePath.c_str());
-    if (!infile.good())
-    {
-      ierr = PetscPrintf(PETSC_COMM_WORLD, "\nERROR: File '%s' does not exist\n", pointsFilePath.c_str()); CHKERRQ(ierr);
-      exit(1);
-    }
-    infile >> numPoints;
-    X.reserve(numPoints);
-    Y.reserve(numPoints);
-    if (dim == 2)
-    {
-      for (PetscInt i=0; i<numPoints; i++)
-      {
-        infile >> x >> y;
-        X.push_back(x);
-        Y.push_back(y);
-      }
-    }
-    else if (dim == 3)
-    {
-      Z.reserve(numPoints);
-      for (PetscInt i=0; i<numPoints; i++)
-      {
-        infile >> x >> y >> z;
-        X.push_back(x);
-        Y.push_back(y);
-        Z.push_back(z);
-      }
-    }
-    infile.close();
-  }
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
-
-  return 0;
-} // initialize
 
 
 /**

@@ -58,12 +58,6 @@ public:
   PetscErrorCode writeLambda(std::string directory);
   PetscErrorCode writeForces();
 
-  PetscReal dhRoma(PetscReal x, PetscReal h);
-  PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
-  PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h);
-  PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *delta);
-  PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
-
 public:
   // constructors
   TairaColoniusSolver(){ };

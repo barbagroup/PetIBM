@@ -1,8 +1,9 @@
-/***************************************************************************//**
+/*! Implementation of the method `generateBNQ` of the class `TairaColoniusSolver`.
  * \file generateBNQ.inl
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `generateBNQ` of the class `TairaColoniusSolver`.
  */
+
+
+#include "delta.h"
 
 
 /**
@@ -28,8 +29,14 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   PetscInt localIdx, procIdx;
   PetscInt row, cols[2], BNQ_col, ET_col;
   PetscReal values[2] = {-1.0, 1.0}, value;
+  
+  PetscReal source[2], target[2];
   PetscReal disp[2];
-  PetscReal xCoord, yCoord, h;
+  PetscReal h;
+  PetscReal widths[2] = {mesh->x[mesh->nx+1] - mesh->x[0],
+                         mesh->y[mesh->ny+1] - mesh->y[0]};
+  BoundaryType bTypes[2] = {flow->boundaries[XPLUS][0].type,
+                            flow->boundaries[YPLUS][0].type};
   
   PetscLogEvent  GENERATE_BNQ;
   ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
@@ -78,11 +85,11 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
-    yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+    target[1] = 0.5*(mesh->y[j] + mesh->y[j+1]);
     for (i=mstart; i<mstart+m; i++)
     {
       h = mesh->dx[i];
-      xCoord = mesh->x[i+1];
+      target[0] = mesh->x[i+1];
       // G portion
       cols[0] = pMappingArray[j][i];
       cols[1] = pMappingArray[j][i+1];
@@ -99,7 +106,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           if (i >= bodies[0].I[*l]-2 && i <= bodies[0].I[*l]+2 
               && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2)
           {
-            if (isInfluenced(xCoord, yCoord, bodies[0].X[*l], bodies[0].Y[*l], 1.5*h, disp))
+            source[0] = bodies[0].X[*l];
+            source[1] = bodies[0].Y[*l];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
               BNQ_col = globalIndexMapping[*l];
               (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
@@ -117,10 +126,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   for (j=nstart; j<nstart+n; j++)
   {
     h = mesh->dy[j];
-    yCoord = mesh->y[j+1];
+    target[1] = mesh->y[j+1];
     for (i=mstart; i<mstart+m; i++)
     {
-      xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+      target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
       // G portion
       cols[0] = pMappingArray[j][i];
       cols[1] = pMappingArray[j+1][i];
@@ -137,7 +146,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           if (i >= bodies[0].I[*l]-2 && i <= bodies[0].I[*l]+2 
               && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2)
           {
-            if (isInfluenced(xCoord, yCoord, bodies[0].X[*l], bodies[0].Y[*l], 1.5*h, disp))
+            source[0] = bodies[0].X[*l];
+            source[1] = bodies[0].Y[*l];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
               BNQ_col = globalIndexMapping[*l]+1;
               (BNQ_col>=lambdaStart && BNQ_col<lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
@@ -181,11 +192,11 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
   for (j=nstart; j<nstart+n; j++)
   {
-    yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+    target[1] = 0.5*(mesh->y[j] + mesh->y[j+1]);
     for (i=mstart; i<mstart+m; i++)
     {
       h = mesh->dx[i];
-      xCoord = mesh->x[i+1];
+      target[0] = mesh->x[i+1];
       row = localIdx + qStart;
       // G portion
       cols[0] = pMappingArray[j][i];
@@ -201,7 +212,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           if (i >= bodies[0].I[*l]-2 && i <= bodies[0].I[*l]+2 
               && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2)
           {
-            if (isInfluenced(xCoord, yCoord, bodies[0].X[*l], bodies[0].Y[*l], 1.5*h, disp))
+            source[0] = bodies[0].X[*l];
+            source[1] = bodies[0].Y[*l];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
               BNQ_col  = globalIndexMapping[*l];
               value = h*delta(disp[0], disp[1], h);
@@ -220,10 +233,10 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   for (j=nstart; j<nstart+n; j++)
   {
     h = mesh->dy[j];
-    yCoord = mesh->y[j+1];
+    target[1] = mesh->y[j+1];
     for (i=mstart; i<mstart+m; i++)
     {
-      xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+      target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
       row = localIdx + qStart;
       // G portion
       cols[0] = pMappingArray[j][i];
@@ -239,7 +252,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           if (i >= bodies[0].I[*l]-2 && i <= bodies[0].I[*l]+2 
               && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2)
           {
-            if (isInfluenced(xCoord, yCoord, bodies[0].X[*l], bodies[0].Y[*l], 1.5*h, disp))
+            source[0] = bodies[0].X[*l];
+            source[1] = bodies[0].Y[*l];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
               BNQ_col = globalIndexMapping[*l] + 1;
               value= h*delta(disp[0], disp[1], h);
@@ -289,8 +304,16 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   PetscInt localIdx, procIdx;
   PetscInt row, cols[2], BNQ_col, ET_col;
   PetscReal values[2] = {-1.0, 1.0}, value;
+  
+  PetscReal source[3], target[3];
   PetscReal disp[3];
-  PetscReal xCoord, yCoord, zCoord, h;
+  PetscReal h;
+  PetscReal widths[3] = {mesh->x[mesh->nx+1] - mesh->x[0],
+                         mesh->y[mesh->ny+1] - mesh->y[0],
+                         mesh->z[mesh->nz+1] - mesh->z[0]};
+  BoundaryType bTypes[3] = {flow->boundaries[XPLUS][0].type,
+                            flow->boundaries[YPLUS][0].type,
+                            flow->boundaries[ZPLUS][0].type};
   
   PetscLogEvent  GENERATE_BNQ;
   ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
@@ -339,14 +362,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+    target[2] = 0.5*(mesh->z[k] + mesh->z[k+1]);
     for (j=nstart; j<nstart+n; j++)
     {
-      yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+      target[1] = 0.5*(mesh->y[j] + mesh->y[j+1]);
       for (i=mstart; i<mstart+m; i++)
       {
         h = mesh->dx[i];
-        xCoord = mesh->x[i+1];
+        target[0] = mesh->x[i+1];
         // G portion
         cols[0] = pMappingArray[k][j][i];
         cols[1] = pMappingArray[k][j][i+1];
@@ -364,7 +387,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
                 && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2 
                 && k >= bodies[0].K[*l]-2 && k <= bodies[0].K[*l]+2)
             {
-              if (isInfluenced(xCoord, yCoord, zCoord, bodies[0].X[*l], bodies[0].Y[*l], bodies[0].Z[*l], 1.5*h, disp))
+              source[0] = bodies[0].X[*l];
+              source[1] = bodies[0].Y[*l];
+              source[2] = bodies[0].Z[*l];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
                 BNQ_col = globalIndexMapping[*l];
                 (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
@@ -382,14 +408,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+    target[2] = 0.5*(mesh->z[k] + mesh->z[k+1]);
     for (j=nstart; j<nstart+n; j++)
     {
       h = mesh->dy[j];
-      yCoord = mesh->y[j+1];
+      target[1] = mesh->y[j+1];
       for (i=mstart; i<mstart+m; i++)
       {
-        xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+        target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         // G portion
         cols[0] = pMappingArray[k][j][i];
         cols[1] = pMappingArray[k][j+1][i];
@@ -407,7 +433,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
                 && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2 
                 && k >= bodies[0].K[*l]-2 && k <= bodies[0].K[*l]+2)
             {
-              if (isInfluenced(xCoord, yCoord, zCoord, bodies[0].X[*l], bodies[0].Y[*l], bodies[0].Z[*l], 1.5*h, disp))
+              source[0] = bodies[0].X[*l];
+              source[1] = bodies[0].Y[*l];
+              source[2] = bodies[0].Z[*l];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
                 BNQ_col = globalIndexMapping[*l] + 1;
                 (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
@@ -426,13 +455,13 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   for (k=pstart; k<pstart+p; k++)
   {
     h = mesh->dz[k];
-    zCoord = mesh->z[k+1];
+    target[2] = mesh->z[k+1];
     for (j=nstart; j<nstart+n; j++)
     {
-      yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+      target[1] = 0.5*(mesh->y[j] + mesh->y[j+1]);
       for (i=mstart; i<mstart+m; i++)
       {
-        xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+        target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         // G portion
         cols[0] = pMappingArray[k][j][i];
         cols[1] = pMappingArray[k+1][j][i];
@@ -450,7 +479,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
                 && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2 
                 && k >= bodies[0].K[*l]-2 && k <= bodies[0].K[*l]+2)
             {
-              if (isInfluenced(xCoord, yCoord, zCoord, bodies[0].X[*l], bodies[0].Y[*l], bodies[0].Z[*l], 1.5*h, disp))
+              source[0] = bodies[0].X[*l];
+              source[1] = bodies[0].Y[*l];
+              source[2] = bodies[0].Z[*l];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
                 BNQ_col = globalIndexMapping[*l] + 2;
                 (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
@@ -495,14 +527,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+    target[2] = 0.5*(mesh->z[k] + mesh->z[k+1]);
     for (j=nstart; j<nstart+n; j++)
     {
-      yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+      target[1] = 0.5*(mesh->y[j] + mesh->y[j+1]);
       for (i=mstart; i<mstart+m; i++)
       {
         h = mesh->dx[i];
-        xCoord = mesh->x[i+1];
+        target[0] = mesh->x[i+1];
         row = localIdx + qStart;
         // G portion
         cols[0] = pMappingArray[k][j][i];
@@ -519,7 +551,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
                 && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2 
                 && k >= bodies[0].K[*l]-2 && k <= bodies[0].K[*l]+2)
             {
-              if (isInfluenced(xCoord, yCoord, zCoord, bodies[0].X[*l], bodies[0].Y[*l], bodies[0].Z[*l], 1.5*h, disp))
+              source[0] = bodies[0].X[*l];
+              source[1] = bodies[0].Y[*l];
+              source[2] = bodies[0].Z[*l];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
                 BNQ_col = globalIndexMapping[*l];
                 value= h*delta(disp[0], disp[1], disp[2], h);
@@ -538,14 +573,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   ierr = DMDAGetCorners(vda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
   for (k=pstart; k<pstart+p; k++)
   {
-    zCoord = 0.5*(mesh->z[k] + mesh->z[k+1]);
+    target[2] = 0.5*(mesh->z[k] + mesh->z[k+1]);
     for (j=nstart; j<nstart+n; j++)
     {
       h = mesh->dy[j];
-      yCoord = mesh->y[j+1];
+      target[1] = mesh->y[j+1];
       for (i=mstart; i<mstart+m; i++)
       {
-        xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+        target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         row = localIdx + qStart;
         // G portion
         cols[0] = pMappingArray[k][j][i];
@@ -562,7 +597,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
                 && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2 
                 && k >= bodies[0].K[*l]-2 && k <= bodies[0].K[*l]+2)
             {
-              if (isInfluenced(xCoord, yCoord, zCoord, bodies[0].X[*l], bodies[0].Y[*l], bodies[0].Z[*l], 1.5*h, disp))
+              source[0] = bodies[0].X[*l];
+              source[1] = bodies[0].Y[*l];
+              source[2] = bodies[0].Z[*l];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
                 BNQ_col = globalIndexMapping[*l] + 1;
                 value = h*delta(disp[0], disp[1], disp[2], h);
@@ -582,13 +620,13 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   for (k=pstart; k<pstart+p; k++)
   {
     h = mesh->dz[k];
-    zCoord = mesh->z[k+1];
+    target[2] = mesh->z[k+1];
     for (j=nstart; j<nstart+n; j++)
     {
-      yCoord = 0.5*(mesh->y[j] + mesh->y[j+1]);
+      target[1] = 0.5*(mesh->y[j] + mesh->y[j+1]);
       for (i=mstart; i<mstart+m; i++)
       {
-        xCoord = 0.5*(mesh->x[i] + mesh->x[i+1]);
+        target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         row = localIdx + qStart;
         // G portion
         cols[0] = pMappingArray[k][j][i];
@@ -605,7 +643,10 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
                 && j >= bodies[0].J[*l]-2 && j <= bodies[0].J[*l]+2 
                 && k >= bodies[0].K[*l]-2 && k <= bodies[0].K[*l]+2)
             {
-              if(isInfluenced(xCoord, yCoord, zCoord, bodies[0].X[*l], bodies[0].Y[*l], bodies[0].Z[*l], 1.5*h, disp))
+              source[0] = bodies[0].X[*l];
+              source[1] = bodies[0].Y[*l];
+              source[2] = bodies[0].Z[*l];
+              if(isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
                 BNQ_col = globalIndexMapping[*l] + 2;
                 value = h*delta(disp[0], disp[1], disp[2], h);

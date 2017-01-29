@@ -74,41 +74,6 @@ PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
 
 
 /**
- * \brief Discrete delta function from Roma et al. (1999).
- */
-template <PetscInt dim>
-PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
-{
-  PetscReal r = fabs(x)/h;
-  if (r > 1.5)
-    return 0.0;
-  if (r > 0.5 && r <= 1.5)
-    return 1.0/(6*h)*( 5.0 - 3.0*r - sqrt(-3.0*(1-r)*(1-r) + 1.0) );
-  return 1.0/(3*h)*( 1.0 + sqrt(-3.0*r*r + 1.0) );
-} // dhRoma
-
-
-/**
- * \brief Two-dimensional discrete delta function.
- */
-template <PetscInt dim>
-PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal h)
-{
-  return dhRoma(x, h) * dhRoma(y, h);
-} // delta
-
-
-/**
- * \brief Three-dimensional discrete delta function.
- */
-template <PetscInt dim>
-PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
-{
-  return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
-} // delta
-
-
-/**
  * \brief Destroys PETSc objects.
  */
 template <PetscInt dim>
@@ -137,7 +102,6 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
 #include "inline/generateR2.inl"
 #include "inline/initializeBodies.inl"
 #include "inline/createGlobalMappingBodies.inl"
-#include "inline/isInfluenced.inl"
 #include "inline/calculateForces.inl"
 #include "inline/io.inl"
 

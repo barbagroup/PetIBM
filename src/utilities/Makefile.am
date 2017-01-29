@@ -5,6 +5,7 @@ libutilities_a_SOURCES = CartesianMesh.cpp \
                          SimulationParameters.cpp \
                          Body.cpp \
                          types.cpp \
+                         delta.cpp \
                          solvers/kspsolver.cpp
 
 if WITH_AMGXWRAPPER

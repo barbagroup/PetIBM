@@ -22,12 +22,13 @@ template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
 public:
-  DM bda; ///< DMDA object
+  PetscInt numBodies;  ///< number of immersed boundaries
+  PetscInt numLagrangianPoints; ///< total number of Lagrangian points
+  std::vector<Body<dim> > bodies;  ///< info about each immersed boundary
+  
+  DM bda;  ///< DMDA for all immersed boundaries
 
-  PetscInt numBodies;
-  std::vector<Body<dim> > bodies; ///< info about each body immersed
-
-  PetscInt numBoundaryPoints; ///< total numbers of Lagrangian body points
+  std::vector<PetscInt> localNumPhiPoints;
 
   PetscInt  startGlobalIndex;
   Mat       ET;
@@ -42,9 +43,8 @@ public:
   std::vector< std::vector<PetscInt> > boundaryPointIndices;
   
   PetscErrorCode initializeBodies();
-  PetscErrorCode getBodyInfo(Body<dim> body,
-                             std::vector<PetscInt> &localNumberPoints,
-                             std::vector<std::vector<PetscInt> > &localIndexPoints);
+  PetscErrorCode setLocalIndexPointsBodies();
+  PetscErrorCode setLocalNumPhiPoints();
   PetscErrorCode createDMs();
   PetscErrorCode createVecs();
   PetscErrorCode setNullSpace();

@@ -73,7 +73,7 @@ PetscErrorCode TairaColoniusSolver<dim>::writeData()
 
   PetscFunctionBeginUser;
 
-  ierr = calculateForces(); CHKERRQ(ierr);
+  ierr = calculateForcesTC(); CHKERRQ(ierr);
   ierr = writeForces(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::writeData(); CHKERRQ(ierr);
 
@@ -135,13 +135,16 @@ PetscErrorCode TairaColoniusSolver<dim>::writeLambda(std::string directory)
 } // writeLambda
 
 
-/**
+/*!
  * \brief Writes force in each direction acting on the body.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::writeForces()
 {
   PetscErrorCode ierr;
+
+  PetscFunctionBeginUser;
+
   PetscMPIInt rank;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
 
@@ -157,13 +160,16 @@ PetscErrorCode TairaColoniusSolver<dim>::writeForces()
       forcesFile.open(filePath.c_str(), std::ios::out | std::ios::app);
     }
     forcesFile << NavierStokesSolver<dim>::timeStep*NavierStokesSolver<dim>::parameters->dt;
-    for (PetscInt i=0; i<dim; i++)
+    for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
     {
-      forcesFile << '\t' << force[i];
+      for (PetscInt d=0; d<dim; d++)
+      {
+        forcesFile << '\t' << bodies[bIdx].forces[d];
+      }
     }
     forcesFile << std::endl;
     forcesFile.close();
   }
 
-  return 0;
+  PetscFunctionReturn(0);
 } // writeForces

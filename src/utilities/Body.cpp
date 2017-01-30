@@ -25,6 +25,26 @@ Body<dim>::Body(std::string filePath)
 
 
 /*!
+ * \brief Resizes the vector with the number of processors.
+ */
+template <PetscInt dim>
+PetscErrorCode Body<dim>::initialize()
+{
+  PetscErrorCode ierr;
+
+  PetscFunctionBeginUser;
+
+  PetscMPIInt numProcs;
+  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+
+  localNumPoints.resize(numProcs);
+  localIndexPoints.resize(numProcs);
+
+  PetscFunctionReturn(0);
+} // initialize
+
+
+/*!
  * \brief Reads the boundary coordinates from a given file.
  *
  * \param filePath Path of the file containing the boundary coordinates.
@@ -77,12 +97,12 @@ PetscErrorCode Body<dim>::readFromFile(std::string filePath)
 
 
 /**
- * \brief Gets the indices of cells owning a Lagrangian body points.
+ * \brief Stores the indices of Eulerian cells owning a Lagrangian body points.
  * 
  * \param mesh Contains the information about the Cartesian grid
  */
 template <PetscInt dim>
-PetscErrorCode Body<dim>::getCellOwners(CartesianMesh *mesh)
+PetscErrorCode Body<dim>::setCellOwners(CartesianMesh *mesh)
 {
   I.reserve(numPoints);
   J.reserve(numPoints);
@@ -149,25 +169,24 @@ PetscErrorCode Body<dim>::getCellOwners(CartesianMesh *mesh)
   }
 
   return 0;
-} // getCellOwners
+} // setCellOwners
 
 
 /*!
- * \brief Counts the number of points in a given box.
+ * \brief Gets the number of points in a given box.
  *
  * \param box Box defined by (xmin, xmax, ymin, ymax, zmin, zmax).
- *
- * \returns The number of points in the box.
+ * \param n The number of points in the box.
  */
 template <PetscInt dim>
-PetscErrorCode Body<dim>::countNumberPointsInBox(PetscReal (&box)[2*dim], PetscInt &n)
+PetscErrorCode Body<dim>::getNumPointsInBox(PetscReal (&box)[2*dim], PetscInt &n)
 {
   return 0;
-} // countNumberPointsInBox
+} // getNumPointsInBox
 
 // two-dimensional specialization
 template <>
-PetscErrorCode Body<2>::countNumberPointsInBox(PetscReal (&box)[4], PetscInt &n)
+PetscErrorCode Body<2>::getNumPointsInBox(PetscReal (&box)[4], PetscInt &n)
 {
   PetscFunctionBeginUser;
 
@@ -179,12 +198,12 @@ PetscErrorCode Body<2>::countNumberPointsInBox(PetscReal (&box)[4], PetscInt &n)
   }
 
   PetscFunctionReturn(0);
-} // countNumberPointsInBox
+} // getNumPointsInBox
 
 
 // three-dimensional specialization
 template <>
-PetscErrorCode Body<3>::countNumberPointsInBox(PetscReal (&box)[6], PetscInt &n)
+PetscErrorCode Body<3>::getNumPointsInBox(PetscReal (&box)[6], PetscInt &n)
 {
   PetscFunctionBeginUser;
 
@@ -197,55 +216,64 @@ PetscErrorCode Body<3>::countNumberPointsInBox(PetscReal (&box)[6], PetscInt &n)
   }
 
   PetscFunctionReturn(0);
-} // countNumberPointsInBox
+} // getNumPointsInBox
 
 
 /*!
- * \brief Gets the index of points inside a given box.
+ * \brief Stores the index of boundary points that on a given process
+          (defined by a box).
  *
- * \param box Box defined by (xmin, xmax, ymin, ymax, zmax, zmin).
- * \param indices The vector of indices to fill.
+ * \param procIdx The process id.
+ * \param box The box defining the process.
  */
 template <PetscInt dim>
-PetscErrorCode Body<dim>::getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> &indices)
+PetscErrorCode Body<dim>::setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[2*dim])
 {
   return 0;
-} // getIndexPointsInBox
+} // setLocalIndexPoints
 
 
 // two-dimensional specialization
 template <>
-PetscErrorCode Body<2>::getIndexPointsInBox(PetscReal (&box)[4], std::vector<PetscInt> &indices)
+PetscErrorCode Body<2>::setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[4])
 {
+  PetscErrorCode ierr;
+
   PetscFunctionBeginUser;
 
+  ierr = getNumPointsInBox(box, localNumPoints[procIdx]); CHKERRQ(ierr);
+  localIndexPoints[procIdx].reserve(localNumPoints[procIdx]);
   for (PetscInt i=0; i<numPoints; i++)
   {
     if (box[0] <= X[i] && X[i] < box[1] &&
         box[2] <= Y[i] && Y[i] < box[3])
-      indices.push_back(i);
+      localIndexPoints[procIdx].push_back(i);
   }
 
   PetscFunctionReturn(0);
-} // getIndexPointsInBox
+} // setLocalIndexPoints
 
 
 // three-dimensional specialization
 template <>
-PetscErrorCode Body<3>::getIndexPointsInBox(PetscReal (&box)[6], std::vector<PetscInt> &indices)
+PetscErrorCode Body<3>::setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[6])
 {
+  PetscErrorCode ierr;
+
   PetscFunctionBeginUser;
 
+  ierr = getNumPointsInBox(box, localNumPoints[procIdx]); CHKERRQ(ierr);
+  localIndexPoints[procIdx].reserve(localNumPoints[procIdx]);
   for (PetscInt i=0; i<numPoints; i++)
   {
     if (box[0] <= X[i] && X[i] < box[1] &&
         box[2] <= Y[i] && Y[i] < box[3] &&
         box[4] <= Z[i] && Z[i] < box[5])
-      indices.push_back(i);
+      localIndexPoints[procIdx].push_back(i);
   }
-
+  
   PetscFunctionReturn(0);
-} // getIndexPointsInBox
+} // setLocalIndexPoints
 
 
 // dimensions specialization

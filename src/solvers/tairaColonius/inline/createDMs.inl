@@ -14,15 +14,30 @@ PetscErrorCode TairaColoniusSolver<dim>::createDMs()
   PetscFunctionBeginUser;
 
   ierr = NavierStokesSolver<dim>::createDMs(); CHKERRQ(ierr);
+
+  PetscMPIInt numProcs;
+  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+
+  ierr = setLocalIndexPointsBodies(); CHKERRQ(ierr);
+  std::vector<PetscInt> localNumLagrangianPoints(numProcs);
+  for (PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+  {
+    localNumLagrangianPoints[procIdx] = 0;
+    for (PetscInt i=0; i<numBodies; i++)
+    {
+      localNumLagrangianPoints[procIdx] += bodies[i].localNumPoints[procIdx];
+    }
+  }
+  PetscInt globalNumLagrangianPoints = 0;
   for (PetscInt i=0; i<numBodies; i++)
   {
-    ierr = getBodyInfo(bodies[i], numBoundaryPointsOnProcess, boundaryPointIndices); CHKERRQ(ierr);
-    ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE, 
-                        bodies[i].numPoints, dim, 0, &numBoundaryPointsOnProcess.front(), 
-                        &bda); CHKERRQ(ierr);
-    ierr = PetscObjectViewFromOptions((PetscObject) bda, NULL, "-bda_dmda_view"); CHKERRQ(ierr);
-    ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
+    globalNumLagrangianPoints += bodies[i].numPoints;
   }
+  ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE,
+                      globalNumLagrangianPoints, dim, 0, &localNumLagrangianPoints.front(),
+                      &bda); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) bda, NULL, "-bda_dmda_view"); CHKERRQ(ierr);
+  ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // createDMs

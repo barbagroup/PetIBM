@@ -46,7 +46,9 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
 
   ierr = initializeBodies(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
+  ierr = setLocalNumPhiPoints(); CHKERRQ(ierr);
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
+
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
@@ -79,7 +81,8 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
 #include "inline/setNullSpace.inl"
-#include "inline/getBodyInfo.inl"
+#include "inline/setLocalIndexPointsBodies.inl"
+#include "inline/setLocalNumPhiPoints.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/initializeBodies.inl"

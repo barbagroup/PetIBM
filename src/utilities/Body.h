@@ -23,8 +23,12 @@ class Body
 {
 public:
   PetscInt numPoints;
+  std::vector<PetscInt> localNumPoints;
+  std::vector<std::vector<PetscInt> > localIndexPoints;
   std::vector<PetscReal> X, Y, Z;
   std::vector<PetscInt> I, J, K;
+  PetscReal forces[dim];
+
 
   // constructors
   Body(){ };
@@ -32,14 +36,16 @@ public:
   // destructor
   ~Body(){ };
 
+  // initialization
+  PetscErrorCode initialize();
   // read boundary coordinates from give file
   PetscErrorCode readFromFile(std::string filePath);
-  // get indices of cells owning a Lagrangian body point
-  PetscErrorCode getCellOwners(CartesianMesh *mesh);
-  // count number of points in a given box
-  PetscErrorCode countNumberPointsInBox(PetscReal (&box)[2*dim], PetscInt &n);
-  // get index of points inside a given box
-  PetscErrorCode getIndexPointsInBox(PetscReal (&box)[2*dim], std::vector<PetscInt> &indices);
+  // store indices of cells owning a Lagrangian body point
+  PetscErrorCode setCellOwners(CartesianMesh *mesh);
+  // get number of points in a given box
+  PetscErrorCode getNumPointsInBox(PetscReal (&box)[2*dim], PetscInt &n);
+  // store index of points for each process
+  PetscErrorCode setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[2*dim]);
   // print info related to body
   PetscErrorCode printInfo();
 

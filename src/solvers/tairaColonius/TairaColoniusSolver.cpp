@@ -28,9 +28,7 @@ TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh,
                                                                       simulationParameters)
 {
   bda = PETSC_NULL;
-  ET = PETSC_NULL;
   nullSpaceVec = PETSC_NULL;
-  regularizedForce = PETSC_NULL;
 } // TairaColoniusSolver
 
 
@@ -68,10 +66,7 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
   ierr = NavierStokesSolver<dim>::finalize();
   // DMs
   if (bda != PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
-  // Mats
-  if (ET != PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
   // Vecs
-  if (regularizedForce != PETSC_NULL){ierr = VecDestroy(&regularizedForce); CHKERRQ(ierr);}
   if (nullSpaceVec != PETSC_NULL)    {ierr = VecDestroy(&nullSpaceVec); CHKERRQ(ierr);}
 
   return 0;

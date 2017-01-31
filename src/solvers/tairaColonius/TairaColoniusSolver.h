@@ -1,7 +1,5 @@
-/***************************************************************************//**
+/*! Definition of the class `TairaColoniusSolver`.
  * \file TairaColoniusSolver.h
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Definition of the class `TairaColoniusSolver`.
  */
 
 
@@ -13,7 +11,7 @@
 #include "Body.h"
 
 
-/**
+/*!
  * \class TairaColoniusSolver
  * \brief Solves the Navier-Stokes equations 
  *        with immersed boundary projection method (Taira and Colonius, 2007).
@@ -29,18 +27,11 @@ public:
   DM bda;  ///< DMDA for all immersed boundaries
 
   std::vector<PetscInt> localNumPhiPoints;
+  std::vector<PetscInt>  globalIndexMapping;
 
-  PetscInt  startGlobalIndex;
-  Mat       ET;
-  PetscReal force[3];
-  Vec       nullSpaceVec, regularizedForce;
+  Vec nullSpaceVec;
 
   std::ofstream forcesFile;
-
-  std::vector<PetscInt>  globalIndexMapping;
-  std::vector<PetscInt>  numBoundaryPointsOnProcess;
-  std::vector<PetscInt>  numPhiOnProcess;
-  std::vector< std::vector<PetscInt> > boundaryPointIndices;
   
   PetscErrorCode initializeBodies();
   PetscErrorCode setLocalIndexPointsBodies();
@@ -52,7 +43,6 @@ public:
   PetscErrorCode generateR2();
   PetscErrorCode createGlobalMappingBodies();
   PetscErrorCode calculateForces();
-  PetscErrorCode calculateForcesTC();
   
   PetscErrorCode readLambda(std::string directory);
   PetscErrorCode writeData();

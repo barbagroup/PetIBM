@@ -29,7 +29,6 @@ public:
   std::vector<PetscInt> I, J, K;
   PetscReal forces[dim];
 
-
   // constructors
   Body(){ };
   Body(std::string filePath);

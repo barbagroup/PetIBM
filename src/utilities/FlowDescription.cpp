@@ -21,6 +21,8 @@
 template <PetscInt dim>
 FlowDescription<dim>::FlowDescription(std::string filePath)
 {
+  // possibility to overwrite the path of the configuration file
+  // using the command-line parameter: `-flow_description <file-path>`
   char path[PETSC_MAX_PATH_LEN];
   PetscBool found;
   PetscOptionsGetString(NULL, NULL, "-flow_description", path, sizeof(path), &found);

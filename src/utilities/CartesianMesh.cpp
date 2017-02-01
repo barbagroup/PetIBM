@@ -30,6 +30,8 @@ CartesianMesh::CartesianMesh()
  */
 CartesianMesh::CartesianMesh(std::string filePath)
 {
+  // possibility to overwrite the path of the configuration file
+  // using the command-line parameter: `-cartesian_mesh <file-path>`
   char path[PETSC_MAX_PATH_LEN];
   PetscBool found;
   PetscOptionsGetString(NULL, NULL, "-cartesian_mesh", path, sizeof(path), &found);

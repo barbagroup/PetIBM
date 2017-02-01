@@ -19,6 +19,8 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
   PetscFunctionBeginUser;
 
   std::string filePath = NavierStokesSolver<dim>::parameters->directory+"/bodies.yaml";
+  // possibility to overwrite the path of the YAML configuration file
+  // using the command-line parameter `-bodies <yaml-file-path>`
   char path[PETSC_MAX_PATH_LEN];
   PetscBool found;
   PetscOptionsGetString(NULL, NULL, "-bodies", path, sizeof(path), &found);
@@ -37,9 +39,9 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
     std::string type = node["type"].as<std::string>();
     if (type == "points")
     {
-      size_t last = filePath.find_last_of("/");
-      std::string directory = filePath.substr(0, last+1);
-      std::string pointsFilePath = directory + node["pointsFile"].as<std::string>();
+      std::string directory = NavierStokesSolver<dim>::parameters->directory;
+      std::string pointsFileName = node["pointsFile"].as<std::string>();
+      std::string pointsFilePath = directory + "/" + pointsFileName;
       ierr = bodies[i].readFromFile(pointsFilePath); CHKERRQ(ierr);
     }
     numLagrangianPoints += bodies[i].numPoints;

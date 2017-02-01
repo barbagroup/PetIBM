@@ -8,6 +8,9 @@
 #endif
 
 
+/*!
+ * \brief Creates the iterative solvers.
+ */
 template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::createSolvers()
 {
@@ -16,16 +19,22 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
   std::string prefix;
   std::string options;
 
+  // possibility to overwrite the path of the configuration file
+  // using the command-line parameter: `-velocity_config_file <file-path>`
+  char path[PETSC_MAX_PATH_LEN];
+  PetscBool found;
+  PetscOptionsGetString(NULL, NULL, "-velocity_config_file", path, sizeof(path), &found);
+
   switch(parameters->vSolveType)
   {
     case CPU:
       prefix = "velocity_";
-      options = parameters->directory + "/solversPetscOptions.info";
+      options = (found) ? std::string(path) : parameters->directory + "/solversPetscOptions.info";
       velocity = new KSPSolver(prefix, options);
       break;
     case GPU:
 #ifdef HAVE_AMGX
-      options = parameters->directory + "/solversAmgXOptions_v.info";
+      options = (found) ? std::string(path) : parameters->directory + "/solversAmgXOptions_v.info";
       velocity = new AMGXSolver(options);
 #else HAVE_AMGX
       ierr = PetscPrintf(PETSC_COMM_WORLD,
@@ -40,16 +49,20 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
   }
   velocity->create(A);
 
+  // possibility to overwrite the path of the configuration file
+  // using the command-line parameter: `-poisson_config_file <file-path>`
+  PetscOptionsGetString(NULL, NULL, "-poisson_config_file", path, sizeof(path), &found);
+
   switch(parameters->pSolveType)
   {
     case CPU:
       prefix = "poisson_";
-      options = parameters->directory + "/solversPetscOptions.info";
+      options = (found) ? std::string(path) : parameters->directory + "/solversPetscOptions.info";
       poisson = new KSPSolver(prefix, options);
       break;
     case GPU:
 #ifdef HAVE_AMGX
-      options = parameters->directory + "/solversAmgXOptions_p.info";
+      options = (found) ? std::string(path) : parameters->directory + "/solversAmgXOptions_p.info";
       poisson = new AMGXSolver(options);
 #else HAVE_AMGX
       ierr = PetscPrintf(PETSC_COMM_WORLD,

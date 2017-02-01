@@ -29,6 +29,8 @@ SimulationParameters::SimulationParameters()
 SimulationParameters::SimulationParameters(std::string dir, std::string filePath)
 {
   directory = dir;
+  // possibility to overwrite the path of the configuration file
+  // using the command-line parameter: `-simulation_parameters <file-path>`
   char path[PETSC_MAX_PATH_LEN];
   PetscBool found;
   PetscOptionsGetString(NULL, NULL, "-simulation_parameters", path, sizeof(path), &found);

@@ -93,6 +93,7 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
   ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
   
   ierr = createDMs(); CHKERRQ(ierr);
+  ierr = createVecs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
@@ -117,8 +118,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
     ierr = writeGrids(); CHKERRQ(ierr);
   }
 #endif
-
-  ierr = createVecs(); CHKERRQ(ierr);
 
   ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
   ierr = createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);

@@ -29,13 +29,11 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
 
   YAML::Node nodes = YAML::LoadFile(filePath);
   numBodies = nodes.size();
-  numLagrangianPoints = 0;
   bodies.resize(numBodies);
   for (PetscInt i=0; i<numBodies; i++)
   {
     const YAML::Node &node = nodes[i];
     bodies[i] = Body<dim>();
-    ierr = bodies[i].initialize(); CHKERRQ(ierr);
     std::string type = node["type"].as<std::string>();
     if (type == "points")
     {
@@ -44,8 +42,7 @@ PetscErrorCode TairaColoniusSolver<dim>::initializeBodies()
       std::string pointsFilePath = directory + "/" + pointsFileName;
       ierr = bodies[i].readFromFile(pointsFilePath); CHKERRQ(ierr);
     }
-    numLagrangianPoints += bodies[i].numPoints;
-    ierr = bodies[i].setCellOwners(NavierStokesSolver<dim>::mesh); CHKERRQ(ierr);
+    ierr = bodies[i].registerCellOwners(NavierStokesSolver<dim>::mesh); CHKERRQ(ierr);
   }
 
   PetscFunctionReturn(0);

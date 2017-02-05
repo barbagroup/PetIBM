@@ -4,7 +4,7 @@
 
 
 /*!
- * \brief Creates the DMDA object that accounts for the number of Lagrangian points.
+ * \brief Creates the DMDA objects for the pressure, fluxes, and Lagrangian forces.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createDMs()
@@ -15,29 +15,23 @@ PetscErrorCode TairaColoniusSolver<dim>::createDMs()
 
   ierr = NavierStokesSolver<dim>::createDMs(); CHKERRQ(ierr);
 
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+  ierr = registerLagPointsOnProcess(); CHKERRQ(ierr);
 
-  ierr = setLocalIndexPointsBodies(); CHKERRQ(ierr);
-  std::vector<PetscInt> localNumLagrangianPoints(numProcs);
-  for (PetscInt procIdx=0; procIdx<numProcs; procIdx++)
-  {
-    localNumLagrangianPoints[procIdx] = 0;
-    for (PetscInt i=0; i<numBodies; i++)
-    {
-      localNumLagrangianPoints[procIdx] += bodies[i].localNumPoints[procIdx];
-    }
-  }
-  PetscInt globalNumLagrangianPoints = 0;
-  for (PetscInt i=0; i<numBodies; i++)
-  {
-    globalNumLagrangianPoints += bodies[i].numPoints;
-  }
+  // get the total number of Lagrangian points
+  PetscInt numLagPoints;
+  ierr = getNumLagPoints(numLagPoints); CHKERRQ(ierr);
+
+  // get the number of Lagrangian points per process
+  std::vector<PetscInt> numLagPointsOnProcess;
+  ierr = getNumLagPointsOnProcess(numLagPointsOnProcess); CHKERRQ(ierr);
+
   ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE,
-                      globalNumLagrangianPoints, dim, 0, &localNumLagrangianPoints.front(),
+                      numLagPoints, dim, 0, &numLagPointsOnProcess.front(),
                       &bda); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) bda, NULL, "-bda_dmda_view"); CHKERRQ(ierr);
-  ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack, bda); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) bda, NULL,
+                                    "-bda_dmda_view"); CHKERRQ(ierr);
+  ierr = DMCompositeAddDM(NavierStokesSolver<dim>::lambdaPack,
+                          bda); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // createDMs

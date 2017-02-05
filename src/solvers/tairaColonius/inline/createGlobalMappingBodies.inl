@@ -4,7 +4,10 @@
 
 
 /*!
- * \brief Maps local to global indices.
+ * \brief Maps local to global indices for the Lagrangian forces.
+ *
+ * The mapping is stored in the Body objects.
+ * Its maps the index of Lagrangian point to its global index in the vector lambda.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createGlobalMappingBodies()
@@ -13,26 +16,18 @@ PetscErrorCode TairaColoniusSolver<dim>::createGlobalMappingBodies()
 
   PetscFunctionBeginUser;
 
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+  // get the global offset index
+  PetscInt lambdaStart;
+  ierr = VecGetOwnershipRange(NavierStokesSolver<dim>::lambda, &lambdaStart, NULL); CHKERRQ(ierr);
 
-  globalIndexMapping.resize(numLagrangianPoints);
+  DMDALocalInfo pdaInfo, bdaInfo;
+  ierr = DMDAGetLocalInfo(NavierStokesSolver<dim>::pda, &pdaInfo); CHKERRQ(ierr);
 
-  PetscInt globalIndex = 0;
-  PetscInt offset;
-  for (PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+  PetscInt offset = lambdaStart + (pdaInfo.xm)*(pdaInfo.ym);
+  for (auto &body : bodies)
   {
-    globalIndex += localNumPhiPoints[procIdx];
-    offset = 0;
-    for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
-    {
-      for (auto i=bodies[bIdx].localIndexPoints[procIdx].begin(); i!=bodies[bIdx].localIndexPoints[procIdx].end(); i++)
-      {
-        globalIndexMapping[offset + *i] = globalIndex;
-        globalIndex += dim;
-      }
-      offset += bodies[bIdx].localIndexPoints[procIdx].size();
-    }
+    // offset is passed by reference and updated in the Body method
+    ierr = body.registerGlobalIdxPoints(offset); CHKERRQ(ierr);
   }
 
   PetscFunctionReturn(0);

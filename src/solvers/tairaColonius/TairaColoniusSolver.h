@@ -20,28 +20,25 @@ template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
 public:
-  PetscInt numBodies;  ///< number of immersed boundaries
-  PetscInt numLagrangianPoints; ///< total number of Lagrangian points
-  std::vector<Body<dim> > bodies;  ///< info about each immersed boundary
+  PetscInt numBodies; ///< number of immersed boundaries
+  std::vector<Body<dim> > bodies; ///< info about each immersed boundary
   
-  DM bda;  ///< DMDA for all immersed boundaries
+  DM bda; ///< DMDA object for all immersed boundaries
 
-  std::vector<PetscInt> localNumPhiPoints;
-  std::vector<PetscInt>  globalIndexMapping;
+  Vec nullSpaceVec; ///< nullspace object to attach to the matrix QTBNQ
 
-  Vec nullSpaceVec;
-
-  std::ofstream forcesFile;
+  std::ofstream forcesFile; ///< stream the file containing the forces acting on each immersed boundary
   
   PetscErrorCode initializeBodies();
-  PetscErrorCode setLocalIndexPointsBodies();
-  PetscErrorCode setLocalNumPhiPoints();
+  PetscErrorCode getNumLagPoints(PetscInt &n);
+  PetscErrorCode getNumLagPointsOnProcess(std::vector<PetscInt> &numOnProcess);
+  PetscErrorCode registerLagPointsOnProcess();
   PetscErrorCode createDMs();
   PetscErrorCode createVecs();
-  PetscErrorCode setNullSpace();
+  PetscErrorCode createGlobalMappingBodies();
   PetscErrorCode generateBNQ();
   PetscErrorCode generateR2();
-  PetscErrorCode createGlobalMappingBodies();
+  PetscErrorCode setNullSpace();
   PetscErrorCode calculateForces();
   
   PetscErrorCode readLambda(std::string directory);

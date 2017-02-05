@@ -1,7 +1,5 @@
-/***************************************************************************//**
+/*! Implementation of the methods of the class `Body`.
  * \file Body.cpp
- * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Implementation of the methods of the class `Body`.
  */
 
 
@@ -22,26 +20,6 @@ Body<dim>::Body(std::string filePath)
 {
   readFromFile(filePath);
 } // Body
-
-
-/*!
- * \brief Resizes the vector with the number of processors.
- */
-template <PetscInt dim>
-PetscErrorCode Body<dim>::initialize()
-{
-  PetscErrorCode ierr;
-
-  PetscFunctionBeginUser;
-
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
-
-  localNumPoints.resize(numProcs);
-  localIndexPoints.resize(numProcs);
-
-  PetscFunctionReturn(0);
-} // initialize
 
 
 /*!
@@ -96,13 +74,13 @@ PetscErrorCode Body<dim>::readFromFile(std::string filePath)
 } // readFromFile
 
 
-/**
+/*!
  * \brief Stores the indices of Eulerian cells owning a Lagrangian body points.
  * 
  * \param mesh Contains the information about the Cartesian grid
  */
 template <PetscInt dim>
-PetscErrorCode Body<dim>::setCellOwners(CartesianMesh *mesh)
+PetscErrorCode Body<dim>::registerCellOwners(CartesianMesh *mesh)
 {
   I.reserve(numPoints);
   J.reserve(numPoints);
@@ -169,111 +147,145 @@ PetscErrorCode Body<dim>::setCellOwners(CartesianMesh *mesh)
   }
 
   return 0;
-} // setCellOwners
+} // registerCellOwners
 
 
 /*!
- * \brief Gets the number of points in a given box.
+ * \brief Registers the number of points on process.
  *
- * \param box Box defined by (xmin, xmax, ymin, ymax, zmin, zmax).
- * \param n The number of points in the box.
- */
-template <PetscInt dim>
-PetscErrorCode Body<dim>::getNumPointsInBox(PetscReal (&box)[2*dim], PetscInt &n)
-{
-  return 0;
-} // getNumPointsInBox
-
-// two-dimensional specialization
-template <>
-PetscErrorCode Body<2>::getNumPointsInBox(PetscReal (&box)[4], PetscInt &n)
-{
-  PetscFunctionBeginUser;
-
-  for (PetscInt i=0; i<numPoints; i++)
-  {
-    if (box[0] <= X[i] && X[i] < box[1] &&
-        box[2] <= Y[i] && Y[i] < box[3])
-      n++;
-  }
-
-  PetscFunctionReturn(0);
-} // getNumPointsInBox
-
-
-// three-dimensional specialization
-template <>
-PetscErrorCode Body<3>::getNumPointsInBox(PetscReal (&box)[6], PetscInt &n)
-{
-  PetscFunctionBeginUser;
-
-  for (PetscInt i=0; i<numPoints; i++)
-  {
-    if (box[0] <= X[i] && X[i] < box[1] &&
-        box[2] <= Y[i] && Y[i] < box[3] &&
-        box[4] <= Z[i] && Z[i] < box[5])
-      n++;
-  }
-
-  PetscFunctionReturn(0);
-} // getNumPointsInBox
-
-
-/*!
- * \brief Stores the index of boundary points that on a given process
-          (defined by a box).
+ * A process is represented by a box (xmin, xmax, ymin, ymax, zmin, zmax).
  *
- * \param procIdx The process id.
  * \param box The box defining the process.
  */
 template <PetscInt dim>
-PetscErrorCode Body<dim>::setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[2*dim])
-{
-  return 0;
-} // setLocalIndexPoints
-
-
-// two-dimensional specialization
-template <>
-PetscErrorCode Body<2>::setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[4])
+PetscErrorCode Body<dim>::registerNumPointsOnProcess(PetscReal (&box)[2*dim])
 {
   PetscErrorCode ierr;
 
   PetscFunctionBeginUser;
 
-  ierr = getNumPointsInBox(box, localNumPoints[procIdx]); CHKERRQ(ierr);
-  localIndexPoints[procIdx].reserve(localNumPoints[procIdx]);
+  PetscMPIInt rank, size;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
+
+  numPointsOnProcess.resize(size);
+
+  numPointsOnProcess[rank] = 0;
   for (PetscInt i=0; i<numPoints; i++)
   {
     if (box[0] <= X[i] && X[i] < box[1] &&
         box[2] <= Y[i] && Y[i] < box[3])
-      localIndexPoints[procIdx].push_back(i);
+    {
+      if (dim == 2 || dim == 3 && box[4] <= Z[i] && Z[i] < box[5])
+      {
+        numPointsOnProcess[rank]++;
+      }
+    }
   }
 
+  ierr = MPI_Allgather(&numPointsOnProcess[rank], 1, MPIU_INT,
+                       &numPointsOnProcess[0], 1, MPIU_INT,
+                       PETSC_COMM_WORLD); CHKERRQ(ierr);
+
   PetscFunctionReturn(0);
-} // setLocalIndexPoints
+} // registerNumPointsOnProcess
 
 
-// three-dimensional specialization
-template <>
-PetscErrorCode Body<3>::setLocalIndexPoints(PetscInt procIdx, PetscReal (&box)[6])
+/*!
+ * \brief Registers the number of points on the local process as well as the indices.
+ *
+ * A process is represented by a box (xmin, xmax, ymin, ymax, zmin, zmax).
+ *
+ * \param box The box defining the process.
+ */
+template <PetscInt dim>
+PetscErrorCode Body<dim>::registerPointsOnProcess(PetscReal (&box)[2*dim])
 {
   PetscErrorCode ierr;
 
   PetscFunctionBeginUser;
 
-  ierr = getNumPointsInBox(box, localNumPoints[procIdx]); CHKERRQ(ierr);
-  localIndexPoints[procIdx].reserve(localNumPoints[procIdx]);
+  idxPointsOnProcess.resize(numPoints);
+
+  ierr = registerNumPointsOnProcess(box); CHKERRQ(ierr);
+
+  PetscMPIInt rank, size;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
+  
+  std::vector<PetscInt> offsets(size);
+  offsets[rank] = 0;
+  for (PetscMPIInt r=0; r<rank; r++)
+  {
+    offsets[rank] += numPointsOnProcess[r];
+  }
+  ierr = MPI_Allgather(&offsets[rank], 1, MPIU_INT,
+                       &offsets[0], 1, MPIU_INT,
+                       PETSC_COMM_WORLD); CHKERRQ(ierr);
+
+  PetscInt index = offsets[rank];
   for (PetscInt i=0; i<numPoints; i++)
   {
     if (box[0] <= X[i] && X[i] < box[1] &&
-        box[2] <= Y[i] && Y[i] < box[3] &&
-        box[4] <= Z[i] && Z[i] < box[5])
-      localIndexPoints[procIdx].push_back(i);
+        box[2] <= Y[i] && Y[i] < box[3])
+    {
+      if (dim == 2 || (dim == 3 && box[4] <= Z[i] && Z[i] < box[5]))
+      {
+        idxPointsOnProcess[index] = i;
+        index++;
+      }
+    }
   }
-  
+  ierr = MPI_Allgatherv(&idxPointsOnProcess[offsets[rank]], numPointsOnProcess[rank], MPIU_INT,
+                        &idxPointsOnProcess[0], &numPointsOnProcess[0], &offsets[0], MPIU_INT,
+                        PETSC_COMM_WORLD); CHKERRQ(ierr);
+
   PetscFunctionReturn(0);
-} // setLocalIndexPoints
+} // registerPointsOnProcess
+
+
+/*!
+ * \brief Registers the global index on points on local process.
+ *
+ * The global index represents the position of a Lagrangian force in the global
+ * vector lambda.
+ * \param globalIdx Offset value to increment from.
+ */
+template <PetscInt dim>
+PetscErrorCode Body<dim>::registerGlobalIdxPoints(PetscInt &globalIdx)
+{
+  PetscErrorCode ierr;
+
+  PetscFunctionBeginUser;
+
+  globalIdxPoints.resize(numPoints);
+
+  PetscMPIInt rank, size;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
+  
+  std::vector<PetscInt> offsets(size);
+  offsets[rank] = 0;
+  for (PetscMPIInt r=0; r<rank; r++)
+  {
+    offsets[rank] += numPointsOnProcess[r];
+  }
+  ierr = MPI_Allgather(&offsets[rank], 1, MPIU_INT,
+                       &offsets[0], 1, MPIU_INT,
+                       PETSC_COMM_WORLD); CHKERRQ(ierr);
+
+  for (PetscInt i=offsets[rank]; i<offsets[rank]+numPointsOnProcess[rank]; i++)
+  {
+    globalIdxPoints[i] = globalIdx;
+    globalIdx += dim;
+  }
+
+  ierr = MPI_Allgatherv(&globalIdxPoints[offsets[rank]], numPointsOnProcess[rank], MPIU_INT,
+                        &globalIdxPoints[0], &numPointsOnProcess[0], &offsets[0], MPIU_INT,
+                        PETSC_COMM_WORLD); CHKERRQ(ierr);
+
+  PetscFunctionReturn(0);
+} // registerGlobalIdxPoints
 
 
 // dimensions specialization

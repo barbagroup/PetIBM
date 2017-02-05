@@ -7,7 +7,7 @@
 
 
 /*!
- * \brief Assembles the matrices BNQ and ET.
+ * \brief Assembles the matrices BNQ.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::generateBNQ()
@@ -22,13 +22,14 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
 {
   PetscErrorCode ierr;
 
-  PetscInt i, j,           // loop indices
+  PetscFunctionBeginUser;
+
+  PetscInt i, j, l,        // loop indices
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
   
   PetscInt localIdx, procIdx;
-  PetscInt offset;
-  PetscInt row, cols[2], BNQ_col;
+  PetscInt row, cols[2], BNQ_col, pointIdx;
   PetscReal values[2] = {-1.0, 1.0}; // gradient coefficients
   
   PetscReal value; // to hold the value of the discrete delta function
@@ -87,26 +88,22 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
       cols[1] = pMappingArray[j][i+1];
       countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
       // ET portion
-      for (procIdx=0; procIdx<numProcs; procIdx++)
-      {
-        offset = 0;
-        for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+      for (auto &body : bodies)
+      { 
+        for (l=0; l<body.numPoints; l++)
         {
-          for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+          pointIdx = body.idxPointsOnProcess[l];
+          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
           {
-            if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
-              source[0] = bodies[bIdx].X[*l];
-              source[1] = bodies[bIdx].Y[*l];
-              if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
-              {
-                BNQ_col = globalIndexMapping[offset + *l];
-                (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
-              }
+              BNQ_col = body.globalIdxPoints[l];
+              (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
             }
           }
-          offset += bodies[bIdx].localIndexPoints[procIdx].size();
         }
       }
       localIdx++;
@@ -126,26 +123,22 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
       cols[1] = pMappingArray[j+1][i];
       countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
       // ET portion
-      for (procIdx=0; procIdx<numProcs; procIdx++)
-      {
-        offset = 0;
-        for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+      for (auto &body : bodies)
+      { 
+        for (l=0; l<body.numPoints; l++)
         {
-          for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+          pointIdx = body.idxPointsOnProcess[l];
+          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
           {
-            if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
-              source[0] = bodies[bIdx].X[*l];
-              source[1] = bodies[bIdx].Y[*l];
-              if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
-              {
-                BNQ_col = globalIndexMapping[offset + *l]+1;
-                (BNQ_col>=lambdaStart && BNQ_col<lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
-              }
+              BNQ_col = body.globalIdxPoints[l] + 1;
+              (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
             }
           }
-          offset += bodies[bIdx].localIndexPoints[procIdx].size();
         }
       }
       localIdx++;
@@ -183,27 +176,23 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
       cols[1] = pMappingArray[j][i+1];
       ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
       // ET portion
-      for (procIdx=0; procIdx<numProcs; procIdx++)
-      {
-        offset = 0;
-        for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+      for (auto &body : bodies)
+      { 
+        for (l=0; l<body.numPoints; l++)
         {
-          for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+          pointIdx = body.idxPointsOnProcess[l];
+          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
           {
-            if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
-              source[0] = bodies[bIdx].X[*l];
-              source[1] = bodies[bIdx].Y[*l];
-              if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
-              {
-                BNQ_col  = globalIndexMapping[offset + *l];
-                value = h*delta(disp[0], disp[1], h);
-                ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
-              }
+              BNQ_col = body.globalIdxPoints[l];
+              value = h*delta(disp[0], disp[1], h);
+              ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
-          offset += bodies[bIdx].localIndexPoints[procIdx].size();
         }
       }
       localIdx++;
@@ -224,27 +213,23 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
       cols[1] = pMappingArray[j+1][i];
       ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
       // ET portion
-      for (procIdx=0; procIdx<numProcs; procIdx++)
-      {
-        offset = 0;
-        for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+      for (auto &body : bodies)
+      { 
+        for (l=0; l<body.numPoints; l++)
         {
-          for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+          pointIdx = body.idxPointsOnProcess[l];
+          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
           {
-            if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
             {
-              source[0] = bodies[bIdx].X[*l];
-              source[1] = bodies[bIdx].Y[*l];
-              if (isInfluenced<2>(target, source, 1.5*h, widths, bTypes, disp))
-              {
-                BNQ_col = globalIndexMapping[offset + *l] + 1;
-                value= h*delta(disp[0], disp[1], h);
-                ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
-              }
+              BNQ_col = body.globalIdxPoints[l] + 1;
+              value = h*delta(disp[0], disp[1], h);
+              ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
-          offset += bodies[bIdx].localIndexPoints[procIdx].size();
         }
       }
       localIdx++;
@@ -265,7 +250,7 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
   ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
 
-  return 0;
+  PetscFunctionReturn(0);
 } // generateBNQ
 
 
@@ -275,13 +260,12 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
 {
   PetscErrorCode ierr;
 
-  PetscInt i, j, k,                // loop indices
+  PetscInt i, j, k, l,             // loop indices
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // starting indices
 
   PetscInt localIdx, procIdx;
-  PetscInt offset;
-  PetscInt row, cols[2], BNQ_col;
+  PetscInt row, cols[2], BNQ_col, pointIdx;
   PetscReal values[2] = {-1.0, 1.0}, value;
   
   PetscReal source[3], target[3];
@@ -341,28 +325,24 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         cols[1] = pMappingArray[k][j][i+1];
         countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
         // ET portion
-        for (procIdx=0; procIdx<numProcs; procIdx++)
-        {
-          offset = 0;
-          for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+        for (auto &body : bodies)
+        { 
+          for (l=0; l<body.numPoints; l++)
           {
-            for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+            pointIdx = body.idxPointsOnProcess[l];
+            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
+                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
             {
-              if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                  j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2 &&
-                  k >= bodies[bIdx].K[*l]-2 && k <= bodies[bIdx].K[*l]+2)
+              source[0] = body.X[pointIdx];
+              source[1] = body.Y[pointIdx];
+              source[2] = body.Z[pointIdx];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
-                source[0] = bodies[bIdx].X[*l];
-                source[1] = bodies[bIdx].Y[*l];
-                source[2] = bodies[bIdx].Z[*l];
-                if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
-                {
-                  BNQ_col = globalIndexMapping[offset + *l];
-                  (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
-                }
+                BNQ_col = body.globalIdxPoints[l];
+                (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
               }
             }
-            offset += bodies[bIdx].localIndexPoints[procIdx].size();
           }
         }
         localIdx++;
@@ -386,28 +366,24 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         cols[1] = pMappingArray[k][j+1][i];
         countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
         // ET portion
-        for (procIdx=0; procIdx<numProcs; procIdx++)
-        {
-          offset = 0;
-          for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+        for (auto &body : bodies)
+        { 
+          for (l=0; l<body.numPoints; l++)
           {
-            for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+            pointIdx = body.idxPointsOnProcess[l];
+            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
+                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
             {
-              if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                  j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2 &&
-                  k >= bodies[bIdx].K[*l]-2 && k <= bodies[bIdx].K[*l]+2)
+              source[0] = body.X[pointIdx];
+              source[1] = body.Y[pointIdx];
+              source[2] = body.Z[pointIdx];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
-                source[0] = bodies[bIdx].X[*l];
-                source[1] = bodies[bIdx].Y[*l];
-                source[2] = bodies[bIdx].Z[*l];
-                if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
-                {
-                  BNQ_col = globalIndexMapping[offset + *l] + 1;
-                  (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
-                }
+                BNQ_col = body.globalIdxPoints[l] + 1;
+                (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
               }
             }
-            offset += bodies[bIdx].localIndexPoints[procIdx].size();
           }
         }
         localIdx++;
@@ -431,28 +407,24 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         cols[1] = pMappingArray[k+1][j][i];
         countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
         // ET portion
-        for (procIdx=0; procIdx<numProcs; procIdx++)
-        {
-          offset = 0;
-          for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+        for (auto &body : bodies)
+        { 
+          for (l=0; l<body.numPoints; l++)
           {
-            for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+            pointIdx = body.idxPointsOnProcess[l];
+            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
+                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
             {
-              if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                  j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2 &&
-                  k >= bodies[bIdx].K[*l]-2 && k <= bodies[bIdx].K[*l]+2)
+              source[0] = body.X[pointIdx];
+              source[1] = body.Y[pointIdx];
+              source[2] = body.Z[pointIdx];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
-                source[0] = bodies[bIdx].X[*l];
-                source[1] = bodies[bIdx].Y[*l];
-                source[2] = bodies[bIdx].Z[*l];
-                if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
-                {
-                  BNQ_col = globalIndexMapping[offset + *l] + 2;
-                  (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
-                }
+                BNQ_col = body.globalIdxPoints[l] + 2;
+                (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
               }
             }
-            offset += bodies[bIdx].localIndexPoints[procIdx].size();
           }
         }
         localIdx++;
@@ -494,29 +466,25 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         cols[1] = pMappingArray[k][j][i+1];
         ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         // ET portion
-        for (procIdx=0; procIdx<numProcs; procIdx++)
-        {
-          offset = 0;
-          for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+        for (auto &body : bodies)
+        { 
+          for (l=0; l<body.numPoints; l++)
           {
-            for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+            pointIdx = body.idxPointsOnProcess[l];
+            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
+                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
             {
-              if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                  j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2 &&
-                  k >= bodies[bIdx].K[*l]-2 && k <= bodies[bIdx].K[*l]+2)
+              source[0] = body.X[pointIdx];
+              source[1] = body.Y[pointIdx];
+              source[2] = body.Z[pointIdx];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
-                source[0] = bodies[bIdx].X[*l];
-                source[1] = bodies[bIdx].Y[*l];
-                source[2] = bodies[bIdx].Z[*l];
-                if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
-                {
-                  BNQ_col = globalIndexMapping[offset + *l];
-                  value= h*delta(disp[0], disp[1], disp[2], h);
-                  ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
-                }
+                BNQ_col = body.globalIdxPoints[l];
+                value= h*delta(disp[0], disp[1], disp[2], h);
+                ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
               }
             }
-            offset += bodies[bIdx].localIndexPoints[procIdx].size();
           }
         }
         localIdx++;
@@ -541,29 +509,25 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         cols[1] = pMappingArray[k][j+1][i];
         ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         // ET portion
-        for (procIdx=0; procIdx<numProcs; procIdx++)
-        {
-          offset = 0;
-          for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+        for (auto &body : bodies)
+        { 
+          for (l=0; l<body.numPoints; l++)
           {
-            for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+            pointIdx = body.idxPointsOnProcess[l];
+            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
+                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
             {
-              if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                  j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2 &&
-                  k >= bodies[bIdx].K[*l]-2 && k <= bodies[bIdx].K[*l]+2)
+              source[0] = body.X[pointIdx];
+              source[1] = body.Y[pointIdx];
+              source[2] = body.Z[pointIdx];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
-                source[0] = bodies[bIdx].X[*l];
-                source[1] = bodies[bIdx].Y[*l];
-                source[2] = bodies[bIdx].Z[*l];
-                if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
-                {
-                  BNQ_col = globalIndexMapping[offset + *l] + 1;
-                  value = h*delta(disp[0], disp[1], disp[2], h);
-                  ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
-                }
+                BNQ_col = body.globalIdxPoints[l] + 1;
+                value= h*delta(disp[0], disp[1], disp[2], h);
+                ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
               }
             }
-            offset += bodies[bIdx].localIndexPoints[procIdx].size();
           }
         }
         localIdx++;
@@ -588,29 +552,25 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         cols[1] = pMappingArray[k+1][j][i];
         ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         // ET portion
-        for (procIdx=0; procIdx<numProcs; procIdx++)
-        {
-          offset = 0;
-          for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+        for (auto &body : bodies)
+        { 
+          for (l=0; l<body.numPoints; l++)
           {
-            for (auto l=bodies[bIdx].localIndexPoints[procIdx].begin(); l!=bodies[bIdx].localIndexPoints[procIdx].end(); l++)
+            pointIdx = body.idxPointsOnProcess[l];
+            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
+                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
+                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
             {
-              if (i >= bodies[bIdx].I[*l]-2 && i <= bodies[bIdx].I[*l]+2 &&
-                  j >= bodies[bIdx].J[*l]-2 && j <= bodies[bIdx].J[*l]+2 &&
-                  k >= bodies[bIdx].K[*l]-2 && k <= bodies[bIdx].K[*l]+2)
+              source[0] = body.X[pointIdx];
+              source[1] = body.Y[pointIdx];
+              source[2] = body.Z[pointIdx];
+              if (isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
               {
-                source[0] = bodies[bIdx].X[*l];
-                source[1] = bodies[bIdx].Y[*l];
-                source[2] = bodies[bIdx].Z[*l];
-                if(isInfluenced<3>(target, source, 1.5*h, widths, bTypes, disp))
-                {
-                  BNQ_col = globalIndexMapping[offset + *l] + 2;
-                  value = h*delta(disp[0], disp[1], disp[2], h);
-                  ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
-                }
+                BNQ_col = body.globalIdxPoints[l] + 2;
+                value= h*delta(disp[0], disp[1], disp[2], h);
+                ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
               }
             }
-            offset += bodies[bIdx].localIndexPoints[procIdx].size();
           }
         }
         localIdx++;

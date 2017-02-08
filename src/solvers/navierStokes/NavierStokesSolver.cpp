@@ -301,10 +301,10 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
   ierr = PetscLogEventBegin(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
   ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRQ(ierr);
-  
-  ierr = PetscObjectViewFromOptions((PetscObject) QTBNQ, NULL, "-QTBNQ_mat_view"); CHKERRQ(ierr);
 
   ierr = PetscLogEventEnd(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) QTBNQ, NULL, "-QTBNQ_mat_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateQTBNQ

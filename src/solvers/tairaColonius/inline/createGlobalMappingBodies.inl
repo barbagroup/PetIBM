@@ -23,7 +23,11 @@ PetscErrorCode TairaColoniusSolver<dim>::createGlobalMappingBodies()
   DMDALocalInfo pdaInfo, bdaInfo;
   ierr = DMDAGetLocalInfo(NavierStokesSolver<dim>::pda, &pdaInfo); CHKERRQ(ierr);
 
-  PetscInt offset = lambdaStart + (pdaInfo.xm)*(pdaInfo.ym);
+  PetscInt numPhiLocal = pdaInfo.xm*pdaInfo.ym;
+  if (dim == 3)
+    numPhiLocal *= pdaInfo.zm;
+
+  PetscInt offset = lambdaStart + numPhiLocal;
   for (auto &body : bodies)
   {
     // offset is passed by reference and updated in the Body method

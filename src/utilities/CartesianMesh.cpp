@@ -226,10 +226,11 @@ PetscErrorCode CartesianMesh::write(std::string filePath)
  * \param filePath Path of the file to write
  * \param mode Staggered mode to define locations of a variable points
  */
-PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
+PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode, BoundaryType bType)
 {
   PetscErrorCode ierr;
   PetscReal value;
+  PetscInt n;
   PetscViewer viewer;
   Vec xs, ys, zs;
   PetscMPIInt rank;
@@ -242,8 +243,9 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
     // stations along a gridline in the x-direction
     if (mode == STAGGERED_MODE_X)
     {
-      ierr = VecCreateSeq(PETSC_COMM_SELF, nx-1, &xs); CHKERRQ(ierr);
-      for (int i=0; i<nx-1; i++)
+      n = (bType == PERIODIC) ? nx : nx-1;
+      ierr = VecCreateSeq(PETSC_COMM_SELF, n, &xs); CHKERRQ(ierr);
+      for (int i=0; i<n; i++)
       {
         value = x[i+1];
         ierr = VecSetValue(xs, i, value, INSERT_VALUES); CHKERRQ(ierr);
@@ -264,8 +266,9 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
     // stations along a gridline in the y-direction
     if (mode == STAGGERED_MODE_Y)
     {
-      ierr = VecCreateSeq(PETSC_COMM_SELF, ny-1, &ys); CHKERRQ(ierr);
-      for (int i=0; i<ny-1; i++)
+      n = (bType == PERIODIC) ? ny : ny-1;
+      ierr = VecCreateSeq(PETSC_COMM_SELF, n, &ys); CHKERRQ(ierr);
+      for (int i=0; i<n; i++)
       {
         value = y[i+1];
         ierr = VecSetValue(ys, i, value, INSERT_VALUES); CHKERRQ(ierr);
@@ -288,8 +291,9 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
       // stations along a gridline in the z-direction
       if (mode == STAGGERED_MODE_Z)
       {
-        ierr = VecCreateSeq(PETSC_COMM_SELF, nz-1, &zs); CHKERRQ(ierr);
-        for (int i=0; i<nz-1; i++)
+        n = (bType == PERIODIC) ? nz : nz-1;
+        ierr = VecCreateSeq(PETSC_COMM_SELF, n, &zs); CHKERRQ(ierr);
+        for (int i=0; i<n; i++)
         {
           value = z[i+1];
           ierr = VecSetValue(zs, i, value, INSERT_VALUES); CHKERRQ(ierr);

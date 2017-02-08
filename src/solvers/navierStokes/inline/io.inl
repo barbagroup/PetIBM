@@ -405,16 +405,16 @@ PetscErrorCode NavierStokesSolver<dim>::writeGrids()
   mkdir(gridsDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
   filePath = gridsDirectory + "/staggered-x.h5";
-  ierr = mesh->write(filePath, STAGGERED_MODE_X); CHKERRQ(ierr);
+  ierr = mesh->write(filePath, STAGGERED_MODE_X, flow->boundaries[XMINUS][0].type); CHKERRQ(ierr);
   filePath = gridsDirectory + "/staggered-y.h5";
-  ierr = mesh->write(filePath, STAGGERED_MODE_Y); CHKERRQ(ierr);
+  ierr = mesh->write(filePath, STAGGERED_MODE_Y, flow->boundaries[YMINUS][0].type); CHKERRQ(ierr);
   if (dim == 3)
   {
     filePath = gridsDirectory + "/staggered-z.h5";
-    ierr = mesh->write(filePath, STAGGERED_MODE_Z); CHKERRQ(ierr);
+    ierr = mesh->write(filePath, STAGGERED_MODE_Z, flow->boundaries[ZMINUS][0].type); CHKERRQ(ierr);
   }
   filePath = gridsDirectory + "/cell-centered.h5";
-  ierr = mesh->write(filePath, CELL_CENTERED); CHKERRQ(ierr);
+  ierr = mesh->write(filePath, CELL_CENTERED, PERIODIC); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // writeGrids

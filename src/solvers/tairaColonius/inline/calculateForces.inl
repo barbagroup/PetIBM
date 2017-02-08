@@ -20,27 +20,29 @@ PetscErrorCode TairaColoniusSolver<dim>::calculateForces()
   ierr = DMCompositeGetAccess(NavierStokesSolver<dim>::lambdaPack, NavierStokesSolver<dim>::lambda, NULL, &fGlobal); CHKERRQ(ierr);
   PetscReal **f;
   ierr = DMDAVecGetArrayDOF(bda, fGlobal, &f); CHKERRQ(ierr);
-  PetscInt m, mstart;  // local number of points and starting index
-  ierr = DMDAGetCorners(bda, &mstart, NULL, NULL, &m, NULL, NULL); CHKERRQ(ierr);
-  
-  // sum force components over the local Lagrangian points
-  PetscReal localForces[dim];  // local force vector
+
+  DMDALocalInfo info;
+  ierr = DMDAGetLocalInfo(bda, &info); CHKERRQ(ierr);
+
+  PetscReal localForces[dim];
   PetscInt start = 0, end;
-  for (PetscInt bIdx=0; bIdx<numBodies; bIdx++)
+  PetscMPIInt rank;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+  for (auto &body : bodies)
   {
-    end = start + bodies[bIdx].numPoints;
+    end = start + body.numPointsOnProcess[rank];
     for (PetscInt d=0; d<dim; d++)
     {
       localForces[d] = 0.0;
-      for (PetscInt i=mstart; i<mstart+m; i++)
+      for (PetscInt i=0; i<info.xm; i++)
       {
         if (start <= i && i < end)
         {
-          localForces[d] += f[i][d];
+          localForces[d] += f[info.xs + i][d];
         }
       }
     }
-    ierr = MPI_Reduce(localForces, bodies[bIdx].forces, dim, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
+    ierr = MPI_Reduce(localForces, body.forces, dim, MPIU_REAL, MPI_SUM, 0, PETSC_COMM_WORLD); CHKERRQ(ierr);
     start = end;
   }
 

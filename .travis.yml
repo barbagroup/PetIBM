@@ -1,13 +1,29 @@
 # PetIBM Travis CI.
 
 os: linux
+sudo: required
+dist: trusty
 
 language: cpp
 
-compiler: gcc
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-5
+            - g++-5
+            - gfortran-5
+      env:
+        - CC=gcc-5
+        - CXX=g++-5
+        - FC=gfortran-5
 
 before_install:
-  - sudo apt-get install gfortran
+  - sudo apt-get update -qq
 
 install:
   - export PETIBM_DIR=$PWD
@@ -18,7 +34,7 @@ install:
   - cd petsc-3.7.4
   - export PETSC_DIR=$PWD
   - export PETSC_ARCH=arch-dbg
-  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=gcc --with-cxx=g++ --with-fc=gfortran --download-fblaslapack --download-mpich
+  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --download-fblaslapack --download-mpich
   - make all
 
 script:
@@ -26,7 +42,7 @@ script:
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PWD CC=$PETSC_DIR/$PETSC_ARCH/bin/mpicc CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++0x"
+  - $PETIBM_DIR/configure --prefix=$PWD CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH
   - make all
   - make check
   - make install

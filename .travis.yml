@@ -18,9 +18,9 @@ matrix:
             - g++-5
             - gfortran-5
       env:
-        - CC=gcc-5
-        - CXX=g++-5
-        - FC=gfortran-5
+        - _CC=gcc-5
+        - _CXX=g++-5
+        - _FC=gfortran-5
 
 before_install:
   - sudo apt-get update -qq
@@ -34,7 +34,7 @@ install:
   - cd petsc-3.7.4
   - export PETSC_DIR=$PWD
   - export PETSC_ARCH=arch-dbg
-  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --download-fblaslapack --download-mpich
+  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$_CC --with-cxx=$_CXX --with-fc=$_FC --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-fblaslapack --download-mpich
   - make all
 
 script:

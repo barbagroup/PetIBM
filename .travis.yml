@@ -1,9 +1,7 @@
 # PetIBM Travis CI.
 
 os: linux
-sudo: required
-dist: trusty
-
+sudo: false
 language: generic
 
 addons:

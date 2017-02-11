@@ -15,6 +15,7 @@
 * Python script `createXMFFile.py` that generates a `.xmf` file to let VisIt know how to read the HDF5 files.
 * [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) as an optional external package (version v1.0-beta).
 * Examples to solve the 2D flow around a circular cylinder using AmgX.
+* Possibility to have multiple immersed boundaries.
 
 ### Changed
 
@@ -23,6 +24,7 @@
 * GAMG parameters for the 2D lid-driven cavity flow to make it run.
 
 ### Fixed
+* Update boundary ghost points only once per time step, at the beginning of the time step.
 
 ### Removed
 

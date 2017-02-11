@@ -30,7 +30,7 @@ install:
   - cd petsc-3.7.4
   - export PETSC_DIR=$PWD
   - export PETSC_ARCH=arch-dbg
-  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-fblaslapack --download-mpich
+  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-fblaslapack --download-openmpi
   - make all
 
 script:

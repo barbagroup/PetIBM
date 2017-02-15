@@ -93,6 +93,7 @@ PetscErrorCode NavierStokesSolver<dim>::initialize()
   ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
   
   ierr = createDMs(); CHKERRQ(ierr);
+  ierr = createVecs(); CHKERRQ(ierr);
   ierr = initializeCommon(); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
@@ -118,8 +119,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   }
 #endif
 
-  ierr = createVecs(); CHKERRQ(ierr);
-
   ierr = createLocalToGlobalMappingsFluxes(); CHKERRQ(ierr);
   ierr = createLocalToGlobalMappingsLambda(); CHKERRQ(ierr);
 
@@ -139,7 +138,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
     ierr = initializeFluxes(); CHKERRQ(ierr);
     ierr = initializeLambda(); CHKERRQ(ierr);
   }
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // initializeCommon
@@ -152,6 +150,17 @@ template <PetscInt dim>
 PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
   PetscErrorCode ierr;
+
+  // update ghost points
+  if (dim == 2)
+  {
+    ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
+  }
+  else
+  {
+    ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
+  }
+  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   // solve system for intermediate velocity
   ierr = assembleRHSVelocity(); CHKERRQ(ierr);
@@ -166,9 +175,6 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   // project intermediate velocity field to satisfy divergence-free condition
   // and no-slip condition at immersed boundary (when Taira-Colonius method used)
   ierr = projectionStep(); CHKERRQ(ierr);
-  
-  // code-development helpers: output vectors and matrices
-  ierr = helpers(); CHKERRQ(ierr);
 
   timeStep++;
 
@@ -187,10 +193,10 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSVelocity()
   ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
 
   ierr = calculateExplicitTerms(); CHKERRQ(ierr);
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
   ierr = generateBC1(); CHKERRQ(ierr);
   ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRQ(ierr);
   ierr = VecPointwiseMult(rhs1, MHat, rhs1); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) rhs1, NULL, "-rhs1_vec_view"); CHKERRQ(ierr);
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -229,6 +235,7 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSPoisson()
   ierr = generateR2(); CHKERRQ(ierr);
   ierr = VecScale(r2, -1.0); CHKERRQ(ierr);
   ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) rhs2, NULL, "-rhs2_vec_view"); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);  
 
@@ -294,8 +301,10 @@ PetscErrorCode NavierStokesSolver<dim>::generateQTBNQ()
   ierr = PetscLogEventBegin(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
   ierr = MatMatMult(QT, BNQ, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &QTBNQ); CHKERRQ(ierr);
-  
+
   ierr = PetscLogEventEnd(GENERATE_QTBNQ, 0, 0, 0, 0); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) QTBNQ, NULL, "-QTBNQ_mat_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateQTBNQ
@@ -341,32 +350,6 @@ PetscBool NavierStokesSolver<dim>::finished()
 {
   return (timeStep >= parameters->startStep+parameters->nt)? PETSC_TRUE : PETSC_FALSE;
 } // finished
-
-
-/**
- * \brief Code-development helpers: outputs vectors and matrices to files.
- */
-template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::helpers()
-{
-  PetscErrorCode ierr;
-
-  if (timeStep == parameters->startStep+1)
-  {
-    PetscBool outputToFiles = PETSC_FALSE;
-    ierr = PetscOptionsGetBool(NULL, NULL, "-outputs", &outputToFiles, NULL); CHKERRQ(ierr);
-    if (outputToFiles)
-    {
-      ierr = helperOutputVectors(); CHKERRQ(ierr);
-      ierr = helperOutputMatrices(); CHKERRQ(ierr);
-      ierr = finalize();
-      ierr = PetscFinalize(); CHKERRQ(ierr);
-      exit(0);
-    }
-  }
-
-  return 0;
-} // helpers
 
 
 /**

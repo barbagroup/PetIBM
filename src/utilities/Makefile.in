@@ -117,13 +117,15 @@ libutilities_a_AR = $(AR) $(ARFLAGS)
 libutilities_a_LIBADD =
 am__libutilities_a_SOURCES_DIST = CartesianMesh.cpp \
 	FlowDescription.cpp SimulationParameters.cpp Body.cpp \
-	types.cpp solvers/kspsolver.cpp solvers/amgxsolver.cpp
+	types.cpp delta.cpp solvers/kspsolver.cpp \
+	solvers/amgxsolver.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
 @WITH_AMGXWRAPPER_TRUE@am__objects_1 = solvers/libutilities_a-amgxsolver.$(OBJEXT)
 am_libutilities_a_OBJECTS = libutilities_a-CartesianMesh.$(OBJEXT) \
 	libutilities_a-FlowDescription.$(OBJEXT) \
 	libutilities_a-SimulationParameters.$(OBJEXT) \
 	libutilities_a-Body.$(OBJEXT) libutilities_a-types.$(OBJEXT) \
+	libutilities_a-delta.$(OBJEXT) \
 	solvers/libutilities_a-kspsolver.$(OBJEXT) $(am__objects_1)
 libutilities_a_OBJECTS = $(am_libutilities_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -297,7 +299,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libutilities.a
 libutilities_a_SOURCES = CartesianMesh.cpp FlowDescription.cpp \
-	SimulationParameters.cpp Body.cpp types.cpp \
+	SimulationParameters.cpp Body.cpp types.cpp delta.cpp \
 	solvers/kspsolver.cpp $(am__append_1)
 libutilities_a_CPPFLAGS =  \
 	-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
@@ -365,6 +367,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-CartesianMesh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-FlowDescription.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-SimulationParameters.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-delta.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_a-types.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@solvers/$(DEPDIR)/libutilities_a-amgxsolver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@solvers/$(DEPDIR)/libutilities_a-kspsolver.Po@am__quote@
@@ -454,6 +457,20 @@ libutilities_a-types.obj: types.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='types.cpp' object='libutilities_a-types.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-types.obj `if test -f 'types.cpp'; then $(CYGPATH_W) 'types.cpp'; else $(CYGPATH_W) '$(srcdir)/types.cpp'; fi`
+
+libutilities_a-delta.o: delta.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-delta.o -MD -MP -MF $(DEPDIR)/libutilities_a-delta.Tpo -c -o libutilities_a-delta.o `test -f 'delta.cpp' || echo '$(srcdir)/'`delta.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_a-delta.Tpo $(DEPDIR)/libutilities_a-delta.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='delta.cpp' object='libutilities_a-delta.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-delta.o `test -f 'delta.cpp' || echo '$(srcdir)/'`delta.cpp
+
+libutilities_a-delta.obj: delta.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_a-delta.obj -MD -MP -MF $(DEPDIR)/libutilities_a-delta.Tpo -c -o libutilities_a-delta.obj `if test -f 'delta.cpp'; then $(CYGPATH_W) 'delta.cpp'; else $(CYGPATH_W) '$(srcdir)/delta.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_a-delta.Tpo $(DEPDIR)/libutilities_a-delta.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='delta.cpp' object='libutilities_a-delta.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_a-delta.obj `if test -f 'delta.cpp'; then $(CYGPATH_W) 'delta.cpp'; else $(CYGPATH_W) '$(srcdir)/delta.cpp'; fi`
 
 solvers/libutilities_a-kspsolver.o: solvers/kspsolver.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT solvers/libutilities_a-kspsolver.o -MD -MP -MF solvers/$(DEPDIR)/libutilities_a-kspsolver.Tpo -c -o solvers/libutilities_a-kspsolver.o `test -f 'solvers/kspsolver.cpp' || echo '$(srcdir)/'`solvers/kspsolver.cpp

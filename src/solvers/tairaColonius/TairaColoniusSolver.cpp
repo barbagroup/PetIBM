@@ -1,7 +1,5 @@
-/***************************************************************************//**
+/*! Implementation of the methods of the class `TairaColoniusSolver`.
  * \file TairaColoniusSolver.cpp
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the methods of the class `TairaColoniusSolver`.
  */
 
 
@@ -16,8 +14,11 @@
 #include <petscdmcomposite.h>
 
 
-/**
- * \brief Constructor. Calls parent's contructor and initializes additioner pointers.
+/*!
+ * \brief Constructor.
+ *
+ * The constructor calls the `NavierStokesSolver` constructor and initializes
+ * additional pointers related to the Lagrangian points.
  */
 template <PetscInt dim>
 TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh, 
@@ -28,13 +29,11 @@ TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh,
                                                                       simulationParameters)
 {
   bda = PETSC_NULL;
-  ET = PETSC_NULL;
   nullSpaceVec = PETSC_NULL;
-  regularizedForce = PETSC_NULL;
 } // TairaColoniusSolver
 
 
-/**
+/*!
  * \brief Initializes the solver.
  */
 template <PetscInt dim>
@@ -42,70 +41,107 @@ PetscErrorCode TairaColoniusSolver<dim>::initialize()
 {
   PetscErrorCode ierr;
 
+  PetscFunctionBeginUser;
+
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageInitialize); CHKERRQ(ierr);
 
   ierr = initializeBodies(); CHKERRQ(ierr);
-  ierr = calculateCellIndices(); CHKERRQ(ierr);
   ierr = createDMs(); CHKERRQ(ierr);
+  ierr = createVecs(); CHKERRQ(ierr);
   ierr = createGlobalMappingBodies(); CHKERRQ(ierr);
+
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
-  return 0;
+  PetscFunctionReturn(0);
 } // initialize
 
 
-/**
- * \brief Gets the indices of cells owning a body point.
+/*!
+ * \brief Gets the total number of Lagrangian points.
+ *
+ * \param n The integer to return.
  */
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::calculateCellIndices()
+PetscErrorCode TairaColoniusSolver<dim>::getNumLagPoints(PetscInt &n)
+{
+  PetscFunctionBeginUser;
+
+  n = 0;
+  for (auto &body : bodies)
+  {
+    n += body.numPoints;
+  }
+  
+  PetscFunctionReturn(0);
+} // getNumLagPoints
+
+
+/*!
+ * \brief Gets the number of Lagrangian points on each process.
+ *
+ * \param numOnProcess The vector of integers to return.
+ */
+template <PetscInt dim>
+PetscErrorCode TairaColoniusSolver<dim>::getNumLagPointsOnProcess(std::vector<PetscInt> &numOnProcess)
 {
   PetscErrorCode ierr;
 
-  for (PetscInt l=0; l<numBodies; l++)
+  PetscFunctionBeginUser;
+
+  PetscMPIInt rank, size;
+  ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
+
+  numOnProcess.resize(size);
+  numOnProcess[rank] = 0;
+  for (auto &body : bodies)
   {
-    ierr = bodies[l].getCellOwners(NavierStokesSolver<dim>::mesh); CHKERRQ(ierr);
+    numOnProcess[rank] += body.numPointsOnProcess[rank];
   }
 
-  return 0;
-} // calculateCellIndices
+  ierr = MPI_Allgather(MPI_IN_PLACE, 1, MPIU_INT,
+                       &numOnProcess[0], 1, MPIU_INT,
+                       PETSC_COMM_WORLD); CHKERRQ(ierr);
+
+  PetscFunctionReturn(0);
+} // getNumLagPointsOnProcess
 
 
-/**
- * \brief Discrete delta function from Roma et al. (1999).
+/*!
+ * \brief Registers the Lagrangian points on local process for each body.
+ *
+ * A local process is defined by a box (xmin, xmax, ymin, ymax) whose dimensions
+ * are set using the layout from the DMDA object for the pressure.
  */
 template <PetscInt dim>
-PetscReal TairaColoniusSolver<dim>::dhRoma(PetscReal x, PetscReal h)
+PetscErrorCode TairaColoniusSolver<dim>::registerLagPointsOnProcess()
 {
-  PetscReal r = fabs(x)/h;
-  if (r > 1.5)
-    return 0.0;
-  if (r > 0.5 && r <= 1.5)
-    return 1.0/(6*h)*( 5.0 - 3.0*r - sqrt(-3.0*(1-r)*(1-r) + 1.0) );
-  return 1.0/(3*h)*( 1.0 + sqrt(-3.0*r*r + 1.0) );
-} // dhRoma
+  PetscErrorCode ierr;
 
+  PetscFunctionBeginUser;
 
-/**
- * \brief Two-dimensional discrete delta function.
- */
-template <PetscInt dim>
-PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal h)
-{
-  return dhRoma(x, h) * dhRoma(y, h);
-} // delta
+  DMDALocalInfo info;
+  ierr = DMDAGetLocalInfo(NavierStokesSolver<dim>::pda, &info); CHKERRQ(ierr);
+  PetscReal box[2*dim];
+  box[0] = NavierStokesSolver<dim>::mesh->x[info.xs];
+  box[1] = NavierStokesSolver<dim>::mesh->x[info.xs + info.xm];
+  box[2] = NavierStokesSolver<dim>::mesh->y[info.ys];
+  box[3] = NavierStokesSolver<dim>::mesh->y[info.ys + info.ym];
+  if (dim == 3)
+  {
+    box[4] = NavierStokesSolver<dim>::mesh->z[info.zs];
+    box[5] = NavierStokesSolver<dim>::mesh->z[info.zs + info.zm];
+  }
 
+  for (auto &body : bodies)
+  {
+    ierr = body.registerPointsOnProcess(box); CHKERRQ(ierr);
+  }
 
-/**
- * \brief Three-dimensional discrete delta function.
- */
-template <PetscInt dim>
-PetscReal TairaColoniusSolver<dim>::delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
-{
-  return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
-} // delta
+  PetscFunctionReturn(0);
+} // registerLagPointsOnProcess
 
 
 /**
@@ -119,26 +155,21 @@ PetscErrorCode TairaColoniusSolver<dim>::finalize()
   ierr = NavierStokesSolver<dim>::finalize();
   // DMs
   if (bda != PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
-  // Mats
-  if (ET != PETSC_NULL)  {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
   // Vecs
-  if (regularizedForce != PETSC_NULL){ierr = VecDestroy(&regularizedForce); CHKERRQ(ierr);}
   if (nullSpaceVec != PETSC_NULL)    {ierr = VecDestroy(&nullSpaceVec); CHKERRQ(ierr);}
 
   return 0;
 }  // finalize
 
 
+#include "inline/initializeBodies.inl"
 #include "inline/createDMs.inl"
 #include "inline/createVecs.inl"
-#include "inline/setNullSpace.inl"
-#include "inline/generateBodyInfo.inl"
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
-#include "inline/initializeBodies.inl"
 #include "inline/createGlobalMappingBodies.inl"
-#include "inline/isInfluenced.inl"
-#include "inline/calculateForce.inl"
+#include "inline/setNullSpace.inl"
+#include "inline/calculateForces.inl"
 #include "inline/io.inl"
 
 

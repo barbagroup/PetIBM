@@ -86,6 +86,10 @@ PetscErrorCode NavierStokesSolver<2>::generateDiagonalMatrices()
   ierr = DMCompositeRestoreAccess(qPack, RInv, &RInvxGlobal, &RInvyGlobal); CHKERRQ(ierr);
   ierr = DMCompositeRestoreAccess(qPack, BN, &BNxGlobal, &BNyGlobal); CHKERRQ(ierr);
 
+  ierr = PetscObjectViewFromOptions((PetscObject) MHat, NULL, "-MHat_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) RInv, NULL, "-RInv_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BN, NULL, "-BN_vec_view"); CHKERRQ(ierr);
+
   return 0;
 } // generateDiagonalMatrices
 
@@ -182,6 +186,10 @@ PetscErrorCode NavierStokesSolver<3>::generateDiagonalMatrices()
   ierr = DMCompositeRestoreAccess(qPack, MHat, &MHatxGlobal, &MHatyGlobal, &MHatzGlobal); CHKERRQ(ierr);
   ierr = DMCompositeRestoreAccess(qPack, RInv, &RInvxGlobal, &RInvyGlobal, &RInvzGlobal); CHKERRQ(ierr);
   ierr = DMCompositeRestoreAccess(qPack, BN, &BNxGlobal, &BNyGlobal, &BNzGlobal); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) MHat, NULL, "-MHat_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) RInv, NULL, "-RInv_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BN, NULL, "-BN_vec_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateDiagonalMatrices

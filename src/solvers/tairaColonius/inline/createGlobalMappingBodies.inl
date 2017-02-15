@@ -1,64 +1,38 @@
-/***************************************************************************//**
+/*! Implementation of the method `createGlobalMappingBodies` of the class `TairaColoniusSolver`.
  * \file createGlobalMappingBodies.inl
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `createGlobalMappingBodies` 
- *        of the class `TairaColoniusSolver`.
  */
 
 
-/**
- * \brief Maps local to global indices.
+/*!
+ * \brief Maps local to global indices for the Lagrangian forces.
+ *
+ * The mapping is stored in the Body objects.
+ * Its maps the index of Lagrangian point to its global index in the vector lambda.
  */
 template <PetscInt dim>
 PetscErrorCode TairaColoniusSolver<dim>::createGlobalMappingBodies()
 {
-  return 0;
-} // createGlobalMappingBodies
-
-
-// two-dimensional specialization
-template <>
-PetscErrorCode TairaColoniusSolver<2>::createGlobalMappingBodies()
-{
   PetscErrorCode ierr;
 
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
+  PetscFunctionBeginUser;
 
-  PetscInt globalIndex = 0;
-  for (PetscInt procIdx=0; procIdx<numProcs; procIdx++)
+  // get the global offset index
+  PetscInt lambdaStart;
+  ierr = VecGetOwnershipRange(NavierStokesSolver<dim>::lambda, &lambdaStart, NULL); CHKERRQ(ierr);
+
+  DMDALocalInfo pdaInfo, bdaInfo;
+  ierr = DMDAGetLocalInfo(NavierStokesSolver<dim>::pda, &pdaInfo); CHKERRQ(ierr);
+
+  PetscInt numPhiLocal = pdaInfo.xm*pdaInfo.ym;
+  if (dim == 3)
+    numPhiLocal *= pdaInfo.zm;
+
+  PetscInt offset = lambdaStart + numPhiLocal;
+  for (auto &body : bodies)
   {
-    globalIndex += numPhiOnProcess[procIdx];
-    for (auto i=boundaryPointIndices[procIdx].begin(); i!=boundaryPointIndices[procIdx].end(); i++)
-    {
-      globalIndexMapping[*i] = globalIndex;
-      globalIndex+=2;
-    }
+    // offset is passed by reference and updated in the Body method
+    ierr = body.registerGlobalIdxPoints(offset); CHKERRQ(ierr);
   }
 
-  return 0;
-} // createGlobalMappingBodies
-
-
-// three-dimensional specialization
-template <>
-PetscErrorCode TairaColoniusSolver<3>::createGlobalMappingBodies()
-{
-  PetscErrorCode ierr;
-
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
-
-  PetscInt globalIndex = 0;
-  for (PetscInt procIdx=0; procIdx<numProcs; procIdx++)
-  {
-    globalIndex += numPhiOnProcess[procIdx];
-    for (auto i=boundaryPointIndices[procIdx].begin(); i!=boundaryPointIndices[procIdx].end(); i++)
-    {
-      globalIndexMapping[*i] = globalIndex;
-      globalIndex+=3;
-    }
-  }
-
-  return 0;
+  PetscFunctionReturn(0);
 } // createGlobalMappingBodies

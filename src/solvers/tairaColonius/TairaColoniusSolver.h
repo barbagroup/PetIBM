@@ -1,7 +1,5 @@
-/***************************************************************************//**
+/*! Definition of the class `TairaColoniusSolver`.
  * \file TairaColoniusSolver.h
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Definition of the class `TairaColoniusSolver`.
  */
 
 
@@ -13,7 +11,7 @@
 #include "Body.h"
 
 
-/**
+/*!
  * \class TairaColoniusSolver
  * \brief Solves the Navier-Stokes equations 
  *        with immersed boundary projection method (Taira and Colonius, 2007).
@@ -22,46 +20,31 @@ template <PetscInt dim>
 class TairaColoniusSolver : public NavierStokesSolver<dim>
 {
 public:
-  DM bda; ///< DMDA object
+  PetscInt numBodies; ///< number of immersed boundaries
+  std::vector<Body<dim> > bodies; ///< info about each immersed boundary
+  
+  DM bda; ///< DMDA object for all immersed boundaries
 
-  PetscInt numBodies;
-  std::vector<Body<dim> > bodies; ///< info about each body immersed
+  Vec nullSpaceVec; ///< nullspace object to attach to the matrix QTBNQ
 
-  PetscInt numBoundaryPoints; ///< total numbers of Lagrangian body points
-
-  PetscInt  startGlobalIndex;
-  Mat       ET;
-  PetscReal force[3];
-  Vec       nullSpaceVec, regularizedForce;
-
-  std::ofstream forcesFile;
-
-  std::vector<PetscInt>  globalIndexMapping;
-  std::vector<PetscInt>  numBoundaryPointsOnProcess;
-  std::vector<PetscInt>  numPhiOnProcess;
-  std::vector< std::vector<PetscInt> > boundaryPointIndices;
+  std::ofstream forcesFile; ///< stream the file containing the forces acting on each immersed boundary
   
   PetscErrorCode initializeBodies();
-  PetscErrorCode generateBodyInfo();
-  PetscErrorCode calculateCellIndices();
+  PetscErrorCode getNumLagPoints(PetscInt &n);
+  PetscErrorCode getNumLagPointsOnProcess(std::vector<PetscInt> &numOnProcess);
+  PetscErrorCode registerLagPointsOnProcess();
   PetscErrorCode createDMs();
   PetscErrorCode createVecs();
-  PetscErrorCode setNullSpace();
+  PetscErrorCode createGlobalMappingBodies();
   PetscErrorCode generateBNQ();
   PetscErrorCode generateR2();
-  PetscErrorCode createGlobalMappingBodies();
-  PetscErrorCode calculateForce();
+  PetscErrorCode setNullSpace();
+  PetscErrorCode calculateForces();
   
   PetscErrorCode readLambda(std::string directory);
   PetscErrorCode writeData();
   PetscErrorCode writeLambda(std::string directory);
   PetscErrorCode writeForces();
-
-  PetscReal dhRoma(PetscReal x, PetscReal h);
-  PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
-  PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h);
-  PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal xBody, PetscReal yBody, PetscReal radius, PetscReal *delta);
-  PetscBool isInfluenced(PetscReal xGrid, PetscReal yGrid, PetscReal zGrid, PetscReal xBody, PetscReal yBody, PetscReal zBody, PetscReal radius, PetscReal *delta);
 
 public:
   // constructors

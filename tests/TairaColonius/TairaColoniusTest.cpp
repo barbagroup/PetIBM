@@ -27,9 +27,9 @@ public:
     
     // read input files and create solver
     directory = "TairaColonius/case";
-    cartesianMesh = CartesianMesh(directory);
-    flowDescription = FlowDescription<2>(directory);
-    simulationParameters = SimulationParameters(directory);
+    cartesianMesh = CartesianMesh(directory+"/cartesianMesh.yaml");
+    flowDescription = FlowDescription<2>(directory+"/flowDescription.yaml");
+    simulationParameters = SimulationParameters(directory, directory+"/simulationParameters.yaml");
     solver = createSolver<2>(&cartesianMesh, &flowDescription, &simulationParameters);
   }
 

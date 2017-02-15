@@ -18,9 +18,12 @@ public:
 
   CartesianMeshTest()
   {
-    uniformMesh2d = CartesianMesh("CartesianMesh/cases/uniformMesh2d");
-    uniformMesh3d = CartesianMesh("CartesianMesh/cases/uniformMesh3d");
-    stretchedMesh3d = CartesianMesh("CartesianMesh/cases/stretchedMesh3d");
+    std::string filePath = "CartesianMesh/cases/uniformMesh2d/cartesianMesh.yaml";
+    uniformMesh2d = CartesianMesh(filePath);
+    filePath = "CartesianMesh/cases/uniformMesh3d/cartesianMesh.yaml";
+    uniformMesh3d = CartesianMesh(filePath);
+    filePath = "CartesianMesh/cases/stretchedMesh3d/cartesianMesh.yaml";
+    stretchedMesh3d = CartesianMesh(filePath);
   }
 };
 

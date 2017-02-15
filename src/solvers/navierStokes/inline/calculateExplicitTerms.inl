@@ -69,9 +69,6 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
 
   PetscBool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
             periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE;
-
-  // copy global fluxes vector to local vectors
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
   
   Vec HxGlobal, HyGlobal;
   ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRQ(ierr);
@@ -173,6 +170,11 @@ PetscErrorCode NavierStokesSolver<2>::calculateExplicitTerms()
   ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal); CHKERRQ(ierr);
   ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal); CHKERRQ(ierr);
 
+  ierr = PetscObjectViewFromOptions((PetscObject) qxLocal, NULL, "-qxLocal_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) qyLocal, NULL, "-qyLocal_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) H, NULL, "-H_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) rn, NULL, "-rn_vec_view"); CHKERRQ(ierr);
+
   return 0;
 } // calculateExplicitTerms
 
@@ -216,9 +218,6 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
   PetscBool periodicX = (flow->boundaries[XMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
             periodicY = (flow->boundaries[YMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE,
             periodicZ = (flow->boundaries[ZMINUS][0].type == PERIODIC) ? PETSC_TRUE : PETSC_FALSE;
-
-  // copy global fluxes vector to local vectors
-  ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
 
   Vec HxGlobal, HyGlobal, HzGlobal;  
   ierr = DMCompositeGetAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
@@ -402,6 +401,9 @@ PetscErrorCode NavierStokesSolver<3>::calculateExplicitTerms()
   
   ierr = DMCompositeRestoreAccess(qPack, H,  &HxGlobal, &HyGlobal, &HzGlobal); CHKERRQ(ierr);
   ierr = DMCompositeRestoreAccess(qPack, rn, &rxGlobal, &ryGlobal, &rzGlobal); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) H, NULL, "-H_vec_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) rn, NULL, "-rn_vec_view"); CHKERRQ(ierr);
 
   return 0;
 } // calculateExplicitTerms

@@ -1,7 +1,5 @@
-/***************************************************************************//**
+/*! Definition of the class `Body`.
  * \file Body.h
- * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \brief Definition of the class `Body`.
  */
 
 
@@ -24,22 +22,34 @@ template <PetscInt dim>
 class Body
 {
 public:
-  PetscInt numPoints;
-  std::vector<PetscReal> X, Y, Z;
-  std::vector<PetscInt> I, J, K;
+  PetscInt numPoints; ///< number of points constituting the body
+  std::vector<PetscReal> X, ///< x-coordinate of all body points
+                         Y, ///< y-coordinate of all body points
+                         Z; ///< z-coordinate of all body points
+  std::vector<PetscInt> I, ///< x-index of Eulerian cells owning the body points
+                        J, ///< x-index of Eulerian cells owning the body points
+                        K; ///< x-index of Eulerian cells owning the body points
+  PetscReal forces[dim]; ///< Force vector acting on the body
+  std::vector<PetscInt> numPointsOnProcess; ///< number of body points on each process
+  std::vector<PetscInt> idxPointsOnProcess; ///< index of body points per process
+  std::vector<PetscInt> globalIdxPoints; ///< local-to-global mapping
 
   // constructors
   Body(){ };
-  Body(std::string directory);
+  Body(std::string filePath);
   // destructor
   ~Body(){ };
 
-  // parse input file and store coordinates of immersed body
-  PetscErrorCode initialize(std::string filePath);
-  // get indices of cells owning a Lagrangian body point
-  PetscErrorCode getCellOwners(CartesianMesh *mesh);
-  // print info related to body
-  PetscErrorCode printInfo();
+  // read the body coordinates from file
+  PetscErrorCode readFromFile(std::string filePath);
+  // register the indices of cells owning a Lagrangian body point
+  PetscErrorCode registerCellOwners(CartesianMesh *mesh);
+  // register the number of body points in a given box
+  PetscErrorCode registerNumPointsOnProcess(PetscReal (&box)[2*dim]);
+  // register the number and index of body points in a given box
+  PetscErrorCode registerPointsOnProcess(PetscReal (&box)[2*dim]);
+  // register the local-to-global mapping
+  PetscErrorCode registerGlobalIdxPoints(PetscInt &offset);
 
 }; // Body
 

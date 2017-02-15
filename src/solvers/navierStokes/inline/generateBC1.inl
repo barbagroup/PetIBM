@@ -193,6 +193,8 @@ PetscErrorCode NavierStokesSolver<2>::generateBC1()
 
   ierr = DMCompositeRestoreAccess(qPack, bc1,  &bc1xGlobal, &bc1yGlobal); CHKERRQ(ierr);
 
+  ierr = PetscObjectViewFromOptions((PetscObject) bc1, NULL, "-bc1_vec_view"); CHKERRQ(ierr);
+
   return 0;
 } // generateBC1
 
@@ -578,6 +580,8 @@ PetscErrorCode NavierStokesSolver<3>::generateBC1()
   ierr = DMDAVecRestoreArray(wda, qzLocal, &qz); CHKERRQ(ierr);
 
   ierr = DMCompositeRestoreAccess(qPack, bc1, &bc1xGlobal, &bc1yGlobal, &bc1zGlobal); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) bc1, NULL, "-bc1_vec_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateBC1

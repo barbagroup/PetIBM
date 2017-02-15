@@ -13,6 +13,7 @@ The simulation parameters do not depend on the dimensionality of the problem, an
       startStep: 0
       nt: 300
       nsave: 50
+      nrestart: 300
       ibm: TAIRA_COLONIUS
       convection: ADAMS_BASHFORTH_2
       diffusion: CRANK_NICOLSON
@@ -29,6 +30,7 @@ The simulation parameters do not depend on the dimensionality of the problem, an
 * `startStep`: (optional, default: `0`) starting time-step. If different than the default value `0`, then the program reads the numerical solution of the stating time-step given. This parameters should be used to restart a simulation.
 * `nt`: (mandatory) number of time-steps to execute.
 * `nsave`: (mandatory) time-step interval at which Eulerian and Lagrangian quantities are saved into files.
+* `nrestart`: (optional, default: `nt`) time-step interval at which the convective terms from the previous time-step are saved. This is useful to restart properly when using Adams-Bashforth second-order time-scheme for the convective terms.
 * `ibm`: (optional) specifies the immersed boundary method used in the simulation. Currently, the only immersed boundary method available in PetIBM is `TAIRA_COLONIUS`. If no immersed boundary are present in the computational domain, once should remove this line.
 * `convection`: (optional, default: `EULER_EXPLICIT`) specifies the time-scheme to use for the convective terms of the momentum equation. In PetIBM, the convective terms can be temporally discretized using an explicit Euler method (`EULER_EXPLICIT`, default value) or a second-order Adams-Bashforth scheme (`ADAMS_BASHFORTH_2`).
 * `diffusion`: (optional, default: `EULER_IMPLICIT`) specifies the time-scheme to use for the diffusive terms of the momentum equation. In PetIBM, the diffusive terms can be  treated explicitly (`EULER_EXPLICIT`), implicitly (`EULER_IMPLICIT`, default), or using a second-order Crank-Nicolson scheme (`CRANK_NICOLSON`).

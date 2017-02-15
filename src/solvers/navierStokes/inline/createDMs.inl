@@ -107,6 +107,10 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
   ierr = DMCompositeAddDM(qPack, uda); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(qPack, vda); CHKERRQ(ierr);
 
+  ierr = PetscObjectViewFromOptions((PetscObject) pda, NULL, "-pda_dmda_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) uda, NULL, "-uda_dmda_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) vda, NULL, "-vda_dmda_view"); CHKERRQ(ierr);
+
   return 0;
 } // createDMs
 
@@ -221,6 +225,11 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
   ierr = DMCompositeAddDM(qPack, uda); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(qPack, vda); CHKERRQ(ierr);
   ierr = DMCompositeAddDM(qPack, wda); CHKERRQ(ierr);
+
+  ierr = PetscObjectViewFromOptions((PetscObject) pda, NULL, "-pda_dmda_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) uda, NULL, "-uda_dmda_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) vda, NULL, "-vda_dmda_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) wda, NULL, "-wda_dmda_view"); CHKERRQ(ierr);
 
   return 0;
 } // createDMs

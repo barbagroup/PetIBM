@@ -24,13 +24,20 @@ CartesianMesh::CartesianMesh()
 
 
 /**
- * \brief Constructor -- Parses input file `cartesianMesh.yaml`.
+ * \brief Constructor -- Parses the YAML input file with the mesh information.
  *
- * \param directory Directory of the simulation
+ * \param filePath Path of the file to parse with YAML-CPP
  */
-CartesianMesh::CartesianMesh(std::string directory)
+CartesianMesh::CartesianMesh(std::string filePath)
 {
-  initialize(directory + "/cartesianMesh.yaml");
+  // possibility to overwrite the path of the configuration file
+  // using the command-line parameter: `-cartesian_mesh <file-path>`
+  char path[PETSC_MAX_PATH_LEN];
+  PetscBool found;
+  PetscOptionsGetString(NULL, NULL, "-cartesian_mesh", path, sizeof(path), &found);
+  if (found)
+    filePath = std::string(path);
+  initialize(filePath);
 } // CartesianMesh
 
 
@@ -219,10 +226,11 @@ PetscErrorCode CartesianMesh::write(std::string filePath)
  * \param filePath Path of the file to write
  * \param mode Staggered mode to define locations of a variable points
  */
-PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
+PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode, BoundaryType bType)
 {
   PetscErrorCode ierr;
   PetscReal value;
+  PetscInt n;
   PetscViewer viewer;
   Vec xs, ys, zs;
   PetscMPIInt rank;
@@ -235,8 +243,9 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
     // stations along a gridline in the x-direction
     if (mode == STAGGERED_MODE_X)
     {
-      ierr = VecCreateSeq(PETSC_COMM_SELF, nx-1, &xs); CHKERRQ(ierr);
-      for (int i=0; i<nx-1; i++)
+      n = (bType == PERIODIC) ? nx : nx-1;
+      ierr = VecCreateSeq(PETSC_COMM_SELF, n, &xs); CHKERRQ(ierr);
+      for (int i=0; i<n; i++)
       {
         value = x[i+1];
         ierr = VecSetValue(xs, i, value, INSERT_VALUES); CHKERRQ(ierr);
@@ -257,8 +266,9 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
     // stations along a gridline in the y-direction
     if (mode == STAGGERED_MODE_Y)
     {
-      ierr = VecCreateSeq(PETSC_COMM_SELF, ny-1, &ys); CHKERRQ(ierr);
-      for (int i=0; i<ny-1; i++)
+      n = (bType == PERIODIC) ? ny : ny-1;
+      ierr = VecCreateSeq(PETSC_COMM_SELF, n, &ys); CHKERRQ(ierr);
+      for (int i=0; i<n; i++)
       {
         value = y[i+1];
         ierr = VecSetValue(ys, i, value, INSERT_VALUES); CHKERRQ(ierr);
@@ -281,8 +291,9 @@ PetscErrorCode CartesianMesh::write(std::string filePath, StaggeredMode mode)
       // stations along a gridline in the z-direction
       if (mode == STAGGERED_MODE_Z)
       {
-        ierr = VecCreateSeq(PETSC_COMM_SELF, nz-1, &zs); CHKERRQ(ierr);
-        for (int i=0; i<nz-1; i++)
+        n = (bType == PERIODIC) ? nz : nz-1;
+        ierr = VecCreateSeq(PETSC_COMM_SELF, n, &zs); CHKERRQ(ierr);
+        for (int i=0; i<n; i++)
         {
           value = z[i+1];
           ierr = VecSetValue(zs, i, value, INSERT_VALUES); CHKERRQ(ierr);

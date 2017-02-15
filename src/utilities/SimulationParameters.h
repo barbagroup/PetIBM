@@ -41,7 +41,8 @@ public:
   
   PetscInt startStep, ///< initial time-step 
            nt,        ///< number of time steps
-           nsave;     ///< data-saving interval
+           nsave,     ///< data-saving interval
+           nrestart;  ///< data-saving interval for the convective terms
   
   std::string outputFormat;  ///< output format to use
   PetscBool outputFlux,     ///< boolean to output the flux components
@@ -57,7 +58,7 @@ public:
 
   // constructors
   SimulationParameters();
-  SimulationParameters(std::string directory);
+  SimulationParameters(std::string dir, std::string filePath);
   // destructor
   ~SimulationParameters();
   // parse input file and store simulation parameters

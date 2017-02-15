@@ -101,7 +101,7 @@ PetscErrorCode TairaColoniusSolver<dim>::getNumLagPointsOnProcess(std::vector<Pe
     numOnProcess[rank] += body.numPointsOnProcess[rank];
   }
 
-  ierr = MPI_Allgather(&numOnProcess[rank], 1, MPIU_INT,
+  ierr = MPI_Allgather(MPI_IN_PLACE, 1, MPIU_INT,
                        &numOnProcess[0], 1, MPIU_INT,
                        PETSC_COMM_WORLD); CHKERRQ(ierr);
 

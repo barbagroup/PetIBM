@@ -183,7 +183,7 @@ PetscErrorCode Body<dim>::registerNumPointsOnProcess(PetscReal (&box)[2*dim])
     }
   }
 
-  ierr = MPI_Allgather(&numPointsOnProcess[rank], 1, MPIU_INT,
+  ierr = MPI_Allgather(MPI_IN_PLACE, 1, MPIU_INT,
                        &numPointsOnProcess[0], 1, MPIU_INT,
                        PETSC_COMM_WORLD); CHKERRQ(ierr);
 
@@ -219,7 +219,7 @@ PetscErrorCode Body<dim>::registerPointsOnProcess(PetscReal (&box)[2*dim])
   {
     offsets[rank] += numPointsOnProcess[r];
   }
-  ierr = MPI_Allgather(&offsets[rank], 1, MPIU_INT,
+  ierr = MPI_Allgather(MPI_IN_PLACE, 1, MPIU_INT,
                        &offsets[0], 1, MPIU_INT,
                        PETSC_COMM_WORLD); CHKERRQ(ierr);
 
@@ -236,7 +236,7 @@ PetscErrorCode Body<dim>::registerPointsOnProcess(PetscReal (&box)[2*dim])
       }
     }
   }
-  ierr = MPI_Allgatherv(&idxPointsOnProcess[offsets[rank]], numPointsOnProcess[rank], MPIU_INT,
+  ierr = MPI_Allgatherv(MPI_IN_PLACE, numPointsOnProcess[rank], MPIU_INT,
                         &idxPointsOnProcess[0], &numPointsOnProcess[0], &offsets[0], MPIU_INT,
                         PETSC_COMM_WORLD); CHKERRQ(ierr);
 
@@ -270,7 +270,7 @@ PetscErrorCode Body<dim>::registerGlobalIdxPoints(PetscInt &globalIdx)
   {
     offsets[rank] += numPointsOnProcess[r];
   }
-  ierr = MPI_Allgather(&offsets[rank], 1, MPIU_INT,
+  ierr = MPI_Allgather(MPI_IN_PLACE, 1, MPIU_INT,
                        &offsets[0], 1, MPIU_INT,
                        PETSC_COMM_WORLD); CHKERRQ(ierr);
 
@@ -280,7 +280,7 @@ PetscErrorCode Body<dim>::registerGlobalIdxPoints(PetscInt &globalIdx)
     globalIdx += dim;
   }
 
-  ierr = MPI_Allgatherv(&globalIdxPoints[offsets[rank]], numPointsOnProcess[rank], MPIU_INT,
+  ierr = MPI_Allgatherv(MPI_IN_PLACE, numPointsOnProcess[rank], MPIU_INT,
                         &globalIdxPoints[0], &numPointsOnProcess[0], &offsets[0], MPIU_INT,
                         PETSC_COMM_WORLD); CHKERRQ(ierr);
 

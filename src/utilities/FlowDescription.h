@@ -1,58 +1,129 @@
 /***************************************************************************//**
  * \file FlowDescription.h
- * \author Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \brief Definition of the class `FlowDescription`.
  */
 
+# pragma once
 
-#if !defined(FLOW_DESCRIPTION_H)
-#define FLOW_DESCRIPTION_H
+// here goes C++ STL
+# include <iostream>
+# include <string>
 
-#include "types.h"
+// here goes PETSc
+# include <petscsys.h>
 
-#include <string>
+// here goes yaml-cpp
+# include <yaml-cpp/yaml.h>
 
-#include <petscsys.h>
+// here goes our headers
+# include "types.h"
 
 
 /**
  * \class FlowDescription
  * \brief Stores information that describes the flow.
+ *
+ * \todo remember to check if the capability of specifying a different 
+ * flowDescription.yaml is implemented in other place. 
+ *
+ * \todo think about whether we should use PetscInt to store BCinfo or use
+ * types::BCLoc and types::VelocityComponent. Using PetscInt allow us to use
+ * std::vector, whil using types::BCLoc and types::VeclocityComponent will 
+ * require std::map.
  */
-template <PetscInt dim>
 class FlowDescription
 {
 public:
-  /**
-   * \class Boundary
-   * \brief Stores info about a boundary (type of boundary condition type and value).
-   */
-  class Boundary
-  {
-  public:
-    BoundaryType type; ///< type of boundary condition
-    PetscReal value;   ///< value at the boundary
-  }; // Boundary
 
-  PetscReal nu;                    ///< kinematic viscosity of the fluid
-  PetscReal initialVelocity[dim];  ///< initial velocity of the flow field
-  PetscBool initialCustomField;    ///< flag to start from an initial custom field
-  PetscReal perturbationAmplitude; ///< amplitude of the Taylor-Green vortex perturbation
-  PetscReal perturbationFrequency; ///< frequency of the Taylor-Green vortex perturbation
-  Boundary boundaries[2*dim][dim]; ///< boundary conditions of the flow
-  
-  // contructors
-  FlowDescription(){ };
-  FlowDescription(std::string filePath);
-  // destructor
-  ~FlowDescription(){ };
-  // parse input file and store description of the flow
-  void initialize(std::string filePath);
-  // run sanity checks about periodic boundary conditions
-  void checkPeriodicity();
-  // print description of the flow
-  PetscErrorCode printInfo();
+    /** \brief dimension of the flow. */
+    PetscInt                    dim;
+
+    /** \brief kinematic viscosity. */
+    PetscReal                   nu;
+
+    /** \brief flag indicating if IC will be customized (not supported yet). */
+    PetscBool                   customIC;
+
+    /** \brief initial conditions. */
+    types::RealVec1D            IC;
+
+    /** \brief perturbation, including frequency and amplitude. */
+    types::Perturbation         pertb;
+
+    /** \brief number of boundaries, should be dim * 2. */
+    PetscInt                    nBCs;
+
+    /** \brief information of BCs obtained from YAML file. */
+    types:: BCInfoHolder        BCInfo;
+
+    /** \brief a string or flow information that can be used for printing. */
+    std::string                 info;
+
+
+    /** \brief default constructor. */
+    FlowDescription();
+
+    /** \brief constructor for using YAML file.
+     *
+     * \details A YAML file holding the flow information is required. Either 
+     * an old flowDescription.yaml or a big config YAML with flow info held 
+     * under the key "flowDescription" is accepted.
+     *
+     * \param YAMLfile the YAML file
+     */
+    FlowDescription(const std::string &YAMLfile);
+
+    /** \brief constructor for using YAML node.
+     *
+     * \ details Either a flowDescription node or a YAML node that has a key 
+     * `flowDescription` is accepted.
+     *
+     * \param node a YAML node
+     */
+    FlowDescription(const YAML::Node &node);
+
+    /** \brief destructor. */
+    ~FlowDescription();
+
+    /** \brief print information using PETSc printf.
+     *
+     * \details This is for parallel simulations. With PETSc printf, only the 
+     * master node will print informations.
+     *
+     * \return PetscErrorCode
+     */
+    PetscErrorCode printInfo();
+
+protected:
+
+    /** \brief check if users' settings of periodicity are correct.
+     *
+     * \return PetscErrorCode
+     */
+    PetscErrorCode checkPeriodicity();
+
+    /** \brief create a std::string for information.
+     *
+     * \details This string then can be used in both PETSc printf or C++ 
+     * output streams.
+     *
+     * \return PetscErrorCode
+     */
+    PetscErrorCode createInfoString();
 
 }; // FlowDescription
 
-#endif
+
+/** \brief output stream support for FlowDescription onjects.
+ *
+ * \details The content sent to output stream will be the info string.
+ *
+ * \param os stdout or other output streams
+ * \param flow a FlowDescription instance
+ *
+ * \return output stream
+ */
+std::ostream &operator<<(std::ostream &os, const FlowDescription &flow);

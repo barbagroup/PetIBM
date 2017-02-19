@@ -1,116 +1,155 @@
 /***************************************************************************//**
  * \file types.h
  * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \brief Definition of enumerated types.
  */
 
+# pragma once
 
-#if !defined(TYPES_H)
-#define TYPES_H
+// here goes C++ STL
+# include <string>
+# include <vector>
+# include <map>
 
-#include <string>
+// here goes PETSc
+# include <petscsys.h>
 
 
-/**
- * \brief Velocity components.
- */
-enum VelocityComponent
+/** \brief frequently used types are defined here */
+namespace types
 {
-  U, ///< x-direction
-  V, ///< y-direction
-  W  ///< z-direction
-};
+    /** \brief legal physical directions. */
+    enum Dir { x = 0, y = 1, z = 2 };
+    /** \brief mapping between `std::string` and `Dir` type */
+    extern std::map<std::string, Dir> str2dir;
+    /** \brief mapping between `Dir` type and `std::string` */
+    extern std::map<Dir, std::string> dir2str;
 
 
-/**
- * \brief Type of boundary condition.
- */
-enum BoundaryType
-{
-  DIRICHLET,  ///< Dirichlet
-  NEUMANN,    ///< Neumann
-  CONVECTIVE, ///< Convective
-  PERIODIC    ///< Periodic
-};
-BoundaryType stringToBoundaryType(std::string s);
-std::string stringFromBoundaryType(BoundaryType type);
+    /** \brief legal velocity components. */
+    enum VelocityComponent { u = 0, v = 1, w = 2 };
+    /** \brief mapping between `std::string` and `VelocityComponent` type */
+    extern std::map<std::string, VelocityComponent> str2vc;
+    /** \brief mapping between `VelocityComponent` type and `std::string` */
+    extern std::map<VelocityComponent, std::string> vc2str;
 
 
-/**
- * \brief Location of the boundary.
- */
-enum BoundaryLocation
-{
-  XMINUS, ///< left
-  XPLUS,  ///< right
-  YMINUS, ///< bottom
-  YPLUS,  ///< top
-  ZMINUS, ///< back
-  ZPLUS   ///< front
-};
-BoundaryLocation stringToBoundaryLocation(std::string s);
-std::string stringFromBoundaryLocation(BoundaryLocation location);
+    /** \brief type of boundary condition. */
+    enum BCType { DIRICHLET = 0, NEUMANN = 1, CONVECTIVE = 2, PERIODIC = 3 };
+    /** \brief mapping between `std::string` and `BCType` type */
+    extern std::map<std::string, BCType> str2bt;
+    /** \brief mapping between `BCType` type and `std::string` */
+    extern std::map<BCType, std::string> bt2str;
 
 
-/**
- * \brief Numerical scheme used to discretize the time derivative.
- *
- * A time-dependent differential equation of the form
- * \f[ \frac{du}{dt} = f(u) \f]
- * can be solved numerically using any of the schemes listed below. In the
- * following, the size of the time step is represented by \f$ \Delta t \f$, the
- * value of \f$ u \f$ at the current time step is represented by \f$ u^n \f$, 
- * and the value at the next time step (which we want to determine) is
- * \f$ u^{n+1} \f$. \f$ u^{n-1} \f$ is the value at the previous time step.
- */
-enum TimeScheme
-{
-  NONE,              ///< numerical coefficients set to zero
-  EULER_EXPLICIT,    ///< explicit Euler method
-  EULER_IMPLICIT,    ///< implicit Euler method
-  ADAMS_BASHFORTH_2, ///< second-order Adams-Bashforth scheme
-  CRANK_NICOLSON     ///< second-order Crank-Nicolson scheme
-};
-TimeScheme stringToTimeScheme(std::string);
-std::string stringFromTimeScheme(TimeScheme timeScheme);
+    /** \brief location of the boundary. */
+    enum BCLoc {
+        XMINUS = 0, XPLUS = 1, YMINUS = 2, YPLUS = 3, ZMINUS = 4, ZPLUS = 5 };
+    /** \brief mapping between `std::string` and `BCLoc` type */
+    extern std::map<std::string, BCLoc> str2bl;
+    /** \brief mapping between `BCLoc` type and `std::string` */
+    extern std::map<BCLoc, std::string> bl2str;
 
 
-/**
- * \brief Immersed boundary method used to solve the flow.
- */
-enum IBMethod
-{
-  TAIRA_COLONIUS, ///< immersed boundary projection method (Taira & Colonius, 2007)
-  NAVIER_STOKES   ///< no immersed boundary (Perot, 1993)
-};
-IBMethod stringToIBMethod(std::string s);
-std::string stringFromIBMethod(IBMethod method);
+    /** \brief Numerical scheme used to discretize the time derivative.
+     *
+     * A time-dependent differential equation of the form
+     * \f[ \frac{du}{dt} = f(u) \f]
+     * can be solved numerically using any of the schemes listed below. In the
+     * following, the size of the time step is represented by \f$ \Delta t \f$, the
+     * value of \f$ u \f$ at the current time step is represented by \f$ u^n \f$, 
+     * and the value at the next time step (which we want to determine) is
+     * \f$ u^{n+1} \f$. \f$ u^{n-1} \f$ is the value at the previous time step.
+     */
+    enum TimeScheme
+    {
+        NONE = 0,              ///< numerical coefficients set to zero
+        EULER_EXPLICIT = 1,    ///< explicit Euler method
+        EULER_IMPLICIT = 2,    ///< implicit Euler method
+        ADAMS_BASHFORTH_2 = 3, ///< second-order Adams-Bashforth scheme
+        CRANK_NICOLSON = 4     ///< second-order Crank-Nicolson scheme
+    };
+    /** \brief mapping between `std::string` and `TimeScheme` type */
+    extern std::map<std::string, TimeScheme> str2ts;
+    /** \brief mapping between `TimeScheme` type and `std::string` */
+    extern std::map<TimeScheme, std::string> ts2str;
 
 
-/**
- * \brief Staggered mode to define the location of mesh points.
- */
-enum StaggeredMode
-{
-  STAGGERED_MODE_X,  ///< x-component of staggered quantity
-  STAGGERED_MODE_Y,  ///< y-component of staggered quantity
-  STAGGERED_MODE_Z,  ///< z-component of staggered quantity
-  CELL_CENTERED      ///< cell-centered quantity
-};
+    /** \brief Immersed boundary method used to solve the flow. */
+    enum IBMethod
+    {
+        NAVIER_STOKES = 0,  ///< no immersed boundary (Perot, 1993)
+        TAIRA_COLONIUS = 1  ///< immersed boundary projection method (Taira & Colonius, 2007)
+    };
+    /** \brief mapping between `std::string` and `IBMethod` type */
+    extern std::map<std::string, IBMethod> str2ibm;
+    /** \brief mapping between `IBMethod` type and `std::string` */
+    extern std::map<IBMethod, std::string> ibm2str;
 
 
-/**
- * \brief Data type describing the executing space of linear solvers
- */
-enum ExecuteType
-{
-    GPU, ///< GPU-based solver. Currently only AmgX solvers exist.
-    CPU  ///< CPU-based solver, i.e. PETSc solvers
-};
-ExecuteType stringToExecuteType(std::string);
-std::string stringFromExecuteType(ExecuteType exeType);
+    /** \brief Staggered mode to define the location of mesh points. */
+    enum StaggeredMode
+    {
+        CELL_CENTERED = 0,     ///< cell-centered quantity
+        STAGGERED_MODE_X = 1,  ///< x-component of staggered quantity
+        STAGGERED_MODE_Y = 2,  ///< y-component of staggered quantity
+        STAGGERED_MODE_Z = 3   ///< z-component of staggered quantity
+    };
+    /** \brief mapping between `std::string` and `StaggeredMode` type */
+    extern std::map<std::string, StaggeredMode> str2sm;
+    /** \brief mapping between `StaggeredMode` type and `std::string` */
+    extern std::map<StaggeredMode, std::string> sm2str;
 
-#endif
+
+    /** \brief Data type describing the executing space of linear solvers. */
+    enum ExecuteType
+    {
+        CPU = 0, ///< GPU-based solver. Currently only AmgX solvers exist.
+        GPU = 1  ///< CPU-based solver, i.e. PETSc solvers
+    };
+    /** \brief mapping between `std::string` and `ExecuteType` type */
+    extern std::map<std::string, ExecuteType> str2et;
+    /** \brief mapping between `ExecuteType` type and `std::string` */
+    extern std::map<ExecuteType, std::string> et2str;
+
+
+    /** \brief 1D std::vector holding PetscInt. */
+    typedef std::vector<PetscInt>   IntVec1D;
+    /** \brief 2D std::vector holding PetscInt. */
+    typedef std::vector<IntVec1D>   IntVec2D;
+    /** \brief 3D std::vector holding PetscInt. */
+    typedef std::vector<IntVec2D>   IntVec3D;
+
+
+    /** \brief 1D std::vector holding PetscReal. */
+    typedef std::vector<PetscReal>  RealVec1D;
+    /** \brief 2D std::vector holding PetscReal. */
+    typedef std::vector<RealVec1D>  RealVec2D;
+    /** \brief 3D std::vector holding PetscReal. */
+    typedef std::vector<RealVec2D>  RealVec3D;
+
+
+    /** \brief a structure holding information of a single boundary condition. */
+    struct BCTypeValuePair
+    {
+        BCType  type;  ///< the type of BC
+        PetscReal   value; ///< the value of BC
+    };
+
+    /** \brief a nested map holding information for user-input BCs. */
+    typedef std::map<BCLoc, std::map<
+        VelocityComponent, BCTypeValuePair>>     BCInfoHolder;
+
+
+    /** \brief a structure holding information of perturbation. */
+    struct Perturbation
+    {
+        PetscReal   freq = 0.;  ///< frequency
+        PetscReal   amp = 0.;  ///< amplitude
+    };
+}
 
 /**
  * \class PetscInt

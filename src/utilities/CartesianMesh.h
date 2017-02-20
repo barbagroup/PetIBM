@@ -1,54 +1,71 @@
 /***************************************************************************//**
  * \file CartesianMesh.h
  * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \brief Definition of the class `CartesianMesh`.
  */
 
 
-#if !defined(CARTESIAN_MESH_H)
-#define CARTESIAN_MESH_H
+# pragma once
 
-#include "types.h"
+// here goes C++ STL
+# include <string>
+# include <vector>
+# include <map>
 
-#include <string>
-#include <vector>
+// here goes PETSc headers
+# include <petscsys.h>
 
-#include <petscsys.h>
+// here goes YAML header
+# include <yaml-cpp/yaml.h>
+
+// here goes headers from our PetIBM
+# include "types.h"
 
 
-/**
- * \brief Stores information about the cartesian mesh.
- */
 class CartesianMesh
 {
 public:
-  PetscInt nx, ///< number of cells in the x-direction
-           ny, ///< number of cells in the y-direction
-           nz; ///< number of cells in the z-direction
-  
-  std::vector<PetscReal> x, ///< x-coordinates of the nodes
-                         y, ///< y-coordinates of the nodes
-                         z; ///< z-coordinates of the nodes
-  
-  std::vector<PetscReal> dx, ///< cell-widths along the x-direction
-                         dy, ///< cell-widths along the y-direction 
-                         dz; ///< cell-widths along the z-direction
 
-  // constructors
-  CartesianMesh();
-  CartesianMesh(std::string filePath);
-  // destructor
-  ~CartesianMesh();
-  // parse input file and create Cartesian mesh
-  void initialize(std::string filePath);
-  // write grid points into file
-  PetscErrorCode write(std::string filePath);
-#ifdef PETSC_HAVE_HDF5
-  PetscErrorCode write(std::string filePath, StaggeredMode mode, BoundaryType type);
-#endif
-  // print information about Cartesian mesh
-  PetscErrorCode printInfo();
+    PetscInt                dim = -1;
+
+    types::RealVec1D        bg, ed;
+
+    types::IntVec2D         n = types::IntVec2D(5);
+
+    types::RealVec3D        coord = types::RealVec3D(5);
+
+    types::RealVec3D        dL = types::RealVec3D(5);
+
+    std::string             info;
+
+
+
+    CartesianMesh();
+    CartesianMesh(const std::string &file, types::BCInfoHolder &bcInfo);
+    CartesianMesh(const YAML::Node &node, types::BCInfoHolder &bcInfo);
+
+    ~CartesianMesh();
+
+    PetscErrorCode init(
+            const YAML::Node &meshNode, types::BCInfoHolder &bcInfo);
+
+    PetscErrorCode printInfo();
+
+    template <types::OutputType out>
+    PetscErrorCode write(const std::string &file, const std::string &xml="");
+
+    PetscErrorCode generateXDMF(const std::string &xml, const std::string &file);
+
+protected:
+
+    PetscErrorCode createVertexMesh();
+    PetscErrorCode createPressureMesh();
+    PetscErrorCode createVelocityMesh(types::BCInfoHolder &bcInfo);
+    PetscErrorCode createInfoString();
 
 }; // CartesianMesh
 
-#endif
+
+std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh);

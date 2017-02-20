@@ -83,6 +83,8 @@ PetscErrorCode parser::parseMesh(
         const YAML::Node &meshNode, PetscInt &dim, types::RealVec1D &bg, 
         types::RealVec1D &ed, types::IntVec1D &nTotal, types::RealVec2D &dL)
 {
+    using namespace types;
+
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
@@ -91,10 +93,11 @@ PetscErrorCode parser::parseMesh(
     dim = meshNode.size();
 
     // initialize vectors according to the dimensions
-    bg.resize(dim);
-    ed.resize(dim);
-    nTotal.resize(dim);
-    dL.resize(dim);
+    // note: no matter it's 2 or 3D, we always create z-coordinates
+    bg = {0.0, 0.0, 0.0};
+    ed = {0.0, 0.0, 0.0};
+    nTotal = {1, 1, 1};
+    dL = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
 
     // loop through all dimensions
     for(auto ax: meshNode)
@@ -103,7 +106,7 @@ PetscErrorCode parser::parseMesh(
         // so we have to use some temporary variables
         PetscInt    dir, nTotalAx;
         PetscReal   bgAx, edAx;
-        types::RealVec1D    dLAx;
+        RealVec1D    dLAx;
 
         // parse current dimension
         ierr = parseOneAxis(ax, dir, bgAx, edAx, nTotalAx, dLAx); CHKERRQ(ierr);
@@ -230,19 +233,19 @@ namespace YAML
         return true;
     }
 
-    // for VelocityComponent
-    Node convert<types::VelocityComponent>::encode(const types::VelocityComponent &vc)
+    // for Field
+    Node convert<types::Field>::encode(const types::Field &vc)
     {
         Node node;
-        node = types::vc2str[vc];
+        node = types::fd2str[vc];
         return node;
     }
 
-    bool convert<types::VelocityComponent>::decode(const Node &node, types::VelocityComponent &vc)
+    bool convert<types::Field>::decode(const Node &node, types::Field &vc)
     {
         if (! node.IsDefined()) return false;
 
-        vc = types::str2vc[node.as<std::string>()];
+        vc = types::str2fd[node.as<std::string>()];
         return true;
     }
 
@@ -368,7 +371,7 @@ namespace YAML
             Node childNode(NodeType::Map);
             childNode["location"] = loc.first;
             for(auto comp: loc.second)
-                childNode[types::vc2str[comp.first]] = comp.second;
+                childNode[types::fd2str[comp.first]] = comp.second;
             node.push_back(childNode);
         }
         return node;
@@ -383,7 +386,7 @@ namespace YAML
                 if (comp.first.as<std::string>() != "location")
                     bc
                         [loc["location"].as<types::BCLoc>()]
-                        [comp.first.as<types::VelocityComponent>()]
+                        [comp.first.as<types::Field>()]
                             = comp.second.as<types::BCTypeValuePair>();
         return true;
     }
@@ -404,6 +407,22 @@ namespace YAML
 
         pertb.freq = node["frequency"].as<PetscReal>();
         pertb.amp = node["amplitude"].as<PetscReal>();
+        return true;
+    }
+
+    // for OutputType
+    Node convert<types::OutputType>::encode(const types::OutputType &out)
+    {
+        YAML::Node  node;
+        node = types::out2str[out];
+        return node;
+    }
+
+    bool convert<types::OutputType>::decode(const Node &node, types::OutputType &out)
+    {
+        if (! node.IsDefined()) return false;
+
+        out = types::str2out[node.as<std::string>()];
         return true;
     }
 

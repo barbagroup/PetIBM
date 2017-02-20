@@ -28,12 +28,12 @@ namespace types
     extern std::map<Dir, std::string> dir2str;
 
 
-    /** \brief legal velocity components. */
-    enum VelocityComponent { u = 0, v = 1, w = 2 };
-    /** \brief mapping between `std::string` and `VelocityComponent` type */
-    extern std::map<std::string, VelocityComponent> str2vc;
-    /** \brief mapping between `VelocityComponent` type and `std::string` */
-    extern std::map<VelocityComponent, std::string> vc2str;
+    /** \brief legal fields. */
+    enum Field { u = 0, v = 1, w = 2 , p = 3, vertex = 4};
+    /** \brief mapping between `std::string` and `Field` type */
+    extern std::map<std::string, Field> str2fd;
+    /** \brief mapping between `Field` type and `std::string` */
+    extern std::map<Field, std::string> fd2str;
 
 
     /** \brief type of boundary condition. */
@@ -115,6 +115,14 @@ namespace types
     extern std::map<ExecuteType, std::string> et2str;
 
 
+    /** \brief output format */
+    enum OutputType {Binary = 0, VTK = 1, HDF5 = 2};
+    /** \brief mapping between `std::string` and `OutputType` type */
+    extern std::map<std::string, OutputType> str2out;
+    /** \brief mapping between `OutputType` type and `std::string` */
+    extern std::map<OutputType, std::string> out2str;
+
+
     /** \brief 1D std::vector holding PetscInt. */
     typedef std::vector<PetscInt>   IntVec1D;
     /** \brief 2D std::vector holding PetscInt. */
@@ -139,8 +147,7 @@ namespace types
     };
 
     /** \brief a nested map holding information for user-input BCs. */
-    typedef std::map<BCLoc, std::map<
-        VelocityComponent, BCTypeValuePair>>     BCInfoHolder;
+    typedef std::map<BCLoc, std::map<Field, BCTypeValuePair>>     BCInfoHolder;
 
 
     /** \brief a structure holding information of perturbation. */

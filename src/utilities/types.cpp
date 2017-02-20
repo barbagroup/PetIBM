@@ -19,10 +19,12 @@ namespace types
     std::map<Dir, std::string> dir2str {{x, "x"}, {y, "y"}, {z, "z"}};
 
 
-    /** \copydoc types::str2vc */
-    std::map<std::string, VelocityComponent> str2vc {{"u", u}, {"v", v}, {"w", w}};
-    /** \copydoc types::vc2str */
-    std::map<VelocityComponent, std::string> vc2str {{u, "u"}, {v, "v"}, {w, "w"}};
+    /** \copydoc types::str2fd */
+    std::map<std::string, Field> str2fd {
+        {"u", u}, {"v", v}, {"w", w}, {"p", p}, {"vertex", vertex}};
+    /** \copydoc types::fd2str */
+    std::map<Field, std::string> fd2str {
+        {u, "u"}, {v, "v"}, {w, "w"}, {p, "p"}, {vertex, "vertex"}};
 
 
     /** \copydoc types::str2bt */
@@ -80,4 +82,13 @@ namespace types
     std::map<std::string, ExecuteType> str2et {{"CPU", CPU}, {"GPU", GPU}};
     /** \copydoc types::et2str */
     std::map<ExecuteType, std::string> et2str {{CPU, "CPU"}, {GPU, "GPU"}};
+
+
+    /** \copydoc types::str2out */
+    std::map<std::string, OutputType> str2out {
+        {"binary", Binary}, {"vtk", VTK}, {"hdf5", HDF5},
+        {"Binary", Binary}, {"VTK", VTK}, {"HDF5", HDF5}};
+    /** \copydoc types::out2str */
+    std::map<OutputType, std::string> out2str {
+        {Binary, "Binary"}, {VTK, "VTK"}, {HDF5, "HDF5"}};
 }

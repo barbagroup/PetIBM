@@ -123,7 +123,7 @@ PetscErrorCode FlowDescription::createInfoString()
     {
         ss << "\t\t" << bl2str[loc.first] << ":" << std::endl;
         for(auto comp: loc.second)
-            ss << "\t\t\t" << vc2str[comp.first] << ": [ "
+            ss << "\t\t\t" << fd2str[comp.first] << ": [ "
                 << bt2str[comp.second.type] << ", "
                 << comp.second.value << " ]" << std::endl;
     }

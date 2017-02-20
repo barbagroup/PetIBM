@@ -122,12 +122,12 @@ namespace YAML
         static bool decode(const Node &node, types::Dir &dir);
     };
 
-    /** \brief converter for `tpyes::VelocityComponent` */
+    /** \brief converter for `tpyes::Field` */
     template <>
-    struct convert<types::VelocityComponent>
+    struct convert<types::Field>
     {
-        static Node encode(const types::VelocityComponent &vc);
-        static bool decode(const Node &node, types::VelocityComponent &vc);
+        static Node encode(const types::Field &vc);
+        static bool decode(const Node &node, types::Field &vc);
     };
 
     /** \brief converter for `types::BCType` */
@@ -200,6 +200,14 @@ namespace YAML
     {
         static Node encode(const types::Perturbation &pertb);
         static bool decode(const Node &node, types::Perturbation &pertb);
+    };
+
+    /** \brief converter for `types::OutputType` */
+    template<>
+    struct convert<types::OutputType>
+    {
+        static Node encode(const types::OutputType &out);
+        static bool decode(const Node &node, types::OutputType &out);
     };
 
     /** \brief converter for `PetscBool` */

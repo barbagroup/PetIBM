@@ -30,7 +30,7 @@
  * flowDescription.yaml is implemented in other place. 
  *
  * \todo think about whether we should use PetscInt to store BCinfo or use
- * types::BCLoc and types::VelocityComponent. Using PetscInt allow us to use
+ * types::BCLoc and types::Field. Using PetscInt allow us to use
  * std::vector, whil using types::BCLoc and types::VeclocityComponent will 
  * require std::map.
  */

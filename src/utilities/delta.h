@@ -15,16 +15,16 @@
 PetscReal dhRoma(PetscReal x, PetscReal h);
 
 // Two-dimensional discrete delta function from Roma et al. (1999).
-PetscReal delta(PetscReal x, PetscReal y, PetscReal h);
+PetscReal delta(PetscReal x, PetscReal y, PetscReal hx, PetscReal hy);
 
 // Three-dimensional discrete delta function from Roma et al. (1999).
-PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h);
+PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal hx, PetscReal hy, PetscReal hz);
 
 // Defines if a point is in the disk or sphere of influence of another
 // and calculates the displacement vector.
 template<PetscInt dim>
 PetscBool isInfluenced(PetscReal (&target)[dim], PetscReal (&source)[dim],
-                       PetscReal radius,
+                       PetscReal (&maxDisp)[dim],
                        PetscReal (&widths)[dim], BoundaryType (&bTypes)[dim],
                        PetscReal *disp);
 

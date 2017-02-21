@@ -10,7 +10,7 @@ navierStokesTest_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 														-I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
 if WITH_AMGXWRAPPER
-navierStokesTest_CPPFLAGS += -I$(top_srcdir)/external/AmgXWrapper-1.0-beta/src
+navierStokesTest_CPPFLAGS += -I$(top_srcdir)/external/AmgXWrapper-1.0-beta2/src
 endif
 
 navierStokesTest_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
@@ -19,7 +19,7 @@ navierStokesTest_LDADD = $(top_builddir)/src/solvers/libsolvers.a \
 												 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 if WITH_AMGXWRAPPER
-navierStokesTest_LDADD += $(top_builddir)/external/AmgXWrapper-1.0-beta/libamgxwrapper.a
+navierStokesTest_LDADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
 endif
 
 input_data:

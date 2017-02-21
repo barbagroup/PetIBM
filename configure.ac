@@ -61,7 +61,7 @@ AC_CONFIG_FILES([Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.7.0/Makefile
-                 external/AmgXWrapper-1.0-beta/Makefile
+                 external/AmgXWrapper-1.0-beta2/Makefile
                  tests/Makefile
                  tests/CartesianMesh/Makefile
                  tests/NavierStokes/Makefile

@@ -9,7 +9,7 @@ libsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities \
                         -I$(top_srcdir)/external/boost-1.57.0
 
 if WITH_AMGXWRAPPER
-libsolvers_a_CPPFLAGS += -I$(top_srcdir)/external/AmgXWrapper-1.0-beta/src \
+libsolvers_a_CPPFLAGS += -I$(top_srcdir)/external/AmgXWrapper-1.0-beta2/src \
                          -I$(CUDA_DIR)/include \
                          -I$(AMGX_DIR)/examples \
                          -D HAVE_AMGX

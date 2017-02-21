@@ -124,16 +124,24 @@ int AmgXSolver::getDevIS(const Mat &A, IS &devIS)
 {
     PetscErrorCode      ierr;
 
+    // get index sets of A locally owned by each process
+    // note that devIS is now a serial IS on each process
     ierr = MatGetOwnershipIS(A, &devIS, nullptr);                            CHK;
 
-    ierr = ISOnComm(devIS, 
-            devWorld, PETSC_USE_POINTER, &devIS);                            CHK;
+    // concatenate index sets that belong to the same devWorld
+    // note that now devIS is a parallel IS of communicator devWorld
+    ierr = ISOnComm(devIS, devWorld, PETSC_USE_POINTER, &devIS);             CHK;
 
+    // all gather in order to have all indices belong to a devWorld on the 
+    // leading rank of that devWorld. This is not efficient.
+    // note that now devIS is again a serial IS on each process
     ierr = ISAllGather(devIS, &devIS);                                       CHK;
 
+    // empty devIS on ranks other than the leading ranks in each devWorld 
     if (myDevWorldRank != 0) 
         ierr = ISGeneralSetIndices(devIS, 0, nullptr, PETSC_COPY_VALUES);    CHK;
 
+    // devIS is not guaranteed to be sorted. We sort it here.
     ierr = ISSort(devIS);                                                    CHK;
 
     return 0;
@@ -150,10 +158,12 @@ int AmgXSolver::redistMat(const Mat &A, const IS &devIS, Mat &newA)
     }
     else
     {
-        ierr = MatGetSubMatrix(
-            A, devIS, nullptr, MAT_INITIAL_MATRIX, &newA);                   CHK;
+        IS      is;
+        ierr = ISOnComm(devIS, globalCpuWorld, PETSC_USE_POINTER, &is);      CHK;
+        ierr = MatGetSubMatrix(A, is, is, MAT_INITIAL_MATRIX, &newA);        CHK;
 
-        ierr = getVecScatter(A, newA, devIS);                                CHK;
+        ierr = getVecScatter(A, newA, is);                                   CHK;
+        ierr = ISDestroy(&is);                                               CHK;
     }
 
     return 0;
@@ -179,7 +189,10 @@ int AmgXSolver::getPartVec(
     {
         ierr = VecCreateMPI(gpuWorld, n, N, &tempMPI);                       CHK;
     
-        ierr = VecISSet(tempMPI, devIS, (PetscScalar) myGpuWorldRank);       CHK;
+        IS      is;
+        ierr = ISOnComm(devIS, gpuWorld, PETSC_USE_POINTER, &is);            CHK;
+        ierr = VecISSet(tempMPI, is, (PetscScalar) myGpuWorldRank);          CHK;
+        ierr = ISDestroy(&is);                                               CHK;
 
         ierr = VecScatterCreateToAll(tempMPI, &scatter, &tempSEQ);           CHK;
         ierr = VecScatterBegin(scatter, 
@@ -282,7 +295,7 @@ int AmgXSolver::getVecScatter(const Mat &A1, const Mat &A2, const IS &devIS)
     ierr = MatCreateVecs(A2, nullptr, &redistLhs);                           CHK;
 
     ierr = VecScatterCreate(tempV, devIS, redistLhs, devIS, &redistScatter); CHK;
-
+    
     ierr = VecDestroy(&tempV);                                               CHK;
 
     return 0;

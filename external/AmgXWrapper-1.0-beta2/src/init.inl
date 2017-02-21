@@ -71,6 +71,7 @@ int AmgXSolver::initMPIcomms(MPI_Comm &comm)
 
     // Copy communicator for all processors
     globalCpuWorld = comm;
+    MPI_Comm_set_name(globalCpuWorld, "globalCpuWorld");
 
     // get size and rank for global communicator
     MPI_Comm_size(globalCpuWorld, &globalSize);
@@ -79,6 +80,7 @@ int AmgXSolver::initMPIcomms(MPI_Comm &comm)
     // Get the communicator for processors on the same node (local world)
     MPI_Comm_split_type(globalCpuWorld, 
             MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &localCpuWorld);
+    MPI_Comm_set_name(localCpuWorld, "localCpuWorld");
 
     // get size and rank for local communicator
     MPI_Comm_size(localCpuWorld, &localSize);
@@ -92,11 +94,12 @@ int AmgXSolver::initMPIcomms(MPI_Comm &comm)
     }
     else if (nDevs > localSize)
     {
-        if (myLocalRank == 0)
-            std::cout << "CUDA devices on the node " << nodeName 
-                      << " are more than the MPI processes launched. " 
-                      << "Only " << localSize << " CUDA devices will be used."
-                      << std::endl;
+        PetscPrintf(localCpuWorld, 
+                "CUDA devices on the node %s ", nodeName);
+        PetscPrintf(localCpuWorld, 
+                "are more than the MPI processes launched. "); 
+        PetscPrintf(localCpuWorld, 
+                "Only %d CUDA devices will be used.\n", localSize);
 
         devID = myLocalRank;
         gpuProc = 0;
@@ -122,6 +125,7 @@ int AmgXSolver::initMPIcomms(MPI_Comm &comm)
 
     // split the global world into a world involved in AmgX and a null world
     MPI_Comm_split(globalCpuWorld, gpuProc, 0, &gpuWorld);
+    MPI_Comm_set_name(gpuWorld, "gpuWorld");
 
     // get size and rank for the communicator corresponding to gpuWorld
     if (gpuWorld != MPI_COMM_NULL)
@@ -138,6 +142,7 @@ int AmgXSolver::initMPIcomms(MPI_Comm &comm)
 
     // split local world into worlds corresponding to each CUDA device
     MPI_Comm_split(localCpuWorld, devID, 0, &devWorld);
+    MPI_Comm_set_name(devWorld, "devWorld");
 
     // get size and rank for the communicator corresponding to myWorld
     MPI_Comm_size(devWorld, &devWorldSize);

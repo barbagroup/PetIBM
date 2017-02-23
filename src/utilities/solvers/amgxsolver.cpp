@@ -8,7 +8,8 @@
 /*!
  * \brief Creates the AmgX solver.
  */
-PetscErrorCode AMGXSolver::create(const Mat &A)
+PetscErrorCode AMGXSolver::create(
+        const Mat &A, const DM &daPack, const PetscBool &split)
 {
   PetscErrorCode ierr;
 

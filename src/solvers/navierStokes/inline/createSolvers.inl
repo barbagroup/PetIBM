@@ -47,7 +47,7 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
                          "\nERROR: vSolveType should be either 'CPU' or 'GPU'.\n");
       exit(1);
   }
-  velocity->create(A);
+  velocity->create(A, qPack);
 
   // possibility to overwrite the path of the configuration file
   // using the command-line parameter: `-poisson_config_file <file-path>`
@@ -75,7 +75,7 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
                          "\nERROR: pSolveType should be either 'CPU' or 'GPU'.\n");
       exit(1);
   }
-  poisson->create(QTBNQ);
+  poisson->create(QTBNQ, lambdaPack, PETSC_TRUE);
 
   return 0;
 } // createSolvers

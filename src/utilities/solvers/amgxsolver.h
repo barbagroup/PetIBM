@@ -23,7 +23,8 @@ public:
     amgx.finalize();
   };
 
-  PetscErrorCode create(const Mat &A);
+  PetscErrorCode create(const Mat &A, const DM &daPack, 
+          const PetscBool &split=PETSC_FALSE);
   PetscErrorCode solve(Vec &x, Vec &b);
   PetscErrorCode getIters(PetscInt &iters);
 

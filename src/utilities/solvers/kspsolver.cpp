@@ -25,7 +25,6 @@ PetscErrorCode KSPSolver::create(
   ierr = KSPSetInitialGuessNonzero(ksp, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetType(ksp, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp, PETSC_TRUE); CHKERRQ(ierr);
-  ierr = KSPSetNormType(ksp, KSP_NORM_UNPRECONDITIONED); CHKERRQ(ierr);
 
 
   DMType    type;

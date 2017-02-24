@@ -87,7 +87,6 @@ PetscErrorCode KSPSolver::setSplitPC(const PetscInt &numDM, const DM &daPack)
         ierr = KSPSetType(childKsp[i], KSPBCGS); CHKERRQ(ierr);
         ierr = KSPSetDM(childKsp[i], dms[i]); CHKERRQ(ierr);
         ierr = KSPSetDMActive(childKsp[i], PETSC_FALSE); CHKERRQ(ierr);
-        ierr = KSPSetInitialGuessNonzero(childKsp[i], PETSC_TRUE); CHKERRQ(ierr);
         ierr = KSPSetReusePreconditioner(childKsp[i], PETSC_TRUE); CHKERRQ(ierr);
 
         PC  pcField;

@@ -13,9 +13,13 @@
 # include <string>
 # include <vector>
 # include <map>
+# include <memory>
+# include <functional>
 
 // here goes PETSc headers
 # include <petscsys.h>
+# include <petscdmda.h>
+# include <petscdmcomposite.h>
 
 // here goes YAML header
 # include <yaml-cpp/yaml.h>
@@ -30,7 +34,7 @@ public:
 
     PetscInt                dim = -1;
 
-    types::RealVec1D        bg, ed;
+    types::RealVec1D        min, max;
 
     types::IntVec2D         n = types::IntVec2D(5);
 
@@ -42,28 +46,62 @@ public:
 
 
 
+    // PETSc stuffs
+    std::vector<DM>         da = std::vector<DM>(5);
+
+    types::IntVec2D         bg = types::IntVec2D(5);
+
+    types::IntVec2D         ed = types::IntVec2D(5);
+
+    types::IntVec2D         m = types::IntVec2D(5);
+
+    DM                      qPack, lambdaPack;
+
+    // cunstructors
     CartesianMesh();
-    CartesianMesh(const std::string &file, types::BCInfoHolder &bcInfo);
-    CartesianMesh(const YAML::Node &node, types::BCInfoHolder &bcInfo);
+    CartesianMesh(const std::string &file, types::BCInfoHolder &bcInfo, 
+            const types::OutputType &type=types::VTK);
+    CartesianMesh(const YAML::Node &node, types::BCInfoHolder &bcInfo, 
+            const types::OutputType &type=types::VTK);
 
     ~CartesianMesh();
 
+    // real initialization function
     PetscErrorCode init(
-            const YAML::Node &meshNode, types::BCInfoHolder &bcInfo);
+            const YAML::Node &meshNode, types::BCInfoHolder &bcInfo, 
+            const types::OutputType &type=types::VTK);
 
+    // here goes the part regarding PETSc DMDA objects
+    PetscErrorCode initDMDA();
+
+    // print info with PetscPrintf
     PetscErrorCode printInfo();
 
-    template <types::OutputType out>
-    PetscErrorCode write(const std::string &file, const std::string &xml="");
+    // a function for writing out the grid based on the OutputType specified
+    std::function<PetscErrorCode(const std::string &)> write;
 
+    // to change the OutputType in after the instance was initialized
+    PetscErrorCode setOutputFormat(const types::OutputType &type);
+
+    // a function to create XDMF file for HDF5 grid file
     PetscErrorCode generateXDMF(const std::string &xml, const std::string &file);
 
 protected:
 
+    std::shared_ptr<types::BCInfoHolder>    bcInfo;
+
     PetscErrorCode createVertexMesh();
     PetscErrorCode createPressureMesh();
-    PetscErrorCode createVelocityMesh(types::BCInfoHolder &bcInfo);
+    PetscErrorCode createVelocityMesh();
     PetscErrorCode createInfoString();
+
+    PetscErrorCode writeBinary(const std::string &file);
+    PetscErrorCode writeVTK(const std::string &file);
+    PetscErrorCode writeHDF5(const std::string &file);
+
+    PetscErrorCode createSingleDMDA(const PetscInt &i);
+    PetscErrorCode createLambdaPack();
+    PetscErrorCode createVelocityPack();
 
 }; // CartesianMesh
 

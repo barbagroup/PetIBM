@@ -23,28 +23,31 @@
 # include "hdf5.h"
 
 // here goes headers from our PetIBM
-# include "CartesianMesh_new.h"
+# include "CartesianMesh.h"
 # include "parser.h"
+
+
+using namespace types;
 
 
 //  TODO: move CMD parsing to other part in PetIBM
 CartesianMesh::CartesianMesh() {};
 
 
-CartesianMesh::CartesianMesh(const std::string &file, types::BCInfoHolder &bcInfo)
+CartesianMesh::CartesianMesh(const std::string &file, BCInfoHolder &bc, const OutputType &type)
 {
     YAML::Node  node = YAML::LoadFile(file);
     
-    CartesianMesh(node, bcInfo);
+    CartesianMesh(node, bc);
 }
 
 
-CartesianMesh::CartesianMesh(const YAML::Node &node, types::BCInfoHolder &bcInfo)
+CartesianMesh::CartesianMesh(const YAML::Node &node, BCInfoHolder &bc, const OutputType &type)
 {
     if (node["cartesianMesh"].IsDefined())
-        init(node["cartesianMesh"], bcInfo);
+        init(node["cartesianMesh"], bc, type);
     else
-        init(node, bcInfo);
+        init(node, bc, type);
 }
 
 
@@ -52,7 +55,7 @@ CartesianMesh::~CartesianMesh() {};
 
 
 PetscErrorCode CartesianMesh::init(
-        const YAML::Node &meshNode, types::BCInfoHolder &bcInfo)
+        const YAML::Node &meshNode, BCInfoHolder &bc, const OutputType &type)
 {
     PetscFunctionBeginUser;
 
@@ -61,12 +64,21 @@ PetscErrorCode CartesianMesh::init(
     ierr = PetscPrintf(PETSC_COMM_WORLD, "Creating a CartesianMesh object ... ");
     CHKERRQ(ierr);
 
-    // index 3 represent pressure mesh; bg & ed always represent pressure mesh
-    ierr = parser::parseMesh(meshNode, dim, bg, ed, n[3], dL[3]); CHKERRQ(ierr);
+    // index 3 represent pressure mesh; min & max always represent pressure mesh
+    ierr = parser::parseMesh(meshNode, dim, min, max, n[3], dL[3]); CHKERRQ(ierr);
+
+    // store the address of bcInfo
+    // note: this is a bad practice; shared_ptr is not for stack variables!!
+    bcInfo = std::shared_ptr<BCInfoHolder>(&bc, [](BCInfoHolder*){});
+
     ierr = createPressureMesh(); CHKERRQ(ierr);
     ierr = createVertexMesh(); CHKERRQ(ierr);
-    ierr = createVelocityMesh(bcInfo); CHKERRQ(ierr);
+    ierr = createVelocityMesh(); CHKERRQ(ierr);
     ierr = createInfoString(); CHKERRQ(ierr);
+
+    ierr = setOutputFormat(type); CHKERRQ(ierr);
+
+    ierr = initDMDA(); CHKERRQ(ierr);
 
     ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
 
@@ -74,10 +86,31 @@ PetscErrorCode CartesianMesh::init(
 }
 
 
+PetscErrorCode CartesianMesh::setOutputFormat(const OutputType &type)
+{
+    PetscFunctionBeginUser;
+
+    using namespace std::placeholders;
+
+    switch (type)
+    {
+        case OutputType::Binary:
+            write = std::bind(&CartesianMesh::writeBinary, this, _1);
+            break;
+        case OutputType::VTK:
+            write = std::bind(&CartesianMesh::writeVTK, this, _1);
+            break;
+        case OutputType::HDF5:
+            write = std::bind(&CartesianMesh::writeHDF5, this, _1);
+            break;
+    }
+
+    PetscFunctionReturn(0);
+}
+
+
 PetscErrorCode CartesianMesh::createPressureMesh()
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
@@ -97,7 +130,7 @@ PetscErrorCode CartesianMesh::createPressureMesh()
         std::partial_sum(dL[3][i].begin(), dL[3][i].end(), coord[3][i].begin());
 
         auto f = [i, this] (double &a, double &b) -> double 
-                    { return a + this->bg[i] - 0.5 * b; };
+                    { return a + this->min[i] - 0.5 * b; };
 
         std::transform(coord[3][i].begin(), coord[3][i].end(), 
                 dL[3][i].begin(), coord[3][i].begin(), f);
@@ -109,8 +142,6 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 
 PetscErrorCode CartesianMesh::createVertexMesh()
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
     // initialization; note: index 4 means vertex mesh
@@ -129,17 +160,15 @@ PetscErrorCode CartesianMesh::createVertexMesh()
         // create coordinates of vertexes
         std::partial_sum(dL[3][i].begin(), dL[3][i].end(), coord[4][i].begin()+1);
         std::for_each(coord[4][i].begin(), coord[4][i].end(),
-                [i, this] (double &a) -> void { a += this->bg[i]; });
+                [i, this] (double &a) -> void { a += this->min[i]; });
     }
 
     PetscFunctionReturn(0);
 }
 
 
-PetscErrorCode CartesianMesh::createVelocityMesh(types::BCInfoHolder &bcInfo)
+PetscErrorCode CartesianMesh::createVelocityMesh()
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
     // loop through all velocity component
@@ -179,7 +208,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh(types::BCInfoHolder &bcInfo)
 
                 // if BC in this direction is periodic, we append one more 
                 // velocity point at the end
-                if (bcInfo[BCLoc(dir*2)][Field(comp)].type == BCType::PERIODIC)
+                if ((*bcInfo)[BCLoc(dir*2)][Field(comp)].type == BCType::PERIODIC)
                 {
                     n[comp][dir] += 1;
                     coord[comp][dir].push_back(coord[4][dir][n[comp][dir]]);
@@ -212,6 +241,13 @@ PetscErrorCode CartesianMesh::createInfoString()
     ss << "Cartesian Staggered Grid:" << std::endl;
 
     ss << "\tDimension: " << dim << std::endl;
+    ss << "\tDomain range: " 
+        << min[0] << " -> " << max[0] << "; "
+        << min[1] << " -> " << max[3];
+   
+    if (dim == 3)
+        ss << "; " << min[2] << " -> " << max[2];
+    ss << std::endl;
 
     ss << "\tNumber of pressure cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "): ";
     ss << n[3][0];
@@ -220,7 +256,7 @@ PetscErrorCode CartesianMesh::createInfoString()
 
     for(unsigned int comp=0; comp<dim; ++comp)
     {
-        ss << "\tNumber of " << types::fd2str[types::Field(comp)] 
+        ss << "\tNumber of " << fd2str[Field(comp)] 
             << "-velocity cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "): ";
         ss << n[comp][0];
         for(unsigned int dir=1; dir<dim; ++dir) ss << " x " << n[comp][dir];
@@ -244,9 +280,7 @@ PetscErrorCode CartesianMesh::printInfo()
 } // printInfo
 
 
-template <>
-PetscErrorCode CartesianMesh::write<types::OutputType::Binary>(
-        const std::string &file, const std::string &xml)
+PetscErrorCode CartesianMesh::writeBinary(const std::string &file)
 {
     PetscErrorCode ierr;
 
@@ -255,9 +289,9 @@ PetscErrorCode CartesianMesh::write<types::OutputType::Binary>(
 
     if (rank == 0)
     {
-        std::ofstream   streamFile(file);
+        std::ofstream   streamFile(file+".txt");
 
-        std::cout << "Writing grid to TXT file: " << file << " ... ";
+        std::cout << "Writing grid to TXT file: " << file+".txt" << " ... ";
 
         streamFile << n[3][0] << "\t" << n[3][1] << "\t"
             << ((dim==3)? std::to_string(n[3][2]) : "") << std::endl;
@@ -283,9 +317,7 @@ PetscErrorCode CartesianMesh::write<types::OutputType::Binary>(
 } // write
 
 
-template <>
-PetscErrorCode CartesianMesh::write<types::OutputType::VTK>(
-        const std::string &file, const std::string &xml)
+PetscErrorCode CartesianMesh::writeVTK(const std::string &file)
 {
     PetscFunctionBeginUser;
 
@@ -298,9 +330,9 @@ PetscErrorCode CartesianMesh::write<types::OutputType::VTK>(
     // only the master process will write file
     if (rank == 0)
     {
-        std::ofstream   fs(file);
+        std::ofstream   fs(file+".vtk");
 
-        std::cout << "Writing grid to VTK file: " << file << " ... ";
+        std::cout << "Writing grid to VTK file: " << file+".vtk" << " ... ";
 
         // vtk version
         fs << "# vtk DataFile Version 3.0" << std::endl;
@@ -347,12 +379,8 @@ PetscErrorCode CartesianMesh::write<types::OutputType::VTK>(
 }
 
 
-template <>
-PetscErrorCode CartesianMesh::write<types::OutputType::HDF5>(
-        const std::string &file, const std::string &xml)
+PetscErrorCode CartesianMesh::writeHDF5(const std::string &file)
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
 # ifndef PETSC_HAVE_HDF5
@@ -366,7 +394,8 @@ PetscErrorCode CartesianMesh::write<types::OutputType::HDF5>(
 
     if (rank == 0)
     {
-        std::cout << "Writing grid to HDF5 file: " << file << " ... ";
+        std::string     extFile = file + ".h5";
+        std::cout << "Writing grid to HDF5 file: " << extFile+".h5" << " ... ";
 
         // handle for file, dataset, and dataspace
         hid_t   fileID, groupID, dsetID, dspID;
@@ -374,7 +403,7 @@ PetscErrorCode CartesianMesh::write<types::OutputType::HDF5>(
         std::vector<hsize_t>     size(1); // for setting data space
 
         // create a HDF5 file based on the input file name
-        fileID = H5Fcreate(file.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+        fileID = H5Fcreate(extFile.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
         // loop through all fields
         for(unsigned int comp=0; comp<5; ++comp)
@@ -424,11 +453,6 @@ PetscErrorCode CartesianMesh::write<types::OutputType::HDF5>(
 
     ierr = MPI_Barrier(PETSC_COMM_WORLD); CHKERRQ(ierr);
 
-    if (xml != "") 
-    {
-        ierr = generateXDMF(xml, file); CHKERRQ(ierr);
-    }
-
     PetscFunctionReturn(0);
 # endif
 }
@@ -437,8 +461,6 @@ PetscErrorCode CartesianMesh::write<types::OutputType::HDF5>(
 PetscErrorCode CartesianMesh::generateXDMF(
         const std::string &xml, const std::string &file)
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
     PetscErrorCode  ierr;
@@ -448,9 +470,10 @@ PetscErrorCode CartesianMesh::generateXDMF(
 
     if (rank == 0)
     {
-        std::cout << "creating " << xml << " for grid file " << file << " ... ";
+        std::cout << "creating " << xml+".xmf" 
+            << " for grid file " << file << " ... ";
 
-        std::ofstream       fs(xml);
+        std::ofstream       fs(xml+".xmf");
         fs << "<?xml version=\"1.0\" ?>" << std::endl;
         fs << "<Xdmf Version=\"2.0\">" << std::endl;
         fs << "\t<Domain>" << std::endl;
@@ -490,18 +513,110 @@ PetscErrorCode CartesianMesh::generateXDMF(
 }
 
 
+PetscErrorCode CartesianMesh::initDMDA()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    ierr = createLambdaPack(); CHKERRQ(ierr);
+    ierr = createVelocityPack(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
+{
+    using namespace types;
+    using namespace std;
+
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    map<BCType, DMBoundaryType>  petscBC {{types::PERIODIC, DM_BOUNDARY_PERIODIC},
+        {types::NEUMANN, DM_BOUNDARY_GHOSTED}, {types::DIRICHLET, DM_BOUNDARY_GHOSTED}};
+
+    DMDALocalInfo   lclInfo;
+
+    switch (dim)
+    {
+        case 2:
+            ierr = DMDACreate2d(PETSC_COMM_WORLD,
+                    petscBC[(*bcInfo)[XMINUS][u].type],
+                    petscBC[(*bcInfo)[XMINUS][v].type], 
+                    DMDA_STENCIL_STAR, 
+                    n[i][0], n[i][1], PETSC_DECIDE, PETSC_DECIDE,
+                    1, 1, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
+            break;
+        case 3:
+            ierr = DMDACreate3d(PETSC_COMM_WORLD, 
+                    petscBC[(*bcInfo)[XMINUS][u].type],
+                    petscBC[(*bcInfo)[YMINUS][v].type], 
+                    petscBC[(*bcInfo)[ZMINUS][w].type], 
+                    DMDA_STENCIL_STAR, n[i][0], n[i][1], n[i][2], 
+                    PETSC_DECIDE, PETSC_DECIDE, PETSC_DECIDE, 
+                    1, 1, nullptr, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
+            break;
+    }
+
+    ierr = DMDAGetLocalInfo(da[i], &lclInfo); CHKERRQ(ierr);
+
+    bg[i].resize(3); ed[i].resize(3); m[i].resize(3);
+
+    bg[i][0] = lclInfo.xs; bg[i][1] = lclInfo.ys; bg[i][2] = lclInfo.zs;
+
+    m[i][0] = lclInfo.xm; m[i][1] = lclInfo.ym; m[i][2] = lclInfo.zm;
+
+    for(unsigned int comp=0; comp<3; ++comp) 
+        ed[i][comp] = bg[i][comp] + m[i][comp];
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode CartesianMesh::createLambdaPack()
+{
+    using namespace types;
+    using namespace std;
+
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    ierr = createSingleDMDA(3); CHKERRQ(ierr);
+
+    ierr = DMCompositeCreate(PETSC_COMM_WORLD, &lambdaPack); CHKERRQ(ierr);
+    ierr = DMCompositeAddDM(lambdaPack, da[3]); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode CartesianMesh::createVelocityPack()
+{
+    using namespace types;
+    using namespace std;
+
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    ierr = DMCompositeCreate(PETSC_COMM_WORLD, &qPack); CHKERRQ(ierr);
+
+    for(unsigned int i=0; i<dim; ++i)
+    {
+        ierr = createSingleDMDA(i); CHKERRQ(ierr);
+        ierr = DMCompositeAddDM(qPack, da[i]); CHKERRQ(ierr);
+    }
+
+    PetscFunctionReturn(0);
+}
+
+
 std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh)
 {
     os << mesh.info;
     return os;
 }
-
-
-template PetscErrorCode CartesianMesh::write<types::OutputType::Binary>(
-        const std::string &file, const std::string &xml="");
-
-template PetscErrorCode CartesianMesh::write<types::OutputType::VTK>(
-        const std::string &file, const std::string &xml="");
-
-template PetscErrorCode CartesianMesh::write<types::OutputType::HDF5>(
-        const std::string &file, const std::string &xml="");

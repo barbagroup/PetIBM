@@ -30,13 +30,14 @@ PetscReal dhRoma(PetscReal x, PetscReal h)
  *
  * \param x x-coordinate of the point at which the delta function is evaluated
  * \param y y-coordinate of the point at which the delta function is evaluated
- * \param h grid-spacing of the underlying Eulerian mesh
+ * \param hx grid-spacing of the underlying Eulerian mesh in the x-direction
+ * \param hy grid-spacing of the underlying Eulerian mesh in the y-direction
  *
  * \returns The value of the 2D discrete delta function
  */
-PetscReal delta(PetscReal x, PetscReal y, PetscReal h)
+PetscReal delta(PetscReal x, PetscReal y, PetscReal hx, PetscReal hy)
 {
-  return dhRoma(x, h) * dhRoma(y, h);
+  return dhRoma(x, hx) * dhRoma(y, hy);
 } // delta
 
 
@@ -46,13 +47,15 @@ PetscReal delta(PetscReal x, PetscReal y, PetscReal h)
  * \param x x-coordinate of the point at which the delta function is evaluated
  * \param y y-coordinate of the point at which the delta function is evaluated
  * \param z z-coordinate of the point at which the delta function is evaluated
- * \param h grid-spacing of the underlying Eulerian mesh
+ * \param hx grid-spacing of the underlying Eulerian mesh in the x-direction
+ * \param hy grid-spacing of the underlying Eulerian mesh in the y-direction
+ * \param hz grid-spacing of the underlying Eulerian mesh in the z-direction
  *
  * \returns The value of the 2D discrete delta function
  */
-PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
+PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal hx, PetscReal hy, PetscReal hz)
 {
-  return dhRoma(x, h) * dhRoma(y, h) * dhRoma(z, h);
+  return dhRoma(x, hx) * dhRoma(y, hy) * dhRoma(z, hz);
 } // delta
 
 
@@ -61,14 +64,14 @@ PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal h)
  *
  * \param target Coordinates of the target point
  * \param source Coordinates of the source point
- * \param radius Radius of the disk or sphere of influence
+ * \param maxDisp Dimensions of the domain of influence
  * \param widths Dimensions of the domain
  * \param bType Types of boundary conditions
  * \param disp The vector displacement to fill
  */
 template<PetscInt dim>
 PetscBool isInfluenced(PetscReal (&target)[dim], PetscReal (&source)[dim],
-                       PetscReal radius,
+                       PetscReal (&maxDisp)[dim],
                        PetscReal (&widths)[dim], BoundaryType (&bTypes)[dim],
                        PetscReal *disp)
 {
@@ -79,7 +82,7 @@ PetscBool isInfluenced(PetscReal (&target)[dim], PetscReal (&source)[dim],
     disp[i] = fabs(target[i] - source[i]);
     if (bTypes[i] == PERIODIC && disp[i] > widths[i]-disp[i])
       disp[i] = widths[i] - disp[i];
-    if (disp[i] >= radius)
+    if (disp[i] >= maxDisp[i])
       influenced = PETSC_FALSE;
     i++;
   }
@@ -88,10 +91,10 @@ PetscBool isInfluenced(PetscReal (&target)[dim], PetscReal (&source)[dim],
 } // isInfluenced
 
 template PetscBool isInfluenced<2>(PetscReal (&target)[2], PetscReal (&source)[2],
-                                   PetscReal radius,
+                                   PetscReal (&maxDisp)[2],
                                    PetscReal (&widths)[2], BoundaryType (&bTypes)[2],
                                    PetscReal *disp);
 template PetscBool isInfluenced<3>(PetscReal (&target)[3], PetscReal (&source)[3],
-                                   PetscReal radius,
+                                   PetscReal (&maxDisp)[3],
                                    PetscReal (&widths)[3], BoundaryType (&bTypes)[3],
                                    PetscReal *disp);

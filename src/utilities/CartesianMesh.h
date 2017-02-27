@@ -49,6 +49,8 @@ public:
     // PETSc stuffs
     std::vector<DM>         da = std::vector<DM>(5);
 
+    types::IntVec1D         nProc= types::IntVec1D(3);
+
     types::IntVec2D         bg = types::IntVec2D(5);
 
     types::IntVec2D         ed = types::IntVec2D(5);
@@ -59,15 +61,15 @@ public:
 
     // cunstructors
     CartesianMesh();
-    CartesianMesh(const std::string &file, types::BCInfoHolder &bcInfo, 
-            const types::OutputType &type=types::VTK);
-    CartesianMesh(const YAML::Node &node, types::BCInfoHolder &bcInfo, 
-            const types::OutputType &type=types::VTK);
+    CartesianMesh(const MPI_Comm &world, const std::string &file, 
+            types::BCInfoHolder &bcInfo, const types::OutputType &type=types::VTK);
+    CartesianMesh(const MPI_Comm &world, const YAML::Node &node, 
+            types::BCInfoHolder &bcInfo, const types::OutputType &type=types::VTK);
 
     ~CartesianMesh();
 
     // real initialization function
-    PetscErrorCode init(
+    PetscErrorCode init(const MPI_Comm &world,
             const YAML::Node &meshNode, types::BCInfoHolder &bcInfo, 
             const types::OutputType &type=types::VTK);
 
@@ -88,12 +90,18 @@ public:
 
 protected:
 
+    std::shared_ptr<const MPI_Comm>         comm;
+
+    PetscMPIInt                             mpiSize,
+                                            mpiRank;
+
     std::shared_ptr<types::BCInfoHolder>    bcInfo;
 
     PetscErrorCode createVertexMesh();
     PetscErrorCode createPressureMesh();
     PetscErrorCode createVelocityMesh();
     PetscErrorCode createInfoString();
+    PetscErrorCode addLocalInfoString(std::stringstream &ss);
 
     PetscErrorCode writeBinary(const std::string &file);
     PetscErrorCode writeVTK(const std::string &file);

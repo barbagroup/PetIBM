@@ -80,10 +80,6 @@ PetscErrorCode CartesianMesh::init(
     bcInfo = std::shared_ptr<BCInfoHolder>(&bc, [](BCInfoHolder*){});
 
 
-    // start initialization
-    ierr = PetscPrintf(*comm, "Creating a CartesianMesh object ... ");
-    CHKERRQ(ierr);
-
     // index 3 represent pressure mesh; min & max always represent pressure mesh
     ierr = parser::parseMesh(meshNode, dim, min, max, n[3], dL[3]); CHKERRQ(ierr);
 
@@ -106,9 +102,6 @@ PetscErrorCode CartesianMesh::init(
     // all processes should be syncrinized
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
 
-
-    // end initialization
-    ierr = PetscPrintf(*comm, "done.\n"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -218,7 +211,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
                 n[comp][dir] = n[3][dir] - 1;
 
                 // coordinates will match that of the vertex
-                coord[comp][dir] = types::RealVec1D(
+                coord[comp][dir] = RealVec1D(
                         coord[4][dir].begin()+1, coord[4][dir].end()-1);
 
                 // cell size will be a half of the sum of adjacent pressure cell
@@ -268,36 +261,44 @@ PetscErrorCode CartesianMesh::createInfoString()
 
     std::stringstream       ss;
 
+
+    ss << std::string(80, '=') << std::endl;
     ss << "Cartesian Staggered Grid:" << std::endl;
+    ss << std::string(80, '=') << std::endl;
+
 
     ss << "\tDimension: " << dim << std::endl;
-    ss << "\tDomain range: " 
-        << min[0] << " -> " << max[0] << "; "
-        << min[1] << " -> " << max[1];
-   
-    if (dim == 3)
-        ss << "; " << min[2] << " -> " << max[2];
     ss << std::endl;
 
-    ss << "\tNumber of pressure cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "): ";
+    ss << "\tDomain Range: " 
+        << "[" << min[0] << ", " << max[0] << "]; "
+        << "[" << min[1] << ", " << max[1] << "]";
+    if (dim == 3) ss << "; [" << min[2] << ", " << max[2] << "]";
+    ss << std::endl;
+    ss << std::endl;
+
+    ss << "\tNumber of Cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "):\n";
+    ss << "\t\tPressure Grid: ";
     ss << n[3][0];
     for(unsigned int dir=1; dir<dim; ++dir) ss << " x " << n[3][dir];
     ss << std::endl;
 
     for(unsigned int comp=0; comp<dim; ++comp)
     {
-        ss << "\tNumber of " << fd2str[Field(comp)] 
-            << "-velocity cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "): ";
+        ss << "\t\t" << fd2str[Field(comp)] 
+            << "-Velocity Grid: ";
         ss << n[comp][0];
         for(unsigned int dir=1; dir<dim; ++dir) ss << " x " << n[comp][dir];
         ss << std::endl;
     }
+    ss << std::endl;
 
     ss << "\tGrid Decomposition:" << std::endl;
     ss << "\t\tMPI Processes: " 
         << nProc[0] << " x " << nProc[1] << " x " << nProc[2] << std::endl;
 
     ierr = addLocalInfoString(ss); CHKERRQ(ierr);
+    ss << std::endl;
 
     info = ss.str();
 
@@ -333,7 +334,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
     for(PetscMPIInt i=0; i<mpiSize; ++i)
     {
         ss << pre << "Rank " << i << ": " << std::endl;
-        ss << pre << "\tPressure grid: ";
+        ss << pre << "\tPressure Grid: ";
         ss << "[" << start[3][i*3] << ", " << end[3][i*3] << "), ";
         ss << "[" << start[3][i*3+1] << ", " << end[3][i*3+1] << "), ";
         ss << "[" << start[3][i*3+2] << ", " << end[3][i*3+2] << ") ";
@@ -341,7 +342,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 
         for(unsigned int comp=0; comp<dim; ++comp)
         {
-            ss << pre << "\t" << fd2str[Field(comp)] << "-Velocity grid: ";
+            ss << pre << "\t" << fd2str[Field(comp)] << "-Velocity Grid: ";
             ss << "[" << start[comp][i*3] << ", " << end[comp][i*3] << "), ";
             ss << "[" << start[comp][i*3+1] << ", " << end[comp][i*3+1] << "), ";
             ss << "[" << start[comp][i*3+2] << ", " << end[comp][i*3+2] << ") ";
@@ -605,15 +606,14 @@ PetscErrorCode CartesianMesh::initDMDA()
 
 PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 {
-    using namespace types;
     using namespace std;
 
     PetscFunctionBeginUser;
 
     PetscErrorCode  ierr;
 
-    map<BCType, DMBoundaryType>  petscBC {{types::PERIODIC, DM_BOUNDARY_PERIODIC},
-        {types::NEUMANN, DM_BOUNDARY_GHOSTED}, {types::DIRICHLET, DM_BOUNDARY_GHOSTED}};
+    map<BCType, DMBoundaryType>  petscBC {{PERIODIC, DM_BOUNDARY_PERIODIC},
+        {NEUMANN, DM_BOUNDARY_GHOSTED}, {DIRICHLET, DM_BOUNDARY_GHOSTED}};
 
     DMDALocalInfo   lclInfo;
 
@@ -655,7 +655,6 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 
 PetscErrorCode CartesianMesh::createLambdaPack()
 {
-    using namespace types;
     using namespace std;
 
     PetscFunctionBeginUser;
@@ -673,7 +672,6 @@ PetscErrorCode CartesianMesh::createLambdaPack()
 
 PetscErrorCode CartesianMesh::createVelocityPack()
 {
-    using namespace types;
     using namespace std;
 
     PetscFunctionBeginUser;

@@ -72,21 +72,30 @@ public:
      * an old flowDescription.yaml or a big config YAML with flow info held 
      * under the key "flowDescription" is accepted.
      *
-     * \param YAMLfile the YAML file
+     * \param world MPI communicator.
+     * \param YAMLfile the YAML file.
      */
-    FlowDescription(const std::string &YAMLfile);
+    FlowDescription(const MPI_Comm &world, const std::string &YAMLfile);
 
     /** \brief constructor for using YAML node.
      *
      * \ details Either a flowDescription node or a YAML node that has a key 
      * `flowDescription` is accepted.
      *
-     * \param node a YAML node
+     * \param world MPI communicator.
+     * \param node a YAML node.
      */
-    FlowDescription(const YAML::Node &node);
+    FlowDescription(const MPI_Comm &world, const YAML::Node &node);
 
     /** \brief destructor. */
     ~FlowDescription();
+
+    /** \brief initialization.
+     *
+     * \param world MPI communicator.
+     * \param node a YAML node
+     */
+    PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
 
     /** \brief print information using PETSc printf.
      *
@@ -98,6 +107,11 @@ public:
     PetscErrorCode printInfo();
 
 protected:
+
+    std::shared_ptr<const MPI_Comm>         comm;
+
+    PetscMPIInt                             mpiSize,
+                                            mpiRank;
 
     /** \brief check if users' settings of periodicity are correct.
      *
@@ -121,8 +135,8 @@ protected:
  *
  * \details The content sent to output stream will be the info string.
  *
- * \param os stdout or other output streams
- * \param flow a FlowDescription instance
+ * \param os stdout or other output streams.
+ * \param flow a FlowDescription instance.
  *
  * \return output stream
  */

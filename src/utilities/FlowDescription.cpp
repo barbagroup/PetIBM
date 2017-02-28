@@ -14,40 +14,60 @@
 # include "parser.h"
 
 
+using namespace types;
+
+
 /** \copydoc FlowDescription::FlowDescription() */
 FlowDescription::FlowDescription() { }
 
 
-/** \copydoc FlowDescription::FlowDescription(const std::string &) */
-FlowDescription::FlowDescription(const std::string &YAMLfile)
+/** \copydoc FlowDescription::FlowDescription(const MPI_Comm &, const std::string &) */
+FlowDescription::FlowDescription(const MPI_Comm &world, const std::string &YAMLfile)
 {
     YAML::Node      node = YAML::LoadFile(YAMLfile);
 
-    // see if the key "flowDescription" is used in the YAML file
-    if (node["flowDescription"].IsDefined())
-        // not sure why GCC can't understand node["flowDescription"] is a node
-        FlowDescription(YAML::Node(node["flowDescription"]));
-    else // pass the whole node
-        FlowDescription(node);
+    FlowDescription(world, node);
 }
 
 
-/** \copydoc FlowDescription::FlowDescription(const YAML::Node &) */
-FlowDescription::FlowDescription(const YAML::Node &node)
+/** \copydoc FlowDescription::FlowDescription(const MPI_Comm &, const YAML::Node &) */
+FlowDescription::FlowDescription(const MPI_Comm &world, const YAML::Node &node)
 {
-    PetscPrintf(PETSC_COMM_WORLD, "Creating a FlowDescription object ... ");
-
     if (node["flowDescription"].IsDefined())
-        parser::parseFlowDescription(node["flowDescription"], 
-                dim, nu, customIC, IC, pertb, nBCs, BCInfo);
+        init(world, node["flowDescription"]);
     else
-        parser::parseFlowDescription(node, 
-                dim, nu, customIC, IC, pertb, nBCs, BCInfo);
+        init(world, node);
+}
 
-    checkPeriodicity();
-    createInfoString();
 
-    PetscPrintf(PETSC_COMM_WORLD, "done.\n");
+/** \copydoc FlowDescription::init(const MPI_Comm &, const YAML::Node &) */
+PetscErrorCode FlowDescription::init(const MPI_Comm &world, const YAML::Node &node)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    // store the address of the communicator
+    // note: this is a bad practice; shared_ptr is not for stack variables!!
+    comm = std::shared_ptr<const MPI_Comm>(&world, [](const MPI_Comm*){});
+
+    // set rank and size
+    ierr = MPI_Comm_size(*comm, &mpiSize); CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(*comm, &mpiRank); CHKERRQ(ierr);
+
+    // parse YAML node
+    parser::parseFlowDescription(node, 
+            dim, nu, customIC, IC, pertb, nBCs, BCInfo);
+
+    // check if the setting of periodic BCs is correct
+    ierr = checkPeriodicity(); CHKERRQ(ierr);
+
+    // create a string to hold information
+    ierr = createInfoString(); CHKERRQ(ierr);
+
+    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
 }
 
 
@@ -58,8 +78,6 @@ FlowDescription::~FlowDescription() {}
 /** \copydoc FlowDescription::checkPeriodicity() */
 PetscErrorCode FlowDescription::checkPeriodicity()
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
     // if a component at one boundary is periodic, then other components should
@@ -83,16 +101,16 @@ PetscErrorCode FlowDescription::checkPeriodicity()
     for(i=BCLoc::XMINUS, j=BCLoc::XPLUS; i<nBCs; i=BCLoc(int(i)+2), j=BCLoc(int(j)+2))
     {
         if ((BCInfo[i][u].type == BCType::PERIODIC) &&
-                (BCInfo[j][u].type != types::BCType::PERIODIC))
+                (BCInfo[j][u].type != BCType::PERIODIC))
             SETERRQ2(PETSC_COMM_WORLD, 60, "%s is a periodic boundary, while "
                     "its counterpart %s is not !!", 
-                    types::bl2str[i].c_str(), types::bl2str[j].c_str());
+                    bl2str[i].c_str(), bl2str[j].c_str());
 
         if ((BCInfo[j][u].type == BCType::PERIODIC) &&
-                (BCInfo[i][u].type != types::BCType::PERIODIC))
+                (BCInfo[i][u].type != BCType::PERIODIC))
             SETERRQ2(PETSC_COMM_WORLD, 60, "%s is a periodic boundary, while "
                     "its counterpart %s is not !!", 
-                    types::bl2str[j].c_str(), types::bl2str[i].c_str());
+                    bl2str[j].c_str(), bl2str[i].c_str());
     }
 
     PetscFunctionReturn(0);
@@ -102,22 +120,32 @@ PetscErrorCode FlowDescription::checkPeriodicity()
 /** \copydoc FlowDescription::createInfoString() */
 PetscErrorCode FlowDescription::createInfoString()
 {
-    using namespace types;
-
     PetscFunctionBeginUser;
 
     std::stringstream       ss;
 
+
+    ss << std::string(80, '=') << std::endl;
     ss << "Flow Descriptions: " << std::endl;
+    ss << std::string(80, '=') << std::endl;
+
     ss << "\tDimension: " << dim << std::endl;
+    ss << std::endl;
+
     ss << "\tViscosity: " << nu << std::endl;
+    ss << std::endl;
+
     ss << "\tCustomized IC: " << (customIC? "true" : "false") << std::endl;
     ss << "\tIC: [ ";
     for(auto it: IC) ss << it << " ";
     ss << "]" << std::endl;
+    ss << std::endl;
+
     ss << "\tPerturbation:" << std::endl;
     ss << "\t\tFrequency: " << pertb.freq << std::endl;
     ss << "\t\tAmplitude: " << pertb.amp << std::endl;
+    ss << std::endl;
+
     ss << "\tBoundary conditions:" << std::endl;
     for(auto loc: BCInfo)
     {
@@ -127,6 +155,7 @@ PetscErrorCode FlowDescription::createInfoString()
                 << bt2str[comp.second.type] << ", "
                 << comp.second.value << " ]" << std::endl;
     }
+    ss << std::endl;
 
     info = ss.str();
 
@@ -141,7 +170,7 @@ PetscErrorCode FlowDescription::printInfo()
 
     PetscErrorCode  ierr;
 
-    ierr = PetscPrintf(PETSC_COMM_WORLD, info.c_str()); CHKERRQ(ierr);
+    ierr = PetscPrintf(*comm, info.c_str()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

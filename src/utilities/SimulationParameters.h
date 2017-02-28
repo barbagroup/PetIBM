@@ -1,71 +1,150 @@
 /***************************************************************************//**
  * \file SimulationParameters.h
  * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \brief Definition of the class `SimulationParameters`.
  */
 
 
-#if !defined(SIMULATION_PARAMETERS_H)
-#define SIMULATION_PARAMETERS_H
+# pragma once
 
-#include "types.h"
+// here goes C++ STL
+# include <iostream>
+# include <string>
+# include <vector>
+# include <experimental/filesystem>
 
-#include <iostream>
-#include <string>
-#include <vector>
+// here goes PETSc headers
+# include <petscsys.h>
 
-#include <petscsys.h>
+// here goes YAML header
+# include <yaml-cpp/yaml.h>
+
+// here goes headers from our PetIBM
+# include "types.h"
 
 
 /**
  * \class SimulationParameters
- * \brief Stores various parameters used in the simulation
+ * \brief Stores various parameters used in the simulation.
  */
 class SimulationParameters
 {
 public:
-  /**
-   * \class TimeScheme
-   * \brief Stores info about the numerical scheme to use.
-   */
-  class TimeIntegration
-  {
-  public:
-    TimeScheme scheme;                   ///< type of time-stepping scheme
-    std::vector<PetscReal> coefficients; ///< coefficients of integration
-  }; // TimeIntegration
 
-  std::string directory; ///< directory of the simulation
+    /** \brief directory of the simulation. */
+    stdfs::path                 caseDir;
 
-  PetscReal dt; ///< time-increment
+
+    /** \brief output settings. */
+    types::OutputInfo       output;
+
+
+    /** \brief info of velocity solver. */
+    types::LinSolverInfo    vSolver;
+
+    /** \brief info of poisson solver. */
+    types::LinSolverInfo    pSolver;
+
+
+
+    /** \brief info of numerical schemes. */
+    types::SchemeInfo       schemes;
+
+
+    /** \brief time increment. */
+    types::SteppingInfo     step;
+
+
+    /** \brief a string of information for this object. */
+    std::string             info;
   
-  PetscInt startStep, ///< initial time-step 
-           nt,        ///< number of time steps
-           nsave,     ///< data-saving interval
-           nrestart;  ///< data-saving interval for the convective terms
-  
-  std::string outputFormat;  ///< output format to use
-  PetscBool outputFlux,     ///< boolean to output the flux components
-            outputVelocity; ///< boolean to output the velocity components
 
-  IBMethod ibm; ///< type of system to be solved
-  
-  TimeIntegration convection, ///< time-scheme for the convection term
-                  diffusion;  ///< time-scheme for the diffusion term
+    /** \brief Default constructor. */
+    SimulationParameters();
 
-  ExecuteType vSolveType, ///< hardware to use for the velocity solver
-              pSolveType; ///< hardware to use for the Poisson solver
+    /**
+     * \brief constructor with given config YAML file.
+     *
+     * \param world MPI communicator.
+     * \param config YAML config file.
+     */
+    SimulationParameters(const MPI_Comm &world, const std::string &config);
 
-  // constructors
-  SimulationParameters();
-  SimulationParameters(std::string dir, std::string filePath);
-  // destructor
-  ~SimulationParameters();
-  // parse input file and store simulation parameters
-  void initialize(std::string filePath);
-  // print simulation parameters
-  PetscErrorCode printInfo();
+    /**
+     * \brief constructor with given YAML node.
+     *
+     * \param world MPI communicator.
+     * \param config YAML config node.
+     * \param dir the path to the case directory; if empty, then there must be 
+     *            a key "caseDir" in the YAML Node and at the same level as the
+     *            key "simulationParameters".
+     */
+    SimulationParameters(const MPI_Comm &world, 
+            const YAML::Node &config, const std::string &dir="");
+
+    /** \brief destructor */
+    ~SimulationParameters();
+
+
+    /**
+     * \brief initialization of the SimulationParameter object
+     *
+     * \param world MPI communicator.
+     * \param config YAML config node.
+     * \param dir the path to the case directory.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode init(const MPI_Comm &world, 
+            const YAML::Node &config, const std::string &dir="");
+
+
+    /**
+     * \brief print information using only the master process.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode printInfo();
+
+protected:
+
+    std::shared_ptr<const MPI_Comm>         comm;
+
+    PetscMPIInt                             mpiSize,
+                                            mpiRank;
+
+    /**
+     * \brief create a std::string holding the information for output.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode createInfoString();
+
+    /**
+     * \brief check if the setting use HDF5 and if we were compiled with HDF5.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode checkHDF5();
+
+    /**
+     * \brief check if the setting use GPU and if we were compiled with AmgX.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode checkAmgX();
 
 }; // SimulationParameters
 
-#endif
+
+/**
+ * \brief overloading of output stream operator `<<`.
+ *
+ * \param os the output stream.
+ * \param param a SimulationParameters onject.
+ *
+ * \return 
+ */
+std::ostream &operator<<(std::ostream &os, const SimulationParameters &param);

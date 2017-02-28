@@ -33,6 +33,23 @@ namespace parser
     PetscErrorCode parseYAMLConfigFile(
             const std::string &dir, YAML::Node &node);
 
+    /**
+     * \brief parse YAML node to get information of SimulationParameters
+     *
+     * \param param the YAML node.
+     * \param output a struct holding output format settings.
+     * \param velocity a struct holding velocity solver settings.
+     * \param poisson a struct holding velocity solver settings.
+     * \param methods a struct holding numerical schemes.
+     * \param stepping a struct holding information of time stepping.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode parseSimulationParameters(const YAML::Node &param,
+            types::OutputInfo  &output, types::LinSolverInfo &velocity, 
+            types::LinSolverInfo &poisson, types::SchemeInfo  &methods, 
+            types::SteppingInfo &stepping);
+
     /** \brief parse a YAML node and obtained info for class `FlowDescription`.
      *
      * \param flowNode a YAML node.
@@ -216,5 +233,37 @@ namespace YAML
     {
         static Node encode(const PetscBool &b);
         static bool decode(const Node &node, PetscBool &b);
+    };
+
+    /** \brief converter for `types::OutputInfo` */
+    template<>
+    struct convert<types::OutputInfo>
+    {
+        static Node encode(const types::OutputInfo &output);
+        static bool decode(const Node &node, types::OutputInfo &output);
+    };
+
+    /** \brief converter for `types::LinSolverInfo` */
+    template<>
+    struct convert<types::LinSolverInfo>
+    {
+        static Node encode(const types::LinSolverInfo &solver);
+        static bool decode(const Node &node, types::LinSolverInfo &solver);
+    };
+
+    /** \brief converter for `types::SchemeInfo` */
+    template<>
+    struct convert<types::SchemeInfo>
+    {
+        static Node encode(const types::SchemeInfo &scheme);
+        static bool decode(const Node &node, types::SchemeInfo &scheme);
+    };
+
+    /** \brief converter for `types::SteppingInfo` */
+    template<>
+    struct convert<types::SteppingInfo>
+    {
+        static Node encode(const types::SteppingInfo &stepping);
+        static bool decode(const Node &node, types::SteppingInfo &stepping);
     };
 }

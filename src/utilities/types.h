@@ -12,10 +12,14 @@
 # include <string>
 # include <vector>
 # include <map>
+# include <experimental/filesystem>
 
 // here goes PETSc
 # include <petscsys.h>
 
+
+/** \brief shortcut of namespace std::experimental::filesystem */
+namespace stdfs = std::experimental::filesystem;
 
 /** \brief frequently used types are defined here */
 namespace types
@@ -155,6 +159,43 @@ namespace types
     {
         PetscReal   freq = 0.;  ///< frequency
         PetscReal   amp = 0.;  ///< amplitude
+    };
+
+
+    /** \brief a struct holding information of output */
+    struct OutputInfo
+    {
+        OutputType      format = OutputType::Binary;
+        PetscBool       outputFlux = PETSC_TRUE;
+        PetscBool       outputVelocity = PETSC_FALSE;
+    };
+
+
+    /** \brief a struct holding information of linear solvers */
+    struct LinSolverInfo
+    {
+        ExecuteType         type = ExecuteType::CPU;
+        stdfs::path         config = "./solversPetscOptions.info";
+    };
+
+
+    /** \brief a struct holding information of numerical schemes */
+    struct SchemeInfo
+    {
+        IBMethod        ibm = IBMethod::NAVIER_STOKES;
+        TimeScheme      convection = TimeScheme::ADAMS_BASHFORTH_2;
+        TimeScheme      diffusion = TimeScheme::CRANK_NICOLSON;
+    };
+
+
+    /** \brief a struct holding information of time-stepping */
+    struct SteppingInfo
+    {
+        PetscReal       dt;
+        PetscInt        nStart;
+        PetscInt        nTotal;
+        PetscInt        nSave;
+        PetscInt        nRestart;
     };
 }
 

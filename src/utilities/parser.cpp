@@ -5,9 +5,13 @@
  * Distributed under terms of the MIT license.
  */
 
+
 // here goes our own headers
 # include "parser.h"
 # include "misc.h"
+
+
+using namespace types;
 
 
 /** \copydoc parser::parseYAMLConfigFile */
@@ -15,13 +19,12 @@ PetscErrorCode parser::parseYAMLConfigFile(
         const std::string &dir, YAML::Node &node)
 {
     PetscFunctionBeginUser;
-    namespace fs = std::experimental::filesystem;
 
     PetscErrorCode  ierr;
 
-    fs::path p = fs::system_complete(dir);
+    stdfs::path p = stdfs::system_complete(dir);
 
-    if (! fs::exists(p.append("config.yaml")))
+    if (! stdfs::exists(p.append("config.yaml")))
         SETERRQ1(PETSC_COMM_WORLD, 65, 
                 "Can not find config.yaml in %s !!", p.parent_path().c_str());
 
@@ -34,11 +37,29 @@ PetscErrorCode parser::parseYAMLConfigFile(
 }
 
 
+/** \copydoc parser::parseSimulationParameters */
+PetscErrorCode parser::parseSimulationParameters(const YAML::Node &param,
+        OutputInfo  &output, LinSolverInfo &velocity, LinSolverInfo &poisson,
+        SchemeInfo  &methods, SteppingInfo &stepping)
+{
+    PetscFunctionBeginUser;
+
+    output = param.as<OutputInfo>();
+    velocity = param.as<LinSolverInfo>();
+    poisson = param.as<LinSolverInfo>();
+    methods = param.as<SchemeInfo>();
+    stepping = param.as<SteppingInfo>();
+
+    PetscFunctionReturn(0);
+}
+
+
+
 /** \copydoc parser::parseFlowDescription */
 PetscErrorCode parser::parseFlowDescription(
         const YAML::Node &flowNode, PetscInt &dim, PetscReal &nu, 
-        PetscBool &customIC, types::RealVec1D &IC, types::Perturbation &pertb, 
-        PetscInt &nBC, types::BCInfoHolder &BCInfo)
+        PetscBool &customIC, RealVec1D &IC, Perturbation &pertb, 
+        PetscInt &nBC, BCInfoHolder &BCInfo)
 {
     PetscFunctionBeginUser;
 
@@ -60,10 +81,10 @@ PetscErrorCode parser::parseFlowDescription(
 
     // perturbation
     pertb = flowNode["perturbation"].as<
-        types::Perturbation>(types::Perturbation());
+        Perturbation>(Perturbation());
 
     // boundary conditions
-    BCInfo = flowNode["boundaryConditions"].as<types::BCInfoHolder>();
+    BCInfo = flowNode["boundaryConditions"].as<BCInfoHolder>();
 
     // number of bcs
     nBC = BCInfo.size();
@@ -80,8 +101,8 @@ PetscErrorCode parser::parseFlowDescription(
 
 /** \copydoc parser::parseMesh */
 PetscErrorCode parser::parseMesh(
-        const YAML::Node &meshNode, PetscInt &dim, types::RealVec1D &bg, 
-        types::RealVec1D &ed, types::IntVec1D &nTotal, types::RealVec2D &dL)
+        const YAML::Node &meshNode, PetscInt &dim, RealVec1D &bg, 
+        RealVec1D &ed, IntVec1D &nTotal, RealVec2D &dL)
 {
     using namespace types;
 
@@ -125,7 +146,7 @@ PetscErrorCode parser::parseMesh(
 /** \copydoc parser::parseOneAxis */
 PetscErrorCode parser::parseOneAxis(
         const YAML::Node &axis, PetscInt &dir, PetscReal &bg, 
-        PetscReal &ed, PetscInt &nTotal, types::RealVec1D &dL)
+        PetscReal &ed, PetscInt &nTotal, RealVec1D &dL)
 {
     PetscFunctionBeginUser;
 
@@ -134,7 +155,7 @@ PetscErrorCode parser::parseOneAxis(
     // a map to transform a string to int
 
     // get the direction
-    dir = PetscInt(axis["direction"].as<types::Dir>());
+    dir = PetscInt(axis["direction"].as<Dir>());
 
     // get the far left boundary
     bg = axis["start"].as<PetscReal>();
@@ -149,7 +170,7 @@ PetscErrorCode parser::parseOneAxis(
 /** \copydoc parser::parseSubDomains */
 PetscErrorCode parser::parseSubDomains(
         const YAML::Node &subs, const PetscReal bg,
-        PetscInt &nTotal, PetscReal &ed, types::RealVec1D &dL)
+        PetscInt &nTotal, PetscReal &ed, RealVec1D &dL)
 {
     PetscFunctionBeginUser;
 
@@ -162,12 +183,12 @@ PetscErrorCode parser::parseSubDomains(
     ed = bg;
 
     // initialize dL
-    dL = types::RealVec1D();
+    dL = RealVec1D();
 
     // loop through all subdomains
     for(auto sub: subs)
     {
-        types::RealVec1D   dLSub;  // cell sizes of the subdomains
+        RealVec1D   dLSub;  // cell sizes of the subdomains
         PetscInt    nSub;  // number of the cells of the subdomains
 
         // the 1st ed is passed by value, while the 2nd one is by reference
@@ -187,7 +208,7 @@ PetscErrorCode parser::parseSubDomains(
 /** \copydoc parser::parseOneSubDomain */
 PetscErrorCode parser::parseOneSubDomain(
         const YAML::Node &sub, const PetscReal bg,
-        PetscInt &n, PetscReal &ed, types::RealVec1D &dL)
+        PetscInt &n, PetscReal &ed, RealVec1D &dL)
 {
     PetscFunctionBeginUser;
 
@@ -202,7 +223,7 @@ PetscErrorCode parser::parseOneSubDomain(
 
     // obtain the cell sizes
     if (std::abs(r - 1.0) <= 1e-12)
-        dL = types::RealVec1D(n, (ed - bg) / n);  // uniform grid
+        dL = RealVec1D(n, (ed - bg) / n);  // uniform grid
     else
         misc::stretchGrid(bg, ed, n, r, dL);  // stretch grid
 
@@ -218,151 +239,151 @@ PetscErrorCode parser::parseOneSubDomain(
 namespace YAML
 {
     // for Dir
-    Node convert<types::Dir>::encode(const types::Dir &dir)
+    Node convert<Dir>::encode(const Dir &dir)
     {
         Node node;
-        node = types::dir2str[dir];
+        node = dir2str[dir];
         return node;
     }
 
-    bool convert<types::Dir>::decode(const Node &node, types::Dir &dir)
+    bool convert<Dir>::decode(const Node &node, Dir &dir)
     {
         if (! node.IsDefined()) return false;
 
-        dir = types::str2dir[node.as<std::string>()];
+        dir = str2dir[node.as<std::string>()];
         return true;
     }
 
     // for Field
-    Node convert<types::Field>::encode(const types::Field &vc)
+    Node convert<Field>::encode(const Field &vc)
     {
         Node node;
-        node = types::fd2str[vc];
+        node = fd2str[vc];
         return node;
     }
 
-    bool convert<types::Field>::decode(const Node &node, types::Field &vc)
+    bool convert<Field>::decode(const Node &node, Field &vc)
     {
         if (! node.IsDefined()) return false;
 
-        vc = types::str2fd[node.as<std::string>()];
+        vc = str2fd[node.as<std::string>()];
         return true;
     }
 
     // for BCType
-    Node convert<types::BCType>::encode(const types::BCType &bc)
+    Node convert<BCType>::encode(const BCType &bc)
     {
         Node node;
-        node = types::bt2str[bc];
+        node = bt2str[bc];
         return node;
     }
 
-    bool convert<types::BCType>::decode(const Node &node, types::BCType &bc)
+    bool convert<BCType>::decode(const Node &node, BCType &bc)
     {
         if (! node.IsDefined()) return false;
-        bc = types::str2bt[node.as<std::string>()];
+        bc = str2bt[node.as<std::string>()];
         return true;
     }
 
     // for BCLoc
-    Node convert<types::BCLoc>::encode(const types::BCLoc &loc)
+    Node convert<BCLoc>::encode(const BCLoc &loc)
     {
         Node node;
-        node = types::bl2str[loc];
+        node = bl2str[loc];
         return node;
     }
 
-    bool convert<types::BCLoc>::decode(const Node &node, types::BCLoc &loc)
+    bool convert<BCLoc>::decode(const Node &node, BCLoc &loc)
     {
         if (! node.IsDefined()) return false;
 
-        loc = types::str2bl[node.as<std::string>()];
+        loc = str2bl[node.as<std::string>()];
         return true;
     }
 
     // for TimeScheme
-    Node convert<types::TimeScheme>::encode(const types::TimeScheme &ts)
+    Node convert<TimeScheme>::encode(const TimeScheme &ts)
     {
         Node node;
-        node = types::ts2str[ts];
+        node = ts2str[ts];
         return node;
     }
 
-    bool convert<types::TimeScheme>::decode(const Node &node, types::TimeScheme &ts)
+    bool convert<TimeScheme>::decode(const Node &node, TimeScheme &ts)
     {
         if (! node.IsDefined()) return false;
-        ts = types::str2ts[node.as<std::string>()];
+        ts = str2ts[node.as<std::string>()];
         return true;
     }
 
     // for IBMethod
-    Node convert<types::IBMethod>::encode(const types::IBMethod &ibm)
+    Node convert<IBMethod>::encode(const IBMethod &ibm)
     {
         Node node;
-        node = types::ibm2str[ibm];
+        node = ibm2str[ibm];
         return node;
     }
 
-    bool convert<types::IBMethod>::decode(const Node &node, types::IBMethod &ibm)
+    bool convert<IBMethod>::decode(const Node &node, IBMethod &ibm)
     {
         if (! node.IsDefined()) return false;
 
-        ibm = types::str2ibm[node.as<std::string>()];
+        ibm = str2ibm[node.as<std::string>()];
         return true;
     }
 
     // for StaggeredMode
-    Node convert<types::StaggeredMode>::encode(const types::StaggeredMode &sm)
+    Node convert<StaggeredMode>::encode(const StaggeredMode &sm)
     {
         Node node;
-        node = types::sm2str[sm];
+        node = sm2str[sm];
         return node;
     }
 
-    bool convert<types::StaggeredMode>::decode(const Node &node, types::StaggeredMode &sm)
+    bool convert<StaggeredMode>::decode(const Node &node, StaggeredMode &sm)
     {
         if (! node.IsDefined()) return false;
 
-        sm = types::str2sm[node.as<std::string>()];
+        sm = str2sm[node.as<std::string>()];
         return true;
     }
 
     // for ExecutiveType
-    Node convert<types::ExecuteType>::encode(const types::ExecuteType &et)
+    Node convert<ExecuteType>::encode(const ExecuteType &et)
     {
         Node node;
-        node = types::et2str[et];
+        node = et2str[et];
         return node;
     }
 
-    bool convert<types::ExecuteType>::decode(const Node &node, types::ExecuteType &et)
+    bool convert<ExecuteType>::decode(const Node &node, ExecuteType &et)
     {
         if (! node.IsDefined()) return false;
         
-        et = types::str2et[node.as<std::string>()];
+        et = str2et[node.as<std::string>()];
         return true;
     }
 
     // for BCTypeValuePair
-    Node convert<types::BCTypeValuePair>::encode(const types::BCTypeValuePair &bcInfo)
+    Node convert<BCTypeValuePair>::encode(const BCTypeValuePair &bcInfo)
     {
         Emitter     out;
         out << Flow;
-        out << BeginSeq << types::bt2str[bcInfo.type] << bcInfo.value << EndSeq;
+        out << BeginSeq << bt2str[bcInfo.type] << bcInfo.value << EndSeq;
         return Load(out.c_str());
     }
 
-    bool convert<types::BCTypeValuePair>::decode(const Node &node, types::BCTypeValuePair &bcInfo)
+    bool convert<BCTypeValuePair>::decode(const Node &node, BCTypeValuePair &bcInfo)
     {
         if((! node[0].IsDefined()) || (! node[1].IsDefined())) return false;
 
-        bcInfo.type = node[0].as<types::BCType>();
+        bcInfo.type = node[0].as<BCType>();
         bcInfo.value = node[1].as<PetscReal>();
         return true;
     }
 
     // for BCInfoHolder
-    Node convert<types::BCInfoHolder>::encode(const types::BCInfoHolder &bc)
+    Node convert<BCInfoHolder>::encode(const BCInfoHolder &bc)
     {
         Node    node(NodeType::Sequence);
         int     counter = 0;
@@ -371,13 +392,13 @@ namespace YAML
             Node childNode(NodeType::Map);
             childNode["location"] = loc.first;
             for(auto comp: loc.second)
-                childNode[types::fd2str[comp.first]] = comp.second;
+                childNode[fd2str[comp.first]] = comp.second;
             node.push_back(childNode);
         }
         return node;
     }
 
-    bool convert<types::BCInfoHolder>::decode(const Node &node, types::BCInfoHolder &bc)
+    bool convert<BCInfoHolder>::decode(const Node &node, BCInfoHolder &bc)
     {
         if (! node.IsDefined()) return false;
 
@@ -385,14 +406,14 @@ namespace YAML
             for(auto comp: loc)
                 if (comp.first.as<std::string>() != "location")
                     bc
-                        [loc["location"].as<types::BCLoc>()]
-                        [comp.first.as<types::Field>()]
-                            = comp.second.as<types::BCTypeValuePair>();
+                        [loc["location"].as<BCLoc>()]
+                        [comp.first.as<Field>()]
+                            = comp.second.as<BCTypeValuePair>();
         return true;
     }
 
     // for Perturbation
-    Node convert<types::Perturbation>::encode(const types::Perturbation &pertb)
+    Node convert<Perturbation>::encode(const Perturbation &pertb)
     {
         YAML::Node  node(NodeType::Map);
         node["frequency"] = pertb.freq;
@@ -400,7 +421,7 @@ namespace YAML
         return node;
     }
 
-    bool convert<types::Perturbation>::decode(const Node &node, types::Perturbation &pertb)
+    bool convert<Perturbation>::decode(const Node &node, Perturbation &pertb)
     {
         if ((! node["frequency"].IsDefined()) || 
                 (! node["amplitude"].IsDefined())) return false;
@@ -411,18 +432,18 @@ namespace YAML
     }
 
     // for OutputType
-    Node convert<types::OutputType>::encode(const types::OutputType &out)
+    Node convert<OutputType>::encode(const OutputType &out)
     {
         YAML::Node  node;
-        node = types::out2str[out];
+        node = out2str[out];
         return node;
     }
 
-    bool convert<types::OutputType>::decode(const Node &node, types::OutputType &out)
+    bool convert<OutputType>::decode(const Node &node, OutputType &out)
     {
         if (! node.IsDefined()) return false;
 
-        out = types::str2out[node.as<std::string>()];
+        out = str2out[node.as<std::string>()];
         return true;
     }
 
@@ -439,6 +460,85 @@ namespace YAML
         if (! node.IsDefined()) return false;
 
         b = PetscBool(node.as<bool>());
+        return true;
+    }
+
+    // for OutputInfo
+    Node convert<OutputInfo>::encode(const OutputInfo &output)
+    {
+        YAML::Node  node(NodeType::Map);
+        node["outputFormat"] = output.format;
+        node["outputFlux"] = output.outputFlux;
+        node["outputVelocity"] = output.outputVelocity;
+        return node;
+    }
+
+    bool convert<OutputInfo>::decode(const Node &node, OutputInfo &output)
+    {
+        using namespace types;
+        output.format = node["outputFormat"].as<OutputType>(OutputType::Binary);
+        output.outputFlux = node["outputFlux"].as<PetscBool>(PETSC_TRUE);
+        output.outputVelocity = node["outputVelocity"].as<PetscBool>(PETSC_FALSE);
+        return true;
+    }
+
+    // for LinSolverInfo
+    Node convert<LinSolverInfo>::encode(const LinSolverInfo &solver)
+    {
+        YAML::Node  node(NodeType::Map);
+        node["type"] = solver.type;
+        node["config"] = solver.config.string();
+        return node;
+    }
+
+    bool convert<LinSolverInfo>::decode(const Node &node, LinSolverInfo &solver)
+    {
+        using namespace types;
+        solver.type = node["type"].as<ExecuteType>(ExecuteType::CPU);
+        solver.config = node["config"].as<std::string>("solverPetscOptions.info");
+        return true;
+    }
+
+    // for SchemeInfo
+    Node convert<SchemeInfo>::encode(const SchemeInfo &scheme)
+    {
+        YAML::Node  node(NodeType::Map);
+        node["ibm"] = scheme.ibm;
+        node["convection"] = scheme.convection;
+        node["diffusion"] = scheme.diffusion;
+        return node;
+    }
+
+    bool convert<SchemeInfo>::decode(const Node &node, SchemeInfo &scheme)
+    {
+        using namespace types;
+        scheme.ibm = node["ibm"].as<IBMethod>(IBMethod::NAVIER_STOKES);
+        scheme.convection = node["convection"].as<TimeScheme>(TimeScheme::ADAMS_BASHFORTH_2);
+        scheme.diffusion = node["diffusion"].as<TimeScheme>(TimeScheme::CRANK_NICOLSON);
+        return true;
+    }
+
+    // for SteppingInfo
+    Node convert<SteppingInfo>::encode(const SteppingInfo &stepping)
+    {
+        YAML::Node  node(NodeType::Map);
+        node["dt"] = stepping.dt;
+        node["startStep"] = stepping.nStart;
+        node["nt"] = stepping.nTotal;
+        node["nsave"] = stepping.nSave;
+        node["nrestart"] = stepping.nRestart;
+        return node;
+    }
+
+    bool convert<SteppingInfo>::decode(const Node &node, SteppingInfo &stepping)
+    {
+        using namespace types;
+
+        stepping.dt = node["dt"].as<PetscReal>();
+        stepping.nStart = node["startStep"].as<PetscInt>(0);
+        stepping.nTotal = node["nt"].as<PetscInt>(1);
+        stepping.nSave = node["nsave"].as<PetscInt>(1);
+        stepping.nRestart = node["nrestart"].as<PetscInt>(1);
         return true;
     }
     

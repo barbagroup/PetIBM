@@ -1,179 +1,202 @@
 /***************************************************************************//**
  * \file SimulationParameters.cpp
- * \author Anush Krishnan (anush@bu.edu), Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \brief Implementation of the methods of the class `SimulationParameters`.
  */
 
 
-#include "SimulationParameters.h"
-
-#include <fstream>
-
-#include "yaml-cpp/yaml.h"
+// here goes headers from our PetIBM
+# include "SimulationParameters.h"
+# include "parser.h"
 
 
-/**
- * \brief Constructor.
- */
-SimulationParameters::SimulationParameters()
+using namespace types;
+
+
+/** \copydoc SimulationParameters::SimulationParameters() */
+SimulationParameters::SimulationParameters() { }
+
+
+/** \copydoc SimulationParameters::SimulationParameters(
+ * const MPI_Comm &world, const std::string &config). */
+SimulationParameters::SimulationParameters(
+        const MPI_Comm &world, const std::string &config)
 {
-} // SimulationParameters
+    YAML::Node      node = YAML::LoadFile(config); 
+    stdfs::path     p(config);
+
+    p = stdfs::system_complete(p).parent_path();
+
+    SimulationParameters(world, node, p);
+}
 
 
-/**
- * \brief Constructor -- Parses the YAMLinput file with the simulation parameters.
- *
- * \param dir Directory of the simulation
- * \param filePath Path of the file to parse with YAML-CPP
- */
-SimulationParameters::SimulationParameters(std::string dir, std::string filePath)
+/** \copydoc SimulationParameters::SimulationParameters(
+ * const MPI_Comm &world, const YAML::Node &config, const std::string &dir). */
+SimulationParameters::SimulationParameters(const MPI_Comm &world, 
+        const YAML::Node &config, const std::string &dir)
 {
-  directory = dir;
-  // possibility to overwrite the path of the configuration file
-  // using the command-line parameter: `-simulation_parameters <file-path>`
-  char path[PETSC_MAX_PATH_LEN];
-  PetscBool found;
-  PetscOptionsGetString(NULL, NULL, "-simulation_parameters", path, sizeof(path), &found);
-  if (found)
-    filePath = std::string(path);
-  initialize(filePath);
-} // SimulationParameters
+    if (config["simulationParameters"].IsDefined())
+    {
+        init(world, config["simulationParameters"], 
+                config["caseDir"].as<std::string>());
+    }
+    else
+        init(world, config, dir);
+}
 
 
-/**
- * \brief Destructor.
- */
-SimulationParameters::~SimulationParameters()
+/** \copydoc SimulationParameters::~SimulationParameters() */
+SimulationParameters::~SimulationParameters() { }
+
+
+/** \copydoc SimulationParameters::init() */
+PetscErrorCode SimulationParameters::init(const MPI_Comm &world, 
+        const YAML::Node &node, const std::string &dir)
 {
-} // ~SimulationParameters
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    // store the address of the communicator
+    // note: this is a bad practice; shared_ptr is not for stack variables!!
+    comm = std::shared_ptr<const MPI_Comm>(&world, [](const MPI_Comm*){});
+
+    // set rank and size
+    ierr = MPI_Comm_size(*comm, &mpiSize); CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(*comm, &mpiRank); CHKERRQ(ierr);
+    
+
+    // set case directory
+    if (dir == "")
+        SETERRQ(*comm, 65, "The path of case directory is not given.");
+
+    caseDir = stdfs::path(dir);
+
+    // get data from the YAML node
+    ierr = parser::parseSimulationParameters(
+            node, output, vSolver, pSolver, schemes, step); CHKERRQ(ierr);
+
+    // check HDF5
+    ierr = checkHDF5(); CHKERRQ(ierr);
+
+    // check AmgX
+    ierr = checkAmgX(); CHKERRQ(ierr);
+
+    // create a string for printing or output stream
+    ierr = createInfoString(); CHKERRQ(ierr);
+
+    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
 
 
-/**
- * \brief Parses file containing the simulation parameters.
- *
- * The file is parsed using YAML format.
- *
- * \param filePath Path of the simulation parameters file
- */
-void SimulationParameters::initialize(std::string filePath)
+/** \copydoc SimulationParameters::checkHDF5(). */
+PetscErrorCode SimulationParameters::checkHDF5()
 {
-  PetscPrintf(PETSC_COMM_WORLD, "\nParsing file %s... ", filePath.c_str());
-  
-  YAML::Node nodes(YAML::LoadFile(filePath));
-  const YAML::Node &node = nodes[0];
+    PetscFunctionBeginUser;
 
-  dt = node["dt"].as<PetscReal>();
-  startStep = node["startStep"].as<PetscInt>(0);
-  nt = node["nt"].as<PetscInt>();
-  nsave = node["nsave"].as<PetscInt>(nt);
-  nrestart = node["nrestart"].as<PetscInt>(nt);
-  
-  vSolveType = stringToExecuteType(node["vSolveType"].as<std::string>("CPU"));
-  pSolveType = stringToExecuteType(node["pSolveType"].as<std::string>("CPU"));
-
-  outputFormat = node["outputFormat"].as<std::string>("binary");
 #ifndef PETSC_HAVE_HDF5
-  if (outputFormat == "hdf5")
-  {
-    PetscPrintf(PETSC_COMM_WORLD,
-                "\nERROR: PETSc has not been built with HDF5 available; "
-                "you cannot use `outputFormat: hdf5`\n");
-    MPI_Barrier(PETSC_COMM_WORLD);
-    exit(1);
-  }
+    if (output.format == OutputFormat::HDF5)
+        SETERRQ(PETSC_COMM_WORLD, 56, "PETSc was not built with HDF5; "
+                "you cannot use `outputFormat: hdf5`");
 #endif
-  outputFlux = (node["outputFlux"].as<bool>(true)) ? PETSC_TRUE : PETSC_FALSE;
-  outputVelocity = (node["outputVelocity"].as<bool>(false)) ? PETSC_TRUE : PETSC_FALSE;
 
-  ibm = stringToIBMethod(node["ibm"].as<std::string>("NONE"));
-
-  convection.scheme = stringToTimeScheme(node["convection"].as<std::string>("EULER_EXPLICIT"));
-  diffusion.scheme = stringToTimeScheme(node["diffusion"].as<std::string>("EULER_IMPLICIT"));
-  // set time-stepping coefficients for convective terms
-  switch (convection.scheme)
-  {
-    case NONE:
-      convection.coefficients.push_back(0.0); // n+1 coefficient
-      convection.coefficients.push_back(0.0); // n coefficient
-      convection.coefficients.push_back(0.0); // n-1 coefficient
-      break;
-    case EULER_EXPLICIT:
-      convection.coefficients.push_back(0.0); // n+1 coefficient
-      convection.coefficients.push_back(1.0); // n coefficient
-      convection.coefficients.push_back(0.0); // n-1 coefficient
-      break;
-    case ADAMS_BASHFORTH_2:
-      convection.coefficients.push_back(0.0);  // n+1 coefficient
-      convection.coefficients.push_back(1.5);  // n coefficient
-      convection.coefficients.push_back(-0.5); // n-1 coefficient
-      break;
-    default:
-      std::cout << "\nERROR: unknown numerical scheme for convective terms.\n";
-      std::cout << "Numerical scheme implemented:\n";
-      std::cout << "\tNONE\n";
-      std::cout << "\tEULER_EXPLICIT\n";
-      std::cout << "\tADAMS_BASHFORTH_2\n" << std::endl;
-      exit(1);
-      break;
-  }
-  // set time-stepping coefficients for diffusive terms
-  switch (diffusion.scheme)
-  {
-    case NONE:
-      diffusion.coefficients.push_back(0.0); // n+1 coefficient
-      diffusion.coefficients.push_back(0.0); // n coefficient
-      break;
-    case EULER_EXPLICIT:
-      diffusion.coefficients.push_back(0.0); // n+1 coefficient
-      diffusion.coefficients.push_back(1.0); // n coefficient
-      break;
-    case EULER_IMPLICIT:
-      diffusion.coefficients.push_back(1.0); // n+1 coefficient
-      diffusion.coefficients.push_back(0.0); // n coefficient
-      break;
-    case CRANK_NICOLSON:
-      diffusion.coefficients.push_back(0.5); // n+1 coefficient
-      diffusion.coefficients.push_back(0.5); // n coefficient
-      break;
-    default:
-      std::cout << "\nERROR: unknown numerical scheme for diffusive terms.\n";
-      std::cout << "Numerical scheme implemented:\n";
-      std::cout << "\tNONE\n";
-      std::cout << "\tEULER_EXPLICIT\n";
-      std::cout << "\tEULER_IMPLICIT\n";
-      std::cout << "\tCRANK_NICOLSON\n" << std::endl;
-      exit(1);
-      break;
-  }
-
-  PetscPrintf(PETSC_COMM_WORLD, "done.\n");
-  
-} // initialize
+    PetscFunctionReturn(0);
+}
 
 
-/**
- * \brief Prints info about the initial and boundary conditions of the flow.
- */
+/** \copydoc SimulationParameters::checkAmgX(). */
+PetscErrorCode SimulationParameters::checkAmgX()
+{
+    PetscFunctionBeginUser;
+
+#ifndef HAVE_AMGX
+    if ((pSolver.type == ExecuteType::GPU) ||
+            (vSolver.type == ExecuteType::GPU))
+        SETERRQ(PETSC_COMM_WORLD, 56, "PetIBM was not built with AmgX enabled; "
+                "you cannot use GPU linear solvers");
+#endif
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SimulationParameters::createInfoString(). */
+PetscErrorCode SimulationParameters::createInfoString()
+{
+    PetscFunctionBeginUser;
+
+    std::stringstream       ss;
+
+
+    ss << std::string(80, '=') << std::endl;
+    ss << "Simulation Parameters:" << std::endl;
+    ss << std::string(80, '=') << std::endl;
+
+    ss << "\tCase Directory:" << std::endl;
+    ss << "\t\t" << caseDir << std::endl;
+    ss << std::endl;
+
+    ss << "\tFlow solver: " << ibm2str[schemes.ibm] << std::endl;
+    ss << std::endl;
+
+    ss << "\tTemporal Discretization: " << std::endl;
+    ss << "\t\tConvection: " << ts2str[schemes.convection] << std::endl;
+    ss << "\t\tDiffusion: " << ts2str[schemes.diffusion] << std::endl;
+    ss << std::endl;
+
+    ss << "\tTime-Stepping Control: " << std::endl;
+    ss << "\t\tTime Step: " << step.dt << std::endl;
+    ss << "\t\tStarting Step: " << step.nStart << std::endl;
+    ss << "\t\tTotal Time Steps: " << step.nTotal << std::endl;
+    ss << "\t\tNumber of Steps to Save Solutions: " << step.nSave << std::endl;
+    ss << "\t\tNumber of Steps to Save Restart Data: " << step.nRestart << std::endl;
+    ss << std::endl;
+
+    ss << "\tVelocity Linear Solver:" << std::endl;
+    ss << "\t\tType: " << et2str[vSolver.type] << std::endl;
+    ss << "\t\tConfiguration File: " << vSolver.config << std::endl;
+    ss << std::endl;
+
+    ss << "\tPoisson Linear Solver:" << std::endl;
+    ss << "\t\tType: " << et2str[pSolver.type] << std::endl;
+    ss << "\t\tConfiguration File: " << pSolver.config << std::endl;
+    ss << std::endl;
+
+    ss << "\tOutput Format Control:" << std::endl;
+    ss << "\t\tFormat: " << out2str[output.format] << std::endl;
+    ss << "\t\tOutput Flux: " 
+        << (output.outputFlux ? "true" : "false") << std::endl;
+    ss << "\t\tOutput Velocity: " 
+        << (output.outputVelocity ? "true" : "false") << std::endl;
+    ss << std::endl;
+
+    info = ss.str();
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SimulationParameters::printInfo(). */
 PetscErrorCode SimulationParameters::printInfo()
 {
-  PetscErrorCode ierr;
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "\n---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Simulation parameters\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "formulation: %s\n", stringFromIBMethod(ibm).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "convection: %s\n", stringFromTimeScheme(convection.scheme).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "diffusion: %s\n", stringFromTimeScheme(diffusion.scheme).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "time-increment: %g\n", dt); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "starting time-step: %d\n", startStep); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "number of time-steps: %d\n", nt); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "saving-interval: %d\n", nsave); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "restart-interval: %d\n", nrestart); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "velocity solver type: %s\n", stringFromExecuteType(vSolveType).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "Poisson solver type: %s\n", stringFromExecuteType(pSolveType).c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "output format: %s\n", outputFormat.c_str()); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "output flux: %D\n", outputFlux); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "output velocity: %D\n", outputVelocity); CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD, "---------------------------------------\n"); CHKERRQ(ierr);
+    PetscFunctionBeginUser;
 
-  return 0;
-} // printInfo
+    PetscErrorCode      ierr;
+
+    ierr = PetscPrintf(*comm, info.c_str()); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copyfoc std::ostream &operator<<(std::ostream &, const SimulationParameters &). */
+std::ostream &operator<<(std::ostream &os, const SimulationParameters &param)
+{
+    os << param.info;
+    return os;
+}

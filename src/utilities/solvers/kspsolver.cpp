@@ -43,7 +43,7 @@ PetscErrorCode KSPSolver::create(
       {
           ierr = PetscPrintf(PETSC_COMM_WORLD, "%s\n", type); CHKERRQ(ierr);
           ierr = PetscPrintf(PETSC_COMM_WORLD, "%s\n", DMCOMPOSITE); CHKERRQ(ierr);
-          SETERRQ(PETSC_COMM_WORLD, 56, "Predicitioner is set to be splited, "
+          SETERRQ(PETSC_COMM_WORLD, 56, "Preconditioner is set to be split, "
                   "but the DM passed in is not a DMComposite!");
       }
   }

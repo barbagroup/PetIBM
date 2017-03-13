@@ -369,6 +369,8 @@ PetscErrorCode CartesianMesh::printInfo()
 
 PetscErrorCode CartesianMesh::writeBinary(const std::string &file)
 {
+    PetscFunctionBeginUser;
+
     PetscErrorCode ierr;
 
     if (mpiRank == 0)

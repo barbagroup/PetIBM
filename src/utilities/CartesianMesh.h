@@ -32,6 +32,8 @@ class CartesianMesh
 {
 public:
 
+    friend class Solutions;
+
     PetscInt                dim = -1;
 
     types::RealVec1D        min, max;

@@ -106,7 +106,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode printInfo();
+    PetscErrorCode printInfo() const;
 
 protected:
 

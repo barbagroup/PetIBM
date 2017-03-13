@@ -79,7 +79,7 @@ public:
     PetscErrorCode initDMDA();
 
     // print info with PetscPrintf
-    PetscErrorCode printInfo();
+    PetscErrorCode printInfo() const;
 
     // a function for writing out the grid based on the OutputType specified
     std::function<PetscErrorCode(const std::string &)> write;
@@ -88,7 +88,8 @@ public:
     PetscErrorCode setOutputFormat(const types::OutputType &type);
 
     // a function to create XDMF file for HDF5 grid file
-    PetscErrorCode generateXDMF(const std::string &xml, const std::string &file);
+    PetscErrorCode generateXDMF(
+            const std::string &xml, const std::string &file) const;
 
 protected:
 

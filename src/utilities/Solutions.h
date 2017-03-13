@@ -52,15 +52,15 @@ public:
     PetscErrorCode setOutputFormat(const types::OutputType &type);
     PetscErrorCode setOutputFluxFlag(const PetscBool &flag=PETSC_TRUE);
 
-    PetscErrorCode printInfo();
+    PetscErrorCode printInfo() const;
 
     PetscErrorCode applyIC(const FlowDescription &flow);
 
     PetscErrorCode updateLocalVecs();
 
-    PetscErrorCode write(const std::string &dir, const std::string &name);
+    PetscErrorCode write(const std::string &dir, const std::string &name) const;
 
-    PetscErrorCode getVelocity(const Vec &Rinv, Vec &U);
+    PetscErrorCode getVelocity(const Vec &Rinv, Vec &U) const;
 
 
 protected:

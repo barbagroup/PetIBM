@@ -37,7 +37,7 @@ public:
     PetscInt                    nExplicit;
 
     /** \brief coefficients of explicit terms. */
-    std::vector<PetscReal>      explicitCoeffs;
+    types::RealVec1D            explicitCoeffs;
 
 
     /** \brief default constructor. */

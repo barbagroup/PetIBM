@@ -164,7 +164,7 @@ PetscErrorCode FlowDescription::createInfoString()
 
 
 /** \copydoc FlowDescription::printInfo() */
-PetscErrorCode FlowDescription::printInfo()
+PetscErrorCode FlowDescription::printInfo() const
 {
     PetscFunctionBeginUser;
 

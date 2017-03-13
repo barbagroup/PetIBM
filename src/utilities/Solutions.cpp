@@ -147,7 +147,7 @@ PetscErrorCode Solutions::createInfoString()
 }
 
 
-PetscErrorCode Solutions::printInfo()
+PetscErrorCode Solutions::printInfo() const
 {
     PetscFunctionBeginUser;
     
@@ -158,7 +158,8 @@ PetscErrorCode Solutions::printInfo()
 } // printInfo
 
 
-PetscErrorCode Solutions::write(const std::string &dir, const std::string &name)
+PetscErrorCode Solutions::write(
+        const std::string &dir, const std::string &name) const
 {
     PetscFunctionBeginUser;
 
@@ -232,7 +233,7 @@ PetscErrorCode Solutions::write(const std::string &dir, const std::string &name)
 } // write
 
 
-PetscErrorCode Solutions::getVelocity(const Vec &RInv, Vec &U)
+PetscErrorCode Solutions::getVelocity(const Vec &RInv, Vec &U) const
 {
     PetscFunctionBeginUser;
 

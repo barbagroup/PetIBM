@@ -182,7 +182,7 @@ PetscErrorCode SimulationParameters::createInfoString()
 
 
 /** \copydoc SimulationParameters::printInfo(). */
-PetscErrorCode SimulationParameters::printInfo()
+PetscErrorCode SimulationParameters::printInfo() const
 {
     PetscFunctionBeginUser;
 

@@ -356,7 +356,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 }
 
 
-PetscErrorCode CartesianMesh::printInfo()
+PetscErrorCode CartesianMesh::printInfo() const
 {
     PetscFunctionBeginUser;
     
@@ -538,7 +538,7 @@ PetscErrorCode CartesianMesh::writeHDF5(const std::string &file)
 
 
 PetscErrorCode CartesianMesh::generateXDMF(
-        const std::string &xml, const std::string &file)
+        const std::string &xml, const std::string &file) const
 {
     PetscFunctionBeginUser;
 

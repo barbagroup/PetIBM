@@ -20,6 +20,10 @@ using namespace types;
 Solutions::Solutions() { };
 
 
+/** \copydoc Solutions::~Solutions() */
+Solutions::~Solutions() {};
+
+
 /** \copydoc Solutions::Solutions(const CartesianMesh &, const OutputType &) */
 Solutions::Solutions(const CartesianMesh &mesh, const OutputType &type)
 {
@@ -34,8 +38,8 @@ PetscErrorCode Solutions::init(
 
     PetscErrorCode      ierr;
 
-    // create a shared pointer to mesh
-    mesh = std::shared_ptr<CartesianMesh>(&mesh, [](CartesianMesh*){}); 
+    // create a shared pointer to mesh; bad practice...
+    mesh = std::shared_ptr<const CartesianMesh>(&inMesh, [](const CartesianMesh*){}); 
 
     // obtain MPI information from CartesianMesh object
     comm = mesh->comm;
@@ -63,6 +67,9 @@ PetscErrorCode Solutions::init(
 
     // set the flag indicating whether to output flux (so far, always true)
     ierr = setOutputFluxFlag(); CHKERRQ(ierr);
+
+    // create info string
+    ierr = createInfoString(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -224,7 +231,7 @@ PetscErrorCode Solutions::write(
         ierr = VecView(lambdaGlobalUnPacked[i], viewer); CHKERRQ(ierr);
     }
 
-    ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
+    ierr = DMCompositeRestoreAccessArray(mesh->lambdaPack, lambdaGlobal, numDMs, 
             nullptr, lambdaGlobalUnPacked.data()); CHKERRQ(ierr);
 
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

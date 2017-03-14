@@ -70,7 +70,7 @@ protected:
     PetscMPIInt                             mpiSize,
                                             mpiRank;
 
-    std::shared_ptr<CartesianMesh>          mesh;
+    std::shared_ptr<const CartesianMesh>    mesh;
 
     PetscBool                               fluxFlag;
 

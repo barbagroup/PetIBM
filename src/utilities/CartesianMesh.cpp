@@ -168,7 +168,9 @@ PetscErrorCode CartesianMesh::createVertexMesh()
     // initialization; note: index 4 means vertex mesh
     n[4] = {1, 1, 1};
     coord[4] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
-    dL[4] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
+
+    // dL of vertices is meaningless, but we still create this variable
+    dL[4] = {RealVec1D(1, 1.0), RealVec1D(1, 1.0), RealVec1D(1, 1.0)};
 
     // loop through all axes to get the coordinates of mesh vertexes
     // note: index 3 means pressure mesh; 4 means vertexes
@@ -199,7 +201,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
         // initialization
         n[comp] = {1, 1, 1};
         coord[comp] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
-        dL[comp] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
+        dL[comp] = {RealVec1D(1, 1.0), RealVec1D(1, 1.0), RealVec1D(1, 1.0)};
 
         // loop through each direction, i.e., x, y, z axes
         for(unsigned int dir=0; dir<dim; ++dir)
@@ -642,6 +644,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 
     ierr = DMDAGetLocalInfo(da[i], &lclInfo); CHKERRQ(ierr);
 
+    // DMDALocalInfo returns 3D info, no matter it is 2D or 3D mesh
     bg[i].resize(3); ed[i].resize(3); m[i].resize(3);
 
     bg[i][0] = lclInfo.xs; bg[i][1] = lclInfo.ys; bg[i][2] = lclInfo.zs;

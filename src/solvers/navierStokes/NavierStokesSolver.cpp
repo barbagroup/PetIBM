@@ -126,7 +126,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   ierr = generateA(); CHKERRQ(ierr);
   ierr = generateBNQ(); CHKERRQ(ierr);
   ierr = generateQTBNQ(); CHKERRQ(ierr);
-  ierr = setNullSpace(); CHKERRQ(ierr);
   ierr = createSolvers(); CHKERRQ(ierr);
 
   if (parameters->startStep > 0 || flow->initialCustomField)
@@ -245,9 +244,18 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSPoisson()
   ierr = generateR2(); CHKERRQ(ierr);
   ierr = VecScale(r2, -1.0); CHKERRQ(ierr);
   ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRQ(ierr);
+
+#ifdef HAVE_AMGX
+  // Set the value of the bottom-left corner pressure point to be zero
+  // to deal with the null space when using AmgX solver
+  ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(rhs2); CHKERRQ(ierr);
+#endif
+
   ierr = PetscObjectViewFromOptions((PetscObject) rhs2, NULL, "-rhs2_vec_view"); CHKERRQ(ierr);
   
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);  
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   return 0;
 } // assembleRHSPoisson

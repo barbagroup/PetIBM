@@ -597,12 +597,10 @@ PetscErrorCode CartesianMesh::initDMDA()
 
     PetscErrorCode  ierr;
 
+    nProc[0] = nProc[1] = nProc[2] = PETSC_DECIDE;
+
     ierr = createLambdaPack(); CHKERRQ(ierr);
     ierr = createVelocityPack(); CHKERRQ(ierr);
-
-    ierr = DMDAGetInfo(da[3], nullptr, nullptr, nullptr, nullptr,
-           &nProc[0], &nProc[1], &nProc[2], 
-           nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -617,7 +615,8 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
     PetscErrorCode  ierr;
 
     map<BCType, DMBoundaryType>  petscBC {{PERIODIC, DM_BOUNDARY_PERIODIC},
-        {NEUMANN, DM_BOUNDARY_GHOSTED}, {DIRICHLET, DM_BOUNDARY_GHOSTED}};
+        {NEUMANN, DM_BOUNDARY_GHOSTED}, {DIRICHLET, DM_BOUNDARY_GHOSTED},
+        {CONVECTIVE, DM_BOUNDARY_GHOSTED}};
 
     DMDALocalInfo   lclInfo;
 
@@ -628,7 +627,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
                     petscBC[(*bcInfo)[XMINUS][u].type],
                     petscBC[(*bcInfo)[XMINUS][v].type], 
                     DMDA_STENCIL_STAR, 
-                    n[i][0], n[i][1], PETSC_DECIDE, PETSC_DECIDE,
+                    n[i][0], n[i][1], nProc[0], nProc[1],
                     1, 1, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
             break;
         case 3:
@@ -637,7 +636,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
                     petscBC[(*bcInfo)[YMINUS][v].type], 
                     petscBC[(*bcInfo)[ZMINUS][w].type], 
                     DMDA_STENCIL_STAR, n[i][0], n[i][1], n[i][2], 
-                    PETSC_DECIDE, PETSC_DECIDE, PETSC_DECIDE, 
+                    nProc[0], nProc[1], nProc[2], 
                     1, 1, nullptr, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
             break;
     }
@@ -667,6 +666,10 @@ PetscErrorCode CartesianMesh::createLambdaPack()
     PetscErrorCode  ierr;
 
     ierr = createSingleDMDA(3); CHKERRQ(ierr);
+
+    ierr = DMDAGetInfo(da[3], nullptr, nullptr, nullptr, nullptr,
+           &nProc[0], &nProc[1], &nProc[2], 
+           nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); CHKERRQ(ierr);
 
     ierr = DMCompositeCreate(*comm, &lambdaPack); CHKERRQ(ierr);
     ierr = DMCompositeAddDM(lambdaPack, da[3]); CHKERRQ(ierr);

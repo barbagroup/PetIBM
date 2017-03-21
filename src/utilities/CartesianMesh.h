@@ -33,6 +33,7 @@ class CartesianMesh
 public:
 
     friend class Solutions;
+    friend class SingleBoundary;
 
     PetscInt                dim = -1;
 

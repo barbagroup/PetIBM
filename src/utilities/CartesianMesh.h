@@ -34,6 +34,7 @@ public:
 
     friend class Solutions;
     friend class SingleBoundary;
+    friend class Boundary;
 
     PetscInt                dim = -1;
 

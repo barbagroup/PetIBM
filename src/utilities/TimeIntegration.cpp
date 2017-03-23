@@ -15,7 +15,11 @@ using namespace types;
 
 
 /** \copydoc TimeIntegration::TimeIntegration(). */
-TimeIntegration::TimeIntegration() { }
+TimeIntegration::TimeIntegration() = default;
+
+
+/** \copydoc TimeIntegration::~TimeIntegration(). */
+TimeIntegration::~TimeIntegration() = default;
 
 
 /** \copydoc TimeIntegration::TimeIntegration(const types::TimeScheme &). */

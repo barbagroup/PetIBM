@@ -17,11 +17,11 @@
 using namespace types;
 
 /** \copydoc Solutions::Solutions() */
-Solutions::Solutions() { };
+Solutions::Solutions() = default;
 
 
 /** \copydoc Solutions::~Solutions() */
-Solutions::~Solutions() {};
+Solutions::~Solutions() = default;
 
 
 /** \copydoc Solutions::Solutions(const CartesianMesh &, const OutputType &) */

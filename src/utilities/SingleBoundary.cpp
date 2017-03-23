@@ -12,11 +12,11 @@
 
 
 /** \copydoc SingleBoundary::SingleBoundary() */
-SingleBoundary::SingleBoundary() {}
+SingleBoundary::SingleBoundary() = default;
 
 
 /** \copydoc SingleBoundary::~SingleBoundary(). */
-SingleBoundary::~SingleBoundary() {}
+SingleBoundary::~SingleBoundary() = default;
 
 
 /** \copydoc SingleBoundary::SingleBoundary(const CartesianMesh &, const types::BCLoc &). */

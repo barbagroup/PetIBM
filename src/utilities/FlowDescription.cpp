@@ -18,7 +18,7 @@ using namespace types;
 
 
 /** \copydoc FlowDescription::FlowDescription() */
-FlowDescription::FlowDescription() { }
+FlowDescription::FlowDescription() = default;
 
 
 /** \copydoc FlowDescription::FlowDescription(const MPI_Comm &, const std::string &) */
@@ -72,7 +72,7 @@ PetscErrorCode FlowDescription::init(const MPI_Comm &world, const YAML::Node &no
 
 
 /** \copydoc FlowDescription::~FlowDescription() */
-FlowDescription::~FlowDescription() {}
+FlowDescription::~FlowDescription() = default;
 
 
 /** \copydoc FlowDescription::checkPeriodicity() */

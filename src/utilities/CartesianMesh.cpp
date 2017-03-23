@@ -31,7 +31,7 @@ using namespace types;
 
 
 //  TODO: move CMD parsing to other part in PetIBM
-CartesianMesh::CartesianMesh() {};
+CartesianMesh::CartesianMesh() = default;
 
 
 CartesianMesh::CartesianMesh(
@@ -55,7 +55,7 @@ CartesianMesh::CartesianMesh(
 }
 
 
-CartesianMesh::~CartesianMesh() {};
+CartesianMesh::~CartesianMesh() = default;
 
 
 PetscErrorCode CartesianMesh::init(

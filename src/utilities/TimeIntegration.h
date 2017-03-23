@@ -46,6 +46,9 @@ public:
     /** \brief constructor. */
     TimeIntegration(const types::TimeScheme &method);
 
+    /** \brief destructor. */
+    ~TimeIntegration();
+
     /** \brief initialization. */
     PetscErrorCode init(const types::TimeScheme &method);
 

@@ -16,7 +16,7 @@ using namespace types;
 
 
 /** \copydoc SimulationParameters::SimulationParameters() */
-SimulationParameters::SimulationParameters() { }
+SimulationParameters::SimulationParameters() = default;
 
 
 /** \copydoc SimulationParameters::SimulationParameters(
@@ -49,7 +49,7 @@ SimulationParameters::SimulationParameters(const MPI_Comm &world,
 
 
 /** \copydoc SimulationParameters::~SimulationParameters() */
-SimulationParameters::~SimulationParameters() { }
+SimulationParameters::~SimulationParameters() = default;
 
 
 /** \copydoc SimulationParameters::init() */

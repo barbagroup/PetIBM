@@ -72,14 +72,24 @@ PetscErrorCode SingleBoundary::init(
         }
 
         // set corresponding updating functions
-        updateCoeffs = std::bind(&SingleBoundary::updateCoeffsTrue, this, _1, _2);
-        updateGhosts = std::bind(&SingleBoundary::updateGhostsTrue, this, _1);
+
+        if (type[0] == types::BCType::PERIODIC)
+            // 1. If u-velocity is periodic, then others are also periodic.
+            // 2. we don't do anything for periodic BC. Let PETSc handles that.
+        {
+            updateCoeffs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+            updateGhosts = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+        }
+        else
+        {
+            updateCoeffs = std::bind(&SingleBoundary::updateCoeffsTrue, this, _1, _2);
+            updateGhosts = std::bind(&SingleBoundary::updateGhostsTrue, this, _1);
+        }
     }
     else
     {
-        updateCoeffs = 
-            [](Solutions &, const PetscReal &)->PetscErrorCode {PetscFunctionReturn(0);};
-        updateGhosts = [](Solutions &)->PetscErrorCode {PetscFunctionReturn(0);};
+        updateCoeffs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+        updateGhosts = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
     }
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
@@ -221,7 +231,7 @@ PetscErrorCode SingleBoundary::setPointsX(
         }
     }
 
-    ierr = setFunctions(field, 0); CHKERRQ(ierr);
+    ierr = setKernels(field, 0); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -265,7 +275,7 @@ PetscErrorCode SingleBoundary::setPointsY(
         }
     }
 
-    ierr = setFunctions(field, 1); CHKERRQ(ierr);
+    ierr = setKernels(field, 1); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -309,14 +319,14 @@ PetscErrorCode SingleBoundary::setPointsZ(
         }
     }
 
-    ierr = setFunctions(field, 2); CHKERRQ(ierr);
+    ierr = setKernels(field, 2); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
-/** \copydoc SingleBoundary::setFunctions */
-PetscErrorCode SingleBoundary::setFunctions(
+/** \copydoc SingleBoundary::setKernels */
+PetscErrorCode SingleBoundary::setKernels(
         const PetscInt &field, const PetscInt &dir)
 {
     using namespace std::placeholders;

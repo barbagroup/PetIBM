@@ -91,7 +91,7 @@ protected:
     PetscErrorCode setPointsZ(
             const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
 
-    PetscErrorCode setFunctions(
+    PetscErrorCode setKernels(
             const PetscInt &field, const PetscInt &dir);
 
     PetscErrorCode updateCoeffsTrue(Solutions &soln, const PetscReal &dt);

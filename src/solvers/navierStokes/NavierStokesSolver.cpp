@@ -245,13 +245,14 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSPoisson()
   ierr = VecScale(r2, -1.0); CHKERRQ(ierr);
   ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRQ(ierr);
 
-#ifdef HAVE_AMGX
-  // Set the value of the bottom-left corner pressure point to be zero
-  // to deal with the null space when using AmgX solver
-  ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
-  ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
-  ierr = VecAssemblyEnd(rhs2); CHKERRQ(ierr);
-#endif
+  if (parameters->pSolveType == GPU)
+  {
+    // Set the value of the bottom-left corner pressure point to be zero
+    // to deal with the null space when using AmgX solver
+    ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
+    ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
+    ierr = VecAssemblyEnd(rhs2); CHKERRQ(ierr);
+  }
 
   ierr = PetscObjectViewFromOptions((PetscObject) rhs2, NULL, "-rhs2_vec_view"); CHKERRQ(ierr);
   

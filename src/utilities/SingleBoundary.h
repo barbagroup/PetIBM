@@ -43,6 +43,7 @@ public:
 
 
     SingleBoundary();
+
     SingleBoundary(const CartesianMesh &mesh, const types::BCLoc &loc); 
 
     ~SingleBoundary();
@@ -68,8 +69,13 @@ protected:
     struct IdPairs {PetscInt bcPt; PetscInt ghId; 
         PetscReal area; PetscReal dL; PetscReal a0; PetscReal a1;};
 
-    std::vector<IdPairs>    points;
 
+    std::vector<std::vector<IdPairs>>   points;
+
+
+    std::vector<std::function<
+        void(IdPairs &p, const PetscReal &bdValue, const PetscReal &ghValue, 
+                const PetscReal &bc, const PetscReal &dt)>>  updateCoeffsKernel;
 
 
     PetscErrorCode setProc();
@@ -78,34 +84,17 @@ protected:
 
     PetscErrorCode setPointsX(
             const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
+
     PetscErrorCode setPointsY(
             const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
+
     PetscErrorCode setPointsZ(
             const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
 
     PetscErrorCode setFunctions(
             const PetscInt &field, const PetscInt &dir);
 
-
     PetscErrorCode updateCoeffsTrue(Solutions &soln, const PetscReal &dt);
-
-    std::vector<std::function<PetscErrorCode(const PetscReal &v, 
-            const PetscReal *&, const PetscReal &)>>        updateCoeffsFuncs;
-
-    PetscErrorCode updateCoeffsDirichletSameDir(
-            const PetscReal &v, const PetscReal * &arry, const PetscReal &dt);
-    PetscErrorCode updateCoeffsDirichletDiffDir(
-            const PetscReal &v, const PetscReal * &arry, const PetscReal &dt);
-    PetscErrorCode updateCoeffsNeumannSameDir(
-            const PetscReal &v, const PetscReal * &arry, const PetscReal &dt);
-    PetscErrorCode updateCoeffsNeumannDiffDir(
-            const PetscReal &v, const PetscReal * &arry, const PetscReal &dt);
-    PetscErrorCode updateCoeffsConvectiveSameDir(
-            const PetscReal &v, const PetscReal * &arry, const PetscReal &dt);
-    PetscErrorCode updateCoeffsConvectiveDiffDir(
-            const PetscReal &v, const PetscReal * &arry, const PetscReal &dt);
-
-
 
     PetscErrorCode updateGhostsTrue(Solutions &soln);
 

@@ -11,14 +11,13 @@
 #include "SingleBoundary.h"
 
 
-using namespace types;
-
-
 /** \copydoc SingleBoundary::SingleBoundary() */
 SingleBoundary::SingleBoundary() {}
 
+
 /** \copydoc SingleBoundary::~SingleBoundary(). */
 SingleBoundary::~SingleBoundary() {}
+
 
 /** \copydoc SingleBoundary::SingleBoundary(const CartesianMesh &, const types::BCLoc &). */
 SingleBoundary::SingleBoundary(
@@ -26,6 +25,7 @@ SingleBoundary::SingleBoundary(
 {
     init(mesh, loc);
 }
+
 
 /** \copydoc SingleBoundary::init */
 PetscErrorCode SingleBoundary::init(
@@ -59,13 +59,14 @@ PetscErrorCode SingleBoundary::init(
     {
         // initialize the STL vectors
         type.resize(dim); value.resize(dim);
-        updateCoeffsFuncs.resize(dim);
+        points.resize(dim);
+        updateCoeffsKernel.resize(dim);
 
         // get the types and values
         for(PetscInt f=0; f<dim; ++f)
         {
-            type[f] = (*(mesh->bcInfo))[loc][Field(f)].type;
-            value[f] = (*(mesh->bcInfo))[loc][Field(f)].value;
+            type[f] = (*(mesh->bcInfo))[loc][types::Field(f)].type;
+            value[f] = (*(mesh->bcInfo))[loc][types::Field(f)].value;
 
             ierr = setPoints(f); CHKERRQ(ierr);
         }
@@ -98,29 +99,29 @@ PetscErrorCode SingleBoundary::setProc()
 
     switch (loc)
     {
-        case BCLoc::XMINUS:
+        case types::BCLoc::XMINUS:
             ierr = DMDAGetProcessorSubset(mesh->da[3], DMDA_X, 0, &bcMPI); 
             CHKERRQ(ierr);
             break;
-        case BCLoc::XPLUS:
+        case types::BCLoc::XPLUS:
             ierr = DMDAGetProcessorSubset(
                     mesh->da[3], DMDA_X, mesh->n[3][0]-1, &bcMPI); 
             CHKERRQ(ierr);
             break;
-        case BCLoc::YMINUS:
+        case types::BCLoc::YMINUS:
             ierr = DMDAGetProcessorSubset(mesh->da[3], DMDA_Y, 0, &bcMPI); 
             CHKERRQ(ierr);
             break;
-        case BCLoc::YPLUS:
+        case types::BCLoc::YPLUS:
             ierr = DMDAGetProcessorSubset(
                     mesh->da[3], DMDA_Y, mesh->n[3][1]-1, &bcMPI); 
             CHKERRQ(ierr);
             break;
-        case BCLoc::ZMINUS:
+        case types::BCLoc::ZMINUS:
             ierr = DMDAGetProcessorSubset(mesh->da[3], DMDA_Z, 0, &bcMPI); 
             CHKERRQ(ierr);
             break;
-        case BCLoc::ZPLUS:
+        case types::BCLoc::ZPLUS:
             ierr = DMDAGetProcessorSubset(
                     mesh->da[3], DMDA_Z, mesh->n[3][2]-1, &bcMPI); 
             CHKERRQ(ierr);
@@ -146,32 +147,32 @@ PetscErrorCode SingleBoundary::setPoints(const PetscInt &field)
 
     switch (loc)
     {
-        case BCLoc::XMINUS:
+        case types::BCLoc::XMINUS:
             self = 0; ghost = self - 1;
             normal = -1.0;
             ierr = setPointsX(field, self, ghost); CHKERRQ(ierr);
             break;
-        case BCLoc::XPLUS:
+        case types::BCLoc::XPLUS:
             self = mesh->n[field][0]-1; ghost = self + 1;
             normal = 1.0;
             ierr = setPointsX(field, self, ghost); CHKERRQ(ierr);
             break;
-        case BCLoc::YMINUS:
+        case types::BCLoc::YMINUS:
             self = 0; ghost = self - 1;
             normal = -1.0;
             ierr = setPointsY(field, self, ghost); CHKERRQ(ierr);
             break;
-        case BCLoc::YPLUS:
+        case types::BCLoc::YPLUS:
             self = mesh->n[field][1]-1; ghost = self + 1;
             normal = 1.0;
             ierr = setPointsY(field, self, ghost); CHKERRQ(ierr);
             break;
-        case BCLoc::ZMINUS:
+        case types::BCLoc::ZMINUS:
             self = 0; ghost = self - 1;
             normal = -1.0;
             ierr = setPointsZ(field, self, ghost); CHKERRQ(ierr);
             break;
-        case BCLoc::ZPLUS:
+        case types::BCLoc::ZPLUS:
             self = mesh->n[field][2]-1; ghost = self + 1;
             normal = 1.0;
             ierr = setPointsZ(field, self, ghost); CHKERRQ(ierr);
@@ -216,7 +217,7 @@ PetscErrorCode SingleBoundary::setPointsX(
                 // for left boundary, dL is the dx of the first pressure cell
                 dL = mesh->dL[3][0][0];
 
-            points.push_back({selfId, ghostId, area, dL, 0.0, 0.0});
+            points[field].push_back({selfId, ghostId, area, dL, 0.0, 0.0});
         }
     }
 
@@ -260,7 +261,7 @@ PetscErrorCode SingleBoundary::setPointsY(
                 // for bottom boundary, dL is the dx of the first pressure cell
                 dL = mesh->dL[3][1][0];
 
-            points.push_back({selfId, ghostId, area, dL, 0.0, 0.0});
+            points[field].push_back({selfId, ghostId, area, dL, 0.0, 0.0});
         }
     }
 
@@ -304,7 +305,7 @@ PetscErrorCode SingleBoundary::setPointsZ(
                 // for back boundary, dL is the dz of the first pressure cell
                 dL = mesh->dL[3][2][0];
 
-            points.push_back({selfId, ghostId, area, dL, 0.0, 0.0});
+            points[field].push_back({selfId, ghostId, area, dL, 0.0, 0.0});
         }
     }
 
@@ -324,37 +325,51 @@ PetscErrorCode SingleBoundary::setFunctions(
 
     switch (type[field])
     {
-        case BCType::DIRICHLET:
+        case types::BCType::DIRICHLET:
             if (field == dir)
-                updateCoeffsFuncs[field] = std::bind(
-                        &SingleBoundary::updateCoeffsDirichletSameDir, 
-                        this, _1, _2, _3);
+                updateCoeffsKernel[field] = std::bind(
+                        [this] (IdPairs &p, const PetscReal &bc) {
+                            p.a1 = bc * p.area;},
+                        _1, _4);
             else
-                updateCoeffsFuncs[field] = std::bind(
-                        &SingleBoundary::updateCoeffsDirichletDiffDir, 
-                        this, _1, _2, _3);
+                updateCoeffsKernel[field] = std::bind(
+                        [this] (IdPairs &p, const PetscReal &bc) {
+                            p.a0 = -1.0; 
+                            p.a1 = 2.0 * bc * p.area;},
+                        _1, _4);
             break;
-        case BCType::NEUMANN:
+
+        case types::BCType::NEUMANN:
+            updateCoeffsKernel[field] = std::bind(
+                    [this] (IdPairs &p, const PetscReal &bc) {
+                        p.a0 = 1.0;
+                        p.a1 = this->normal * p.dL * bc * p.area;},
+                    _1, _4);
+            break;
+
+        case types::BCType::CONVECTIVE:
             if (field == dir)
-                updateCoeffsFuncs[field] = std::bind(
-                        &SingleBoundary::updateCoeffsNeumannSameDir, 
-                        this, _1, _2, _3);
+                updateCoeffsKernel[field] =
+                    [this] (IdPairs &p, const PetscReal &bdValue, 
+                            const PetscReal &ghValue, const PetscReal &bc,
+                            const PetscReal &dt) 
+                    { 
+                        p.a1 = ghValue - 
+                            this->normal * dt * bc * (ghValue - bdValue) / p.dL;
+                    };
             else
-                updateCoeffsFuncs[field] = std::bind(
-                        &SingleBoundary::updateCoeffsNeumannDiffDir, 
-                        this, _1, _2, _3);
+                updateCoeffsKernel[field] =
+                    [this] (IdPairs &p, const PetscReal &bdValue, 
+                            const PetscReal &ghValue, const PetscReal &bc,
+                            const PetscReal &dt) 
+                    {
+                        p.a0 = -1.0;
+                        p.a1 = ghValue + bdValue - 
+                            2.0 * this->normal * dt * bc * (ghValue - bdValue) / p.dL;
+                    };
             break;
-        case BCType::CONVECTIVE:
-            if (field == dir)
-                updateCoeffsFuncs[field] = std::bind(
-                        &SingleBoundary::updateCoeffsConvectiveSameDir, 
-                        this, _1, _2, _3);
-            else
-                updateCoeffsFuncs[field] = std::bind(
-                        &SingleBoundary::updateCoeffsConvectiveDiffDir, 
-                        this, _1, _2, _3);
-            break;
-        case BCType::PERIODIC:
+
+        case types::BCType::PERIODIC:
             break;
     }
 
@@ -376,92 +391,12 @@ PetscErrorCode SingleBoundary::updateCoeffsTrue(
     {
         ierr = VecGetArrayRead(soln.qLocal[f], &arry); CHKERRQ(ierr);
 
-        ierr = updateCoeffsFuncs[f](value[f], arry, dt); CHKERRQ(ierr);
+        for(auto &it: points[f]) 
+            updateCoeffsKernel[f](it, arry[it.bcPt], arry[it.ghId], value[f], dt); 
 
         ierr = VecRestoreArrayRead(soln.qLocal[f], &arry); CHKERRQ(ierr);
     }
 
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc SingleBoundary::updateCoeffsDirichletSameDir */
-PetscErrorCode SingleBoundary::updateCoeffsDirichletSameDir(
-        const PetscReal &v, const PetscReal *&arry, const PetscReal &dt)
-{
-    PetscFunctionBeginUser;
-    for(auto &it: points) it.a1 = v * it.area;
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc SingleBoundary::updateCoeffsDirichletDiffDir */
-PetscErrorCode SingleBoundary::updateCoeffsDirichletDiffDir(
-        const PetscReal &v, const PetscReal *&arry, const PetscReal &dt)
-{
-    PetscFunctionBeginUser;
-    for(auto &it: points)
-    {
-        it.a0 = -1.0;
-        it.a1 = 2.0 * v * it.area;
-    }
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc SingleBoundary::updateCoeffsNeumannSameDir */
-PetscErrorCode SingleBoundary::updateCoeffsNeumannSameDir(
-        const PetscReal &v, const PetscReal *&arry, const PetscReal &dt)
-{
-    PetscFunctionBeginUser;
-    for(auto &it: points)
-    {
-        it.a0 = 1.0;
-        it.a1 = normal * it.dL * v * it.area;
-    }
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc SingleBoundary::updateCoeffsNeumannDiffDir */
-PetscErrorCode SingleBoundary::updateCoeffsNeumannDiffDir(
-        const PetscReal &v, const PetscReal *&arry, const PetscReal &dt)
-{
-    PetscFunctionBeginUser;
-    for(auto &it: points)
-    {
-        it.a0 = 1.0;
-        it.a1 = normal * it.dL * v * it.area;
-    }
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc SingleBoundary::updateCoeffsConvectiveSameDir */
-PetscErrorCode SingleBoundary::updateCoeffsConvectiveSameDir(
-        const PetscReal &v, const PetscReal *&arry, const PetscReal &dt)
-{
-    PetscFunctionBeginUser;
-    for(auto &it: points)
-    {
-        it.a1 = arry[it.ghId] - 
-            normal * dt * v * (arry[it.ghId] - arry[it.bcPt]) / it.dL;
-    }
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc SingleBoundary::updateCoeffsConvectiveDiffDir */
-PetscErrorCode SingleBoundary::updateCoeffsConvectiveDiffDir(
-        const PetscReal &v, const PetscReal *&arry, const PetscReal &dt)
-{
-    PetscFunctionBeginUser;
-    for(auto &it: points)
-    {
-        it.a0 = -1.0;
-        it.a1 = arry[it.ghId] + arry[it.bcPt] - 
-            2.0 * normal * dt * v * (arry[it.ghId] - arry[it.bcPt]) / it.dL;
-    }
     PetscFunctionReturn(0);
 }
 
@@ -479,7 +414,8 @@ PetscErrorCode SingleBoundary::updateGhostsTrue(Solutions &soln)
     {
         ierr = VecGetArray(soln.qLocal[f], &arry); CHKERRQ(ierr);
 
-        for(auto it: points) arry[it.ghId] = it.a0 * arry[it.bcPt] + it.a1;
+        for(auto it: points[f])
+            arry[it.ghId] = it.a0 * arry[it.bcPt] + it.a1;
 
         ierr = VecRestoreArray(soln.qLocal[f], &arry); CHKERRQ(ierr);
     }

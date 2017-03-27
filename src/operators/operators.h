@@ -20,6 +20,21 @@
  * \param mesh an instance of CartesianMesh.
  * \param R returned matrix R.
  *
+ * Petsc matrix R should not be created before calling this function.
+ *
  * \return PetscErrorCode.
  */
 PetscErrorCode createR(const CartesianMesh &mesh, Mat &R);
+
+
+/**
+ * \brief create normalization matrix RInv.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param RInv returned matrix R.
+ *
+ * Petsc matrix RInv should not be created before calling this function.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createRInv(const CartesianMesh &mesh, Mat &RInv);

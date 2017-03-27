@@ -126,7 +126,6 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
   ierr = generateA(); CHKERRQ(ierr);
   ierr = generateBNQ(); CHKERRQ(ierr);
   ierr = generateQTBNQ(); CHKERRQ(ierr);
-  ierr = setNullSpace(); CHKERRQ(ierr);
   ierr = createSolvers(); CHKERRQ(ierr);
 
   if (parameters->startStep > 0 || flow->initialCustomField)
@@ -138,6 +137,17 @@ PetscErrorCode NavierStokesSolver<dim>::initializeCommon()
     ierr = initializeFluxes(); CHKERRQ(ierr);
     ierr = initializeLambda(); CHKERRQ(ierr);
   }
+
+  // update ghost points
+  if (dim == 2)
+  {
+    ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
+  }
+  else
+  {
+    ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
+  }
+  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // initializeCommon
@@ -151,7 +161,6 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
 {
   PetscErrorCode ierr;
 
-  // update ghost points
   if (dim == 2)
   {
     ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal); CHKERRQ(ierr);
@@ -160,7 +169,6 @@ PetscErrorCode NavierStokesSolver<dim>::stepTime()
   {
     ierr = DMCompositeScatter(qPack, q, qxLocal, qyLocal, qzLocal); CHKERRQ(ierr);
   }
-  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
 
   // solve system for intermediate velocity
   ierr = assembleRHSVelocity(); CHKERRQ(ierr);
@@ -193,6 +201,7 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSVelocity()
   ierr = PetscLogStagePush(stageRHSVelocitySystem); CHKERRQ(ierr);
 
   ierr = calculateExplicitTerms(); CHKERRQ(ierr);
+  ierr = updateBoundaryGhosts(); CHKERRQ(ierr);
   ierr = generateBC1(); CHKERRQ(ierr);
   ierr = VecWAXPY(rhs1, 1.0, rn, bc1); CHKERRQ(ierr);
   ierr = VecPointwiseMult(rhs1, MHat, rhs1); CHKERRQ(ierr);
@@ -235,9 +244,19 @@ PetscErrorCode NavierStokesSolver<dim>::assembleRHSPoisson()
   ierr = generateR2(); CHKERRQ(ierr);
   ierr = VecScale(r2, -1.0); CHKERRQ(ierr);
   ierr = MatMultAdd(QT, qStar, r2, rhs2); CHKERRQ(ierr);
+
+  if (parameters->pSolveType == GPU)
+  {
+    // Set the value of the bottom-left corner pressure point to be zero
+    // to deal with the null space when using AmgX solver
+    ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
+    ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
+    ierr = VecAssemblyEnd(rhs2); CHKERRQ(ierr);
+  }
+
   ierr = PetscObjectViewFromOptions((PetscObject) rhs2, NULL, "-rhs2_vec_view"); CHKERRQ(ierr);
   
-  ierr = PetscLogStagePop(); CHKERRQ(ierr);  
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   return 0;
 } // assembleRHSPoisson

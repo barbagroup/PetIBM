@@ -18,6 +18,7 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
 
   std::string prefix;
   std::string options;
+  PetscInt idx;
 
   // possibility to overwrite the path of the configuration file
   // using the command-line parameter: `-velocity_config_file <file-path>`
@@ -59,11 +60,19 @@ PetscErrorCode NavierStokesSolver<dim>::createSolvers()
       prefix = "poisson_";
       options = (found) ? std::string(path) : parameters->directory + "/solversPetscOptions.info";
       poisson = new KSPSolver(prefix, options);
+      ierr = setNullSpace(); CHKERRQ(ierr);
       break;
     case GPU:
 #ifdef HAVE_AMGX
       options = (found) ? std::string(path) : parameters->directory + "/solversAmgXOptions_p.info";
       poisson = new AMGXSolver(options);
+      // Set the first row of the Poisson matrix to zero (except diagonal element)
+      // to fix the pressure at the bottom-left corner of the domain
+      // This is done to deal with the null space of the Poisson matrix when using
+      // AmgX solver
+      idx = 0;
+      ierr = MatZeroRows(QTBNQ, 1, &idx, 1.0, PETSC_NULL, PETSC_NULL); CHKERRQ(ierr);
+      ierr = PetscObjectViewFromOptions((PetscObject) QTBNQ, NULL, "-QTBNQ_mat_view"); CHKERRQ(ierr);
 #else HAVE_AMGX
       ierr = PetscPrintf(PETSC_COMM_WORLD,
                          "\nERROR: AmgX not available; pSolveType should be set to 'CPU'.\n");

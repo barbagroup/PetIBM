@@ -31,10 +31,49 @@ PetscErrorCode createR(const CartesianMesh &mesh, Mat &R);
  * \brief create normalization matrix RInv.
  *
  * \param mesh an instance of CartesianMesh.
- * \param RInv returned matrix R.
+ * \param RInv returned matrix RInv.
  *
  * Petsc matrix RInv should not be created before calling this function.
  *
  * \return PetscErrorCode.
  */
 PetscErrorCode createRInv(const CartesianMesh &mesh, Mat &RInv);
+
+
+/**
+ * \brief create normalization matrix MHead.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param MHead returned matrix MHead.
+ *
+ * Petsc matrix MHead should not be created before calling this function.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createMHead(const CartesianMesh &mesh, Mat &MHead);
+
+
+/**
+ * \brief create normalization matrix M.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param M returned matrix M.
+ *
+ * Petsc matrix M should not be created before calling this function.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createM(const CartesianMesh &mesh, Mat &M);
+
+
+/**
+ * \brief create identity matrix I.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param I returned matrix I.
+ *
+ * Petsc matrix I should not be created before calling this function.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createM(const CartesianMesh &mesh, Mat &I);

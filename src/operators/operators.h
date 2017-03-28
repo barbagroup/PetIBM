@@ -77,3 +77,17 @@ PetscErrorCode createM(const CartesianMesh &mesh, Mat &M);
  * \return PetscErrorCode.
  */
 PetscErrorCode createM(const CartesianMesh &mesh, Mat &I);
+
+
+/**
+ * \brief a function returning a gradient operator.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param G returned gradient operator.
+ * \param normalize a bool indicating whether or not we want normalization 
+ *        (default is True).
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createGradient(const CartesianMesh &mesh, 
+        Mat &G, const PetscBool &normalize=PETSC_TRUE);

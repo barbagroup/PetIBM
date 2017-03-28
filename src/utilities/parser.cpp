@@ -113,13 +113,6 @@ PetscErrorCode parser::parseMesh(
     // get the dimension of the mesh; no checking here
     dim = meshNode.size();
 
-    // initialize vectors according to the dimensions
-    // note: no matter it's 2 or 3D, we always create z-coordinates
-    bg = {0.0, 0.0, 0.0};
-    ed = {1.0, 1.0, 1.0};
-    nTotal = {1, 1, 1};
-    dL = {RealVec1D(1, 1.0), RealVec1D(1, 1.0), RealVec1D(1, 1.0)};
-
     // loop through all dimensions
     for(auto ax: meshNode)
     {

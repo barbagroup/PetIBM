@@ -75,6 +75,23 @@ PetscErrorCode CartesianMesh::init(
     ierr = MPI_Comm_rank(*comm, &mpiRank); CHKERRQ(ierr);
 
 
+    // set the default sizes and values for members
+    // The default values are chosen for 2D cases. We want to eliminate the use
+    // of template and also `if` conditions that determine the dimension. So
+    // with carefully choosed default values, we can take care of 2D case with 
+    // 3D code in many places.
+    min = types::RealVec1D(3, 0.0);
+    max = types::RealVec1D(3, 1.0);
+    n = types::IntVec2D(5, types::IntVec1D(3, 1));
+    coord = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 0.0)));
+    dL = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 1.0)));
+    da = std::vector<DM>(5, PETSC_NULL);
+    nProc = types::IntVec1D(3, PETSC_DECIDE);
+    bg = types::IntVec2D(5, types::IntVec1D(3, 0));
+    ed = types::IntVec2D(5, types::IntVec1D(3, 1));
+    m = types::IntVec2D(5, types::IntVec1D(3, 0));
+
+
     // store the address of bcInfo
     // note: this is a bad practice; shared_ptr is not for stack variables!!
     bcInfo = std::shared_ptr<BCInfoHolder>(&bc, [](BCInfoHolder*){});
@@ -136,12 +153,6 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 
     PetscErrorCode      ierr;
 
-    // note: no matter it's 2D or 3D, we always create z coordinates
-    
-    // initialization; other property should be already created in parseMesh
-    // note: index 3 means pressure mesh
-    coord[3] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
-
     // loop through all axes to get the coordinates of pressure points
     for(unsigned int i=0; i<dim; ++i)
     {
@@ -164,13 +175,6 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 PetscErrorCode CartesianMesh::createVertexMesh()
 {
     PetscFunctionBeginUser;
-
-    // initialization; note: index 4 means vertex mesh
-    n[4] = {1, 1, 1};
-    coord[4] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
-
-    // dL of vertices is meaningless, but we still create this variable
-    dL[4] = {RealVec1D(1, 1.0), RealVec1D(1, 1.0), RealVec1D(1, 1.0)};
 
     // loop through all axes to get the coordinates of mesh vertexes
     // note: index 3 means pressure mesh; 4 means vertexes
@@ -198,11 +202,6 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
     // note: index 0, 1, 2 represent u, v, w respectively
     for(unsigned int comp=0; comp<dim; comp++)
     {
-        // initialization
-        n[comp] = {1, 1, 1};
-        coord[comp] = {RealVec1D(1, 0.0), RealVec1D(1, 0.0), RealVec1D(1, 0.0)};
-        dL[comp] = {RealVec1D(1, 1.0), RealVec1D(1, 1.0), RealVec1D(1, 1.0)};
-
         // loop through each direction, i.e., x, y, z axes
         for(unsigned int dir=0; dir<dim; ++dir)
         {
@@ -597,8 +596,6 @@ PetscErrorCode CartesianMesh::initDMDA()
 
     PetscErrorCode  ierr;
 
-    nProc[0] = nProc[1] = nProc[2] = PETSC_DECIDE;
-
     ierr = createLambdaPack(); CHKERRQ(ierr);
     ierr = createVelocityPack(); CHKERRQ(ierr);
 
@@ -642,9 +639,6 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
     }
 
     ierr = DMDAGetLocalInfo(da[i], &lclInfo); CHKERRQ(ierr);
-
-    // DMDALocalInfo returns 3D info, no matter it is 2D or 3D mesh
-    bg[i].resize(3); ed[i].resize(3); m[i].resize(3);
 
     bg[i][0] = lclInfo.xs; bg[i][1] = lclInfo.ys; bg[i][2] = lclInfo.zs;
 

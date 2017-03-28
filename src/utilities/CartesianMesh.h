@@ -32,36 +32,48 @@ class CartesianMesh
 {
 public:
 
-    friend class Solutions;
-    friend class SingleBoundary;
-    friend class Boundary;
+    //friend class Solutions;
+    //friend class SingleBoundary;
+    //friend class Boundary;
 
     PetscInt                dim = -1;
 
-    types::RealVec1D        min, max;
+    types::RealVec1D        min,
+                            max;
 
-    types::IntVec2D         n = types::IntVec2D(5);
+    types::IntVec2D         n;
 
-    types::RealVec3D        coord = types::RealVec3D(5);
+    types::RealVec3D        coord;
 
-    types::RealVec3D        dL = types::RealVec3D(5);
+    types::RealVec3D        dL;
 
     std::string             info;
 
 
 
     // PETSc stuffs
-    std::vector<DM>         da = std::vector<DM>(5);
+    std::vector<DM>         da;
 
-    types::IntVec1D         nProc= types::IntVec1D(3);
+    types::IntVec1D         nProc;
 
-    types::IntVec2D         bg = types::IntVec2D(5);
+    types::IntVec2D         bg;
 
-    types::IntVec2D         ed = types::IntVec2D(5);
+    types::IntVec2D         ed;
 
-    types::IntVec2D         m = types::IntVec2D(5);
+    types::IntVec2D         m;
 
     DM                      qPack, lambdaPack;
+
+
+    // MPI stuffs
+    std::shared_ptr<const MPI_Comm>         comm;
+
+    PetscMPIInt                             mpiSize,
+                                            mpiRank;
+
+    // a reference to BC information
+    std::shared_ptr<types::BCInfoHolder>    bcInfo;
+
 
     // cunstructors
     CartesianMesh();
@@ -94,13 +106,6 @@ public:
             const std::string &xml, const std::string &file) const;
 
 protected:
-
-    std::shared_ptr<const MPI_Comm>         comm;
-
-    PetscMPIInt                             mpiSize,
-                                            mpiRank;
-
-    std::shared_ptr<types::BCInfoHolder>    bcInfo;
 
     PetscErrorCode createVertexMesh();
     PetscErrorCode createPressureMesh();

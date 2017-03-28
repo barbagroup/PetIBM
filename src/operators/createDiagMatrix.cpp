@@ -1,9 +1,9 @@
 /***************************************************************************//**
- * \file createR.cpp
+ * \file createDiagMatrix.cpp
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of function `createR`.
+ * \brief Definitions of functions creating different kinds of diagonal matrix.
  */
 
 

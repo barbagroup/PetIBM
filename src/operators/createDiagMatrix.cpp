@@ -77,16 +77,16 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
             for(PetscInt j=mesh.bg[field][1]; j<mesh.ed[field][1]; ++j)
                 for(PetscInt i=mesh.bg[field][0]; i<mesh.ed[field][0]; ++i)
                 {
-                    PetscInt    idx, idx1;
+                    PetscInt    idx;
                     MatStencil  self = {k, j, i, 1};
 
                     // get index local to this process
                     ierr = DMDAConvertToCell(
-                            mesh.da[field], self, &idx1); CHKERRQ(ierr);
+                            mesh.da[field], self, &idx); CHKERRQ(ierr);
 
                     // map to global index
                     ierr = ISLocalToGlobalMappingApply(
-                            mapping[field], 1, &idx1, &idx); CHKERRQ(ierr);
+                            mapping[field], 1, &idx, &idx); CHKERRQ(ierr);
 
                     // set value
                     ierr = MatSetValue(M, idx, idx, kernels[field](i, j, k), 

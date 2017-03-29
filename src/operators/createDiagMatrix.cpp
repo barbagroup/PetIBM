@@ -46,18 +46,10 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
 
     PetscErrorCode      ierr;
     
-    ISLocalToGlobalMapping      *mapping;
-
-    // total number of local velocity points
-    PetscInt    nQLcl = 
-        mesh.m[0][0] * mesh.m[0][1] * mesh.m[0][2] + 
-        mesh.m[1][0] * mesh.m[1][1] * mesh.m[1][2] + 
-        mesh.m[2][0] * mesh.m[2][1] * mesh.m[2][2];
-
     // create matrix
     ierr = MatCreate(*mesh.comm, &M); CHKERRQ(ierr);
-    ierr = MatSetSizes(
-            M, nQLcl, nQLcl, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+    ierr = MatSetSizes(M, mesh.qNLocal, mesh.qNLocal, 
+            PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(M); CHKERRQ(ierr);
     ierr = MatSeqAIJSetPreallocation(M, 1, nullptr); CHKERRQ(ierr);
     ierr = MatMPIAIJSetPreallocation(M, 1, nullptr, 0, nullptr); CHKERRQ(ierr);
@@ -66,10 +58,6 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
     ierr = MatSetOption(M, MAT_KEEP_NONZERO_PATTERN, PETSC_FALSE); CHKERRQ(ierr);
     ierr = MatSetOption(M, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
-
-    // get the mapping for each sub-DM
-    ierr = DMCompositeGetISLocalToGlobalMappings(
-            mesh.qPack, &mapping); CHKERRQ(ierr);
 
     // set values to matrix
     for(PetscInt field=0; field<mesh.dim; ++field)
@@ -86,7 +74,7 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
 
                     // map to global index
                     ierr = ISLocalToGlobalMappingApply(
-                            mapping[field], 1, &idx, &idx); CHKERRQ(ierr);
+                            mesh.qMapping[field], 1, &idx, &idx); CHKERRQ(ierr);
 
                     // set value
                     ierr = MatSetValue(M, idx, idx, kernels[field](i, j, k), 
@@ -96,13 +84,6 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
     // assemble matrix
     ierr = MatAssemblyBegin(M, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(M, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-
-    // destroy mapping
-    for(PetscInt i=0; i<mesh.dim; ++i)
-    {
-        ierr = ISLocalToGlobalMappingDestroy(&mapping[i]); CHKERRQ(ierr);
-    }
-    ierr = PetscFree(mapping); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

@@ -91,3 +91,17 @@ PetscErrorCode createM(const CartesianMesh &mesh, Mat &I);
  */
 PetscErrorCode createGradient(const CartesianMesh &mesh, 
         Mat &G, const PetscBool &normalize=PETSC_TRUE);
+
+
+/**
+ * \brief a function returning a divergence operator.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param D returned divergence operator.
+ * \param normalize a bool indicating whether or not we want normalization 
+ *        (default is True).
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createDivergence(const CartesianMesh &mesh, 
+        Mat &G, const PetscBool &normalize=PETSC_TRUE);

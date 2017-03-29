@@ -62,7 +62,11 @@ public:
 
     types::IntVec2D         m;
 
+    PetscInt                qNLocal, lambdaNLocal;
+
     DM                      qPack, lambdaPack;
+
+    std::vector<ISLocalToGlobalMapping>     qMapping, lambdaMapping;
 
 
     // MPI stuffs
@@ -120,6 +124,7 @@ protected:
     PetscErrorCode createSingleDMDA(const PetscInt &i);
     PetscErrorCode createLambdaPack();
     PetscErrorCode createVelocityPack();
+    PetscErrorCode createMapping();
 
 }; // CartesianMesh
 

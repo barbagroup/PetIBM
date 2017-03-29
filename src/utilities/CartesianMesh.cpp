@@ -599,6 +599,16 @@ PetscErrorCode CartesianMesh::initDMDA()
     ierr = createLambdaPack(); CHKERRQ(ierr);
     ierr = createVelocityPack(); CHKERRQ(ierr);
 
+    // total number of local velocity points
+    qNLocal = m[0][0] * m[0][1] * m[0][2] + 
+        m[1][0] * m[1][1] * m[1][2] + m[2][0] * m[2][1] * m[2][2];
+
+    // total number of local pressure points
+    // TODO: remember to change this when we have bodies in the future
+    lambdaNLocal = m[3][0] * m[3][1] * m[3][2];
+
+    ierr = createMapping(); CHKERRQ(ierr);
+
     PetscFunctionReturn(0);
 }
 
@@ -687,6 +697,59 @@ PetscErrorCode CartesianMesh::createVelocityPack()
         ierr = createSingleDMDA(i); CHKERRQ(ierr);
         ierr = DMCompositeAddDM(qPack, da[i]); CHKERRQ(ierr);
     }
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode CartesianMesh::createMapping()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ISLocalToGlobalMapping      *mapping;
+
+    ierr = DMCompositeGetISLocalToGlobalMappings(qPack, &mapping); CHKERRQ(ierr);
+
+    // not a hard copy, so do not free the memory space 
+    // before we destroy this CartesianMesh instance ...
+    qMapping.assign(mapping, mapping+dim);
+
+
+    // there is a bug (or they do that with a purpose I don't know) in the 
+    // mapping returned by DMCompositeLocalToGlobalMappings. That is, the 
+    // global indices of ghost points are not -1. Their values are the offset
+    // instead. So we have to change these values to -1 manually.
+    for(PetscInt c=1; c<dim; ++c)
+    {
+        const PetscInt      *cArry; // PETSc only return const array ...
+        PetscInt            *arry, n, smallest;
+
+        ierr = ISLocalToGlobalMappingGetSize(qMapping[c], &n); CHKERRQ(ierr);
+        ierr = ISLocalToGlobalMappingGetIndices(qMapping[c], &cArry); CHKERRQ(ierr);
+
+        // cast to normal ptr that can be modified
+        arry = const_cast<PetscInt*>(cArry);
+
+        // Currently, PETSc seems to use the same ghost index on all
+        // processes, so we don't have to communicate with other processes
+        // to find out the real minimum across them. But we should
+        // keep an eye on it to avoid PETSc changes that in the future.
+        smallest = *std::min_element(arry, arry+n);
+
+        // if an entry has the min value, it should be a ghost point
+        for(PetscInt i=0; i<n; ++i) if (arry[i] == smallest) arry[i] = -1;
+
+        ierr = ISLocalToGlobalMappingRestoreIndices(qMapping[c], &cArry); CHKERRQ(ierr);
+    }
+
+    ierr = DMCompositeGetISLocalToGlobalMappings(lambdaPack, &mapping); CHKERRQ(ierr);
+
+    // not a hard copy
+    // TODO: now we don't consider bodies. In the future when we have bodies,
+    // we may want to modify this.
+    lambdaMapping.assign(mapping, mapping+1);
 
     PetscFunctionReturn(0);
 }

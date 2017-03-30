@@ -12,6 +12,7 @@
 
 // here goes headers from our PetIBM
 # include "CartesianMesh.h"
+# include "Boundary.h"
 
 
 /**
@@ -87,6 +88,8 @@ PetscErrorCode createM(const CartesianMesh &mesh, Mat &I);
  * \param normalize a bool indicating whether or not we want normalization 
  *        (default is True).
  *
+ * Petsc matrix G should not be created before calling this function.
+ *
  * \return PetscErrorCode.
  */
 PetscErrorCode createGradient(const CartesianMesh &mesh, 
@@ -101,7 +104,24 @@ PetscErrorCode createGradient(const CartesianMesh &mesh,
  * \param normalize a bool indicating whether or not we want normalization 
  *        (default is True).
  *
+ * Petsc matrix D should not be created before calling this function.
+ *
  * \return PetscErrorCode.
  */
 PetscErrorCode createDivergence(const CartesianMesh &mesh, 
         Mat &G, const PetscBool &normalize=PETSC_TRUE);
+
+
+/**
+ * \brief create an implicit Laplacian operator matrix.
+ *
+ * \param mesh an instance of CartesianMesh class.
+ * \param bc an instance of Boundary class.
+ * \param L returned matrix.
+ *
+ * Petsc matrix L should not be created before calling this function.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createLaplacian(
+        const CartesianMesh &mesh, const Boundary &bc, Mat &L);

@@ -30,6 +30,9 @@ typedef std::function<StencilVec(const PetscInt &,
         const PetscInt &, const PetscInt &)>            GetStencilsFunc;
 
 
+typedef std::vector<std::map<PetscInt, PetscReal>>       GhostCoeffType;
+
+
 /**
  * \brief a private function that set values of a row in Laplacian.
  *
@@ -48,12 +51,14 @@ inline PetscErrorCode setRowValues(
         const CartesianMesh &mesh, const Boundary &bc, 
         const GetStencilsFunc &getStencils, 
         const PetscInt &f, const PetscInt &i, 
-        const PetscInt &j, const PetscInt &k, Mat &L);
+        const PetscInt &j, const PetscInt &k, Mat &L,
+        std::map<PetscInt, PetscReal> &bcCoeffs);
 
 
 /** \copydoc createLaplacian. */
 PetscErrorCode createLaplacian(
-        const CartesianMesh &mesh, const Boundary &bc, Mat &L)
+        const CartesianMesh &mesh, const Boundary &bc, 
+        Mat &L, GhostCoeffType &ghCoeff)
 {
     using namespace std::placeholders;
 
@@ -95,17 +100,24 @@ PetscErrorCode createLaplacian(
     for(PetscInt field=0; field<mesh.dim; ++field)
     {
         // set row values
+        // the std::bind originally only binds values, in order to use
+        // reference instead of value-copying, we have to use std::ref
         ierr = misc::tripleLoops(
                 {mesh.bg[field][2], mesh.ed[field][2]},
                 {mesh.bg[field][1], mesh.ed[field][1]},
                 {mesh.bg[field][0], mesh.ed[field][0]},
                 std::bind(setRowValues, 
-                    mesh, bc, getStencils, field, _3, _2, _1, L));
+                    std::ref(mesh), std::ref(bc), std::ref(getStencils), 
+                    std::ref(field), _3, _2, _1, std::ref(L), 
+                    std::ref(ghCoeff[field])));
         CHKERRQ(ierr);
     }
 
 
     // TODO: change diagonal entries for BCs.
+    for(PetscInt f=0; f<mesh.dim; ++f)
+    {
+    }
 
 
     // assemble matrix
@@ -126,7 +138,8 @@ inline PetscErrorCode setRowValues(
         const CartesianMesh &mesh, const Boundary &bc, 
         const GetStencilsFunc &getStencils, 
         const PetscInt &f, const PetscInt &i, 
-        const PetscInt &j, const PetscInt &k, Mat &L)
+        const PetscInt &j, const PetscInt &k, Mat &L,
+        std::map<PetscInt, PetscReal> &bcCoeffs)
 {
     PetscFunctionBeginUser;
 
@@ -134,7 +147,8 @@ inline PetscErrorCode setRowValues(
 
     StencilVec          stencils = getStencils(i, j, k);
 
-    types::IntVec1D     cIds(1+2*mesh.dim, -1);
+    types::IntVec1D     lclIds(1+2*mesh.dim, -1),
+                        cols(1+2*mesh.dim, -1);
 
     types::RealVec1D    values(1+2*mesh.dim, 0.0);
 
@@ -143,12 +157,12 @@ inline PetscErrorCode setRowValues(
     for(PetscInt id=0; id<stencils.size(); ++id)
     {
         ierr = DMDAConvertToCell(
-                mesh.da[f], stencils[id], &cIds[id]); CHKERRQ(ierr);
+                mesh.da[f], stencils[id], &lclIds[id]); CHKERRQ(ierr);
     }
 
     // get the global index
     ierr = ISLocalToGlobalMappingApply(
-            mesh.qMapping[f], stencils.size(), cIds.data(), cIds.data()); 
+            mesh.qMapping[f], stencils.size(), lclIds.data(), cols.data()); 
     CHKERRQ(ierr);
 
 
@@ -164,22 +178,26 @@ inline PetscErrorCode setRowValues(
 
         const PetscInt &n = dL.size();
 
-        PetscInt    neg = (self > 0)? self - 1 : 
-            (type == types::PERIODIC) ? n - 1 : self;
+        PetscReal   dLNeg = (self > 0) ? dL[self-1] :
+            (type == types::PERIODIC) ? dL.back() : mesh.dL[3][dir].front();
 
-        PetscInt    pos = (self < (n - 1))? self + 1 : 
-            (type == types::PERIODIC) ? 0 : self;
+        PetscReal   dLPos = (self < (n - 1)) ? dL[self+1] :
+            (type == types::PERIODIC) ? dL.front() : mesh.dL[3][dir].back();
 
-        values[dir*2+1] = 1.0 / (0.5 * (dL[neg] + dL[self]) * dL[self]);
-        values[dir*2+2] = 1.0 / (0.5 * (dL[self] + dL[pos]) * dL[self]);
+        values[dir*2+1] = 1.0 / (0.5 * (dLNeg + dL[self]) * dL[self]);
+        values[dir*2+2] = 1.0 / (0.5 * (dL[self] + dLPos) * dL[self]);
     }
 
     // update diagonal value
     values[0] = - std::accumulate(values.begin()+1, values.end(), 0.0);
 
     // set the coefficient for the left point
-    ierr = MatSetValues(L, 1, &cIds[0], stencils.size(), cIds.data(), 
+    ierr = MatSetValues(L, 1, &cols[0], stencils.size(), cols.data(), 
             values.data(), INSERT_VALUES); CHKERRQ(ierr);
+
+    // save the values for boundary ghost points
+    for(PetscInt id=0; id<stencils.size(); ++id)
+        if (cols[id] == -1) bcCoeffs[lclIds[id]] = values[id];
 
     PetscFunctionReturn(0);
 }

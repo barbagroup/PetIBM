@@ -114,13 +114,36 @@ PetscErrorCode createLaplacian(
     }
 
 
-    // TODO: change diagonal entries for BCs.
-    for(PetscInt f=0; f<mesh.dim; ++f)
+    // temporarily assemble matrix
+    ierr = MatAssemblyBegin(L, MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
+    ierr = MatAssemblyEnd(L, MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
+
+
+    // TODO: check if a0 coefficients are already up-to-date.
+    for(auto &bd: bc.bds)
     {
+        if (bd.onThisProc)
+        {
+            for(PetscInt f=0; f<mesh.dim; ++f)
+            {
+                for(auto &pt: bd.points[f])
+                {
+                    PetscInt row = pt.bcPt;
+                    PetscReal value = ghCoeff[f][pt.ghId] * pt.a0;
+
+                    ierr = ISLocalToGlobalMappingApply(
+                            mesh.qMapping[f], 1, &row, &row); 
+                    CHKERRQ(ierr);
+
+                    ierr = MatSetValue(L, row, row, value, ADD_VALUES);
+                    CHKERRQ(ierr);
+                }
+            }
+        }
     }
 
 
-    // assemble matrix
+    // assemble matrix, an implicit mpi barrier is applied
     ierr = MatAssemblyBegin(L, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(L, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 

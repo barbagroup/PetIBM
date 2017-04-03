@@ -41,6 +41,13 @@ public:
     PetscReal           normal;
 
 
+    struct IdPairs {PetscInt bcPt; PetscInt ghId; 
+        PetscReal area; PetscReal dL; PetscReal a0; PetscReal a1;};
+
+
+    std::vector<std::vector<IdPairs>>   points;
+
+
 
     SingleBoundary();
 
@@ -64,13 +71,6 @@ protected:
 
 
     std::shared_ptr<const CartesianMesh> mesh;
-
-
-    struct IdPairs {PetscInt bcPt; PetscInt ghId; 
-        PetscReal area; PetscReal dL; PetscReal a0; PetscReal a1;};
-
-
-    std::vector<std::vector<IdPairs>>   points;
 
 
     std::vector<std::function<

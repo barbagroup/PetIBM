@@ -127,4 +127,4 @@ PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc,
  */
 PetscErrorCode createLaplacian(
         const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &L, std::vector<std::map<PetscInt, PetscReal>> &ghCoeff);
+        Mat &L, types::MatrixModifier &modifier);

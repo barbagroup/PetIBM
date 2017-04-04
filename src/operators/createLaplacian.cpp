@@ -30,9 +30,6 @@ typedef std::function<StencilVec(const PetscInt &,
         const PetscInt &, const PetscInt &)>            GetStencilsFunc;
 
 
-typedef std::vector<std::map<PetscInt, PetscReal>>       GhostCoeffType;
-
-
 /**
  * \brief a private function that set values of a row in Laplacian.
  *
@@ -52,13 +49,13 @@ inline PetscErrorCode setRowValues(
         const GetStencilsFunc &getStencils, 
         const PetscInt &f, const PetscInt &i, 
         const PetscInt &j, const PetscInt &k, Mat &L,
-        std::map<PetscInt, PetscReal> &bcCoeffs);
+        std::map<PetscInt, types::RowModifier> &rowModifiers);
 
 
 /** \copydoc createLaplacian. */
 PetscErrorCode createLaplacian(
         const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &L, GhostCoeffType &ghCoeff)
+        Mat &L, types::MatrixModifier &modifier)
 {
     using namespace std::placeholders;
 
@@ -67,6 +64,10 @@ PetscErrorCode createLaplacian(
     PetscErrorCode                  ierr;
     
     GetStencilsFunc                 getStencils;
+
+
+    // initialize modifier, regardless what's inside it now
+    modifier = types::MatrixModifier(mesh.dim);
 
 
     // set up getStencils
@@ -109,7 +110,7 @@ PetscErrorCode createLaplacian(
                 std::bind(setRowValues, 
                     std::ref(mesh), std::ref(bc), std::ref(getStencils), 
                     std::ref(field), _3, _2, _1, std::ref(L), 
-                    std::ref(ghCoeff[field])));
+                    std::ref(modifier[field])));
         CHKERRQ(ierr);
     }
 
@@ -121,26 +122,20 @@ PetscErrorCode createLaplacian(
 
     // TODO: check if a0 coefficients are already up-to-date.
     for(auto &bd: bc.bds)
-    {
         if (bd.onThisProc)
-        {
             for(PetscInt f=0; f<mesh.dim; ++f)
-            {
                 for(auto &pt: bd.points[f])
                 {
-                    PetscInt row = pt.bcPt;
-                    PetscReal value = ghCoeff[f][pt.ghId] * pt.a0;
+                    PetscInt    col = pt.bcPt;
+                    PetscReal   value = modifier[f][pt.ghId].coeff * pt.a0;
 
                     ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[f], 1, &row, &row); 
+                            mesh.qMapping[f], 1, &col, &col); 
                     CHKERRQ(ierr);
 
-                    ierr = MatSetValue(L, row, row, value, ADD_VALUES);
-                    CHKERRQ(ierr);
+                    ierr = MatSetValue(L, modifier[f][pt.ghId].row, 
+                            col, value, ADD_VALUES); CHKERRQ(ierr);
                 }
-            }
-        }
-    }
 
 
     // assemble matrix, an implicit mpi barrier is applied
@@ -162,7 +157,7 @@ inline PetscErrorCode setRowValues(
         const GetStencilsFunc &getStencils, 
         const PetscInt &f, const PetscInt &i, 
         const PetscInt &j, const PetscInt &k, Mat &L,
-        std::map<PetscInt, PetscReal> &bcCoeffs)
+        std::map<PetscInt, types::RowModifier> &rowModifiers)
 {
     PetscFunctionBeginUser;
 
@@ -220,7 +215,7 @@ inline PetscErrorCode setRowValues(
 
     // save the values for boundary ghost points
     for(PetscInt id=0; id<stencils.size(); ++id)
-        if (cols[id] == -1) bcCoeffs[lclIds[id]] = values[id];
+        if (cols[id] == -1) rowModifiers[lclIds[id]] = {cols[0], values[id]};
 
     PetscFunctionReturn(0);
 }

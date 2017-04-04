@@ -13,6 +13,7 @@
 // here goes headers from our PetIBM
 # include "CartesianMesh.h"
 # include "Boundary.h"
+# include "types.h"
 
 
 /**
@@ -108,8 +109,9 @@ PetscErrorCode createGradient(const CartesianMesh &mesh,
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createDivergence(const CartesianMesh &mesh, 
-        Mat &G, const PetscBool &normalize=PETSC_TRUE);
+PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc, 
+        Mat &D, types::MatrixModifier &ghCoeff, 
+        const PetscBool &normalize=PETSC_TRUE);
 
 
 /**

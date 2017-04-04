@@ -12,6 +12,7 @@
 
 // here goes headers from our PetIBM
 # include "CartesianMesh.h"
+# include "Boundary.h"
 # include "types.h"
 
 
@@ -27,7 +28,9 @@ typedef std::function<PetscReal(
 
 /** \copydoc createDivergence. */
 PetscErrorCode createDivergence(
-        const CartesianMesh &mesh, Mat &D, const PetscBool &normalize)
+        const CartesianMesh &mesh, const Boundary &bc, 
+        Mat &D, types::MatrixModifier &modifier, 
+        const PetscBool &normalize)
 {
     PetscFunctionBeginUser;
 
@@ -36,6 +39,10 @@ PetscErrorCode createDivergence(
     std::vector<GetNeighborFunc>    getNeighbor(3);
 
     std::vector<Kernel>             kernel(3);
+
+
+    // initialize modifier, regardless what's inside it now
+    modifier = types::MatrixModifier(mesh.dim);
 
 
     // set up getNeighbor
@@ -82,8 +89,9 @@ PetscErrorCode createDivergence(
         for(PetscInt j=mesh.bg[3][1]; j<mesh.ed[3][1]; ++j)
             for(PetscInt i=mesh.bg[3][0]; i<mesh.ed[3][0]; ++i)
             {
-                PetscInt    idx, self;
-
+                PetscInt    self;
+                
+                // row index is based on pressure grid
                 ierr = DMDAConvertToCell(mesh.da[3], {k, j, i, 0}, &self);
                 CHKERRQ(ierr);
 
@@ -91,33 +99,74 @@ PetscErrorCode createDivergence(
                         mesh.lambdaMapping[0], 1, &self, &self);
                 CHKERRQ(ierr);
 
+                // calculate and set values of the two surfaces in each direction
                 for(PetscInt field=0; field<mesh.dim; ++field)
                 {
-                    ierr = DMDAConvertToCell(
-                            mesh.da[field], {k, j, i, 0}, &idx); CHKERRQ(ierr);
 
-                    ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[field], 1, &idx, &idx); CHKERRQ(ierr);
+                    // variables to store the local and global index of surfaces
+                    PetscInt        lclIdx, glbIdx;
 
-                    ierr = MatSetValue(D, self, idx, 
-                            kernel[field](i, j, k), INSERT_VALUES); CHKERRQ(ierr);
+                    // the absolute value of coefficient
+                    PetscReal       value = kernel[field](i, j, k);
 
+
+                    // the surface toward positive direction
                     ierr = DMDAConvertToCell(mesh.da[field], 
-                            getNeighbor[field](i, j, k), &idx); CHKERRQ(ierr);
+                            {k, j, i, 0}, &lclIdx); CHKERRQ(ierr);
 
-                    ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[field], 1, &idx, &idx); CHKERRQ(ierr);
+                    ierr = ISLocalToGlobalMappingApply(mesh.qMapping[field], 
+                            1, &lclIdx, &glbIdx); CHKERRQ(ierr);
 
-                    ierr = MatSetValue(D, self, idx, 
-                            - kernel[field](i, j, k), INSERT_VALUES); CHKERRQ(ierr);
+                    ierr = MatSetValue(D, self, glbIdx, 
+                            value, INSERT_VALUES); CHKERRQ(ierr);
+
+                    // store the coefficient of ghost points for future use
+                    if (glbIdx == -1) modifier[field][lclIdx] = {self, value};
+
+
+                    // the surface toward negative direction
+                    ierr = DMDAConvertToCell(mesh.da[field], 
+                            getNeighbor[field](i, j, k), &lclIdx); CHKERRQ(ierr);
+
+                    ierr = ISLocalToGlobalMappingApply(mesh.qMapping[field], 
+                            1, &lclIdx, &glbIdx); CHKERRQ(ierr);
+
+                    // note the value for this face is just a negative version
+                    ierr = MatSetValue(D, self, glbIdx, 
+                            - value, INSERT_VALUES); CHKERRQ(ierr);
+
+                    // store the coefficient of ghost points for future use
+                    if (glbIdx == -1) modifier[field][lclIdx] = {self, - value};
                 }
             }
 
 
-    // TODO: modify diag values for Neumann BCs.
+    // temporarily assemble matrix
+    ierr = MatAssemblyBegin(D, MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
+    ierr = MatAssemblyEnd(D, MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
 
 
-    // assemble matrix
+    // modify the column of the neighbors of ghost points
+    // Only ghost points on Neumann BC will modify Divergence operator
+    for(auto &bd: bc.bds)
+        if (bd.onThisProc)
+            for(PetscInt f=0; f<mesh.dim; ++f)
+                for(auto &pt: bd.points[f])
+                {
+                    PetscInt    col = pt.bcPt;
+                    PetscReal   value = modifier[f][pt.ghId].coeff * pt.a0;
+
+                    ierr = ISLocalToGlobalMappingApply(
+                            mesh.qMapping[f], 1, &col, &col);
+                    CHKERRQ(ierr);
+
+                    ierr = MatSetValue(D, modifier[f][pt.ghId].row,
+                            col, value, ADD_VALUES);
+                    CHKERRQ(ierr);
+                }
+
+
+    // assemble matrix, an implicit mpi barrier is applied
     ierr = MatAssemblyBegin(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 

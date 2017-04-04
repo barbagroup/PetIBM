@@ -197,6 +197,22 @@ namespace types
         PetscInt        nSave;
         PetscInt        nRestart;
     };
+
+
+    /** \brief a struct holding information about which row in a matrix should
+     *         be modified based on BCs.
+     */
+    struct RowModifier
+    {
+        PetscInt    row;
+        PetscReal   coeff;
+    };
+
+
+    /** \brief a type that holds necessary for a matrix modifier that modifies
+     *         matrix coefficient based on BCs.
+     */
+    typedef std::vector<std::map<PetscInt, RowModifier>> MatrixModifier;
 }
 
 /**

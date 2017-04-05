@@ -128,3 +128,81 @@ PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc,
 PetscErrorCode createLaplacian(
         const CartesianMesh &mesh, const Boundary &bc, 
         Mat &L, types::MatrixModifier &modifier);
+
+
+/**
+ * \brief create non-normalized Bn.
+ *
+ * A is defined as \frac{I}{dt} - coeff \times Op, where I is identity matrix,
+ * Op is the summed coefficient matrix for implicit operators, and coeff is the
+ * coefficient from temporal integration. For example, for the case of Adams-
+ * Bashforth for convective terms and Crank-Nicolson for diffusion term, 
+ * AHead = \frac{I}{dt} - 0.5 \times LHead. If the implicit part is more complex,
+ * there may be not only one coeff for each implicit operator, then, in order
+ * to use this function, we may need to incorporate coefficients into each
+ * implicit operator before calling this function. And then set coeff as 1.
+ *
+ * \param Op implicit operator.
+ * \param dt size of a time step.
+ * \param coeff coefficient of temporal integration for implicit operator.
+ * \param n the order of Bn.
+ * \param BnHead returned matrix.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt, 
+        const PetscReal &coeff, const PetscInt &n, Mat &BnHead);
+
+
+/**
+ * \brief create normalized Bn.
+ *
+ * A is defined as \frac{inv(M)}{dt} - coeff \times Op, where M is defined as
+ * MHead * inv(R), Op is the summed coefficient matrix for implicit operators, 
+ * and coeff is the coefficient from temporal integration. For example, for the
+ * case of Adams-Bashforth for convective terms and Crank-Nicolson for diffusion
+ * term, A = \frac{inv(M)}{dt} - 0.5 \times L, where L = MHead * LHead * inv(R). 
+ * If the implicit part is more complex,there may be not only one coeff for summed
+ * implicit operator, then, in order to use this function, we may need to 
+ * incorporate coefficients into each implicit operator before calling this 
+ * function. And then set coeff as 1.
+ *
+ * \param Op implicit operator.
+ * \param R the normalization matrix to define M = MHead * inv(R).
+ * \param MHead the normalization matrix to define M = MHead * inv(R).
+ * \param dt size of a time step.
+ * \param coeff coefficient of temporal integration for implicit operator.
+ * \param n the order of Bn.
+ * \param Bn returned matrix.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
+        const PetscReal &dt, const PetscReal &coeff, const PetscInt &n, 
+        Mat &Bn);
+
+
+/**
+ * \brief create normalized Bn.
+ *
+ * A is defined as \frac{inv(M)}{dt} - coeff \times Op, where M is defined as
+ * MHead * inv(R), Op is the summed coefficient matrix for implicit operators, 
+ * and coeff is the coefficient from temporal integration. For example, for the
+ * case of Adams-Bashforth for convective terms and Crank-Nicolson for diffusion
+ * term, A = \frac{inv(M)}{dt} - 0.5 \times L, where L = MHead * LHead * inv(R). 
+ * If the implicit part is more complex,there may be not only one coeff for summed
+ * implicit operator, then, in order to use this function, we may need to 
+ * incorporate coefficients into each implicit operator before calling this 
+ * function. And then set coeff as 1.
+ *
+ * \param Op implicit operator.
+ * \param M the first term in A = dt * inv(M) - coeff * Op.
+ * \param dt size of a time step.
+ * \param coeff coefficient of temporal integration for implicit operator.
+ * \param n the order of Bn.
+ * \param Bn returned matrix.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt, 
+        const PetscReal &coeff, const PetscInt &n, Mat &Bn);

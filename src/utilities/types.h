@@ -16,6 +16,15 @@
 
 // here goes PETSc
 # include <petscsys.h>
+# include <petscmat.h>
+
+
+/** \brief operator < for MatStencil for using it as a key to map. 
+ *
+ * For the detail of implimentation, please refer to 
+ * std::lexicographical_compare. This is just a splified version.
+ */
+bool operator<(const MatStencil &, const MatStencil &);
 
 
 /** \brief shortcut of namespace std::experimental::filesystem */
@@ -199,6 +208,21 @@ namespace types
     };
 
 
+    /** \brief a data structure for a single ghost point. */
+    struct GhostPointInfo
+    {
+        MatStencil  targetStencil;
+        PetscInt    targetPackedId;
+        PetscReal   area, dL;
+        PetscReal   a0, a1;
+        PetscReal   value;
+    };
+
+
+    /** \brief a map (dictionary) for ghost points. */
+    typedef std::map<MatStencil, GhostPointInfo> GhostPointsList;
+
+
     /** \brief a struct holding information about which row in a matrix should
      *         be modified based on BCs.
      */
@@ -212,7 +236,7 @@ namespace types
     /** \brief a type that holds necessary for a matrix modifier that modifies
      *         matrix coefficient based on BCs.
      */
-    typedef std::vector<std::map<PetscInt, RowModifier>> MatrixModifier;
+    typedef std::vector<std::map<MatStencil, RowModifier>> MatrixModifier;
 }
 
 /**

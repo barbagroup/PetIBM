@@ -10,6 +10,24 @@
 #include "types.h"
 
 
+/** \copydoc operator<(const MatStencil &, const MatStencil &). */
+bool operator<(const MatStencil &l, const MatStencil &r)
+{
+    if (l.k < r.k) return true;
+    if (l.k > r.k) return false;
+
+    if (l.j < r.j) return true;
+    if (l.j > r.j) return false;
+
+    if (l.i < r.i) return true;
+    if (l.i > r.i) return false;
+
+    if (l.c < r.c) return true;
+
+    return false;
+}
+
+
 /** \copydoc types */
 namespace types
 {

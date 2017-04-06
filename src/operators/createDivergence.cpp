@@ -102,41 +102,47 @@ PetscErrorCode createDivergence(
                 // calculate and set values of the two surfaces in each direction
                 for(PetscInt field=0; field<mesh.dim; ++field)
                 {
+                    // the stencil of target surface
+                    MatStencil      target;
 
-                    // variables to store the local and global index of surfaces
-                    PetscInt        lclIdx, glbIdx;
+                    // index of target surface in packed Vec
+                    PetscInt        targetIdx;
 
                     // the absolute value of coefficient
                     PetscReal       value = kernel[field](i, j, k);
 
 
                     // the surface toward positive direction
+                    target = {k, j, i, 0};
+
                     ierr = DMDAConvertToCell(mesh.da[field], 
-                            {k, j, i, 0}, &lclIdx); CHKERRQ(ierr);
+                            target, &targetIdx); CHKERRQ(ierr);
 
                     ierr = ISLocalToGlobalMappingApply(mesh.qMapping[field], 
-                            1, &lclIdx, &glbIdx); CHKERRQ(ierr);
+                            1, &targetIdx, &targetIdx); CHKERRQ(ierr);
 
-                    ierr = MatSetValue(D, self, glbIdx, 
+                    ierr = MatSetValue(D, self, targetIdx, 
                             value, INSERT_VALUES); CHKERRQ(ierr);
 
                     // store the coefficient of ghost points for future use
-                    if (glbIdx == -1) modifier[field][lclIdx] = {self, value};
+                    if (targetIdx == -1) modifier[field][target] = {self, value};
 
 
                     // the surface toward negative direction
+                    target = getNeighbor[field](i, j, k);
+
                     ierr = DMDAConvertToCell(mesh.da[field], 
-                            getNeighbor[field](i, j, k), &lclIdx); CHKERRQ(ierr);
+                            target, &targetIdx); CHKERRQ(ierr);
 
                     ierr = ISLocalToGlobalMappingApply(mesh.qMapping[field], 
-                            1, &lclIdx, &glbIdx); CHKERRQ(ierr);
+                            1, &targetIdx, &targetIdx); CHKERRQ(ierr);
 
                     // note the value for this face is just a negative version
-                    ierr = MatSetValue(D, self, glbIdx, 
+                    ierr = MatSetValue(D, self, targetIdx, 
                             - value, INSERT_VALUES); CHKERRQ(ierr);
 
                     // store the coefficient of ghost points for future use
-                    if (glbIdx == -1) modifier[field][lclIdx] = {self, - value};
+                    if (targetIdx == -1) modifier[field][target] = {self, - value};
                 }
             }
 
@@ -153,16 +159,11 @@ PetscErrorCode createDivergence(
             for(PetscInt f=0; f<mesh.dim; ++f)
                 for(auto &pt: bd.points[f])
                 {
-                    PetscInt    col = pt.bcPt;
-                    PetscReal   value = modifier[f][pt.ghId].coeff * pt.a0;
+                    PetscInt    col = pt.second.targetPackedId;
+                    PetscReal   value = modifier[f][pt.first].coeff * pt.second.a0;
 
-                    ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[f], 1, &col, &col);
-                    CHKERRQ(ierr);
-
-                    ierr = MatSetValue(D, modifier[f][pt.ghId].row,
-                            col, value, ADD_VALUES);
-                    CHKERRQ(ierr);
+                    ierr = MatSetValue(D, modifier[f][pt.first].row,
+                            col, value, ADD_VALUES); CHKERRQ(ierr);
                 }
 
 

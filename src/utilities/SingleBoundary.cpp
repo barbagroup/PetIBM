@@ -6,6 +6,7 @@
  * \brief Definition of the member functions of class `SingleBoundary`.
  */
 
+// TODO: how to initialize the ghost value at the begining of a simulation
 
 // here goes headers from our PetIBM
 #include "SingleBoundary.h"
@@ -201,22 +202,26 @@ PetscErrorCode SingleBoundary::setPointsX(
 
     PetscErrorCode      ierr;
 
+
     for(PetscInt k=mesh->bg[field][2]; k<mesh->ed[field][2]; ++k)
     {
         for(PetscInt j=mesh->bg[field][1]; j<mesh->ed[field][1]; ++j)
         {
-            // selfId is the local id in a Vec of the boundary point
-            // ghostId is the local id in a Vec of the ghost point
+            // target is the target interior point of current ghost point
+            MatStencil  target = {k, j, self, 0};
+
+            // targetId is the index of target in packed global Vec
+            PetscInt    targetId;
+
             // area is the cell surface area used to calculate flux
             // dL is the distance between the boundary and the ghost points
-            PetscInt    selfId, ghostId;
             PetscReal   area, dL;
 
-            ierr = DMDAConvertToCell(mesh->da[field], {k, j, self, 0}, &selfId);
-            CHKERRQ(ierr);
+            ierr = DMDAConvertToCell(
+                    mesh->da[field], target, &targetId); CHKERRQ(ierr);
 
-            ierr = DMDAConvertToCell(mesh->da[field], {k, j, ghost, 0}, &ghostId);
-            CHKERRQ(ierr);
+            ierr = ISLocalToGlobalMappingApply(
+                    mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
 
             area = mesh->dL[field][1][j] * mesh->dL[field][2][k];
 
@@ -227,7 +232,8 @@ PetscErrorCode SingleBoundary::setPointsX(
                 // for left boundary, dL is the dx of the first pressure cell
                 dL = mesh->dL[3][0][0];
 
-            points[field].push_back({selfId, ghostId, area, dL, 0.0, 0.0});
+            points[field][{k, j, ghost, 0}] = 
+                {target, targetId, area, dL, 0.0, 0.0, 0.0};
         }
     }
 
@@ -249,18 +255,21 @@ PetscErrorCode SingleBoundary::setPointsY(
     {
         for(PetscInt i=mesh->bg[field][0]; i<mesh->ed[field][0]; ++i)
         {
-            // selfId is the local id in a Vec of the boundary point
-            // ghostId is the local id in a Vec of the ghost point
+            // target is the target interior point of current ghost point
+            MatStencil  target = {k, self, i, 0};
+
+            // targetId is the index of target in packed global Vec
+            PetscInt    targetId;
+
             // area is the cell surface area used to calculate flux
             // dL is the distance between the boundary and the ghost points
-            PetscInt    selfId, ghostId;
             PetscReal   area, dL;
 
-            ierr = DMDAConvertToCell(mesh->da[field], {k, self, i, 0}, &selfId);
-            CHKERRQ(ierr);
+            ierr = DMDAConvertToCell(
+                    mesh->da[field], target, &targetId); CHKERRQ(ierr);
 
-            ierr = DMDAConvertToCell(mesh->da[field], {k, ghost, i, 0}, &ghostId);
-            CHKERRQ(ierr);
+            ierr = ISLocalToGlobalMappingApply(
+                    mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
 
             area = mesh->dL[field][0][i] * mesh->dL[field][2][k];
 
@@ -271,7 +280,8 @@ PetscErrorCode SingleBoundary::setPointsY(
                 // for bottom boundary, dL is the dx of the first pressure cell
                 dL = mesh->dL[3][1][0];
 
-            points[field].push_back({selfId, ghostId, area, dL, 0.0, 0.0});
+            points[field][{k, ghost, i, 0}] = 
+                {target, targetId, area, dL, 0.0, 0.0, 0.0};
         }
     }
 
@@ -293,18 +303,21 @@ PetscErrorCode SingleBoundary::setPointsZ(
     {
         for(PetscInt i=mesh->bg[field][0]; i<mesh->ed[field][0]; ++i)
         {
-            // selfId is the local id in a Vec of the boundary point
-            // ghostId is the local id in a Vec of the ghost point
+            // target is the target interior point of current ghost point
+            MatStencil  target = {self, j, i, 0};
+
+            // targetId is the index of target in packed global Vec
+            PetscInt    targetId;
+
             // area is the cell surface area used to calculate flux
             // dL is the distance between the boundary and the ghost points
-            PetscInt    selfId, ghostId;
             PetscReal   area, dL;
 
-            ierr = DMDAConvertToCell(mesh->da[field], {self, j, i, 0}, &selfId);
-            CHKERRQ(ierr);
+            ierr = DMDAConvertToCell(
+                    mesh->da[field], target, &targetId); CHKERRQ(ierr);
 
-            ierr = DMDAConvertToCell(mesh->da[field], {ghost, j, i, 0}, &ghostId);
-            CHKERRQ(ierr);
+            ierr = ISLocalToGlobalMappingApply(
+                    mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
 
             area = mesh->dL[field][0][i] * mesh->dL[field][1][j];
 
@@ -315,7 +328,8 @@ PetscErrorCode SingleBoundary::setPointsZ(
                 // for back boundary, dL is the dz of the first pressure cell
                 dL = mesh->dL[3][2][0];
 
-            points[field].push_back({selfId, ghostId, area, dL, 0.0, 0.0});
+            points[field][{ghost, j, i, 0}] = 
+                {target, targetId, area, dL, 0.0, 0.0, 0.0};
         }
     }
 
@@ -338,44 +352,42 @@ PetscErrorCode SingleBoundary::setKernels(
         case types::BCType::DIRICHLET:
             if (field == dir)
                 updateCoeffsKernel[field] = std::bind(
-                        [this] (IdPairs &p, const PetscReal &bc) {
+                        [this] (types::GhostPointInfo &p, const PetscReal &bc) {
                             p.a1 = bc * p.area;},
-                        _1, _4);
+                        _1, _3);
             else
                 updateCoeffsKernel[field] = std::bind(
-                        [this] (IdPairs &p, const PetscReal &bc) {
+                        [this] (types::GhostPointInfo &p, const PetscReal &bc) {
                             p.a0 = -1.0; 
                             p.a1 = 2.0 * bc * p.area;},
-                        _1, _4);
+                        _1, _3);
             break;
 
         case types::BCType::NEUMANN:
             updateCoeffsKernel[field] = std::bind(
-                    [this] (IdPairs &p, const PetscReal &bc) {
+                    [this] (types::GhostPointInfo &p, const PetscReal &bc) {
                         p.a0 = 1.0;
                         p.a1 = this->normal * p.dL * bc * p.area;},
-                    _1, _4);
+                    _1, _3);
             break;
 
         case types::BCType::CONVECTIVE:
             if (field == dir)
                 updateCoeffsKernel[field] =
-                    [this] (IdPairs &p, const PetscReal &bdValue, 
-                            const PetscReal &ghValue, const PetscReal &bc,
-                            const PetscReal &dt) 
+                    [this] (types::GhostPointInfo &p, const PetscReal &bdValue, 
+                            const PetscReal &bc, const PetscReal &dt) 
                     { 
-                        p.a1 = ghValue - 
-                            this->normal * dt * bc * (ghValue - bdValue) / p.dL;
+                        p.a1 = p.value - 
+                            this->normal * dt * bc * (p.value - bdValue) / p.dL;
                     };
             else
                 updateCoeffsKernel[field] =
-                    [this] (IdPairs &p, const PetscReal &bdValue, 
-                            const PetscReal &ghValue, const PetscReal &bc,
-                            const PetscReal &dt) 
+                    [this] (types::GhostPointInfo &p, const PetscReal &bdValue, 
+                            const PetscReal &bc, const PetscReal &dt) 
                     {
                         p.a0 = -1.0;
-                        p.a1 = ghValue + bdValue - 
-                            2.0 * this->normal * dt * bc * (ghValue - bdValue) / p.dL;
+                        p.a1 = p.value + bdValue - 
+                            2.0 * this->normal * dt * bc * (p.value - bdValue) / p.dL;
                     };
             break;
 
@@ -395,17 +407,18 @@ PetscErrorCode SingleBoundary::updateCoeffsTrue(
 
     PetscErrorCode      ierr;
 
-    const PetscReal     *arry;
+    PetscReal           targetValue;
 
     for(PetscInt f=0; f<dim; ++f)
-    {
-        ierr = VecGetArrayRead(soln.qLocal[f], &arry); CHKERRQ(ierr);
-
         for(auto &it: points[f]) 
-            updateCoeffsKernel[f](it, arry[it.bcPt], arry[it.ghId], value[f], dt); 
+        {
+            // note: thanks to PETSc, this is not a collective function, because
+            // this function can only get values local to this process.
+            ierr = VecGetValues(soln.qGlobal, 1, 
+                    &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
-        ierr = VecRestoreArrayRead(soln.qLocal[f], &arry); CHKERRQ(ierr);
-    }
+            updateCoeffsKernel[f](it.second, targetValue, value[f], dt); 
+        }
 
     PetscFunctionReturn(0);
 }
@@ -418,17 +431,16 @@ PetscErrorCode SingleBoundary::updateGhostsTrue(Solutions &soln)
 
     PetscErrorCode      ierr;
 
-    PetscReal           *arry;
+    PetscReal           targetValue;
 
     for(PetscInt f=0; f<dim; ++f)
-    {
-        ierr = VecGetArray(soln.qLocal[f], &arry); CHKERRQ(ierr);
-
         for(auto it: points[f])
-            arry[it.ghId] = it.a0 * arry[it.bcPt] + it.a1;
+        {
+            ierr = VecGetValues(soln.qGlobal, 1, 
+                    &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
-        ierr = VecRestoreArray(soln.qLocal[f], &arry); CHKERRQ(ierr);
-    }
+            it.second.value = it.second.a0 * targetValue + it.second.a1;
+        }
 
     PetscFunctionReturn(0);
 }

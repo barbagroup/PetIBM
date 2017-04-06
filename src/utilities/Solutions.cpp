@@ -55,13 +55,6 @@ PetscErrorCode Solutions::init(
     // create global composite vaector for lambda
     ierr = DMCreateGlobalVector(mesh->lambdaPack, &lambdaGlobal); CHKERRQ(ierr);
 
-    // create local composite vaector for q
-    qLocal.resize(dim);
-    for(PetscInt i=0; i<dim; ++i)
-    {
-        ierr = DMCreateLocalVector(mesh->da[i], &qLocal[i]); CHKERRQ(ierr);
-    }
-
     // set output format
     ierr = setOutputFormat(type); CHKERRQ(ierr);
 
@@ -70,19 +63,6 @@ PetscErrorCode Solutions::init(
 
     // create info string
     ierr = createInfoString(); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}
-
-
-PetscErrorCode Solutions::updateLocalVecs()
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-
-    ierr = DMCompositeScatterArray(mesh->qPack, qGlobal, qLocal.data());
-    CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

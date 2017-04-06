@@ -40,12 +40,7 @@ public:
 
     PetscReal           normal;
 
-
-    struct IdPairs {PetscInt bcPt; PetscInt ghId; 
-        PetscReal area; PetscReal dL; PetscReal a0; PetscReal a1;};
-
-
-    std::vector<std::vector<IdPairs>>   points;
+    std::vector<types::GhostPointsList>   points;
 
 
 
@@ -74,7 +69,7 @@ protected:
 
 
     std::vector<std::function<
-        void(IdPairs &p, const PetscReal &bdValue, const PetscReal &ghValue, 
+        void(types::GhostPointInfo &p, const PetscReal &bdValue, 
                 const PetscReal &bc, const PetscReal &dt)>>  updateCoeffsKernel;
 
 

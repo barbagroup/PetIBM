@@ -33,8 +33,6 @@ public:
 
     Vec                     lambdaGlobal;
 
-    std::vector<Vec>        qLocal;
-
     std::string             info;
     
     
@@ -55,8 +53,6 @@ public:
     PetscErrorCode printInfo() const;
 
     PetscErrorCode applyIC(const FlowDescription &flow);
-
-    PetscErrorCode updateLocalVecs();
 
     PetscErrorCode write(const std::string &dir, const std::string &name) const;
 

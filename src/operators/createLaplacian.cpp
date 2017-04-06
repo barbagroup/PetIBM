@@ -49,7 +49,7 @@ inline PetscErrorCode setRowValues(
         const GetStencilsFunc &getStencils, 
         const PetscInt &f, const PetscInt &i, 
         const PetscInt &j, const PetscInt &k, Mat &L,
-        std::map<PetscInt, types::RowModifier> &rowModifiers);
+        std::map<MatStencil, types::RowModifier> &rowModifiers);
 
 
 /** \copydoc createLaplacian. */
@@ -126,14 +126,10 @@ PetscErrorCode createLaplacian(
             for(PetscInt f=0; f<mesh.dim; ++f)
                 for(auto &pt: bd.points[f])
                 {
-                    PetscInt    col = pt.bcPt;
-                    PetscReal   value = modifier[f][pt.ghId].coeff * pt.a0;
+                    PetscInt    col = pt.second.targetPackedId;
+                    PetscReal   value = modifier[f][pt.first].coeff * pt.second.a0;
 
-                    ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[f], 1, &col, &col); 
-                    CHKERRQ(ierr);
-
-                    ierr = MatSetValue(L, modifier[f][pt.ghId].row, 
+                    ierr = MatSetValue(L, modifier[f][pt.first].row, 
                             col, value, ADD_VALUES); CHKERRQ(ierr);
                 }
 
@@ -157,7 +153,7 @@ inline PetscErrorCode setRowValues(
         const GetStencilsFunc &getStencils, 
         const PetscInt &f, const PetscInt &i, 
         const PetscInt &j, const PetscInt &k, Mat &L,
-        std::map<PetscInt, types::RowModifier> &rowModifiers)
+        std::map<MatStencil, types::RowModifier> &rowModifiers)
 {
     PetscFunctionBeginUser;
 
@@ -215,7 +211,7 @@ inline PetscErrorCode setRowValues(
 
     // save the values for boundary ghost points
     for(PetscInt id=0; id<stencils.size(); ++id)
-        if (cols[id] == -1) rowModifiers[lclIds[id]] = {cols[0], values[id]};
+        if (cols[id] == -1) rowModifiers[stencils[id]] = {cols[0], values[id]};
 
     PetscFunctionReturn(0);
 }

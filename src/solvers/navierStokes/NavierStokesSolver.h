@@ -127,7 +127,7 @@ public:
   virtual PetscErrorCode generateR2();
 
   // advance in time
-  PetscErrorCode stepTime();
+  virtual PetscErrorCode stepTime();
   // solve system for intermediate velocity fluxes \f$ q^* \f$
   PetscErrorCode solveIntermediateVelocity();
   // solver Poisson system for pressure and body forces
@@ -156,7 +156,7 @@ public:
   // write pressure field into file
   virtual PetscErrorCode writeLambda(std::string directory);
   // write KSP iteration counts into file
-  PetscErrorCode writeIterationCounts();
+  virtual PetscErrorCode writeIterationCounts();
   
 public:
   // constructors

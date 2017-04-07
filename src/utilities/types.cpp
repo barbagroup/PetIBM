@@ -140,9 +140,12 @@ IBMethod stringToIBMethod(std::string s)
     return NAVIER_STOKES;
   if (s == "TAIRA_COLONIUS")
     return TAIRA_COLONIUS;
-  std::cout << "\nERROR: " << s << " - unknown Immersed Boudnary Method.\n";
+  if (s == "LI_ET_AL")
+    return LI_ET_AL;
+  std::cout << "\nERROR: " << s << " - unknown Immersed Boundary Method.\n";
   std::cout << "Immersed Boundary methods implemented:\n";
   std::cout << "\tTAIRA_COLONIUS\n";
+  std::cout << "\tLI_ET_AL\n";
   std::cout << "\tNONE\n" << std::endl;
   exit(1);
 } // stringToIBMethod
@@ -159,6 +162,9 @@ std::string stringFromIBMethod(IBMethod method)
   {
     case TAIRA_COLONIUS:
       return "Immersed-Boundary Projection method (Taira and Colonius, 2007)";
+      break;
+    case LI_ET_AL:
+      return "Decoupled IBPM (Li et al., 2016)";
       break;
     case NAVIER_STOKES:
       return "Navier-Stokes solver (Perot, 1993)";

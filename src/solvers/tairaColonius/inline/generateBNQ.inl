@@ -254,14 +254,14 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   // BNQ
   ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
 
   ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
   ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
   
   ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
-
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // generateBNQ
@@ -627,14 +627,14 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   // BNQ
   ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
 
   ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
-  ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-  
-  ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
-
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
   ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
+  ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
+
+  ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
 
   return 0;
 } // generateBNQ

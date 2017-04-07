@@ -119,15 +119,15 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
 
   ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
 
   // compute matrix QT
   ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
   // scale Q to get BNQ
   ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-
   ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
-
+  
   return 0;
 } // generateBNQ
 
@@ -279,14 +279,14 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
 
   ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
 
   // compute matrix QT
   ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
   // scale Q to get BNQ
   ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-
   ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
 
   return 0;
 } // generateBNQ

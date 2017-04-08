@@ -152,6 +152,14 @@ namespace types
     typedef std::vector<RealVec2D>  RealVec3D;
 
 
+    /** \brief a 1D array for dL, which allows use to use index "-1". */
+    typedef PetscReal*                  DeltaLVec1D;
+    /** \brief an array of DeltaLVec1D. */
+    typedef std::vector<DeltaLVec1D>    DeltaLVec2D;
+    /** \brief an array of DeltaLVec2D. */
+    typedef std::vector<DeltaLVec2D>    DeltaLVec3D;
+
+
     /** \brief a structure holding information of a single boundary condition. */
     struct BCTypeValuePair
     {

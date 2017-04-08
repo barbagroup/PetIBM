@@ -25,7 +25,7 @@ public:
 
   DM bda;
   Mat E, ET, EBNET;
-  Vec fTilde, rhsf, temp, temp2, qStar2;
+  Vec fTilde, rhsf, temp, qStar2;
   Solver *forces;
 
   std::ofstream forcesFile;

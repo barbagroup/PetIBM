@@ -18,7 +18,6 @@ PetscErrorCode LiEtAlSolver<dim>::createVecs()
   ierr = VecDuplicate(fTilde, &rhsf); CHKERRQ(ierr);
   ierr = VecDuplicate(NavierStokesSolver<dim>::q, &qStar2); CHKERRQ(ierr);
   ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp); CHKERRQ(ierr);
-  ierr = VecDuplicate(NavierStokesSolver<dim>::q, &temp2); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // createVecs

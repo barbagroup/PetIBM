@@ -31,7 +31,6 @@ LiEtAlSolver<dim>::LiEtAlSolver(CartesianMesh *cartesianMesh,
   fTilde = PETSC_NULL;
   rhsf = PETSC_NULL;
   temp = PETSC_NULL;
-  temp2 = PETSC_NULL;
   E = PETSC_NULL;
   ET = PETSC_NULL;
   EBNET = PETSC_NULL;
@@ -103,7 +102,7 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
   ierr = NavierStokesSolver<dim>::assembleRHSVelocity(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::solveIntermediateVelocity(); CHKERRQ(ierr);
 
-  PetscInt maxIters = 5;
+  PetscInt maxIters = 1;
   for (PetscInt iter=0; iter<maxIters; iter++)
   {
     if (iter > 0)
@@ -185,9 +184,9 @@ PetscErrorCode LiEtAlSolver<dim>::updateFlux()
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageProjectionStep); CHKERRQ(ierr);
 
   ierr = MatMult(ET, fTilde, temp); CHKERRQ(ierr);
-  ierr = VecPointwiseMult(temp2, NavierStokesSolver<dim>::BN, temp); CHKERRQ(ierr);
+  ierr = VecPointwiseMult(temp, NavierStokesSolver<dim>::BN, temp); CHKERRQ(ierr);
   ierr = VecCopy(NavierStokesSolver<dim>::qStar, qStar2); CHKERRQ(ierr);
-  ierr = VecWAXPY(NavierStokesSolver<dim>::qStar, -1.0, temp2, qStar2); CHKERRQ(ierr);
+  ierr = VecWAXPY(NavierStokesSolver<dim>::qStar, -1.0, temp, qStar2); CHKERRQ(ierr);
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -297,7 +296,6 @@ PetscErrorCode LiEtAlSolver<dim>::finalize()
   if (rhsf != PETSC_NULL) {ierr = VecDestroy(&rhsf); CHKERRQ(ierr);}
   if (qStar2 != PETSC_NULL) {ierr = VecDestroy(&qStar2); CHKERRQ(ierr);}
   if (temp != PETSC_NULL) {ierr = VecDestroy(&temp); CHKERRQ(ierr);}
-  if (temp2 != PETSC_NULL) {ierr = VecDestroy(&temp2); CHKERRQ(ierr);}
   if (E != PETSC_NULL) {ierr = MatDestroy(&E); CHKERRQ(ierr);}
   if (ET != PETSC_NULL) {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
   if (EBNET != PETSC_NULL) {ierr = MatDestroy(&EBNET); CHKERRQ(ierr);}

@@ -25,9 +25,11 @@ public:
 
   DM bda;
   Mat E, ET, EBNET;
-  Vec fTilde, rhsf, temp, qStar2;
+  Vec fTilde, rhsf, tmp;
   Solver *forces;
 
+  Vec regularizedForces;
+  PetscReal bodyForces[dim];
   std::ofstream forcesFile;
 
   PetscLogStage stageRHSForceSystem,
@@ -47,9 +49,12 @@ public:
   PetscErrorCode solveForceSystem();
 
   PetscErrorCode calculateForces();
+  PetscErrorCode calculateForces2();
   PetscErrorCode writeForces();
   PetscErrorCode writeIterationCounts();
   PetscErrorCode writeLagrangianForces(std::string directory);
+
+  PetscErrorCode scatterGlobalToLocal();
 
 public:
   // constructors

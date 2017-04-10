@@ -14,6 +14,7 @@ PetscErrorCode LiEtAlSolver<dim>::writeData()
   PetscFunctionBeginUser;
 
   ierr = calculateForces(); CHKERRQ(ierr);
+  // ierr = calculateForces2(); CHKERRQ(ierr);
   ierr = writeForces(); CHKERRQ(ierr);
 
   ierr = writeIterationCounts(); CHKERRQ(ierr);
@@ -167,6 +168,10 @@ PetscErrorCode LiEtAlSolver<dim>::writeForces()
         forcesFile << '\t' << bodies[bIdx].forces[d];
       }
     }
+    // for (PetscInt d=0; d<dim; d++)
+    // {
+    //   forcesFile << '\t' << bodyForces[d];
+    // }
     forcesFile << std::endl;
     forcesFile.close();
   }

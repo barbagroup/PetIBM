@@ -15,6 +15,7 @@ PetscErrorCode TairaColoniusSolver<dim>::createVecs()
 
   ierr = NavierStokesSolver<dim>::createVecs();
   ierr = VecDuplicate(NavierStokesSolver<dim>::lambda, &nullSpaceVec); CHKERRQ(ierr);
+  ierr = VecDuplicate(NavierStokesSolver<dim>::q, &regularizedForces); CHKERRQ(ierr);
 
   return 0;
 } // createVecs

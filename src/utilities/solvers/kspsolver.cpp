@@ -19,7 +19,7 @@ PetscErrorCode KSPSolver::create(const Mat &A)
   ierr = KSPCreate(PETSC_COMM_WORLD, &ksp); CHKERRQ(ierr);
   ierr = KSPSetOptionsPrefix(ksp, prefix.c_str()); CHKERRQ(ierr);
   ierr = KSPSetOperators(ksp, A, A); CHKERRQ(ierr);
-  ierr = KSPSetInitialGuessNonzero(ksp, PETSC_TRUE); CHKERRQ(ierr);
+  // ierr = KSPSetInitialGuessNonzero(ksp, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetType(ksp, KSPCG); CHKERRQ(ierr);
   ierr = KSPSetReusePreconditioner(ksp, PETSC_TRUE); CHKERRQ(ierr);
   ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);

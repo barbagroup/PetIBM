@@ -84,7 +84,8 @@ PetscErrorCode CartesianMesh::init(
     max = types::RealVec1D(3, 1.0);
     n = types::IntVec2D(5, types::IntVec1D(3, 1));
     coord = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 0.0)));
-    dL = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 1.0)));
+    dLTrue = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 1.0)));
+    dL = types::DeltaLVec3D(5, types::DeltaLVec2D(3, nullptr));
     da = std::vector<DM>(5, PETSC_NULL);
     nProc = types::IntVec1D(3, PETSC_DECIDE);
     bg = types::IntVec2D(5, types::IntVec1D(3, 0));
@@ -98,7 +99,7 @@ PetscErrorCode CartesianMesh::init(
 
 
     // index 3 represent pressure mesh; min & max always represent pressure mesh
-    ierr = parser::parseMesh(meshNode, dim, min, max, n[3], dL[3]); CHKERRQ(ierr);
+    ierr = parser::parseMesh(meshNode, dim, min, max, n[3], dLTrue[3]); CHKERRQ(ierr);
 
 
     // create raw grid information
@@ -159,13 +160,17 @@ PetscErrorCode CartesianMesh::createPressureMesh()
         coord[3][i].resize(n[3][i]);
 
         // the following three lines calculate the coord of pressure points
-        std::partial_sum(dL[3][i].begin(), dL[3][i].end(), coord[3][i].begin());
+        std::partial_sum(
+                dLTrue[3][i].begin(), dLTrue[3][i].end(), coord[3][i].begin());
 
         auto f = [i, this] (double &a, double &b) -> double 
                     { return a + this->min[i] - 0.5 * b; };
 
         std::transform(coord[3][i].begin(), coord[3][i].end(), 
-                dL[3][i].begin(), coord[3][i].begin(), f);
+                dLTrue[3][i].begin(), coord[3][i].begin(), f);
+
+        // no ghost points in pressure grid, so dL[0] = dLTrue[0]
+        dL[3][i] = &dLTrue[3][i][0];
     }
 
     PetscFunctionReturn(0);
@@ -185,7 +190,9 @@ PetscErrorCode CartesianMesh::createVertexMesh()
         coord[4][i].resize(n[4][i]);
 
         // create coordinates of vertexes
-        std::partial_sum(dL[3][i].begin(), dL[3][i].end(), coord[4][i].begin()+1);
+        std::partial_sum(dLTrue[3][i].begin(), dLTrue[3][i].end(), 
+                coord[4][i].begin()+1); // here we assume coord[4][0] = 0.0
+
         std::for_each(coord[4][i].begin(), coord[4][i].end(),
                 [i, this] (double &a) -> void { a += this->min[i]; });
     }
@@ -202,40 +209,63 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
     // note: index 0, 1, 2 represent u, v, w respectively
     for(unsigned int comp=0; comp<dim; comp++)
     {
-        // loop through each direction, i.e., x, y, z axes
+        // loop through each direction, i.e., x, y, z directions
         for(unsigned int dir=0; dir<dim; ++dir)
         {
             // when the direction corresponding to velocity component
             if (dir == comp)
             {
-                // there will no velocity point on boundary (it ghosted)
+                // there will no velocity point on boundary (it's a ghost point)
                 n[comp][dir] = n[3][dir] - 1;
 
-                // coordinates will match that of the vertex
+                // coordinates will match the interior part of the vertex grid
                 coord[comp][dir] = RealVec1D(
                         coord[4][dir].begin()+1, coord[4][dir].end()-1);
 
-                // cell size will be a half of the sum of adjacent pressure cell
-                dL[comp][dir].resize(n[comp][dir]);
+                // we store the dL of ghost points, so the size is n+2
+                dLTrue[comp][dir].resize(n[comp][dir]+2);
 
+                // cell size will be a half of the sum of adjacent pressure cell
                 auto f = [] (const PetscReal &x, const PetscReal &y)
                     -> PetscReal { return 0.5 * (x + y); };
 
                 // note: adjacent can not automatically ignore the first element
-                std::adjacent_difference(dL[3][dir].begin()+1, dL[3][dir].end(),
-                        dL[comp][dir].begin(), f);
+                // note: pressure doesn't have ghost points, while velocity does.
+                std::adjacent_difference(
+                        dLTrue[3][dir].begin(), dLTrue[3][dir].end(),
+                        dLTrue[comp][dir].begin(), f);
 
-                // so we have to handle the first cell manually
-                dL[comp][dir][0] = 0.5 * (dL[3][dir][0] + dL[3][dir][1]);
 
                 // if BC in this direction is periodic, we append one more 
                 // velocity point at the end
                 if ((*bcInfo)[BCLoc(dir*2)][Field(comp)].type == BCType::PERIODIC)
                 {
+                    // add 1 to the number of valid grid point
                     n[comp][dir] += 1;
-                    coord[comp][dir].push_back(coord[4][dir][n[comp][dir]]);
-                    dL[comp][dir].push_back(
-                            f(dL[3][dir][0], dL[3][dir][n[comp][dir]-1]));
+
+                    // add the coordinate to the extra point
+                    coord[comp][dir].push_back(coord[4][dir].back());
+
+
+                    // the space for larger ghost point in dLTrue is now used to 
+                    // store the grid point on periodic BC
+                    dLTrue[comp][dir].back() = 
+                        f(dLTrue[3][dir][0], dLTrue[3][dir].back());
+
+                    // the smaller ghost point will be the same as the last
+                    // valid point
+                    dLTrue[comp][dir][0] = dLTrue[comp][dir].back();
+
+                    // we have to create one more space for the larger ghost
+                    // point, and its dL is the same as the 1st valid point
+                    dLTrue[comp][dir].push_back(dLTrue[comp][dir][1]);
+                }
+                // for other cases, we simply get the dL for the larger ghost
+                // note: the smaller ghost point has already got value from
+                // adjacent_difference, which is the dL of the 1st pressure cell
+                else
+                {
+                    dLTrue[comp][dir].back() = dLTrue[3][dir].back();
                 }
             }
             // other directions
@@ -245,8 +275,23 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 
                 // coordinate and cel size will match that of pressure point
                 coord[comp][dir] = coord[3][dir];
-                dL[comp][dir] = dL[3][dir];
+
+                // we store the dL of ghost points, so the size is n+2
+                dLTrue[comp][dir].resize(n[comp][dir]+2);
+
+                // the dL of valid points is the same as pressure grid
+                std::copy(dLTrue[3][dir].begin(), dLTrue[3][dir].end(), 
+                        dLTrue[comp][dir].begin()+1);
+
+                // get the dL for the smaller and larger ghost points
+                dLTrue[comp][dir].front() = dLTrue[3][dir].front();
+                dLTrue[comp][dir].back() = dLTrue[3][dir].back();
             }
+
+
+            // variable dL will point to the 1st valid grid point, so we can access
+            // the 1st ghost point with the index -1, i.e., dL[comp][dir][-1]
+            dL[comp][dir] = &dLTrue[comp][dir][1];
         }
     }
 

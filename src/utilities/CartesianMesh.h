@@ -32,10 +32,6 @@ class CartesianMesh
 {
 public:
 
-    //friend class Solutions;
-    //friend class SingleBoundary;
-    //friend class Boundary;
-
     PetscInt                dim = -1;
 
     types::RealVec1D        min,
@@ -45,7 +41,7 @@ public:
 
     types::RealVec3D        coord;
 
-    types::RealVec3D        dL;
+    types::DeltaLVec3D      dL;
 
     std::string             info;
 
@@ -110,6 +106,8 @@ public:
             const std::string &xml, const std::string &file) const;
 
 protected:
+
+    types::RealVec3D        dLTrue;
 
     PetscErrorCode createVertexMesh();
     PetscErrorCode createPressureMesh();

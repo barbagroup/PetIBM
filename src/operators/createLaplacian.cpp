@@ -181,25 +181,20 @@ inline PetscErrorCode setRowValues(
 
 
     // get the values. One direction each time.
+    // Luckly we have dL for ghost points, and the index of -1 is usable in dL,
+    // so we don't have to use "if" to find out the boundary points
     for(PetscInt dir=0; dir<mesh.dim; ++dir)
     {
-        const types::BCType &type = 
-            (*mesh.bcInfo)[types::BCLoc(dir*2)][types::Field(f)].type;
-
-        const types::RealVec1D &dL = mesh.dL[f][dir];
-
+        // determine the index based on the direction
         const PetscInt &self = (dir == 0)? i : (dir == 1)? j : k;
 
-        const PetscInt &n = dL.size();
+        // alias for cleaner code
+        const PetscReal &dLSelf = mesh.dL[f][dir][self];
+        const PetscReal &dLNeg = mesh.dL[f][dir][self-1];
+        const PetscReal &dLPos = mesh.dL[f][dir][self+1];
 
-        PetscReal   dLNeg = (self > 0) ? dL[self-1] :
-            (type == types::PERIODIC) ? dL.back() : mesh.dL[3][dir].front();
-
-        PetscReal   dLPos = (self < (n - 1)) ? dL[self+1] :
-            (type == types::PERIODIC) ? dL.front() : mesh.dL[3][dir].back();
-
-        values[dir*2+1] = 1.0 / (0.5 * (dLNeg + dL[self]) * dL[self]);
-        values[dir*2+2] = 1.0 / (0.5 * (dL[self] + dLPos) * dL[self]);
+        values[dir*2+1] = 1.0 / (0.5 * (dLNeg + dLSelf) * dLSelf);
+        values[dir*2+2] = 1.0 / (0.5 * (dLSelf + dLPos) * dLSelf);
     }
 
     // update diagonal value

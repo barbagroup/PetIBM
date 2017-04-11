@@ -63,13 +63,13 @@ PetscErrorCode Boundary::init(const CartesianMesh &_mesh)
 
 
 /** \copydoc Boundary::updateCoeffs */
-PetscErrorCode Boundary::updateCoeffs(Solutions &soln, const PetscReal &dt)
+PetscErrorCode Boundary::updateEqs(Solutions &soln, const PetscReal &dt)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
 
-    for(auto &it: bds) { ierr = it.updateCoeffs(soln, dt); CHKERRQ(ierr); }
+    for(auto &it: bds) { ierr = it.updateEqs(soln, dt); CHKERRQ(ierr); }
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
 
@@ -78,13 +78,28 @@ PetscErrorCode Boundary::updateCoeffs(Solutions &soln, const PetscReal &dt)
 
 
 /** \copydoc Boundary::updateGhosts */
-PetscErrorCode Boundary::updateGhosts(Solutions &soln)
+PetscErrorCode Boundary::updateGhostValues(Solutions &soln)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
 
-    for(auto &it: bds) { ierr = it.updateGhosts(soln); CHKERRQ(ierr); }
+    for(auto &it: bds) { ierr = it.updateGhostValues(soln); CHKERRQ(ierr); }
+
+    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc Boundary::copyValues2LocalVecs */
+PetscErrorCode Boundary::copyValues2LocalVecs(std::vector<Vec> &lclVecs) const
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    for(auto &it: bds) { ierr = it.copyValues2LocalVecs(lclVecs); CHKERRQ(ierr); }
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
 

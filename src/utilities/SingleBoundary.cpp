@@ -61,7 +61,7 @@ PetscErrorCode SingleBoundary::init(
         // initialize the STL vectors
         type.resize(dim); value.resize(dim);
         points.resize(dim);
-        updateCoeffsKernel.resize(dim);
+        updateEqsKernel.resize(dim);
 
         // get the types and values
         for(PetscInt f=0; f<dim; ++f)
@@ -78,19 +78,22 @@ PetscErrorCode SingleBoundary::init(
             // 1. If u-velocity is periodic, then others are also periodic.
             // 2. we don't do anything for periodic BC. Let PETSc handles that.
         {
-            updateCoeffs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
-            updateGhosts = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+            updateEqs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+            updateGhostValues = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+            copyValues2LocalVecs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
         }
         else
         {
-            updateCoeffs = std::bind(&SingleBoundary::updateCoeffsTrue, this, _1, _2);
-            updateGhosts = std::bind(&SingleBoundary::updateGhostsTrue, this, _1);
+            updateEqs = std::bind(&SingleBoundary::updateEqsTrue, this, _1, _2);
+            updateGhostValues = std::bind(&SingleBoundary::updateGhostValuesTrue, this, _1);
+            copyValues2LocalVecs = std::bind(&SingleBoundary::copyValues2LocalVecsTrue, this, _1);
         }
     }
     else
     {
-        updateCoeffs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
-        updateGhosts = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+        updateEqs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+        updateGhostValues = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
+        copyValues2LocalVecs = std::bind([]()->PetscErrorCode{PetscFunctionReturn(0);});
     }
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
@@ -369,12 +372,12 @@ PetscErrorCode SingleBoundary::setKernels(
     {
         case types::BCType::DIRICHLET:
             if (field == dir)
-                updateCoeffsKernel[field] = std::bind(
+                updateEqsKernel[field] = std::bind(
                         [this] (types::GhostPointInfo &p, const PetscReal &bc) {
                             p.a1 = bc * p.area;},
                         _1, _3);
             else
-                updateCoeffsKernel[field] = std::bind(
+                updateEqsKernel[field] = std::bind(
                         [this] (types::GhostPointInfo &p, const PetscReal &bc) {
                             p.a0 = -1.0; 
                             p.a1 = 2.0 * bc * p.area;},
@@ -382,7 +385,7 @@ PetscErrorCode SingleBoundary::setKernels(
             break;
 
         case types::BCType::NEUMANN:
-            updateCoeffsKernel[field] = std::bind(
+            updateEqsKernel[field] = std::bind(
                     [this] (types::GhostPointInfo &p, const PetscReal &bc) {
                         p.a0 = 1.0;
                         p.a1 = this->normal * p.dL * bc * p.area;},
@@ -391,7 +394,7 @@ PetscErrorCode SingleBoundary::setKernels(
 
         case types::BCType::CONVECTIVE:
             if (field == dir)
-                updateCoeffsKernel[field] =
+                updateEqsKernel[field] =
                     [this] (types::GhostPointInfo &p, const PetscReal &bdValue, 
                             const PetscReal &bc, const PetscReal &dt) 
                     { 
@@ -399,7 +402,7 @@ PetscErrorCode SingleBoundary::setKernels(
                             this->normal * dt * bc * (p.value - bdValue) / p.dL;
                     };
             else
-                updateCoeffsKernel[field] =
+                updateEqsKernel[field] =
                     [this] (types::GhostPointInfo &p, const PetscReal &bdValue, 
                             const PetscReal &bc, const PetscReal &dt) 
                     {
@@ -418,7 +421,7 @@ PetscErrorCode SingleBoundary::setKernels(
 
 
 /** \copydoc SingleBoundary::updateCoeffsTrue */
-PetscErrorCode SingleBoundary::updateCoeffsTrue(
+PetscErrorCode SingleBoundary::updateEqsTrue(
         Solutions &soln, const PetscReal &dt)
 {
     PetscFunctionBeginUser;
@@ -435,7 +438,7 @@ PetscErrorCode SingleBoundary::updateCoeffsTrue(
             ierr = VecGetValues(soln.qGlobal, 1, 
                     &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
-            updateCoeffsKernel[f](it.second, targetValue, value[f], dt); 
+            updateEqsKernel[f](it.second, targetValue, value[f], dt); 
         }
 
     PetscFunctionReturn(0);
@@ -443,7 +446,7 @@ PetscErrorCode SingleBoundary::updateCoeffsTrue(
 
 
 /** \copydoc SingleBoundary::updateGhostTrue */
-PetscErrorCode SingleBoundary::updateGhostsTrue(Solutions &soln)
+PetscErrorCode SingleBoundary::updateGhostValuesTrue(Solutions &soln)
 {
     PetscFunctionBeginUser;
 
@@ -458,6 +461,24 @@ PetscErrorCode SingleBoundary::updateGhostsTrue(Solutions &soln)
                     &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
             it.second.value = it.second.a0 * targetValue + it.second.a1;
+        }
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBoundary::copyValues2LocalVecsTrue. */
+PetscErrorCode SingleBoundary::copyValues2LocalVecsTrue(std::vector<Vec> &lclVecs)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    for(PetscInt f=0; f<dim; ++f)
+        for(auto &it: points[f])
+        {
+            ierr = VecSetValue(lclVecs[f], it.second.lclId, 
+                    it.second.value, INSERT_VALUES); CHKERRQ(ierr);
         }
 
     PetscFunctionReturn(0);

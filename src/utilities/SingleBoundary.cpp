@@ -213,6 +213,9 @@ PetscErrorCode SingleBoundary::setPointsX(
             // targetId is the index of target in packed global Vec
             PetscInt    targetId;
 
+            // ghostId is the index of ghost in a local Vec
+            PetscInt    ghostId;
+
             // area is the cell surface area used to calculate flux
             // dL is the distance between the boundary and the ghost points
             PetscReal   area, dL;
@@ -222,6 +225,9 @@ PetscErrorCode SingleBoundary::setPointsX(
 
             ierr = ISLocalToGlobalMappingApply(
                     mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
+
+            ierr = DMDAConvertToCell(
+                    mesh->da[field], {k, j, ghost, 0}, &ghostId); CHKERRQ(ierr);
 
             area = mesh->dL[field][1][j] * mesh->dL[field][2][k];
 
@@ -233,7 +239,7 @@ PetscErrorCode SingleBoundary::setPointsX(
                 dL = mesh->dL[3][0][0];
 
             points[field][{k, j, ghost, 0}] = 
-                {target, targetId, area, dL, 0.0, 0.0, 0.0};
+                {ghostId, target, targetId, area, dL, 0.0, 0.0, 0.0};
         }
     }
 
@@ -261,6 +267,9 @@ PetscErrorCode SingleBoundary::setPointsY(
             // targetId is the index of target in packed global Vec
             PetscInt    targetId;
 
+            // ghostId is the index of ghost in a local Vec
+            PetscInt    ghostId;
+
             // area is the cell surface area used to calculate flux
             // dL is the distance between the boundary and the ghost points
             PetscReal   area, dL;
@@ -270,6 +279,9 @@ PetscErrorCode SingleBoundary::setPointsY(
 
             ierr = ISLocalToGlobalMappingApply(
                     mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
+
+            ierr = DMDAConvertToCell(
+                    mesh->da[field], {k, ghost, i, 0}, &ghostId); CHKERRQ(ierr);
 
             area = mesh->dL[field][0][i] * mesh->dL[field][2][k];
 
@@ -281,7 +293,7 @@ PetscErrorCode SingleBoundary::setPointsY(
                 dL = mesh->dL[3][1][0];
 
             points[field][{k, ghost, i, 0}] = 
-                {target, targetId, area, dL, 0.0, 0.0, 0.0};
+                {ghostId, target, targetId, area, dL, 0.0, 0.0, 0.0};
         }
     }
 
@@ -309,6 +321,9 @@ PetscErrorCode SingleBoundary::setPointsZ(
             // targetId is the index of target in packed global Vec
             PetscInt    targetId;
 
+            // ghostId is the index of ghost in a local Vec
+            PetscInt    ghostId;
+
             // area is the cell surface area used to calculate flux
             // dL is the distance between the boundary and the ghost points
             PetscReal   area, dL;
@@ -318,6 +333,9 @@ PetscErrorCode SingleBoundary::setPointsZ(
 
             ierr = ISLocalToGlobalMappingApply(
                     mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
+
+            ierr = DMDAConvertToCell(
+                    mesh->da[field], {ghost, j, i, 0}, &ghostId); CHKERRQ(ierr);
 
             area = mesh->dL[field][0][i] * mesh->dL[field][1][j];
 
@@ -329,7 +347,7 @@ PetscErrorCode SingleBoundary::setPointsZ(
                 dL = mesh->dL[3][2][0];
 
             points[field][{ghost, j, i, 0}] = 
-                {target, targetId, area, dL, 0.0, 0.0, 0.0};
+                {ghostId, target, targetId, area, dL, 0.0, 0.0, 0.0};
         }
     }
 
@@ -434,7 +452,7 @@ PetscErrorCode SingleBoundary::updateGhostsTrue(Solutions &soln)
     PetscReal           targetValue;
 
     for(PetscInt f=0; f<dim; ++f)
-        for(auto it: points[f])
+        for(auto &it: points[f])
         {
             ierr = VecGetValues(soln.qGlobal, 1, 
                     &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);

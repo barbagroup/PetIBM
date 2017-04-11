@@ -219,6 +219,7 @@ namespace types
     /** \brief a data structure for a single ghost point. */
     struct GhostPointInfo
     {
+        PetscInt    lclId;
         MatStencil  targetStencil;
         PetscInt    targetPackedId;
         PetscReal   area, dL;

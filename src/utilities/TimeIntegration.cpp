@@ -29,6 +29,8 @@ TimeIntegration::TimeIntegration(const TimeScheme &method) { init(method); }
 /** \copydoc TimeIntegration::init(const types::TimeScheme &). */
 PetscErrorCode TimeIntegration::init(const TimeScheme &method)
 {
+    PetscFunctionBeginUser;
+
     // hard copy the scheme
     scheme = method;
 
@@ -61,4 +63,6 @@ PetscErrorCode TimeIntegration::init(const TimeScheme &method)
             explicitCoeffs.push_back(0.5); // n coefficient
             break;
     }
+
+    PetscFunctionReturn(0);
 }

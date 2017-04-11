@@ -173,6 +173,9 @@ PetscErrorCode CartesianMesh::createPressureMesh()
         dL[3][i] = &dLTrue[3][i][0];
     }
 
+    // in 2D simulation, we still use the varaible dL in z-direction
+    if (dim == 2) dL[3][2] = &dLTrue[3][2][0];
+
     PetscFunctionReturn(0);
 }
 
@@ -293,6 +296,17 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
             // the 1st ghost point with the index -1, i.e., dL[comp][dir][-1]
             dL[comp][dir] = &dLTrue[comp][dir][1];
         }
+    }
+
+
+    // for 2D simulation, we still use dL in z-direction in our code
+    if (dim == 2)
+    {
+        dL[0][2] = &dLTrue[0][2][0];
+        dL[1][2] = &dLTrue[1][2][0];
+        dL[2][0] = &dLTrue[2][0][0];
+        dL[2][1] = &dLTrue[2][1][0];
+        dL[2][2] = &dLTrue[2][2][0];
     }
 
     PetscFunctionReturn(0);

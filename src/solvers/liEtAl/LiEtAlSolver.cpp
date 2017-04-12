@@ -95,16 +95,19 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
 
   PetscFunctionBeginUser;
 
-  // ierr = PetscPrintf(PETSC_COMM_WORLD,
-  //                    "[time-step %d]\n",
-  //                    NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
-
   ierr = scatterGlobalToLocal(); CHKERRQ(ierr);
   
+  // scheme 1 of Li et al. (2016)
+  // ierr = VecSet(fTilde, 0.0); CHKERRQ(ierr);
+  // scheme 3 of Li et al. (2016)
+  ierr = assembleRHSForce(); CHKERRQ(ierr);
+  ierr = solveForceSystem(fTilde); CHKERRQ(ierr);
+
   PetscInt iter = 0;
   PetscReal norm = 1.0, norm_init;
   ierr = VecNorm(fTilde, NORM_2, &norm_init); CHKERRQ(ierr);
-  while (norm > std::max(atol, rtol * norm_init) && iter < maxIters)
+  PetscReal tolerance = std::max(atol, rtol * norm_init);
+  while (norm > tolerance && iter < maxIters)
   {
     ierr = assembleRHSVelocity(); CHKERRQ(ierr);
     ierr = NavierStokesSolver<dim>::solveIntermediateVelocity(); CHKERRQ(ierr);
@@ -135,14 +138,18 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
              "Algorithm id %d not recognized (values accepted: 1 and 3)",
              algorithm);
     }
-   
+
+    // update Lagrangian forces and pressure field
     ierr = VecAXPY(fTilde, 1.0, dfTilde); CHKERRQ(ierr);
     ierr = VecAXPY(NavierStokesSolver<dim>::lambda, 1.0, dlambda); CHKERRQ(ierr);
 
-    ierr = VecNorm(dfTilde, NORM_2, &norm); CHKERRQ(ierr);
+    if (maxIters > 1)
+    {
+      ierr = VecNorm(dfTilde, NORM_2, &norm); CHKERRQ(ierr);
+    }
     // ierr = PetscPrintf(PETSC_COMM_WORLD,
-    //                    "\t[iter %d] L2(df_k)=%f\n",
-    //                    iter, norm); CHKERRQ(ierr);
+    //                    "[time-step %d][iter %d] L2(df_k)=%f\n",
+    //                    NavierStokesSolver<dim>::timeStep, iter, norm); CHKERRQ(ierr);
     iter++;
   }
 
@@ -192,11 +199,7 @@ PetscErrorCode LiEtAlSolver<dim>::assembleRHSVelocity()
 
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageRHSVelocitySystem); CHKERRQ(ierr);
 
-  ierr = NavierStokesSolver<dim>::calculateExplicitTerms(); CHKERRQ(ierr);
-  ierr = NavierStokesSolver<dim>::updateBoundaryGhosts(); CHKERRQ(ierr);
-  ierr = NavierStokesSolver<dim>::generateBC1(); CHKERRQ(ierr);
-  ierr = VecWAXPY(NavierStokesSolver<dim>::rhs1, 1.0, NavierStokesSolver<dim>::rn, NavierStokesSolver<dim>::bc1); CHKERRQ(ierr);
-  ierr = VecPointwiseMult(NavierStokesSolver<dim>::rhs1, NavierStokesSolver<dim>::MHat, NavierStokesSolver<dim>::rhs1); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::assembleRHSVelocity(); CHKERRQ(ierr);
   // add forces from previous time-step
   ierr = MatMult(ET, fTilde, tmp); CHKERRQ(ierr);
   ierr = VecAXPY(NavierStokesSolver<dim>::rhs1, -1.0, tmp); CHKERRQ(ierr);

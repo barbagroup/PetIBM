@@ -52,7 +52,7 @@ public:
 
     PetscErrorCode printInfo() const;
 
-    PetscErrorCode applyIC(const FlowDescription &flow);
+    PetscErrorCode applyIC(const FlowDescription &flow, const Mat &R=nullptr);
 
     PetscErrorCode write(const std::string &dir, const std::string &name) const;
 

@@ -234,7 +234,7 @@ PetscErrorCode Solutions::getVelocity(const Vec &RInv, Vec &U) const
 }
 
 
-PetscErrorCode Solutions::applyIC(const FlowDescription &flow)
+PetscErrorCode Solutions::applyIC(const FlowDescription &flow, const Mat &R)
 {
     PetscFunctionBeginUser;
 
@@ -251,6 +251,15 @@ PetscErrorCode Solutions::applyIC(const FlowDescription &flow)
 
     ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
             nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+
+    if (R)
+    {
+        Vec     y;
+        ierr = VecDuplicate(qGlobal, &y); CHKERRQ(ierr);
+        ierr = MatMult(R, qGlobal, y); CHKERRQ(ierr);
+        ierr = VecSwap(qGlobal, y); CHKERRQ(ierr);
+        ierr = VecDestroy(&y); CHKERRQ(ierr);
+    }
 
     ierr = VecSet(lambdaGlobal, 0.0); CHKERRQ(ierr);
 

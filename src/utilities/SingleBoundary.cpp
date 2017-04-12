@@ -374,22 +374,17 @@ PetscErrorCode SingleBoundary::setKernels(
             if (field == dir)
                 updateEqsKernel[field] = std::bind(
                         [this] (types::GhostPointInfo &p, const PetscReal &bc) {
-                            p.a1 = bc * p.area;},
-                        _1, _3);
+                            p.a1 = bc;}, _1, _3);
             else
                 updateEqsKernel[field] = std::bind(
                         [this] (types::GhostPointInfo &p, const PetscReal &bc) {
-                            p.a0 = -1.0; 
-                            p.a1 = 2.0 * bc * p.area;},
-                        _1, _3);
+                            p.a0 = -1.0; p.a1 = 2.0 * bc;}, _1, _3);
             break;
 
         case types::BCType::NEUMANN:
             updateEqsKernel[field] = std::bind(
                     [this] (types::GhostPointInfo &p, const PetscReal &bc) {
-                        p.a0 = 1.0;
-                        p.a1 = this->normal * p.dL * bc * p.area;},
-                    _1, _3);
+                        p.a0 = 1.0; p.a1 = this->normal * p.dL * bc;}, _1, _3);
             break;
 
         case types::BCType::CONVECTIVE:

@@ -220,15 +220,41 @@ PetscErrorCode Solutions::write(
 } // write
 
 
-PetscErrorCode Solutions::getVelocity(const Vec &RInv, Vec &U) const
+PetscErrorCode Solutions::convert2Velocity(const Mat &RInv)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
 
+    Vec                 U;
+
     ierr = VecDuplicate(qGlobal, &U); CHKERRQ(ierr);
 
-    ierr = VecPointwiseMult(U, qGlobal, RInv); CHKERRQ(ierr);
+    ierr = MatMult(RInv, qGlobal, U); CHKERRQ(ierr);
+
+    ierr = VecSwap(qGlobal, U); CHKERRQ(ierr);
+
+    ierr = VecDestroy(&U); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode Solutions::convert2Flux(const Mat &R)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    Vec                 F;
+
+    ierr = VecDuplicate(qGlobal, &F); CHKERRQ(ierr);
+
+    ierr = MatMult(R, qGlobal, F); CHKERRQ(ierr);
+
+    ierr = VecSwap(qGlobal, F); CHKERRQ(ierr);
+
+    ierr = VecDestroy(&F); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

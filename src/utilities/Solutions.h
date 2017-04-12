@@ -48,6 +48,7 @@ public:
             const types::OutputType &type=types::HDF5);
 
     PetscErrorCode setOutputFormat(const types::OutputType &type);
+
     PetscErrorCode setOutputFluxFlag(const PetscBool &flag=PETSC_TRUE);
 
     PetscErrorCode printInfo() const;
@@ -56,7 +57,9 @@ public:
 
     PetscErrorCode write(const std::string &dir, const std::string &name) const;
 
-    PetscErrorCode getVelocity(const Vec &Rinv, Vec &U) const;
+    PetscErrorCode convert2Velocity(const Mat &Rinv);
+
+    PetscErrorCode convert2Flux(const Mat &R);
 
 
 protected:

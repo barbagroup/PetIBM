@@ -29,12 +29,14 @@ LiEtAlSolver<dim>::LiEtAlSolver(CartesianMesh *cartesianMesh,
                                                                   simulationParameters)
 {
   fTilde = PETSC_NULL;
+  dfTilde = PETSC_NULL;
   rhsf = PETSC_NULL;
   tmp = PETSC_NULL;
+  dlambda = PETSC_NULL;
   E = PETSC_NULL;
   ET = PETSC_NULL;
   EBNET = PETSC_NULL;
-  regularizedForces = PETSC_NULL;
+  G = PETSC_NULL;
   PetscLogStageRegister("RHSForce", &stageRHSForceSystem);
   PetscLogStageRegister("solveForce", &stageSolveForceSystem);
 } // LiEtAl
@@ -59,6 +61,7 @@ PetscErrorCode LiEtAlSolver<dim>::initialize()
 
   ierr = NavierStokesSolver<dim>::initializeCommon(); CHKERRQ(ierr);
 
+  ierr = NavierStokesSolver<dim>::generateGradient(&G); CHKERRQ(ierr);
   ierr = generateET(); CHKERRQ(ierr);
   ierr = MatTranspose(ET, MAT_INITIAL_MATRIX, &E); CHKERRQ(ierr);
   Mat BNET;
@@ -70,13 +73,19 @@ PetscErrorCode LiEtAlSolver<dim>::initialize()
 
   ierr = createForceSolver(); CHKERRQ(ierr);
 
+  // info about the algorithm to use and the inner-iterations
+  algorithm = NavierStokesSolver<dim>::parameters->lietal_algorithm;
+  atol = NavierStokesSolver<dim>::parameters->lietal_atol;
+  rtol = NavierStokesSolver<dim>::parameters->lietal_rtol;
+  maxIters = NavierStokesSolver<dim>::parameters->lietal_maxIters;
+
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // initialize
 
 
-/**
+/*!
  * \brief Advance in time. Calculates the variables at the next time-step.
  */
 template <PetscInt dim>
@@ -86,31 +95,55 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
 
   PetscFunctionBeginUser;
 
+  // ierr = PetscPrintf(PETSC_COMM_WORLD,
+  //                    "[time-step %d]\n",
+  //                    NavierStokesSolver<dim>::timeStep); CHKERRQ(ierr);
+
   ierr = scatterGlobalToLocal(); CHKERRQ(ierr);
-
-  ierr = NavierStokesSolver<dim>::assembleRHSVelocity(); CHKERRQ(ierr);
-  ierr = NavierStokesSolver<dim>::solveIntermediateVelocity(); CHKERRQ(ierr);
-
-  PetscInt maxIters = 1;
-  for (PetscInt iter=0; iter<maxIters; iter++)
+  
+  PetscInt iter = 0;
+  PetscReal norm = 1.0, norm_init;
+  ierr = VecNorm(fTilde, NORM_2, &norm_init); CHKERRQ(ierr);
+  while (norm > std::max(atol, rtol * norm_init) && iter < maxIters)
   {
-    if (iter > 0)
+    ierr = assembleRHSVelocity(); CHKERRQ(ierr);
+    ierr = NavierStokesSolver<dim>::solveIntermediateVelocity(); CHKERRQ(ierr);
+
+    if (algorithm == 1)
     {
-      ierr = VecCopy(NavierStokesSolver<dim>::q, NavierStokesSolver<dim>::qStar); CHKERRQ(ierr);
+      ierr = assembleRHSForce(); CHKERRQ(ierr);
+      ierr = solveForceSystem(dfTilde); CHKERRQ(ierr);
+      ierr = updateFlux(dfTilde);
+
+      ierr = NavierStokesSolver<dim>::assembleRHSPoisson(); CHKERRQ(ierr);
+      ierr = solvePoissonSystem(dlambda); CHKERRQ(ierr);
+      ierr = projectionStep(dlambda); CHKERRQ(ierr);
     }
+    else if (algorithm == 3)
+    {
+      ierr = NavierStokesSolver<dim>::assembleRHSPoisson(); CHKERRQ(ierr);
+      ierr = solvePoissonSystem(dlambda); CHKERRQ(ierr);
+      ierr = projectionStep(dlambda); CHKERRQ(ierr);
 
-    ierr = assembleRHSForce(); CHKERRQ(ierr);
-    ierr = solveForceSystem(); CHKERRQ(ierr);
-    ierr = updateFlux();
+      ierr = assembleRHSForce(); CHKERRQ(ierr);
+      ierr = solveForceSystem(dfTilde); CHKERRQ(ierr);
+      ierr = updateFlux(dfTilde);
+    }
+    else
+    {
+      SETERRQ1(PETSC_COMM_WORLD, 63,
+             "Algorithm id %d not recognized (values accepted: 1 and 3)",
+             algorithm);
+    }
+   
+    ierr = VecAXPY(fTilde, 1.0, dfTilde); CHKERRQ(ierr);
+    ierr = VecAXPY(NavierStokesSolver<dim>::lambda, 1.0, dlambda); CHKERRQ(ierr);
 
-    ierr = NavierStokesSolver<dim>::assembleRHSPoisson(); CHKERRQ(ierr);
-    ierr = NavierStokesSolver<dim>::solvePoissonSystem(); CHKERRQ(ierr);
-    ierr = NavierStokesSolver<dim>::projectionStep(); CHKERRQ(ierr);
-
-    // ierr = VecCopy(NavierStokesSolver<dim>::q, NavierStokesSolver<dim>::qStar); CHKERRQ(ierr);
-    // ierr = assembleRHSForce(); CHKERRQ(ierr);
-    // ierr = solveForceSystem(); CHKERRQ(ierr);
-    // ierr = updateFlux();
+    ierr = VecNorm(dfTilde, NORM_2, &norm); CHKERRQ(ierr);
+    // ierr = PetscPrintf(PETSC_COMM_WORLD,
+    //                    "\t[iter %d] L2(df_k)=%f\n",
+    //                    iter, norm); CHKERRQ(ierr);
+    iter++;
   }
 
   NavierStokesSolver<dim>::timeStep++;
@@ -119,7 +152,7 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
 } // stepTime
 
 
-/**
+/*!
  * \brief Scatter global flux vector into local flux vectors.
  */
 template <PetscInt dim>
@@ -149,7 +182,36 @@ PetscErrorCode LiEtAlSolver<dim>::scatterGlobalToLocal()
 } // scatterGlobalToLocal
 
 
-/**
+/*!
+ * \brief Assembles the right hand-side of the velocity system.
+ */
+template <PetscInt dim>
+PetscErrorCode LiEtAlSolver<dim>::assembleRHSVelocity()
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageRHSVelocitySystem); CHKERRQ(ierr);
+
+  ierr = NavierStokesSolver<dim>::calculateExplicitTerms(); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::updateBoundaryGhosts(); CHKERRQ(ierr);
+  ierr = NavierStokesSolver<dim>::generateBC1(); CHKERRQ(ierr);
+  ierr = VecWAXPY(NavierStokesSolver<dim>::rhs1, 1.0, NavierStokesSolver<dim>::rn, NavierStokesSolver<dim>::bc1); CHKERRQ(ierr);
+  ierr = VecPointwiseMult(NavierStokesSolver<dim>::rhs1, NavierStokesSolver<dim>::MHat, NavierStokesSolver<dim>::rhs1); CHKERRQ(ierr);
+  // add forces from previous time-step
+  ierr = MatMult(ET, fTilde, tmp); CHKERRQ(ierr);
+  ierr = VecAXPY(NavierStokesSolver<dim>::rhs1, -1.0, tmp); CHKERRQ(ierr);
+  // add pressure gradient from previous time-step
+  ierr = MatMult(G, NavierStokesSolver<dim>::lambda, tmp); CHKERRQ(ierr);
+  ierr = VecAXPY(NavierStokesSolver<dim>::rhs1, -1.0, tmp); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) NavierStokesSolver<dim>::rhs1, NULL, "-rhs1_vec_view"); CHKERRQ(ierr);
+
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+  return 0;
+} // assembleRHSVelocity
+
+
+/*!
  * \brief Assembles the right-hand side of the system for the Lagrangian forces.
  */
 template <PetscInt dim>
@@ -171,11 +233,13 @@ PetscErrorCode LiEtAlSolver<dim>::assembleRHSForce()
 } // assembleRHSForce
 
 
-/**
- * \brief Solves the system for the Lagrangian forces.
+/*!
+ * \brief Solves the Lagrangian system.
+ *
+ * \param f The solution vector.
  */
 template <PetscInt dim>
-PetscErrorCode LiEtAlSolver<dim>::solveForceSystem()
+PetscErrorCode LiEtAlSolver<dim>::solveForceSystem(Vec &f)
 {
   PetscErrorCode ierr;
 
@@ -183,7 +247,7 @@ PetscErrorCode LiEtAlSolver<dim>::solveForceSystem()
 
   ierr = PetscLogStagePush(stageSolveForceSystem); CHKERRQ(ierr);
 
-  ierr = forces->solve(fTilde, rhsf); CHKERRQ(ierr);
+  ierr = forces->solve(f, rhsf); CHKERRQ(ierr);
   
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -191,11 +255,13 @@ PetscErrorCode LiEtAlSolver<dim>::solveForceSystem()
 } // solveForceSystem
 
 
-/**
+/*!
  * \brief Updates the intermediate fluxes to satisfy the no-slip condition.
+ *
+ * \param f The force vector or the delta-force vector.
  */
 template <PetscInt dim>
-PetscErrorCode LiEtAlSolver<dim>::updateFlux()
+PetscErrorCode LiEtAlSolver<dim>::updateFlux(Vec f)
 {
   PetscErrorCode ierr;
 
@@ -203,15 +269,81 @@ PetscErrorCode LiEtAlSolver<dim>::updateFlux()
 
   ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageProjectionStep); CHKERRQ(ierr);
 
-  ierr = MatMult(ET, fTilde, tmp); CHKERRQ(ierr);
+  ierr = MatMult(ET, f, tmp); CHKERRQ(ierr);
   ierr = VecPointwiseMult(tmp, NavierStokesSolver<dim>::BN, tmp); CHKERRQ(ierr);
-  ierr = VecAXPY(NavierStokesSolver<dim>::qStar, -1.0, tmp); CHKERRQ(ierr);
-  // ierr = VecWAXPY(NavierStokesSolver<dim>::q, -1.0, tmp, NavierStokesSolver<dim>::qStar); CHKERRQ(ierr);
+  if (algorithm == 1)
+  {
+    ierr = VecAXPY(NavierStokesSolver<dim>::qStar, -1.0, tmp); CHKERRQ(ierr);  
+  }
+  else if (algorithm == 3)
+  {
+    ierr = VecWAXPY(NavierStokesSolver<dim>::q, -1.0, tmp, NavierStokesSolver<dim>::qStar); CHKERRQ(ierr);
+  }
+  else
+  {
+    SETERRQ1(PETSC_COMM_WORLD, 63,
+             "Algorithm id %d not recognized (values accepted: 1 and 3)",
+             algorithm);
+  }
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // updateFlux
+
+
+/*!
+ * \brief Solves Poisson system.
+ *
+ * \param p The solution vector.
+ */
+template <PetscInt dim>
+PetscErrorCode LiEtAlSolver<dim>::solvePoissonSystem(Vec &p)
+{
+  PetscErrorCode ierr;
+  
+  ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageSolvePoissonSystem); CHKERRQ(ierr);
+
+  ierr = NavierStokesSolver<dim>::poisson->solve(p, NavierStokesSolver<dim>::rhs2); CHKERRQ(ierr);
+  
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+  return 0;
+} // solvePoissonSystem
+
+
+/*!
+ * \brief Project fluxes on divergence-free space.
+ *
+ * \param p The pressure vector and the delta-pressure vector.
+ */
+template <PetscInt dim>
+PetscErrorCode LiEtAlSolver<dim>::projectionStep(Vec p)
+{
+  PetscErrorCode ierr;
+
+  ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageProjectionStep); CHKERRQ(ierr);
+  
+  ierr = MatMult(NavierStokesSolver<dim>::BNQ, p, NavierStokesSolver<dim>::temp); CHKERRQ(ierr);
+  if (algorithm == 1)
+  {
+    ierr = VecWAXPY(NavierStokesSolver<dim>::q, -1.0, NavierStokesSolver<dim>::temp, NavierStokesSolver<dim>::qStar); CHKERRQ(ierr);  
+  }
+  else if (algorithm == 3)
+  {
+    ierr = VecAXPY(NavierStokesSolver<dim>::qStar, -1.0, NavierStokesSolver<dim>::temp); CHKERRQ(ierr);
+  }
+  else
+  {
+    SETERRQ1(PETSC_COMM_WORLD, 63,
+             "Algorithm id %d not recognized (values accepted: 1 and 3)",
+             algorithm);
+  }
+
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+  return 0;
+} // projectionStep
 
 
 /*!
@@ -300,7 +432,7 @@ PetscErrorCode LiEtAlSolver<dim>::registerLagPointsOnProcess()
 } // registerLagPointsOnProcess
 
 
-/**
+/*!
  * \brief Destroys PETSc objects.
  */
 template <PetscInt dim>
@@ -314,11 +446,13 @@ PetscErrorCode LiEtAlSolver<dim>::finalize()
   if (bda != PETSC_NULL) {ierr = DMDestroy(&bda); CHKERRQ(ierr);}
   if (fTilde != PETSC_NULL) {ierr = VecDestroy(&fTilde); CHKERRQ(ierr);}
   if (rhsf != PETSC_NULL) {ierr = VecDestroy(&rhsf); CHKERRQ(ierr);}
+  if (dfTilde != PETSC_NULL) {ierr = VecDestroy(&dfTilde); CHKERRQ(ierr);}
   if (tmp != PETSC_NULL) {ierr = VecDestroy(&tmp); CHKERRQ(ierr);}
-  if (regularizedForces != PETSC_NULL) {ierr = VecDestroy(&regularizedForces); CHKERRQ(ierr);}
+  if (dlambda != PETSC_NULL) {ierr = VecDestroy(&dlambda); CHKERRQ(ierr);}
   if (E != PETSC_NULL) {ierr = MatDestroy(&E); CHKERRQ(ierr);}
   if (ET != PETSC_NULL) {ierr = MatDestroy(&ET); CHKERRQ(ierr);}
   if (EBNET != PETSC_NULL) {ierr = MatDestroy(&EBNET); CHKERRQ(ierr);}
+  if (G != PETSC_NULL) {ierr = MatDestroy(&G); CHKERRQ(ierr);}
   
   delete forces;
 

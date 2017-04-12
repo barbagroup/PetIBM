@@ -441,6 +441,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/io.inl"
+#include "inline/generateGradient.inl"
 
 
 // template class specialization

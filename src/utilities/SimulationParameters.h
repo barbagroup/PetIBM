@@ -50,6 +50,13 @@ public:
 
   IBMethod ibm; ///< type of system to be solved
   
+  // parameters for decoupled solver (Li et al., 2016)
+  PetscInt lietal_algorithm;
+  PetscReal lietal_atol,
+            lietal_rtol;
+  PetscInt lietal_maxIters;
+
+
   TimeIntegration convection, ///< time-scheme for the convection term
                   diffusion;  ///< time-scheme for the diffusion term
 

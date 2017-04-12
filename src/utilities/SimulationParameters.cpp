@@ -146,6 +146,14 @@ void SimulationParameters::initialize(std::string filePath)
       break;
   }
 
+  if (ibm == LI_ET_AL)
+  {
+    lietal_algorithm = node["algorithm"].as<PetscInt>(1);
+    lietal_atol = node["atol"].as<PetscReal>(1.0E-05);
+    lietal_rtol = node["rtol"].as<PetscReal>(1.0E-05);
+    lietal_maxIters = node["maxIters"].as<PetscInt>(5);
+  }
+
   PetscPrintf(PETSC_COMM_WORLD, "done.\n");
   
 } // initialize

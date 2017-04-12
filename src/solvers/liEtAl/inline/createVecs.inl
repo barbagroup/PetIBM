@@ -16,8 +16,9 @@ PetscErrorCode LiEtAlSolver<dim>::createVecs()
   ierr = NavierStokesSolver<dim>::createVecs(); CHKERRQ(ierr);
   ierr = DMCreateGlobalVector(bda, &fTilde); CHKERRQ(ierr);
   ierr = VecDuplicate(fTilde, &rhsf); CHKERRQ(ierr);
+  ierr = VecDuplicate(fTilde, &dfTilde); CHKERRQ(ierr);
+  ierr = VecDuplicate(NavierStokesSolver<dim>::lambda, &dlambda); CHKERRQ(ierr);
   ierr = VecDuplicate(NavierStokesSolver<dim>::q, &tmp); CHKERRQ(ierr);
-  ierr = VecDuplicate(NavierStokesSolver<dim>::q, &regularizedForces); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // createVecs

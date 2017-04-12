@@ -106,6 +106,8 @@ public:
   
   // compute matrix \f$ B^N Q \f$
   virtual PetscErrorCode generateBNQ();
+  // generate gradient operator
+  PetscErrorCode generateGradient(Mat *G);
   // compute matrix \f$ Q^T B^N Q \f$
   PetscErrorCode generateQTBNQ();
   // calculate and specify to the Krylov solver the null-space of the LHS matrix
@@ -113,7 +115,7 @@ public:
   virtual PetscErrorCode setNullSpace();
 
   // assemble RHS of velocity system
-  PetscErrorCode assembleRHSVelocity();
+  virtual PetscErrorCode assembleRHSVelocity();
   // calculate explicit convective and diffusive terms
   PetscErrorCode calculateExplicitTerms();
   // update values in ghost nodes at the domain boundaries
@@ -131,9 +133,9 @@ public:
   // solve system for intermediate velocity fluxes \f$ q^* \f$
   PetscErrorCode solveIntermediateVelocity();
   // solver Poisson system for pressure and body forces
-  PetscErrorCode solvePoissonSystem();
+  virtual PetscErrorCode solvePoissonSystem();
   // project velocity onto divergence-free field with satisfaction of the no-splip condition
-  PetscErrorCode projectionStep();
+  virtual PetscErrorCode projectionStep();
 
   // read fluxes from files
   PetscErrorCode readFluxes(std::string directory);

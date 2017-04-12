@@ -25,10 +25,10 @@ PetscErrorCode LiEtAlSolver<2>::calculateForces2()
 
   PetscFunctionBeginUser;
 
-  ierr = MatMult(ET, fTilde, regularizedForces); CHKERRQ(ierr);
+  ierr = MatMult(ET, fTilde, tmp); CHKERRQ(ierr);
 
   Vec fxGlobal, fyGlobal;
-  ierr = DMCompositeGetAccess(qPack, regularizedForces, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
+  ierr = DMCompositeGetAccess(qPack, tmp, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
 
   PetscReal localForces[2];
 
@@ -60,7 +60,7 @@ PetscErrorCode LiEtAlSolver<2>::calculateForces2()
   }
   ierr = DMDAVecRestoreArray(vda, fyGlobal, &fy); CHKERRQ(ierr);
 
-  ierr = DMCompositeRestoreAccess(qPack, regularizedForces, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
+  ierr = DMCompositeRestoreAccess(qPack, tmp, &fxGlobal, &fyGlobal); CHKERRQ(ierr);
 
   ierr = MPI_Reduce(localForces, bodyForces, 2, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
 
@@ -80,10 +80,10 @@ PetscErrorCode LiEtAlSolver<3>::calculateForces2()
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // starting indices
   
-  ierr = MatMult(ET, fTilde, regularizedForces);
+  ierr = MatMult(ET, fTilde, tmp);
 
   Vec fxGlobal, fyGlobal, fzGlobal;
-  ierr = DMCompositeGetAccess(qPack, regularizedForces, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
+  ierr = DMCompositeGetAccess(qPack, tmp, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
   
   PetscReal localForces[3];
 
@@ -138,7 +138,7 @@ PetscErrorCode LiEtAlSolver<3>::calculateForces2()
   }
   ierr = DMDAVecRestoreArray(wda, fzGlobal, &fz); CHKERRQ(ierr);
 
-  ierr = DMCompositeRestoreAccess(qPack, regularizedForces, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
+  ierr = DMCompositeRestoreAccess(qPack, tmp, &fxGlobal, &fyGlobal, &fzGlobal); CHKERRQ(ierr);
 
   ierr = MPI_Reduce(localForces, bodyForces, 3, MPIU_REAL, MPI_SUM, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
 

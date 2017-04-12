@@ -109,4 +109,26 @@ namespace types
     /** \copydoc types::out2str */
     std::map<OutputType, std::string> out2str {
         {Binary, "Binary"}, {VTK, "VTK"}, {HDF5, "HDF5"}};
+
+
+    /** \copydoc types::RawArray2D::RawArray2D(). */
+    RawArray2D::RawArray2D() = default;
+
+    /** \copydoc types::RawArray2D::RawArray2D(const size_t &, const size_t &,
+     *           const int &, const int &). */
+    RawArray2D::RawArray2D(const size_t &_iN, const size_t &_jN,
+            const int &_iBg, const int &_jBg):
+        iN(_iN), jN(_jN), iBg(_iBg), jBg(_jBg),
+        data(new double[_iN*_jN], std::default_delete<double[]>()) {};
+
+    /** \copydoc types::RawArray2D::~RawArray2D. */
+    RawArray2D::~RawArray2D() = default;
+
+    /** \copydoc types::RawArray2D::operator[]. */
+    double * RawArray2D::operator[](const int &j)
+    { return data.get() + (j - jBg) * iN - iBg; };
+
+    /** \copydoc types::RawArray2D::operator[] const. */
+    double const * RawArray2D::operator[](const int &j) const
+    { return data.get() + (j - jBg) * iN - iBg; };
 }

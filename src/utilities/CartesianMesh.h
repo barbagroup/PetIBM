@@ -41,7 +41,9 @@ public:
 
     types::RealVec3D        coord;
 
-    types::DeltaLVec3D      dL;
+    types::DeltaLVec        dL;
+
+    types::DeltaAVec        dA;
 
     std::string             info;
 
@@ -113,6 +115,7 @@ protected:
     PetscErrorCode createPressureMesh();
     PetscErrorCode createVelocityMesh();
     PetscErrorCode createInfoString();
+    PetscErrorCode calculateAreas();
     PetscErrorCode addLocalInfoString(std::stringstream &ss);
 
     PetscErrorCode writeBinary(const std::string &file);

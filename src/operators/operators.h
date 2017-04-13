@@ -101,7 +101,9 @@ PetscErrorCode createGradient(const CartesianMesh &mesh,
  * \brief a function returning a divergence operator.
  *
  * \param mesh an instance of CartesianMesh.
+ * \param bc an instance of Boundary class.
  * \param D returned divergence operator.
+ * \param DCorrection returned matrix-free operator that serves as constraint mat.
  * \param normalize a bool indicating whether or not we want normalization 
  *        (default is True).
  *
@@ -110,7 +112,7 @@ PetscErrorCode createGradient(const CartesianMesh &mesh,
  * \return PetscErrorCode.
  */
 PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &D, types::MatrixModifier &ghCoeff, 
+        Mat &D, Mat &DCorrection, 
         const PetscBool &normalize=PETSC_TRUE);
 
 
@@ -120,14 +122,14 @@ PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc,
  * \param mesh an instance of CartesianMesh class.
  * \param bc an instance of Boundary class.
  * \param L returned matrix.
+ * \param LCorrection returned matrix-free operator that serves as constraint mat.
  *
  * Petsc matrix L should not be created before calling this function.
  *
  * \return PetscErrorCode.
  */
 PetscErrorCode createLaplacian(
-        const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &L, types::MatrixModifier &modifier);
+        const CartesianMesh &mesh, const Boundary &bc, Mat &L, Mat &LCorrection);
 
 
 /**

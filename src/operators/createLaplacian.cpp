@@ -21,6 +21,22 @@
 # include "misc.h"
 
 
+/** \brief a private struct for matrix-free constraint mat. */
+struct LagrangianCtx
+{
+    std::shared_ptr<const Boundary>     bc;
+    types::MatrixModifier               modifier;
+};
+
+
+/** \brief a user-defined MatMult for constraint mat. */
+PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y);
+
+
+/** \brief a user-defined MatDestroy for constraint mat. */
+PetscErrorCode LCorrectionDestroy(Mat mat);
+
+
 /** \brief a helper type definition for vector of MatStencil. */
 typedef std::vector<MatStencil> StencilVec;
 
@@ -55,7 +71,7 @@ inline PetscErrorCode setRowValues(
 /** \copydoc createLaplacian. */
 PetscErrorCode createLaplacian(
         const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &L, types::MatrixModifier &modifier)
+        Mat &L, Mat &LCorrection)
 {
     using namespace std::placeholders;
 
@@ -65,9 +81,13 @@ PetscErrorCode createLaplacian(
     
     GetStencilsFunc                 getStencils;
 
+    LagrangianCtx                   *ctx;
+
 
     // initialize modifier, regardless what's inside it now
-    modifier = types::MatrixModifier(mesh.dim);
+    ctx = new LagrangianCtx;
+    ctx->modifier = types::MatrixModifier(mesh.dim);
+    ctx->bc = std::shared_ptr<const Boundary>(&bc, [](const Boundary*){});
 
 
     // set up getStencils
@@ -110,7 +130,7 @@ PetscErrorCode createLaplacian(
                 std::bind(setRowValues, 
                     std::ref(mesh), std::ref(bc), std::ref(getStencils), 
                     std::ref(field), _3, _2, _1, std::ref(L), 
-                    std::ref(modifier[field])));
+                    std::ref(ctx->modifier[field])));
         CHKERRQ(ierr);
     }
 
@@ -127,9 +147,10 @@ PetscErrorCode createLaplacian(
                 for(auto &pt: bd.points[f])
                 {
                     PetscInt    col = pt.second.targetPackedId;
-                    PetscReal   value = modifier[f][pt.first].coeff * pt.second.a0;
+                    PetscReal   value = 
+                        ctx->modifier[f][pt.first].coeff * pt.second.a0;
 
-                    ierr = MatSetValue(L, modifier[f][pt.first].row, 
+                    ierr = MatSetValue(L, ctx->modifier[f][pt.first].row, 
                             col, value, ADD_VALUES); CHKERRQ(ierr);
                 }
 
@@ -137,6 +158,18 @@ PetscErrorCode createLaplacian(
     // assemble matrix, an implicit mpi barrier is applied
     ierr = MatAssemblyBegin(L, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(L, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+
+
+    // create a matrix-free constraint matrix for boundary correction
+    ierr = MatCreateShell(*mesh.comm, mesh.qNLocal, mesh.qNLocal,
+            PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &LCorrection); 
+    CHKERRQ(ierr);
+
+    ierr = MatShellSetOperation(LCorrection, MATOP_MULT,
+            (void(*)(void)) LCorrectionMult); CHKERRQ(ierr);
+
+    ierr = MatShellSetOperation(LCorrection, MATOP_DESTROY,
+            (void(*)(void)) LCorrectionDestroy); CHKERRQ(ierr);
 
 
     // see if users want to view this matrix through cmd
@@ -207,6 +240,63 @@ inline PetscErrorCode setRowValues(
     // save the values for boundary ghost points
     for(PetscInt id=0; id<stencils.size(); ++id)
         if (cols[id] == -1) rowModifiers[stencils[id]] = {cols[0], values[id]};
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc LCorrectionMult. */
+PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    LagrangianCtx       *ctx;
+
+    // get the context
+    ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
+
+    // zero the output vector
+    ierr = VecSet(y, 0.0); CHKERRQ(ierr);
+
+    // set the correction values to corresponding rows
+    for(auto &bd: ctx->bc->bds)
+        if (bd.onThisProc)
+            for(PetscInt f=0; f<ctx->bc->dim; ++f)
+                for(auto &pt: bd.points[f])
+                {
+                    PetscInt    col = pt.second.targetPackedId;
+                    PetscReal   value = ctx->modifier[f][pt.first].coeff * pt.second.a0;
+
+                    ierr = VecSetValue(y, 
+                            ctx->modifier[f][pt.first].row,
+                            ctx->modifier[f][pt.first].coeff * pt.second.a1, 
+                            INSERT_VALUES); CHKERRQ(ierr);
+
+                }
+
+    // assembly (not sure if this is necessary and if this causes overhead)
+    ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
+    ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc LCorrectionDestroy. */
+PetscErrorCode LCorrectionDestroy(Mat mat)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+    LagrangianCtx       *ctx;
+
+    // get the context
+    ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
+
+    // deallocate the context
+    delete ctx;
 
     PetscFunctionReturn(0);
 }

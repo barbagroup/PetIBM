@@ -78,7 +78,7 @@ PetscErrorCode createM(const CartesianMesh &mesh, Mat &M);
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createM(const CartesianMesh &mesh, Mat &I);
+PetscErrorCode createIdentity(const CartesianMesh &mesh, Mat &I);
 
 
 /**

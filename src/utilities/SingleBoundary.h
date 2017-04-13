@@ -53,9 +53,11 @@ public:
 
     PetscErrorCode init(const CartesianMesh &mesh, const types::BCLoc &loc); 
 
-    std::function<PetscErrorCode(Solutions &, const PetscReal &)> updateEqs;
+    PetscErrorCode setGhostICs(const Solutions &soln);
 
-    std::function<PetscErrorCode(Solutions &)> updateGhostValues;
+    std::function<PetscErrorCode(const Solutions &, const PetscReal &)> updateEqs;
+
+    std::function<PetscErrorCode(const Solutions &)> updateGhostValues;
 
     std::function<PetscErrorCode(std::vector<Vec> &)> copyValues2LocalVecs;
 
@@ -91,9 +93,9 @@ protected:
     PetscErrorCode setKernels(
             const PetscInt &field, const PetscInt &dir);
 
-    PetscErrorCode updateEqsTrue(Solutions &soln, const PetscReal &dt);
+    PetscErrorCode updateEqsTrue(const Solutions &soln, const PetscReal &dt);
 
-    PetscErrorCode updateGhostValuesTrue(Solutions &soln);
+    PetscErrorCode updateGhostValuesTrue(const Solutions &soln);
 
     PetscErrorCode copyValues2LocalVecsTrue(std::vector<Vec> &lclVecs);
 

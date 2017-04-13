@@ -62,8 +62,23 @@ PetscErrorCode Boundary::init(const CartesianMesh &_mesh)
 }
 
 
+/** \copydoc Boundary::setGhostICs(const Solutions &). */
+PetscErrorCode Boundary::setGhostICs(const Solutions &soln)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    for(auto &bd: bds) { ierr = bd.setGhostICs(soln); CHKERRQ(ierr); }
+
+    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
 /** \copydoc Boundary::updateCoeffs */
-PetscErrorCode Boundary::updateEqs(Solutions &soln, const PetscReal &dt)
+PetscErrorCode Boundary::updateEqs(const Solutions &soln, const PetscReal &dt)
 {
     PetscFunctionBeginUser;
 
@@ -78,7 +93,7 @@ PetscErrorCode Boundary::updateEqs(Solutions &soln, const PetscReal &dt)
 
 
 /** \copydoc Boundary::updateGhosts */
-PetscErrorCode Boundary::updateGhostValues(Solutions &soln)
+PetscErrorCode Boundary::updateGhostValues(const Solutions &soln)
 {
     PetscFunctionBeginUser;
 

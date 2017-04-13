@@ -37,9 +37,11 @@ public:
 
     PetscErrorCode init(const CartesianMesh &mesh);
 
-    PetscErrorCode updateEqs(Solutions &soln, const PetscReal &dt);
+    PetscErrorCode setGhostICs(const Solutions &soln);
 
-    PetscErrorCode updateGhostValues(Solutions &soln);
+    PetscErrorCode updateEqs(const Solutions &soln, const PetscReal &dt);
+
+    PetscErrorCode updateGhostValues(const Solutions &soln);
 
     PetscErrorCode copyValues2LocalVecs(std::vector<Vec> &lclVecs) const;
 

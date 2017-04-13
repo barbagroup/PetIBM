@@ -415,9 +415,53 @@ PetscErrorCode SingleBoundary::setKernels(
 }
 
 
-/** \copydoc SingleBoundary::updateCoeffsTrue */
+/** \copydoc SingleBoundary::setGhostICs. */
+PetscErrorCode SingleBoundary::setGhostICs(const Solutions &soln)
+{
+    PetscFunctionBeginUser;
+
+    if ((! onThisProc) || 
+            (type[0] == types::BCType::PERIODIC)) PetscFunctionReturn(0);
+
+    PetscErrorCode      ierr;
+
+    PetscReal           targetValue;
+
+    for(PetscInt f=0; f<dim; ++f)
+    {
+        if (type[f] != types::BCType::CONVECTIVE)
+        {
+            for(auto &it: points[f]) 
+            {
+                // note: thanks to PETSc, this is not a collective function, 
+                // because this function can only get values locally.
+                ierr = VecGetValues(soln.qGlobal, 1, 
+                        &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
+
+                updateEqsKernel[f](it.second, targetValue, value[f], 0.0); 
+
+                it.second.value = it.second.a0 * targetValue + it.second.a1;
+            }
+        }
+        else
+        {
+            for(auto &it: points[f])
+            {
+                ierr = VecGetValues(soln.qGlobal, 1, 
+                        &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
+
+                it.second.value = targetValue;
+            }
+        }
+    }
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBoundary::updateEqsTrue */
 PetscErrorCode SingleBoundary::updateEqsTrue(
-        Solutions &soln, const PetscReal &dt)
+        const Solutions &soln, const PetscReal &dt)
 {
     PetscFunctionBeginUser;
 
@@ -441,7 +485,7 @@ PetscErrorCode SingleBoundary::updateEqsTrue(
 
 
 /** \copydoc SingleBoundary::updateGhostTrue */
-PetscErrorCode SingleBoundary::updateGhostValuesTrue(Solutions &soln)
+PetscErrorCode SingleBoundary::updateGhostValuesTrue(const Solutions &soln)
 {
     PetscFunctionBeginUser;
 

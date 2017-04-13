@@ -266,17 +266,14 @@ PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
             for(PetscInt f=0; f<ctx->bc->dim; ++f)
                 for(auto &pt: bd.points[f])
                 {
-                    PetscInt    col = pt.second.targetPackedId;
-                    PetscReal   value = ctx->modifier[f][pt.first].coeff * pt.second.a0;
-
-                    ierr = VecSetValue(y, 
-                            ctx->modifier[f][pt.first].row,
+                    ierr = VecSetValue(y, ctx->modifier[f][pt.first].row,
                             ctx->modifier[f][pt.first].coeff * pt.second.a1, 
-                            INSERT_VALUES); CHKERRQ(ierr);
+                            ADD_VALUES); CHKERRQ(ierr);
 
                 }
 
     // assembly (not sure if this is necessary and if this causes overhead)
+    // but there is an implicit MPI barrier in assembly, which we defenitely need
     ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
     ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
 

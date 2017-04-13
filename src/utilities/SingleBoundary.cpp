@@ -450,7 +450,7 @@ PetscErrorCode SingleBoundary::setGhostICs(const Solutions &soln)
                 ierr = VecGetValues(soln.qGlobal, 1, 
                         &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
-                it.second.value = targetValue;
+                it.second.a1 = it.second.value = targetValue;
             }
         }
     }

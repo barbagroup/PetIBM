@@ -34,17 +34,17 @@ struct NonLinearCtx
  *
  * For user-defined PETSc Mat operations, please refer to PETSc manual.
  */
-PetscErrorCode UserMult2D(Mat mat, Vec x, Vec y);
+PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y);
 
 /**
  * \brief a private function for convection operator's MatMult in 3D.
  *
  * For user-defined PETSc Mat operations, please refer to PETSc manual.
  */
-PetscErrorCode UserMult3D(Mat mat, Vec x, Vec y);
+PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y);
 
 /** \brief user-defined destroyer for convection operator. */
-PetscErrorCode UserDestroy(Mat mat);
+PetscErrorCode ConvectionDestroy(Mat mat);
 
 
 /** \brief a private kernel for the convection at a u-velocity point in 2D. */
@@ -114,24 +114,24 @@ PetscErrorCode createConvection(
     if (ctx->mesh->dim == 2)
     {
         ierr = MatShellSetOperation(H, MATOP_MULT, 
-                (void(*)(void)) UserMult2D); CHKERRQ(ierr);
+                (void(*)(void)) ConvectionMult2D); CHKERRQ(ierr);
     }
     else // assuem the dim is either 2 or 3
     {
         ierr = MatShellSetOperation(H, MATOP_MULT, 
-                (void(*)(void)) UserMult3D); CHKERRQ(ierr);
+                (void(*)(void)) ConvectionMult3D); CHKERRQ(ierr);
     }
 
     // bind MatDestroy
     ierr = MatShellSetOperation(H, MATOP_DESTROY, 
-            (void(*)(void)) UserDestroy); CHKERRQ(ierr);
+            (void(*)(void)) ConvectionDestroy); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
 /** \copydoc UserMult2D. */
-PetscErrorCode UserMult2D(Mat mat, Vec x, Vec y)
+PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
 
@@ -204,7 +204,7 @@ PetscErrorCode UserMult2D(Mat mat, Vec x, Vec y)
 
 
 /** \copydoc UserMult3D. */
-PetscErrorCode UserMult3D(Mat mat, Vec x, Vec y)
+PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
 
@@ -287,7 +287,7 @@ PetscErrorCode UserMult3D(Mat mat, Vec x, Vec y)
 
 
 /** \copydoc UserDestroy. */
-PetscErrorCode UserDestroy(Mat mat)
+PetscErrorCode ConvectionDestroy(Mat mat)
 {
     PetscFunctionBeginUser;
 

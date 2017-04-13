@@ -131,6 +131,23 @@ PetscErrorCode createLaplacian(
 
 
 /**
+ * \brief create a matrix-free Mat for convective operater.
+ *
+ * \param mesh an instance of CartesianMesh.
+ * \param bd an instance of Boundary.
+ * \param H the returned matrix (an matrix-free Mat).
+ *
+ * Though this matrix-free operator is a PETSc Mat, not all PETSc Mat functions 
+ * can be applied to it because we only register MatMult and MatDestroy 
+ * functions in PetIBM. 
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createConvection(
+        const CartesianMesh &mesh, const Boundary &bd, Mat &H);
+
+
+/**
  * \brief create non-normalized Bn.
  *
  * A is defined as \frac{I}{dt} - coeff \times Op, where I is identity matrix,

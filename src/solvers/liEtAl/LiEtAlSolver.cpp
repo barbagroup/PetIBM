@@ -75,11 +75,12 @@ PetscErrorCode LiEtAlSolver<dim>::initialize()
   ierr = createForceSolver(); CHKERRQ(ierr);
 
   // info about the algorithm to use and the inner-iterations
-  algorithm = NavierStokesSolver<dim>::parameters->lietal_algorithm;
-  forceScheme = NavierStokesSolver<dim>::parameters->lietal_forceScheme;
-  atol = NavierStokesSolver<dim>::parameters->lietal_atol;
-  rtol = NavierStokesSolver<dim>::parameters->lietal_rtol;
-  maxIters = NavierStokesSolver<dim>::parameters->lietal_maxIters;
+  algorithm = NavierStokesSolver<dim>::parameters->decoupling_algorithm;
+  forceEstimator = NavierStokesSolver<dim>::parameters->decoupling_forceEstimator;
+  atol = NavierStokesSolver<dim>::parameters->decoupling_atol;
+  rtol = NavierStokesSolver<dim>::parameters->decoupling_rtol;
+  maxIters = NavierStokesSolver<dim>::parameters->decoupling_maxIters;
+  printStats = NavierStokesSolver<dim>::parameters->decoupling_printStats;
 
   ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -99,13 +100,13 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
 
   ierr = scatterGlobalToLocal(); CHKERRQ(ierr);
   
-  // estimate prediction of the momentum forcing
-  // forceScheme = 2: use the forcing from previous time-step
-  if (forceScheme == 1)
+  // estimation of the momentum forcing at beginning of time step
+  // forceEstimator = 2: use forcing from previous time step
+  if (forceEstimator == 1)
   {
     ierr = VecSet(fTilde, 0.0); CHKERRQ(ierr);
   }
-  else if (forceScheme == 3)
+  else if (forceEstimator == 3)
   {
     ierr = assembleRHSForce(NavierStokesSolver<dim>::q); CHKERRQ(ierr);
     ierr = solveForceSystem(fTilde); CHKERRQ(ierr);
@@ -161,9 +162,12 @@ PetscErrorCode LiEtAlSolver<dim>::stepTime()
       ierr = VecNorm(dfTilde, NORM_2, &norm); CHKERRQ(ierr);
       ierr = VecNorm(fTilde, NORM_2, &norm_init); CHKERRQ(ierr);
       ratio = norm / norm_init;
-      ierr = PetscPrintf(PETSC_COMM_WORLD,
-                         "[time-step %d][iter %d] L2(df_k)=%f\tL2(df_k)/L2(f_k)=%f\n",
-                         NavierStokesSolver<dim>::timeStep, iter, norm, ratio); CHKERRQ(ierr);
+      if (printStats)
+      {
+        ierr = PetscPrintf(PETSC_COMM_WORLD,
+                           "[time-step %d][iter %d] L2(df_k)=%f\tL2(df_k)/L2(f_k)=%f\n",
+                           NavierStokesSolver<dim>::timeStep, iter, norm, ratio); CHKERRQ(ierr);
+      }
     }
     iter++;
   }

@@ -148,11 +148,21 @@ void SimulationParameters::initialize(std::string filePath)
 
   if (ibm == LI_ET_AL)
   {
-    lietal_algorithm = node["algorithm"].as<PetscInt>(1);
-    lietal_forceScheme = node["forceScheme"].as<PetscInt>(2);
-    lietal_atol = node["atol"].as<PetscReal>(1.0E-05);
-    lietal_rtol = node["rtol"].as<PetscReal>(1.0E-05);
-    lietal_maxIters = node["maxIters"].as<PetscInt>(5);
+    const YAML::Node &decoupling = node["decoupling"];
+    // algorithm index based on Li et al. (2016)
+    // 1: satisfy no-slip then satisfy divergence-free
+    // 3: satisfy divergence-free then satisfy no-slip 
+    decoupling_algorithm = decoupling["algorithm"].as<PetscInt>(1);
+    // forceEstimator index based on Li et al. (2016)
+    // 1: set momentum forcing to zero
+    // 2: use momentum forcing from previous time step
+    // 3: solve system for Lagrangian forces
+    decoupling_forceEstimator = decoupling["forceEstimator"].as<PetscInt>(2);
+    // criteria for sub-iterative process
+    decoupling_atol = decoupling["atol"].as<PetscReal>(1.0E-05);
+    decoupling_rtol = decoupling["rtol"].as<PetscReal>(1.0E-05);
+    decoupling_maxIters = decoupling["maxIters"].as<PetscInt>(1);
+    decoupling_printStats = (decoupling["printStats"].as<bool>(false)) ? PETSC_TRUE : PETSC_FALSE;
   }
 
   PetscPrintf(PETSC_COMM_WORLD, "done.\n");

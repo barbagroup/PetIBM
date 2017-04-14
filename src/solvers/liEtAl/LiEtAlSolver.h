@@ -39,11 +39,12 @@ public:
   PetscReal bodyForces[dim]; ///< array with the force in each direction acting on the body
   std::ofstream forcesFile;  ///< file in which to write the forces
 
-  PetscInt algorithm;   ///< which algorithm to use (index based on Li et al., 2016)
-  PetscInt forceScheme; ///< scheme to use to estimate the prediction of the momentum forcing
-  PetscReal atol,       ///< absolute tolerance criterion to stop sub-iterations
-            rtol;       ///< relative tolerance criterion to stop sub-iterations
-  PetscInt maxIters;    ///< maximum number of sub-iterations
+  PetscInt algorithm;      ///< algo index for order of decoupling
+  PetscInt forceEstimator; ///< scheme index to estimate momentum forcing
+  PetscReal atol,          ///< absolute tolerance for sub-iterative process
+            rtol;          ///< relative tolerance for sub-iterative process
+  PetscInt maxIters;       ///< maximum number of iterations for sub-iterative process
+  PetscBool printStats;    ///< prints L2 norm and relative L2 norm when using sub-iterative process
 
   PetscLogStage stageRHSForceSystem,
                 stageSolveForceSystem;

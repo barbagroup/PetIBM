@@ -16,6 +16,7 @@
 * [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) as an optional external package (version v1.0-beta).
 * Examples to solve the 2D flow around a circular cylinder using AmgX.
 * Possibility to have multiple immersed boundaries.
+* Decoupled IBPM solver (as published in [Li et al., 2016](http://www.sciencedirect.com/science/article/pii/S0045793016302833))
 
 ### Changed
 

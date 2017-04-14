@@ -115,7 +115,7 @@ public:
   virtual PetscErrorCode setNullSpace();
 
   // assemble RHS of velocity system
-  virtual PetscErrorCode assembleRHSVelocity();
+  PetscErrorCode assembleRHSVelocity();
   // calculate explicit convective and diffusive terms
   PetscErrorCode calculateExplicitTerms();
   // update values in ghost nodes at the domain boundaries

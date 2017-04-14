@@ -149,6 +149,7 @@ void SimulationParameters::initialize(std::string filePath)
   if (ibm == LI_ET_AL)
   {
     lietal_algorithm = node["algorithm"].as<PetscInt>(1);
+    lietal_forceScheme = node["forceScheme"].as<PetscInt>(2);
     lietal_atol = node["atol"].as<PetscReal>(1.0E-05);
     lietal_rtol = node["rtol"].as<PetscReal>(1.0E-05);
     lietal_maxIters = node["maxIters"].as<PetscInt>(5);

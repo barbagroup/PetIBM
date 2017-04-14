@@ -33,15 +33,17 @@ public:
       dfTilde;    ///< delta (variation) of the Lagrangian forces
   Vec dlambda;    ///< delta (variation) of the pressure field
   Vec tmp;        ///< a temporary vector
+  Vec rhs1_n;     ///< RHS of velocity system without pressure gradient and momentum forcing
   Solver *forces; ///< solver for the Lagrangian forces
 
   PetscReal bodyForces[dim]; ///< array with the force in each direction acting on the body
   std::ofstream forcesFile;  ///< file in which to write the forces
 
-  PetscInt algorithm; ///< which algorithm to use (index based on Li et al., 2016)
-  PetscReal atol,     ///< absolute tolerance criterion to stop sub-iterations
-            rtol;     ///< relative tolerance criterion to stop sub-iterations
-  PetscInt maxIters;  ///< maximum number of sub-iterations
+  PetscInt algorithm;   ///< which algorithm to use (index based on Li et al., 2016)
+  PetscInt forceScheme; ///< scheme to use to estimate the prediction of the momentum forcing
+  PetscReal atol,       ///< absolute tolerance criterion to stop sub-iterations
+            rtol;       ///< relative tolerance criterion to stop sub-iterations
+  PetscInt maxIters;    ///< maximum number of sub-iterations
 
   PetscLogStage stageRHSForceSystem,
                 stageSolveForceSystem;
@@ -54,11 +56,11 @@ public:
   PetscErrorCode createVecs();
   PetscErrorCode createGlobalMappingBodies();
   PetscErrorCode generateET();
-  PetscErrorCode assembleRHSVelocity();
+  PetscErrorCode updateRHSVelocity();
   PetscErrorCode solvePoissonSystem(Vec &p);
   PetscErrorCode createForceSolver();
   PetscErrorCode updateFlux(Vec f);
-  PetscErrorCode assembleRHSForce();
+  PetscErrorCode assembleRHSForce(Vec q);
   PetscErrorCode solveForceSystem(Vec &f);
   PetscErrorCode projectionStep(Vec p);
 

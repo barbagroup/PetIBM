@@ -52,6 +52,7 @@ public:
   
   // parameters for decoupled solver (Li et al., 2016)
   PetscInt lietal_algorithm;
+  PetscInt lietal_forceScheme;
   PetscReal lietal_atol,
             lietal_rtol;
   PetscInt lietal_maxIters;

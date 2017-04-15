@@ -735,7 +735,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
         case 2:
             ierr = DMDACreate2d(*comm,
                     petscBC[(*bcInfo)[XMINUS][u].type],
-                    petscBC[(*bcInfo)[XMINUS][v].type], 
+                    petscBC[(*bcInfo)[YMINUS][v].type], 
                     DMDA_STENCIL_STAR, 
                     n[i][0], n[i][1], nProc[0], nProc[1],
                     1, 1, nullptr, nullptr, &da[i]); CHKERRQ(ierr);

@@ -79,8 +79,10 @@ public:
 
     // cunstructors
     CartesianMesh();
+
     CartesianMesh(const MPI_Comm &world, const std::string &file, 
             types::BCInfoHolder &bcInfo, const types::OutputType &type=types::VTK);
+
     CartesianMesh(const MPI_Comm &world, const YAML::Node &node, 
             types::BCInfoHolder &bcInfo, const types::OutputType &type=types::VTK);
 
@@ -89,7 +91,7 @@ public:
     // real initialization function
     PetscErrorCode init(const MPI_Comm &world,
             const YAML::Node &meshNode, types::BCInfoHolder &bcInfo, 
-            const types::OutputType &type=types::VTK);
+            const types::OutputType &type=types::HDF5);
 
     // here goes the part regarding PETSc DMDA objects
     PetscErrorCode initDMDA();
@@ -97,15 +99,15 @@ public:
     // print info with PetscPrintf
     PetscErrorCode printInfo() const;
 
-    // a function for writing out the grid based on the OutputType specified
-    std::function<PetscErrorCode(const std::string &)> write;
-
     // to change the OutputType in after the instance was initialized
     PetscErrorCode setOutputFormat(const types::OutputType &type);
 
     // a function to create XDMF file for HDF5 grid file
     PetscErrorCode generateXDMF(
             const std::string &xml, const std::string &file) const;
+
+    // a function for writing out the grid based on the OutputType specified
+    std::function<PetscErrorCode(const std::string &, const std::string &)> write;
 
 protected:
 
@@ -118,9 +120,9 @@ protected:
     PetscErrorCode calculateAreas();
     PetscErrorCode addLocalInfoString(std::stringstream &ss);
 
-    PetscErrorCode writeBinary(const std::string &file);
-    PetscErrorCode writeVTK(const std::string &file);
-    PetscErrorCode writeHDF5(const std::string &file);
+    PetscErrorCode writeBinary(const std::string &dir, const std::string &file);
+    PetscErrorCode writeVTK(const std::string &dir, const std::string &file);
+    PetscErrorCode writeHDF5(const std::string &dir, const std::string &file);
 
     PetscErrorCode createSingleDMDA(const PetscInt &i);
     PetscErrorCode createLambdaPack();

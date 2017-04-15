@@ -136,13 +136,13 @@ PetscErrorCode CartesianMesh::setOutputFormat(const OutputType &type)
     switch (type)
     {
         case OutputType::Binary:
-            write = std::bind(&CartesianMesh::writeBinary, this, _1);
+            write = std::bind(&CartesianMesh::writeBinary, this, _1, _2);
             break;
         case OutputType::VTK:
-            write = std::bind(&CartesianMesh::writeVTK, this, _1);
+            write = std::bind(&CartesianMesh::writeVTK, this, _1, _2);
             break;
         case OutputType::HDF5:
-            write = std::bind(&CartesianMesh::writeHDF5, this, _1);
+            write = std::bind(&CartesianMesh::writeHDF5, this, _1, _2);
             break;
     }
 
@@ -468,7 +468,8 @@ PetscErrorCode CartesianMesh::printInfo() const
 } // printInfo
 
 
-PetscErrorCode CartesianMesh::writeBinary(const std::string &file)
+PetscErrorCode CartesianMesh::writeBinary(
+        const std::string &dir, const std::string &file)
 {
     PetscFunctionBeginUser;
 
@@ -476,7 +477,7 @@ PetscErrorCode CartesianMesh::writeBinary(const std::string &file)
 
     if (mpiRank == 0)
     {
-        std::ofstream   streamFile(file+".txt");
+        std::ofstream   streamFile(dir + file+".txt");
 
         std::cout << "Writing grid to TXT file: " << file+".txt" << " ... ";
 
@@ -504,7 +505,8 @@ PetscErrorCode CartesianMesh::writeBinary(const std::string &file)
 } // write
 
 
-PetscErrorCode CartesianMesh::writeVTK(const std::string &file)
+PetscErrorCode CartesianMesh::writeVTK(
+        const std::string &dir, const std::string &file)
 {
     PetscFunctionBeginUser;
 
@@ -513,7 +515,7 @@ PetscErrorCode CartesianMesh::writeVTK(const std::string &file)
     // only the master process will write file
     if (mpiRank == 0)
     {
-        std::ofstream   fs(file+".vtk");
+        std::ofstream   fs(dir + file+".vtk");
 
         std::cout << "Writing grid to VTK file: " << file+".vtk" << " ... ";
 
@@ -562,7 +564,8 @@ PetscErrorCode CartesianMesh::writeVTK(const std::string &file)
 }
 
 
-PetscErrorCode CartesianMesh::writeHDF5(const std::string &file)
+PetscErrorCode CartesianMesh::writeHDF5(
+        const std::string &dir, const std::string &file)
 {
     PetscFunctionBeginUser;
 
@@ -574,8 +577,8 @@ PetscErrorCode CartesianMesh::writeHDF5(const std::string &file)
 
     if (mpiRank == 0)
     {
-        std::string     extFile = file + ".h5";
-        std::cout << "Writing grid to HDF5 file: " << extFile+".h5" << " ... ";
+        std::string     extFile = dir + file + ".h5";
+        std::cout << "Writing grid to HDF5 file: " << extFile << " ... ";
 
         // handle for file, dataset, and dataspace
         hid_t   fileID, groupID, dsetID, dspID;

@@ -45,8 +45,8 @@ PetscErrorCode parser::parseSimulationParameters(const YAML::Node &param,
     PetscFunctionBeginUser;
 
     output = param.as<OutputInfo>();
-    velocity = param.as<LinSolverInfo>();
-    poisson = param.as<LinSolverInfo>();
+    velocity = param["velocitySolver"].as<LinSolverInfo>();
+    poisson = param["poissonSolver"].as<LinSolverInfo>();
     methods = param.as<SchemeInfo>();
     stepping = param.as<SteppingInfo>();
 
@@ -488,7 +488,7 @@ namespace YAML
     {
         using namespace types;
         solver.type = node["type"].as<ExecuteType>(ExecuteType::CPU);
-        solver.config = node["config"].as<std::string>("solverPetscOptions.info");
+        solver.config = node["config"].as<std::string>("");
         return true;
     }
 

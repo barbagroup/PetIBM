@@ -34,7 +34,7 @@ class SimulationParameters
 public:
 
     /** \brief directory of the simulation. */
-    stdfs::path                 caseDir;
+    stdfs::path             caseDir;
 
 
     /** \brief output settings. */

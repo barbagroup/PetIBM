@@ -79,6 +79,10 @@ PetscErrorCode SimulationParameters::init(const MPI_Comm &world,
     ierr = parser::parseSimulationParameters(
             node, output, vSolver, pSolver, schemes, step); CHKERRQ(ierr);
 
+    // set the full path of the configuration files for linear solvers
+    vSolver.config = caseDir / vSolver.config;
+    pSolver.config = caseDir / pSolver.config;
+
     // check HDF5
     ierr = checkHDF5(); CHKERRQ(ierr);
 

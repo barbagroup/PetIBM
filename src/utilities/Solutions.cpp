@@ -152,36 +152,44 @@ PetscErrorCode Solutions::write(
 
     PetscErrorCode      ierr;
 
-    std::string     filePath = dir + "/" + name + fileExt;
+    std::string         filePath = dir + "/" + name + fileExt;
 
+    std::vector<Vec>    qGlobalUnPacked(dim);
 
     PetscViewer         viewer;
 
+
+    // create viewer
     ierr = PetscViewerCreate(*comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
 
 
+    // output velocity
+    ierr = DMCompositeGetAccessArray(mesh->qPack, qGlobal, dim, 
+            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+
+    for(PetscInt i=0; i<dim; ++i)
+    {
+        std::string     objName = types::fd2str[types::Field(i)];
+
+        ierr = PetscObjectSetName(
+                PetscObject(qGlobalUnPacked[i]), objName.c_str()); CHKERRQ(ierr);
+
+        ierr = VecView(qGlobalUnPacked[i], viewer); CHKERRQ(ierr);
+    }
+
+    ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
+            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+
     // output flux
     if (fluxFlag)
     {
-        std::vector<Vec>    qGlobalUnPacked(dim);
-        ierr = DMCompositeGetAccessArray(mesh->qPack, qGlobal, dim, 
-                nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
-    
-        for(PetscInt i=0; i<dim; ++i)
-        {
-            std::string     objName = "q" + dir2str[Dir(i)];
-
-            ierr = PetscObjectSetName(
-                    PetscObject(qGlobalUnPacked[i]), objName.c_str()); CHKERRQ(ierr);
-
-            ierr = VecView(qGlobalUnPacked[i], viewer); CHKERRQ(ierr);
-        }
-
-        ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
-                nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+        // TODO: thinks about if outputing flux is necessary
+        ierr = PetscPrintf(*comm, "The outputFlux has been set to true, "
+                "while current version of PetIBM does not support it yet. "
+                "No flux will be output.\n"); CHKERRQ(ierr);
     }
 
 

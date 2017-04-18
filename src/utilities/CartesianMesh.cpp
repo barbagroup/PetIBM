@@ -477,9 +477,7 @@ PetscErrorCode CartesianMesh::writeBinary(
 
     if (mpiRank == 0)
     {
-        std::ofstream   streamFile(dir + file+".txt");
-
-        std::cout << "Writing grid to TXT file: " << file+".txt" << " ... ";
+        std::ofstream   streamFile(dir + "/" + file + ".txt");
 
         streamFile << n[3][0] << "\t" << n[3][1] << "\t"
             << ((dim==3)? std::to_string(n[3][2]) : "") << std::endl;
@@ -495,8 +493,6 @@ PetscErrorCode CartesianMesh::writeBinary(
                 streamFile << std::setprecision(16) << it << std::endl;
 
         streamFile.close();
-
-        std::cout << "done." << std::endl;
     }
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
@@ -515,9 +511,7 @@ PetscErrorCode CartesianMesh::writeVTK(
     // only the master process will write file
     if (mpiRank == 0)
     {
-        std::ofstream   fs(dir + file+".vtk");
-
-        std::cout << "Writing grid to VTK file: " << file+".vtk" << " ... ";
+        std::ofstream   fs(dir + "/" + file + ".vtk");
 
         // vtk version
         fs << "# vtk DataFile Version 3.0" << std::endl;
@@ -553,8 +547,6 @@ PetscErrorCode CartesianMesh::writeVTK(
 
         // close the file
         fs.close();
-
-        std::cout << "done." << std::endl;
     }
 
     // all processes must to wait the master process
@@ -577,8 +569,7 @@ PetscErrorCode CartesianMesh::writeHDF5(
 
     if (mpiRank == 0)
     {
-        std::string     extFile = dir + file + ".h5";
-        std::cout << "Writing grid to HDF5 file: " << extFile << " ... ";
+        std::string     extFile = dir + "/" + file + ".h5";
 
         // handle for file, dataset, and dataspace
         hid_t   fileID, groupID, dsetID, dspID;
@@ -630,8 +621,6 @@ PetscErrorCode CartesianMesh::writeHDF5(
 
         // close the file
         h5err = H5Fclose(fileID); 
-
-        std::cout << "done." << std::endl;
     }
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);

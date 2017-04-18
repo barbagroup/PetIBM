@@ -409,7 +409,7 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
   }
   
   // allocate memory for matrix ET
-  ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
+  ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
   ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
   ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
   ierr = MatSeqAIJSetPreallocation(ET, 0, ET_d_nnz); CHKERRQ(ierr);

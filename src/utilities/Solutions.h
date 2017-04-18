@@ -57,6 +57,8 @@ public:
 
     PetscErrorCode write(const std::string &dir, const std::string &name) const;
 
+    PetscErrorCode read(const std::string &dir, const std::string &name) const;
+
     PetscErrorCode convert2Velocity(const Mat &Rinv);
 
     PetscErrorCode convert2Flux(const Mat &R);

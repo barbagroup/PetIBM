@@ -353,6 +353,8 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 
   PetscFunctionBeginUser;
 
+  ierr = PetscLogStagePush(stageWriteData); CHKERRQ(ierr);
+
   ierr = writeIterationCounts(); CHKERRQ(ierr);
 
   if (timeStep%parameters->nsave == 0 || timeStep%parameters->nrestart == 0)
@@ -383,6 +385,7 @@ PetscErrorCode NavierStokesSolver<dim>::writeData()
 
     ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
   }
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // writeData

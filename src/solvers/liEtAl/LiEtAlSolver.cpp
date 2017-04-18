@@ -38,8 +38,9 @@ LiEtAlSolver<dim>::LiEtAlSolver(CartesianMesh *cartesianMesh,
   ET = PETSC_NULL;
   EBNET = PETSC_NULL;
   G = PETSC_NULL;
-  PetscLogStageRegister("RHSForce", &stageRHSForceSystem);
-  PetscLogStageRegister("solveForce", &stageSolveForceSystem);
+  PetscLogStageRegister("RHSForces", &stageRHSForceSystem);
+  PetscLogStageRegister("solveForces", &stageSolveForceSystem);
+  PetscLogStageRegister("integrateForces", &stageIntegrateForces);
 } // LiEtAl
 
 

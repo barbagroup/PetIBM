@@ -73,7 +73,8 @@ public:
                 stageSolveVelocitySystem,
                 stageRHSPoissonSystem,
                 stageSolvePoissonSystem,
-                stageProjectionStep;
+                stageProjectionStep,
+                stageWriteData;
 
   // initialize data common to NavierStokesSolver and derived classes
   PetscErrorCode initializeCommon();

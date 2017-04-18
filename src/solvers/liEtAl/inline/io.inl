@@ -13,8 +13,11 @@ PetscErrorCode LiEtAlSolver<dim>::writeData()
 
   PetscFunctionBeginUser;
 
+  ierr = PetscLogStagePush(stageIntegrateForces); CHKERRQ(ierr);
   ierr = calculateForces(); CHKERRQ(ierr);
   // ierr = calculateForces2(); CHKERRQ(ierr);
+  ierr = PetscLogStagePop();
+  ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageWriteData); CHKERRQ(ierr);
   ierr = writeForces(); CHKERRQ(ierr);
 
   ierr = writeIterationCounts(); CHKERRQ(ierr);
@@ -49,6 +52,7 @@ PetscErrorCode LiEtAlSolver<dim>::writeData()
 
     ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
   }
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // writeData

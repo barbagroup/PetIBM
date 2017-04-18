@@ -79,6 +79,7 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
   PetscLogStageRegister("RHSPoisson", &stageRHSPoissonSystem);
   PetscLogStageRegister("solvePoisson", &stageSolvePoissonSystem);
   PetscLogStageRegister("projectionStep", &stageProjectionStep);
+  PetscLogStageRegister("writeData", &stageWriteData);
 } // NavierStokesSolver
 
 

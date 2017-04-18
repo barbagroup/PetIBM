@@ -47,7 +47,8 @@ public:
   PetscBool printStats;    ///< prints L2 norm and relative L2 norm when using sub-iterative process
 
   PetscLogStage stageRHSForceSystem,
-                stageSolveForceSystem;
+                stageSolveForceSystem,
+                stageIntegrateForces;
 
   PetscErrorCode initializeBodies();
   PetscErrorCode getNumLagPoints(PetscInt &n);

@@ -209,10 +209,13 @@ PetscErrorCode SingleBody::findCellIdx()
     // loop through points owned locally and find indices
     for(PetscInt d=0; d<dim; ++d)
     {
+        PetscInt    c = 0;
         for(PetscInt i=bg; i<ed; ++i)
         {
             ierr = misc::findCell1D(coords[d][i], 
-                    mesh->coord[4][d], meshIdx[d][i]); CHKERRQ(ierr);
+                    mesh->coord[4][d], meshIdx[d][c]); CHKERRQ(ierr);
+
+            c += 1;
         }
     }
 

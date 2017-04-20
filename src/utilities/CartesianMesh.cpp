@@ -86,7 +86,6 @@ PetscErrorCode CartesianMesh::init(
     coord = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 0.0)));
     dLTrue = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 1.0)));
     dL = types::DeltaLVec(5, std::vector<PetscReal*>(3, nullptr));
-    dA = types::DeltaAVec(3);
     da = std::vector<DM>(5, PETSC_NULL);
     nProc = types::IntVec1D(3, PETSC_DECIDE);
     bg = types::IntVec2D(5, types::IntVec1D(3, 0));
@@ -107,7 +106,6 @@ PetscErrorCode CartesianMesh::init(
     ierr = createPressureMesh(); CHKERRQ(ierr);
     ierr = createVertexMesh(); CHKERRQ(ierr);
     ierr = createVelocityMesh(); CHKERRQ(ierr);
-    ierr = calculateAreas(); CHKERRQ(ierr);
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
 
     // create PETSc DMs
@@ -309,45 +307,6 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
         dL[2][0] = &dLTrue[2][0][0];
         dL[2][1] = &dLTrue[2][1][0];
         dL[2][2] = &dLTrue[2][2][0];
-    }
-
-    PetscFunctionReturn(0);
-}
-
-
-PetscErrorCode CartesianMesh::calculateAreas()
-{
-    PetscFunctionBeginUser;
-
-    if (dim == 3)
-    {
-        // u-velocity mesh
-        dA[0] = types::RawArray2D(n[0][1]+2, n[0][2]+2, -1, -1);
-        for(PetscInt k=-1; k<n[0][2]+1; ++k)
-            for(PetscInt j=-1; j<n[0][1]+1; ++j)
-                dA[0][k][j] = dL[0][2][k] * dL[0][1][j];
-        
-        // v-velocity mesh
-        dA[1] = types::RawArray2D(n[1][0]+2, n[1][2]+2, -1, -1);
-        for(PetscInt k=-1; k<n[1][2]+1; ++k)
-            for(PetscInt i=-1; i<n[1][0]+1; ++i)
-                dA[1][k][i] = dL[1][2][k] * dL[1][0][i];
-        
-        // w-velocity mesh
-        dA[2] = types::RawArray2D(n[2][0]+2, n[2][1]+2, -1, -1);
-        for(PetscInt j=-1; j<n[2][1]+1; ++j)
-            for(PetscInt i=-1; i<n[2][0]+1; ++i)
-                dA[2][j][i] = dL[2][1][j] * dL[2][0][i];
-    }
-    else // assume dim == 2
-    {
-        // u-velocity mesh
-        dA[0] = types::RawArray2D(n[0][1]+2, 1, -1, 0);
-        for(PetscInt j=-1; j<n[0][1]+1; ++j) dA[0][0][j] = dL[0][1][j];
-
-        // v-velocity mesh
-        dA[1] = types::RawArray2D(n[1][0]+2, 1, -1, 0);
-        for(PetscInt i=-1; i<n[1][0]+1; ++i) dA[1][0][i] = dL[1][0][i];
     }
 
     PetscFunctionReturn(0);

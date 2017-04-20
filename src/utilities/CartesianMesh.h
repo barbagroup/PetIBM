@@ -43,8 +43,6 @@ public:
 
     types::DeltaLVec        dL;
 
-    types::DeltaAVec        dA;
-
     std::string             info;
 
 
@@ -117,7 +115,6 @@ protected:
     PetscErrorCode createPressureMesh();
     PetscErrorCode createVelocityMesh();
     PetscErrorCode createInfoString();
-    PetscErrorCode calculateAreas();
     PetscErrorCode addLocalInfoString(std::stringstream &ss);
 
     PetscErrorCode writeBinary(const std::string &dir, const std::string &file);

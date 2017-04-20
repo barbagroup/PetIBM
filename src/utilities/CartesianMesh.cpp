@@ -35,23 +35,10 @@ CartesianMesh::CartesianMesh() = default;
 
 
 CartesianMesh::CartesianMesh(
-        const MPI_Comm &world, const std::string &file, 
-        BCInfoHolder &bc, const OutputType &type)
-{
-    YAML::Node  node = YAML::LoadFile(file);
-    
-    CartesianMesh(world, node, bc, type);
-}
-
-
-CartesianMesh::CartesianMesh(
         const MPI_Comm &world, const YAML::Node &node, 
         BCInfoHolder &bc, const OutputType &type)
 {
-    if (node["cartesianMesh"].IsDefined())
-        init(world, node["cartesianMesh"], bc, type);
-    else
-        init(world, node, bc, type);
+    init(world, node, bc, type);
 }
 
 

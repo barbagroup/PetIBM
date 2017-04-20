@@ -20,31 +20,11 @@ SimulationParameters::SimulationParameters() = default;
 
 
 /** \copydoc SimulationParameters::SimulationParameters(
- * const MPI_Comm &world, const std::string &config). */
-SimulationParameters::SimulationParameters(
-        const MPI_Comm &world, const std::string &config)
-{
-    YAML::Node      node = YAML::LoadFile(config); 
-    stdfs::path     p(config);
-
-    p = stdfs::system_complete(p).parent_path();
-
-    SimulationParameters(world, node, p);
-}
-
-
-/** \copydoc SimulationParameters::SimulationParameters(
  * const MPI_Comm &world, const YAML::Node &config, const std::string &dir). */
 SimulationParameters::SimulationParameters(const MPI_Comm &world, 
         const YAML::Node &config, const std::string &dir)
 {
-    if (config["simulationParameters"].IsDefined())
-    {
-        init(world, config["simulationParameters"], 
-                config["caseDir"].as<std::string>());
-    }
-    else
-        init(world, config, dir);
+    init(world, config, dir);
 }
 
 
@@ -68,20 +48,12 @@ PetscErrorCode SimulationParameters::init(const MPI_Comm &world,
     ierr = MPI_Comm_size(*comm, &mpiSize); CHKERRQ(ierr);
     ierr = MPI_Comm_rank(*comm, &mpiRank); CHKERRQ(ierr);
     
-
-    // set case directory
-    if (dir == "")
-        SETERRQ(*comm, 65, "The path of case directory is not given.");
-
+    // store the case directory
     caseDir = stdfs::path(dir);
 
     // get data from the YAML node
     ierr = parser::parseSimulationParameters(
             node, output, vSolver, pSolver, schemes, step); CHKERRQ(ierr);
-
-    // set the full path of the configuration files for linear solvers
-    vSolver.config = caseDir / vSolver.config;
-    pSolver.config = caseDir / pSolver.config;
 
     // check HDF5
     ierr = checkHDF5(); CHKERRQ(ierr);

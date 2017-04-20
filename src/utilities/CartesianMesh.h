@@ -78,11 +78,9 @@ public:
     // cunstructors
     CartesianMesh();
 
-    CartesianMesh(const MPI_Comm &world, const std::string &file, 
-            types::BCInfoHolder &bcInfo, const types::OutputType &type=types::VTK);
-
-    CartesianMesh(const MPI_Comm &world, const YAML::Node &node, 
-            types::BCInfoHolder &bcInfo, const types::OutputType &type=types::VTK);
+    CartesianMesh(const MPI_Comm &world, 
+            const YAML::Node &node, types::BCInfoHolder &bcInfo, 
+            const types::OutputType &type=types::HDF5);
 
     ~CartesianMesh();
 

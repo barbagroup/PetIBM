@@ -21,22 +21,10 @@ using namespace types;
 FlowDescription::FlowDescription() = default;
 
 
-/** \copydoc FlowDescription::FlowDescription(const MPI_Comm &, const std::string &) */
-FlowDescription::FlowDescription(const MPI_Comm &world, const std::string &YAMLfile)
-{
-    YAML::Node      node = YAML::LoadFile(YAMLfile);
-
-    FlowDescription(world, node);
-}
-
-
 /** \copydoc FlowDescription::FlowDescription(const MPI_Comm &, const YAML::Node &) */
 FlowDescription::FlowDescription(const MPI_Comm &world, const YAML::Node &node)
 {
-    if (node["flowDescription"].IsDefined())
-        init(world, node["flowDescription"]);
-    else
-        init(world, node);
+    init(world, node);
 }
 
 

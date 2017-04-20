@@ -66,16 +66,6 @@ public:
     /** \brief default constructor. */
     FlowDescription();
 
-    /** \brief constructor for using YAML file.
-     *
-     * \details A YAML file holding the flow information is required. Either 
-     * an old flowDescription.yaml or a big config YAML with flow info held 
-     * under the key "flowDescription" is accepted.
-     *
-     * \param world MPI communicator.
-     * \param YAMLfile the YAML file.
-     */
-    FlowDescription(const MPI_Comm &world, const std::string &YAMLfile);
 
     /** \brief constructor for using YAML node.
      *

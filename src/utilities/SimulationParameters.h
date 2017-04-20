@@ -65,24 +65,14 @@ public:
     SimulationParameters();
 
     /**
-     * \brief constructor with given config YAML file.
-     *
-     * \param world MPI communicator.
-     * \param config YAML config file.
-     */
-    SimulationParameters(const MPI_Comm &world, const std::string &config);
-
-    /**
      * \brief constructor with given YAML node.
      *
      * \param world MPI communicator.
      * \param config YAML config node.
-     * \param dir the path to the case directory; if empty, then there must be 
-     *            a key "caseDir" in the YAML Node and at the same level as the
-     *            key "simulationParameters".
+     * \param dir the path to the case directory, which is used for output files.
      */
     SimulationParameters(const MPI_Comm &world, 
-            const YAML::Node &config, const std::string &dir="");
+            const YAML::Node &config, const std::string &dir);
 
     /** \brief destructor */
     ~SimulationParameters();
@@ -93,12 +83,12 @@ public:
      *
      * \param world MPI communicator.
      * \param config YAML config node.
-     * \param dir the path to the case directory.
+     * \param dir the path to the case directory, which is used for output files.
      *
      * \return PetscErrorCode.
      */
     PetscErrorCode init(const MPI_Comm &world, 
-            const YAML::Node &config, const std::string &dir="");
+            const YAML::Node &config, const std::string &dir);
 
 
     /**

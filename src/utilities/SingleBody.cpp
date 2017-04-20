@@ -9,6 +9,7 @@
 
 // STL
 # include <fstream>
+# include <sstream>
 
 // PetIBM
 # include "misc.h"
@@ -24,31 +25,31 @@ SingleBody::~SingleBody() = default;
 
 
 /** \copydoc SingleBody::SingleBody(const CartesianMesh &, const std::string &). */
-SingleBody::SingleBody(
-        const CartesianMesh &_mesh, const std::string &file)
+SingleBody::SingleBody(const CartesianMesh &_mesh, 
+        const std::string &file, const std::string &_name)
 {
-    init(_mesh, file);
+    init(_mesh, file, _name);
 }
 
 
 /** \copydoc SingleBody::SingleBogy(const CartesianMesh &, const types::RealVec2D &). */
-SingleBody::SingleBody(
-        const CartesianMesh &_mesh, const types::RealVec2D &_coords)
+SingleBody::SingleBody(const CartesianMesh &_mesh, 
+        const types::RealVec2D &_coords, const std::string &_name)
 {
-    init(_mesh, _coords);
+    init(_mesh, _coords, _name);
 }
 
 
 /** \copydoc SingleBody::init(const CartesianMesh &, const std::string &). */
-PetscErrorCode SingleBody::init(
-        const CartesianMesh &_mesh, const std::string &file)
+PetscErrorCode SingleBody::init(const CartesianMesh &_mesh, 
+        const std::string &file, const std::string &_name)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
 
     // initialize MPI info and mesh
-    ierr = preInit(_mesh); CHKERRQ(ierr);
+    ierr = preInit(_mesh, _name); CHKERRQ(ierr);
 
     // read coordinates from the given file; nPts and coords are set up here
     ierr = readFromFile(file); CHKERRQ(ierr);
@@ -61,15 +62,15 @@ PetscErrorCode SingleBody::init(
 
 
 /** \copydoc SingleBody::init(const CartesianMesh &, const types::RealVec2D &). */
-PetscErrorCode SingleBody::init(
-        const CartesianMesh &_mesh, const types::RealVec2D &_coords)
+PetscErrorCode SingleBody::init(const CartesianMesh &_mesh, 
+        const types::RealVec2D &_coords, const std::string &_name)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
 
     // initialize MPI info and mesh
-    ierr = preInit(_mesh); CHKERRQ(ierr);
+    ierr = preInit(_mesh, _name); CHKERRQ(ierr);
 
     // copy cooedinates and set total number of Lagrangian points
     // TODO: check if the input _coords is correct?
@@ -84,11 +85,15 @@ PetscErrorCode SingleBody::init(
 
 
 /** \copydoc SingleBody::preInit. */
-PetscErrorCode SingleBody::preInit(const CartesianMesh &_mesh)
+PetscErrorCode SingleBody::preInit(
+        const CartesianMesh &_mesh, const std::string &_name)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
+
+    // set up the name
+    name = _name;
 
     // save the address of input mesh instance
     // note: a bad practice for shared_ptr
@@ -120,6 +125,9 @@ PetscErrorCode SingleBody::postInit()
     // set up background mesh indices for Lagrangian points owned locally
     // meshIdx is defined here.
     ierr = findCellIdx(); CHKERRQ(ierr);
+
+    // create info string
+    ierr = createInfoString(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -241,6 +249,80 @@ PetscErrorCode SingleBody::createDMDA()
     bg = lclInfo.xs;
     nLclPts = lclInfo.xm;
     ed = bg + nLclPts;
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBody::createInfoString. */
+PetscErrorCode SingleBody::createInfoString()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode          ierr;
+
+    types::IntVec1D         nOnProcs(mpiSize);
+    types::IntVec1D         bgOnProcs(mpiSize);
+    types::IntVec1D         edOnProcs(mpiSize);
+
+    // gather information from all processes to Rank 0
+    ierr = MPI_Gather(&nLclPts, 1, MPIU_INT, 
+            nOnProcs.data(), 1, MPIU_INT, 0, *comm); CHKERRQ(ierr);
+
+    ierr = MPI_Gather(&bg, 1, MPIU_INT, 
+            bgOnProcs.data(), 1, MPIU_INT, 0, *comm); CHKERRQ(ierr);
+
+    ierr = MPI_Gather(&ed, 1, MPIU_INT, 
+            edOnProcs.data(), 1, MPIU_INT, 0, *comm); CHKERRQ(ierr);
+
+    // only rank 0 prepares the info string
+    if (mpiRank == 0)
+    {
+        std::stringstream       ss;
+
+        ss << std::string(80, '=') << std::endl;
+        ss << "Body " << name << ":" << std::endl;
+        ss << std::string(80, '=') << std::endl;
+
+        ss << "\tDimension: " << dim << std::endl << std::endl;
+
+        ss << "\tTotal number of Lagrangian points: "
+            << nPts << std::endl << std::endl;
+
+        ss << "\tBody is distributed to " << mpiSize
+            << " processes" << std::endl << std::endl;
+
+        ss << "\tDistribution of Lagrangian points:" << std::endl << std::endl;
+
+        for(PetscInt i=0; i<mpiSize; ++i)
+        {
+            ss << "\t\tRank " << i << ":" << std::endl;
+            ss << "\t\t\tNumber of points: " << nOnProcs[i] << std::endl;
+            ss << "\t\t\tRange of point indices: ["
+                << bgOnProcs[i] << ", " << edOnProcs[i] << ")" << std::endl;
+        }
+
+        ss << std::endl;
+
+        info = ss.str();
+    }
+    else
+        info = "This is not a master process.\n";
+
+    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBody::printInfo. */
+PetscErrorCode SingleBody::printInfo()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = PetscPrintf(*comm, info.c_str()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

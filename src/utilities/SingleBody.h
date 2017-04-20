@@ -29,6 +29,9 @@ public:
     /** \brief dimension. */
     PetscInt            dim;
 
+    /** \brief the name of this body. */
+    std::string         name;
+
     /** \brief the total number of Lagrangian points. */
     PetscInt            nPts;
 
@@ -51,6 +54,9 @@ public:
     /** \brief the underlying parallel 1D DMDA onject. */
     DM                  da;
 
+    /** \brief a string for printing information. */
+    std::string         info;
+
 
     /** \brief the default constructor. */
     SingleBody();
@@ -61,8 +67,10 @@ public:
      *
      * \param mesh an instance of CartesianMesh.
      * \param file the ASCII file containing coordinates of Lagrangian points.
+     * \param name the name of this body.
      */
-    SingleBody(const CartesianMesh &mesh, const std::string &file);
+    SingleBody(const CartesianMesh &mesh, 
+            const std::string &file, const std::string &name);
 
 
     /**
@@ -70,11 +78,13 @@ public:
      *
      * \param mesh an instance of CartesianMesh.
      * \param coords a 3 by nPts vector of doubles.
+     * \param name the name of this body.
      *
      * Note: Even with 2D problem, this function still requires coordinates in 
      * z-direction. They are simply zeros in this case.
      */
-    SingleBody(const CartesianMesh &mesh, const types::RealVec2D &coords);
+    SingleBody(const CartesianMesh &mesh, 
+            const types::RealVec2D &coords, const std::string &name);
 
 
     /** \brief the default destructor. */
@@ -86,9 +96,10 @@ public:
      *
      * \param mesh an instance of CartesianMesh.
      * \param file the ASCII file containing coordinates of Lagrangian points.
+     * \param name the name of this body.
      */
-    PetscErrorCode init(
-            const CartesianMesh &mesh, const std::string &file);
+    PetscErrorCode init(const CartesianMesh &mesh, 
+            const std::string &file, const std::string &name);
 
 
     /**
@@ -96,12 +107,21 @@ public:
      *
      * \param mesh an instance of CartesianMesh.
      * \param coords a 3 by nPts vector of doubles.
+     * \param name the name of this body.
      *
      * Note: Even with 2D problem, this function still requires coordinates in 
      * z-direction. They are simply zeros in this case.
      */
-    PetscErrorCode init(
-            const CartesianMesh &mesh, const types::RealVec2D &coords);
+    PetscErrorCode init(const CartesianMesh &mesh, 
+            const types::RealVec2D &coords, const std::string &name);
+
+
+    /**
+     * \brief print the information of this body.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode printInfo();
 
 protected:
 
@@ -125,10 +145,11 @@ protected:
      * \brief part of initialization that initialize mesh and MPI information.
      *
      * \param mesh an instance of CartesianMesh.
+     * \param name the name of this body.
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode preInit(const CartesianMesh &mesh);
+    PetscErrorCode preInit(const CartesianMesh &mesh, const std::string &name);
 
 
     /**
@@ -163,4 +184,12 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createDMDA();
+
+
+    /**
+     * \brief create a string for printing information.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode createInfoString();
 };

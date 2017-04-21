@@ -29,9 +29,9 @@ public:
 
     PetscInt                dim;
 
-    Vec                     qGlobal;
+    Vec                     UGlobal;
 
-    Vec                     lambdaGlobal;
+    Vec                     pGlobal;
 
     std::string             info;
     
@@ -53,7 +53,7 @@ public:
 
     PetscErrorCode printInfo() const;
 
-    PetscErrorCode applyIC(const FlowDescription &flow, const Mat &R=nullptr);
+    PetscErrorCode applyIC(const FlowDescription &flow);
 
     PetscErrorCode write(const std::string &dir, const std::string &name) const;
 

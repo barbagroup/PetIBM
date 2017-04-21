@@ -634,16 +634,15 @@ PetscErrorCode CartesianMesh::initDMDA()
 
     PetscErrorCode  ierr;
 
-    ierr = createLambdaPack(); CHKERRQ(ierr);
+    ierr = createPressureDMDA(); CHKERRQ(ierr);
     ierr = createVelocityPack(); CHKERRQ(ierr);
 
     // total number of local velocity points
-    qNLocal = m[0][0] * m[0][1] * m[0][2] + 
+    UNLocal = m[0][0] * m[0][1] * m[0][2] + 
         m[1][0] * m[1][1] * m[1][2] + m[2][0] * m[2][1] * m[2][2];
 
     // total number of local pressure points
-    // TODO: remember to change this when we have bodies in the future
-    lambdaNLocal = m[3][0] * m[3][1] * m[3][2];
+    pNLocal = m[3][0] * m[3][1] * m[3][2];
 
     ierr = createMapping(); CHKERRQ(ierr);
 
@@ -699,7 +698,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 }
 
 
-PetscErrorCode CartesianMesh::createLambdaPack()
+PetscErrorCode CartesianMesh::createPressureDMDA()
 {
     using namespace std;
 
@@ -713,9 +712,6 @@ PetscErrorCode CartesianMesh::createLambdaPack()
            &nProc[0], &nProc[1], &nProc[2], 
            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); CHKERRQ(ierr);
 
-    ierr = DMCompositeCreate(*comm, &lambdaPack); CHKERRQ(ierr);
-    ierr = DMCompositeAddDM(lambdaPack, da[3]); CHKERRQ(ierr);
-
     PetscFunctionReturn(0);
 }
 
@@ -728,12 +724,12 @@ PetscErrorCode CartesianMesh::createVelocityPack()
 
     PetscErrorCode  ierr;
 
-    ierr = DMCompositeCreate(*comm, &qPack); CHKERRQ(ierr);
+    ierr = DMCompositeCreate(*comm, &UPack); CHKERRQ(ierr);
 
     for(unsigned int i=0; i<dim; ++i)
     {
         ierr = createSingleDMDA(i); CHKERRQ(ierr);
-        ierr = DMCompositeAddDM(qPack, da[i]); CHKERRQ(ierr);
+        ierr = DMCompositeAddDM(UPack, da[i]); CHKERRQ(ierr);
     }
 
     PetscFunctionReturn(0);
@@ -748,11 +744,11 @@ PetscErrorCode CartesianMesh::createMapping()
 
     ISLocalToGlobalMapping      *mapping;
 
-    ierr = DMCompositeGetISLocalToGlobalMappings(qPack, &mapping); CHKERRQ(ierr);
+    ierr = DMCompositeGetISLocalToGlobalMappings(UPack, &mapping); CHKERRQ(ierr);
 
     // not a hard copy, so do not free the memory space 
     // before we destroy this CartesianMesh instance ...
-    qMapping.assign(mapping, mapping+dim);
+    UMapping.assign(mapping, mapping+dim);
 
 
     // there is a bug (or they do that with a purpose I don't know) in the 
@@ -764,8 +760,8 @@ PetscErrorCode CartesianMesh::createMapping()
         const PetscInt      *cArry; // PETSc only return const array ...
         PetscInt            *arry, n, smallest;
 
-        ierr = ISLocalToGlobalMappingGetSize(qMapping[c], &n); CHKERRQ(ierr);
-        ierr = ISLocalToGlobalMappingGetIndices(qMapping[c], &cArry); CHKERRQ(ierr);
+        ierr = ISLocalToGlobalMappingGetSize(UMapping[c], &n); CHKERRQ(ierr);
+        ierr = ISLocalToGlobalMappingGetIndices(UMapping[c], &cArry); CHKERRQ(ierr);
 
         // cast to normal ptr that can be modified
         arry = const_cast<PetscInt*>(cArry);
@@ -779,15 +775,11 @@ PetscErrorCode CartesianMesh::createMapping()
         // if an entry has the min value, it should be a ghost point
         for(PetscInt i=0; i<n; ++i) if (arry[i] == smallest) arry[i] = -1;
 
-        ierr = ISLocalToGlobalMappingRestoreIndices(qMapping[c], &cArry); CHKERRQ(ierr);
+        ierr = ISLocalToGlobalMappingRestoreIndices(UMapping[c], &cArry); CHKERRQ(ierr);
     }
 
-    ierr = DMCompositeGetISLocalToGlobalMappings(lambdaPack, &mapping); CHKERRQ(ierr);
-
-    // not a hard copy
-    // TODO: now we don't consider bodies. In the future when we have bodies,
-    // we may want to modify this.
-    lambdaMapping.assign(mapping, mapping+1);
+    // get mapping for pressure
+    ierr = DMGetLocalToGlobalMapping(da[3], &pMapping); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

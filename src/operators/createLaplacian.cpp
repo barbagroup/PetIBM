@@ -111,7 +111,7 @@ PetscErrorCode createLaplacian(
 
 
     // create matrix
-    ierr = DMCreateMatrix(mesh.qPack, &L); CHKERRQ(ierr);
+    ierr = DMCreateMatrix(mesh.UPack, &L); CHKERRQ(ierr);
     ierr = MatSetFromOptions(L); CHKERRQ(ierr);
     ierr = MatSetOption(L, MAT_KEEP_NONZERO_PATTERN, PETSC_FALSE); CHKERRQ(ierr);
     ierr = MatSetOption(L, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
@@ -161,7 +161,7 @@ PetscErrorCode createLaplacian(
 
 
     // create a matrix-free constraint matrix for boundary correction
-    ierr = MatCreateShell(*mesh.comm, mesh.qNLocal, mesh.qNLocal,
+    ierr = MatCreateShell(*mesh.comm, mesh.UNLocal, mesh.UNLocal,
             PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &LCorrection); 
     CHKERRQ(ierr);
 
@@ -209,7 +209,7 @@ inline PetscErrorCode setRowValues(
 
     // get the global index
     ierr = ISLocalToGlobalMappingApply(
-            mesh.qMapping[f], stencils.size(), lclIds.data(), cols.data()); 
+            mesh.UMapping[f], stencils.size(), lclIds.data(), cols.data()); 
     CHKERRQ(ierr);
 
 

@@ -107,7 +107,7 @@ PetscErrorCode createConvection(
     }
 
     // create a matrix-free operator
-    ierr = MatCreateShell(*mesh.comm, mesh.qNLocal, mesh.qNLocal, 
+    ierr = MatCreateShell(*mesh.comm, mesh.UNLocal, mesh.UNLocal, 
             N, N, (void *) ctx, &H); CHKERRQ(ierr);
 
     // bind MatMult
@@ -150,14 +150,14 @@ PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y)
     ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
 
     // get local (including overlapped points) values of x
-    ierr = DMCompositeScatterArray(ctx->mesh->qPack, 
+    ierr = DMCompositeScatterArray(ctx->mesh->UPack, 
             x, ctx->qLocal.data()); CHKERRQ(ierr);
 
     // set the values of ghost points in local vectors
     ierr = ctx->bc->copyValues2LocalVecs(ctx->qLocal); CHKERRQ(ierr);
 
     // get unPacked vectors of y
-    ierr = DMCompositeGetAccessArray(ctx->mesh->qPack,
+    ierr = DMCompositeGetAccessArray(ctx->mesh->UPack,
             y, ctx->mesh->dim, nullptr, unPacked.data()); CHKERRQ(ierr);
 
 
@@ -196,7 +196,7 @@ PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y)
 
 
     // return the ownership of unpacked vectors back to packed vectors
-    ierr = DMCompositeRestoreAccessArray(ctx->mesh->qPack,
+    ierr = DMCompositeRestoreAccessArray(ctx->mesh->UPack,
             y, ctx->mesh->dim, nullptr, unPacked.data()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
@@ -223,14 +223,14 @@ PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y)
     ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
 
     // get local (including overlapped points) vectors of x
-    ierr = DMCompositeScatterArray(ctx->mesh->qPack, 
+    ierr = DMCompositeScatterArray(ctx->mesh->UPack, 
             x, ctx->qLocal.data()); CHKERRQ(ierr);
 
     // set the values of ghost points in local vectors
     ierr = ctx->bc->copyValues2LocalVecs(ctx->qLocal); CHKERRQ(ierr);
 
     // get unPacked vectors of y
-    ierr = DMCompositeGetAccessArray(ctx->mesh->qPack,
+    ierr = DMCompositeGetAccessArray(ctx->mesh->UPack,
             y, ctx->mesh->dim, nullptr, unPacked.data()); CHKERRQ(ierr);
 
 
@@ -278,7 +278,7 @@ PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y)
 
 
     // return the ownership of unpacked vectors back to packed vectors
-    ierr = DMCompositeRestoreAccessArray(ctx->mesh->qPack,
+    ierr = DMCompositeRestoreAccessArray(ctx->mesh->UPack,
             y, ctx->mesh->dim, nullptr, unPacked.data()); CHKERRQ(ierr);
 
 

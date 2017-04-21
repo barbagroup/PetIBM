@@ -58,18 +58,30 @@ public:
 
     types::IntVec2D         m;
 
-    PetscInt                qNLocal, lambdaNLocal;
+    /** \brief total number of velocity points local to this process. */
+    PetscInt                UNLocal;
 
-    DM                      qPack, lambdaPack;
+    /** \brief total number of pressure points local to this process. */
+    PetscInt                pNLocal;
 
-    std::vector<ISLocalToGlobalMapping>     qMapping, lambdaMapping;
+    /** \brief DMComposte of velocity DMs. */
+    DM                      UPack;
+
+    /** \brief mapping between local unpacked and global packed indices of veloicity.*/
+    std::vector<ISLocalToGlobalMapping>     UMapping;
+
+    /** \brief mapping between local and global indices of pressure.*/
+    ISLocalToGlobalMapping                  pMapping;
 
 
     // MPI stuffs
     std::shared_ptr<const MPI_Comm>         comm;
 
-    PetscMPIInt                             mpiSize,
-                                            mpiRank;
+    /** \brief total number of processes. */
+    PetscMPIInt                             mpiSize;
+
+    /** \brief rank of this process. */
+    PetscMPIInt                             mpiRank;
 
     // a reference to BC information
     std::shared_ptr<types::BCInfoHolder>    bcInfo;
@@ -120,7 +132,7 @@ protected:
     PetscErrorCode writeHDF5(const std::string &dir, const std::string &file);
 
     PetscErrorCode createSingleDMDA(const PetscInt &i);
-    PetscErrorCode createLambdaPack();
+    PetscErrorCode createPressureDMDA();
     PetscErrorCode createVelocityPack();
     PetscErrorCode createMapping();
 

@@ -50,10 +50,10 @@ PetscErrorCode Solutions::init(
     dim = mesh->dim;
 
     // create global composite vaector for q
-    ierr = DMCreateGlobalVector(mesh->qPack, &qGlobal); CHKERRQ(ierr);
+    ierr = DMCreateGlobalVector(mesh->UPack, &UGlobal); CHKERRQ(ierr);
 
-    // create global composite vaector for lambda
-    ierr = DMCreateGlobalVector(mesh->lambdaPack, &lambdaGlobal); CHKERRQ(ierr);
+    // create global composite vaector for pressure
+    ierr = DMCreateGlobalVector(mesh->da[3], &pGlobal); CHKERRQ(ierr);
 
     // set output format
     ierr = setOutputFormat(type); CHKERRQ(ierr);
@@ -109,7 +109,7 @@ PetscErrorCode Solutions::createInfoString()
     PetscErrorCode      ierr;
     PetscInt            size;
 
-    ierr = VecGetSize(qGlobal, &size); CHKERRQ(ierr);
+    ierr = VecGetSize(UGlobal, &size); CHKERRQ(ierr);
 
     std::stringstream   ss;
 
@@ -120,12 +120,12 @@ PetscErrorCode Solutions::createInfoString()
     ss << "\tDimension: " << dim << std::endl;
     ss << std::endl;
 
-    ierr = VecGetSize(qGlobal, &size); CHKERRQ(ierr);
-    ss << "\tLength of Global Packed q Vector: " << size << std::endl;
+    ierr = VecGetSize(UGlobal, &size); CHKERRQ(ierr);
+    ss << "\tLength of Global Packed Velocity Vector: " << size << std::endl;
     ss << std::endl;
 
-    ierr = VecGetSize(lambdaGlobal, &size); CHKERRQ(ierr);
-    ss << "\tLength of Global Packed lambda Vector: " << size << std::endl;
+    ierr = VecGetSize(pGlobal, &size); CHKERRQ(ierr);
+    ss << "\tLength of Global Pressure Vector: " << size << std::endl;
     ss << std::endl;
 
     info = ss.str();
@@ -154,7 +154,7 @@ PetscErrorCode Solutions::write(
 
     std::string         filePath = dir + "/" + name + fileExt;
 
-    std::vector<Vec>    qGlobalUnPacked(dim);
+    std::vector<Vec>    UGlobalUnPacked(dim);
 
     PetscViewer         viewer;
 
@@ -167,21 +167,21 @@ PetscErrorCode Solutions::write(
 
 
     // output velocity
-    ierr = DMCompositeGetAccessArray(mesh->qPack, qGlobal, dim, 
-            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
 
     for(PetscInt i=0; i<dim; ++i)
     {
         std::string     objName = types::fd2str[types::Field(i)];
 
         ierr = PetscObjectSetName(
-                PetscObject(qGlobalUnPacked[i]), objName.c_str()); CHKERRQ(ierr);
+                PetscObject(UGlobalUnPacked[i]), objName.c_str()); CHKERRQ(ierr);
 
-        ierr = VecView(qGlobalUnPacked[i], viewer); CHKERRQ(ierr);
+        ierr = VecView(UGlobalUnPacked[i], viewer); CHKERRQ(ierr);
     }
 
-    ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
-            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim,
+            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
 
     // output flux
     if (fluxFlag)
@@ -193,36 +193,14 @@ PetscErrorCode Solutions::write(
     }
 
 
-    // output pressure and surface forces
-    PetscInt    numDMs;
-
-    ierr = DMCompositeGetNumberDM(mesh->lambdaPack, &numDMs); CHKERRQ(ierr);
-
-    std::vector<Vec>    lambdaGlobalUnPacked(numDMs);
-
-    ierr = DMCompositeGetAccessArray(mesh->lambdaPack, lambdaGlobal, numDMs, 
-            nullptr, lambdaGlobalUnPacked.data()); CHKERRQ(ierr);
-
-    // first we output pressure
+    // output pressure
     ierr = PetscObjectSetName(
-            PetscObject(lambdaGlobalUnPacked[0]), "p"); CHKERRQ(ierr);
+            PetscObject(pGlobal), "p"); CHKERRQ(ierr);
 
-    ierr = VecView(lambdaGlobalUnPacked[0], viewer); CHKERRQ(ierr);
+    ierr = VecView(pGlobal, viewer); CHKERRQ(ierr);
 
-    // next, we output surface forces
-    for(PetscInt i=1; i<numDMs; ++i)
-    {
-        std::string     objName = "body" + std::to_string(i);
 
-        ierr = PetscObjectSetName(PetscObject(lambdaGlobalUnPacked[i]), 
-                objName.c_str()); CHKERRQ(ierr);
-
-        ierr = VecView(lambdaGlobalUnPacked[i], viewer); CHKERRQ(ierr);
-    }
-
-    ierr = DMCompositeRestoreAccessArray(mesh->lambdaPack, lambdaGlobal, numDMs, 
-            nullptr, lambdaGlobalUnPacked.data()); CHKERRQ(ierr);
-
+    // destroy PetscViewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
@@ -238,7 +216,7 @@ PetscErrorCode Solutions::read(
 
     std::string         filePath = dir + "/" + name + fileExt;
 
-    std::vector<Vec>    qGlobalUnPacked(dim);
+    std::vector<Vec>    UGlobalUnPacked(dim);
 
     PetscViewer         viewer;
 
@@ -251,53 +229,31 @@ PetscErrorCode Solutions::read(
 
 
     // read velocity
-    ierr = DMCompositeGetAccessArray(mesh->qPack, qGlobal, dim, 
-            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
 
     for(PetscInt i=0; i<dim; ++i)
     {
         std::string     objName = types::fd2str[types::Field(i)];
 
         ierr = PetscObjectSetName(
-                PetscObject(qGlobalUnPacked[i]), objName.c_str()); CHKERRQ(ierr);
+                PetscObject(UGlobalUnPacked[i]), objName.c_str()); CHKERRQ(ierr);
 
-        ierr = VecLoad(qGlobalUnPacked[i], viewer); CHKERRQ(ierr);
+        ierr = VecLoad(UGlobalUnPacked[i], viewer); CHKERRQ(ierr);
     }
 
-    ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
-            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim,
+            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
 
 
-    // read pressure and surface forces
-    PetscInt    numDMs;
-
-    ierr = DMCompositeGetNumberDM(mesh->lambdaPack, &numDMs); CHKERRQ(ierr);
-
-    std::vector<Vec>    lambdaGlobalUnPacked(numDMs);
-
-    ierr = DMCompositeGetAccessArray(mesh->lambdaPack, lambdaGlobal, numDMs, 
-            nullptr, lambdaGlobalUnPacked.data()); CHKERRQ(ierr);
-
-    // first we read pressure
+    // read pressure
     ierr = PetscObjectSetName(
-            PetscObject(lambdaGlobalUnPacked[0]), "p"); CHKERRQ(ierr);
+            PetscObject(pGlobal), "p"); CHKERRQ(ierr);
 
-    ierr = VecLoad(lambdaGlobalUnPacked[0], viewer); CHKERRQ(ierr);
+    ierr = VecLoad(pGlobal, viewer); CHKERRQ(ierr);
 
-    // next, we read surface forces
-    for(PetscInt i=1; i<numDMs; ++i)
-    {
-        std::string     objName = "body" + std::to_string(i);
 
-        ierr = PetscObjectSetName(PetscObject(lambdaGlobalUnPacked[i]), 
-                objName.c_str()); CHKERRQ(ierr);
-
-        ierr = VecLoad(lambdaGlobalUnPacked[i], viewer); CHKERRQ(ierr);
-    }
-
-    ierr = DMCompositeRestoreAccessArray(mesh->lambdaPack, lambdaGlobal, numDMs, 
-            nullptr, lambdaGlobalUnPacked.data()); CHKERRQ(ierr);
-
+    // destroy PetscViewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
@@ -312,11 +268,11 @@ PetscErrorCode Solutions::convert2Velocity(const Mat &RInv)
 
     Vec                 U;
 
-    ierr = VecDuplicate(qGlobal, &U); CHKERRQ(ierr);
+    ierr = VecDuplicate(UGlobal, &U); CHKERRQ(ierr);
 
-    ierr = MatMult(RInv, qGlobal, U); CHKERRQ(ierr);
+    ierr = MatMult(RInv, UGlobal, U); CHKERRQ(ierr);
 
-    ierr = VecSwap(qGlobal, U); CHKERRQ(ierr);
+    ierr = VecSwap(UGlobal, U); CHKERRQ(ierr);
 
     ierr = VecDestroy(&U); CHKERRQ(ierr);
 
@@ -332,11 +288,11 @@ PetscErrorCode Solutions::convert2Flux(const Mat &R)
 
     Vec                 F;
 
-    ierr = VecDuplicate(qGlobal, &F); CHKERRQ(ierr);
+    ierr = VecDuplicate(UGlobal, &F); CHKERRQ(ierr);
 
-    ierr = MatMult(R, qGlobal, F); CHKERRQ(ierr);
+    ierr = MatMult(R, UGlobal, F); CHKERRQ(ierr);
 
-    ierr = VecSwap(qGlobal, F); CHKERRQ(ierr);
+    ierr = VecSwap(UGlobal, F); CHKERRQ(ierr);
 
     ierr = VecDestroy(&F); CHKERRQ(ierr);
 
@@ -344,34 +300,25 @@ PetscErrorCode Solutions::convert2Flux(const Mat &R)
 }
 
 
-PetscErrorCode Solutions::applyIC(const FlowDescription &flow, const Mat &R)
+PetscErrorCode Solutions::applyIC(const FlowDescription &flow)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
-    std::vector<Vec>    qGlobalUnPacked(dim);
+    std::vector<Vec>    UGlobalUnPacked(dim);
 
-    ierr = DMCompositeGetAccessArray(mesh->qPack, qGlobal, dim,
-            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim,
+            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
 
     for(PetscInt comp=0; comp<dim; ++comp)
     {
-        ierr = VecSet(qGlobalUnPacked[comp], flow.IC[comp]); CHKERRQ(ierr);
+        ierr = VecSet(UGlobalUnPacked[comp], flow.IC[comp]); CHKERRQ(ierr);
     }
 
-    ierr = DMCompositeRestoreAccessArray(mesh->qPack, qGlobal, dim,
-            nullptr, qGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim,
+            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
 
-    if (R)
-    {
-        Vec     y;
-        ierr = VecDuplicate(qGlobal, &y); CHKERRQ(ierr);
-        ierr = MatMult(R, qGlobal, y); CHKERRQ(ierr);
-        ierr = VecSwap(qGlobal, y); CHKERRQ(ierr);
-        ierr = VecDestroy(&y); CHKERRQ(ierr);
-    }
-
-    ierr = VecSet(lambdaGlobal, 0.0); CHKERRQ(ierr);
+    ierr = VecSet(pGlobal, 0.0); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

@@ -48,7 +48,7 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
     
     // create matrix
     ierr = MatCreate(*mesh.comm, &M); CHKERRQ(ierr);
-    ierr = MatSetSizes(M, mesh.qNLocal, mesh.qNLocal, 
+    ierr = MatSetSizes(M, mesh.UNLocal, mesh.UNLocal, 
             PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(M); CHKERRQ(ierr);
     ierr = MatSeqAIJSetPreallocation(M, 1, nullptr); CHKERRQ(ierr);
@@ -74,7 +74,7 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
 
                     // map to global index
                     ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[field], 1, &idx, &idx); CHKERRQ(ierr);
+                            mesh.UMapping[field], 1, &idx, &idx); CHKERRQ(ierr);
 
                     // set value
                     ierr = MatSetValue(M, idx, idx, kernels[field](i, j, k), 

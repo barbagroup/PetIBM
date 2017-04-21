@@ -90,7 +90,7 @@ PetscErrorCode createDivergence(
 
     // create matrix
     ierr = MatCreate(*mesh.comm, &D); CHKERRQ(ierr);
-    ierr = MatSetSizes(D, mesh.lambdaNLocal, mesh.qNLocal, 
+    ierr = MatSetSizes(D, mesh.pNLocal, mesh.UNLocal, 
             PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(D); CHKERRQ(ierr);
     ierr = MatSeqAIJSetPreallocation(D, mesh.dim*2, nullptr); CHKERRQ(ierr);
@@ -115,7 +115,7 @@ PetscErrorCode createDivergence(
                 CHKERRQ(ierr);
 
                 ierr = ISLocalToGlobalMappingApply(
-                        mesh.lambdaMapping[0], 1, &self, &self);
+                        mesh.pMapping, 1, &self, &self);
                 CHKERRQ(ierr);
 
                 // calculate and set values of the two surfaces in each direction
@@ -137,7 +137,7 @@ PetscErrorCode createDivergence(
                     ierr = DMDAConvertToCell(mesh.da[field], 
                             target, &targetIdx); CHKERRQ(ierr);
 
-                    ierr = ISLocalToGlobalMappingApply(mesh.qMapping[field], 
+                    ierr = ISLocalToGlobalMappingApply(mesh.UMapping[field], 
                             1, &targetIdx, &targetIdx); CHKERRQ(ierr);
 
                     ierr = MatSetValue(D, self, targetIdx, 
@@ -154,7 +154,7 @@ PetscErrorCode createDivergence(
                     ierr = DMDAConvertToCell(mesh.da[field], 
                             target, &targetIdx); CHKERRQ(ierr);
 
-                    ierr = ISLocalToGlobalMappingApply(mesh.qMapping[field], 
+                    ierr = ISLocalToGlobalMappingApply(mesh.UMapping[field], 
                             1, &targetIdx, &targetIdx); CHKERRQ(ierr);
 
                     // note the value for this face is just a negative version
@@ -195,7 +195,7 @@ PetscErrorCode createDivergence(
 
 
     // create a matrix-free constraint matrix for boundary correction
-    ierr = MatCreateShell(*mesh.comm, mesh.lambdaNLocal, mesh.qNLocal,
+    ierr = MatCreateShell(*mesh.comm, mesh.pNLocal, mesh.UNLocal,
             PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &DCorrection); 
     CHKERRQ(ierr);
 

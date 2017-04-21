@@ -72,7 +72,7 @@ PetscErrorCode createGradient(
 
     // create matrix
     ierr = MatCreate(*mesh.comm, &G); CHKERRQ(ierr);
-    ierr = MatSetSizes(G, mesh.qNLocal, mesh.lambdaNLocal,
+    ierr = MatSetSizes(G, mesh.UNLocal, mesh.pNLocal,
             PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(G); CHKERRQ(ierr);
     ierr = MatSeqAIJSetPreallocation(G, 2, nullptr); CHKERRQ(ierr);
@@ -100,7 +100,7 @@ PetscErrorCode createGradient(
 
                     // map local velocity index to global index
                     ierr = ISLocalToGlobalMappingApply(
-                            mesh.qMapping[field], 1, &rId, &rId); CHKERRQ(ierr);
+                            mesh.UMapping[field], 1, &rId, &rId); CHKERRQ(ierr);
 
                     // loop through columns
                     for(PetscInt n=0; n<2; ++n)
@@ -109,7 +109,7 @@ PetscErrorCode createGradient(
                                 mesh.da[3], loc[n], &cId); CHKERRQ(ierr);
 
                         ierr = ISLocalToGlobalMappingApply(
-                                mesh.lambdaMapping[0], 1, &cId, &cId); CHKERRQ(ierr);
+                                mesh.pMapping, 1, &cId, &cId); CHKERRQ(ierr);
 
                         ierr = MatSetValue(G, rId, cId, 
                                 values[n], INSERT_VALUES); CHKERRQ(ierr);

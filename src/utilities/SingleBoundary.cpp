@@ -227,7 +227,7 @@ PetscErrorCode SingleBoundary::setPointsX(
                     mesh->da[field], target, &targetId); CHKERRQ(ierr);
 
             ierr = ISLocalToGlobalMappingApply(
-                    mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
+                    mesh->UMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
 
             ierr = DMDAConvertToCell(
                     mesh->da[field], {k, j, ghost, 0}, &ghostId); CHKERRQ(ierr);
@@ -281,7 +281,7 @@ PetscErrorCode SingleBoundary::setPointsY(
                     mesh->da[field], target, &targetId); CHKERRQ(ierr);
 
             ierr = ISLocalToGlobalMappingApply(
-                    mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
+                    mesh->UMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
 
             ierr = DMDAConvertToCell(
                     mesh->da[field], {k, ghost, i, 0}, &ghostId); CHKERRQ(ierr);
@@ -335,7 +335,7 @@ PetscErrorCode SingleBoundary::setPointsZ(
                     mesh->da[field], target, &targetId); CHKERRQ(ierr);
 
             ierr = ISLocalToGlobalMappingApply(
-                    mesh->qMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
+                    mesh->UMapping[field], 1, &targetId, &targetId); CHKERRQ(ierr);
 
             ierr = DMDAConvertToCell(
                     mesh->da[field], {ghost, j, i, 0}, &ghostId); CHKERRQ(ierr);
@@ -435,7 +435,7 @@ PetscErrorCode SingleBoundary::setGhostICs(const Solutions &soln)
             {
                 // note: thanks to PETSc, this is not a collective function, 
                 // because this function can only get values locally.
-                ierr = VecGetValues(soln.qGlobal, 1, 
+                ierr = VecGetValues(soln.UGlobal, 1, 
                         &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
                 updateEqsKernel[f](it.second, targetValue, value[f], 0.0); 
@@ -447,7 +447,7 @@ PetscErrorCode SingleBoundary::setGhostICs(const Solutions &soln)
         {
             for(auto &it: points[f])
             {
-                ierr = VecGetValues(soln.qGlobal, 1, 
+                ierr = VecGetValues(soln.UGlobal, 1, 
                         &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
                 it.second.a1 = it.second.value = targetValue;
@@ -474,7 +474,7 @@ PetscErrorCode SingleBoundary::updateEqsTrue(
         {
             // note: thanks to PETSc, this is not a collective function, because
             // this function can only get values local to this process.
-            ierr = VecGetValues(soln.qGlobal, 1, 
+            ierr = VecGetValues(soln.UGlobal, 1, 
                     &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
             updateEqsKernel[f](it.second, targetValue, value[f], dt); 
@@ -496,7 +496,7 @@ PetscErrorCode SingleBoundary::updateGhostValuesTrue(const Solutions &soln)
     for(PetscInt f=0; f<dim; ++f)
         for(auto &it: points[f])
         {
-            ierr = VecGetValues(soln.qGlobal, 1, 
+            ierr = VecGetValues(soln.UGlobal, 1, 
                     &(it.second.targetPackedId), &targetValue); CHKERRQ(ierr);
 
             it.second.value = it.second.a0 * targetValue + it.second.a1;

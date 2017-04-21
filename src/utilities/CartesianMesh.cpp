@@ -31,9 +31,15 @@ using namespace types;
 
 
 //  TODO: move CMD parsing to other part in PetIBM
+
+/** \copydoc CartesianMesh::CartesianMesh(). */
 CartesianMesh::CartesianMesh() = default;
 
 
+/** \copydoc CartesianMesh::CartesianMesh(
+ *           const MPI_Comm &, const YAML::Node &, 
+ *           BCInfoHolder &, const OutputType &).
+ */
 CartesianMesh::CartesianMesh(
         const MPI_Comm &world, const YAML::Node &node, 
         BCInfoHolder &bc, const OutputType &type)
@@ -42,9 +48,14 @@ CartesianMesh::CartesianMesh(
 }
 
 
+/** \copydoc CartesianMesh::~CartesianMesh(). */
 CartesianMesh::~CartesianMesh() = default;
 
 
+/** \copydoc CartesianMesh::init(
+ *           const MPI_Comm &, const YAML::Node &, 
+ *           BCInfoHolder &, const OutputType &).
+ */
 PetscErrorCode CartesianMesh::init(
         const MPI_Comm &world, const YAML::Node &meshNode, 
         BCInfoHolder &bc, const OutputType &type)
@@ -112,6 +123,7 @@ PetscErrorCode CartesianMesh::init(
 }
 
 
+/** \copydoc CartesianMesh::setOutputFormat(const OutputType &). */
 PetscErrorCode CartesianMesh::setOutputFormat(const OutputType &type)
 {
     PetscFunctionBeginUser;
@@ -135,6 +147,7 @@ PetscErrorCode CartesianMesh::setOutputFormat(const OutputType &type)
 }
 
 
+/** \copydoc CartesianMesh::createPressureMesh(). */
 PetscErrorCode CartesianMesh::createPressureMesh()
 {
     PetscFunctionBeginUser;
@@ -167,6 +180,7 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 }
 
 
+/** \copydoc CartesianMesh::createVertexMesh(). */
 PetscErrorCode CartesianMesh::createVertexMesh()
 {
     PetscFunctionBeginUser;
@@ -191,6 +205,7 @@ PetscErrorCode CartesianMesh::createVertexMesh()
 }
 
 
+/** \copydoc CartesianMesh::createVelocityMesh(). */
 PetscErrorCode CartesianMesh::createVelocityMesh()
 {
     PetscFunctionBeginUser;
@@ -300,6 +315,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 }
 
 
+/** \copydoc CartesianMesh::createInfoString(). */
 PetscErrorCode CartesianMesh::createInfoString()
 {
     PetscFunctionBeginUser;
@@ -353,6 +369,7 @@ PetscErrorCode CartesianMesh::createInfoString()
 }
 
 
+/** \copydoc CartesianMesh::addLocalInfoString(std::stringstream &). */
 PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 {
     PetscFunctionBeginUser;
@@ -403,6 +420,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 }
 
 
+/** \copydoc CartesianMesh::printInfo() const. */
 PetscErrorCode CartesianMesh::printInfo() const
 {
     PetscFunctionBeginUser;
@@ -414,6 +432,7 @@ PetscErrorCode CartesianMesh::printInfo() const
 } // printInfo
 
 
+/** \copydoc CartesianMesh::writeBinary(const std::string &, const std::string &). */
 PetscErrorCode CartesianMesh::writeBinary(
         const std::string &dir, const std::string &file)
 {
@@ -447,6 +466,7 @@ PetscErrorCode CartesianMesh::writeBinary(
 } // write
 
 
+/** \copydoc CartesianMesh::writeVTK(const std::string &, const std::string &). */
 PetscErrorCode CartesianMesh::writeVTK(
         const std::string &dir, const std::string &file)
 {
@@ -502,6 +522,7 @@ PetscErrorCode CartesianMesh::writeVTK(
 }
 
 
+/** \copydoc CartesianMesh::writeHDF5(const std::string &, const std::string &). */
 PetscErrorCode CartesianMesh::writeHDF5(
         const std::string &dir, const std::string &file)
 {
@@ -576,6 +597,7 @@ PetscErrorCode CartesianMesh::writeHDF5(
 }
 
 
+/** \copydoc CartesianMesh::generateXDMF(const std::string &, const std::string &) const. */
 PetscErrorCode CartesianMesh::generateXDMF(
         const std::string &xml, const std::string &file) const
 {
@@ -628,6 +650,7 @@ PetscErrorCode CartesianMesh::generateXDMF(
 }
 
 
+/** \copydoc CartesianMesh::initDMDA(). */
 PetscErrorCode CartesianMesh::initDMDA()
 {
     PetscFunctionBeginUser;
@@ -650,6 +673,7 @@ PetscErrorCode CartesianMesh::initDMDA()
 }
 
 
+/** \copydoc CartesianMesh::createSingleDMDA(const PetscInt &). */
 PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 {
     using namespace std;
@@ -698,6 +722,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 }
 
 
+/** \copydoc CartesianMesh::createPressureDMDA(). */
 PetscErrorCode CartesianMesh::createPressureDMDA()
 {
     using namespace std;
@@ -716,6 +741,7 @@ PetscErrorCode CartesianMesh::createPressureDMDA()
 }
 
 
+/** \copydoc CartesianMesh::createVelocityPack(). */
 PetscErrorCode CartesianMesh::createVelocityPack()
 {
     using namespace std;
@@ -736,6 +762,7 @@ PetscErrorCode CartesianMesh::createVelocityPack()
 }
 
 
+/** \copydoc CartesianMesh::createMapping(). */
 PetscErrorCode CartesianMesh::createMapping()
 {
     PetscFunctionBeginUser;
@@ -785,6 +812,7 @@ PetscErrorCode CartesianMesh::createMapping()
 }
 
 
+/** \copydoc std::ostream &operator<< (std::ostream &, const CartesianMesh &). */
 std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh)
 {
     os << mesh.info;

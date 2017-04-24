@@ -36,8 +36,8 @@ PetscErrorCode LiEtAlSolver<2>::generateET()
   PetscReal hx, hy; // grid-spacings
   PetscReal maxDisp[2]; // lengths of the support of the discrete delta function
   // get domain dimensions
-  PetscReal widths[2] = {mesh->x[mesh->nx+1] - mesh->x[0],
-                         mesh->y[mesh->ny+1] - mesh->y[0]};
+  PetscReal widths[2] = {mesh->x[mesh->nx] - mesh->x[0],
+                         mesh->y[mesh->ny] - mesh->y[0]};
   // get boundary types
   BoundaryType bTypes[2] = {flow->boundaries[XPLUS][0].type,
                             flow->boundaries[YPLUS][0].type};
@@ -81,16 +81,12 @@ PetscErrorCode LiEtAlSolver<2>::generateET()
         for (l=0; l<body.numPoints; l++)
         {
           pointIdx = body.idxPointsOnProcess[l];
-          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
+          source[0] = body.X[pointIdx];
+          source[1] = body.Y[pointIdx];
+          if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            source[0] = body.X[pointIdx];
-            source[1] = body.Y[pointIdx];
-            if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
-            {
-              ET_col = body.globalIdxPoints[l];
-              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
-            }
+            ET_col = body.globalIdxPoints[l];
+            (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
           }
         }
       }
@@ -117,16 +113,12 @@ PetscErrorCode LiEtAlSolver<2>::generateET()
         for (l=0; l<body.numPoints; l++)
         {
           pointIdx = body.idxPointsOnProcess[l];
-          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
+          source[0] = body.X[pointIdx];
+          source[1] = body.Y[pointIdx];
+          if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            source[0] = body.X[pointIdx];
-            source[1] = body.Y[pointIdx];
-            if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
-            {
-              ET_col = body.globalIdxPoints[l] + 1;
-              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
-            }
+            ET_col = body.globalIdxPoints[l] + 1;
+            (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
           }
         }
       }
@@ -167,17 +159,13 @@ PetscErrorCode LiEtAlSolver<2>::generateET()
         for (l=0; l<body.numPoints; l++)
         {
           pointIdx = body.idxPointsOnProcess[l];
-          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
+          source[0] = body.X[pointIdx];
+          source[1] = body.Y[pointIdx];
+          if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            source[0] = body.X[pointIdx];
-            source[1] = body.Y[pointIdx];
-            if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
-            {
-              ET_col = body.globalIdxPoints[l];
-              value = hx*delta(disp[0], disp[1], hx, hy);
-              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
-            }
+            ET_col = body.globalIdxPoints[l];
+            value = hx*delta(disp[0], disp[1], hx, hy);
+            ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
           }
         }
       }
@@ -203,17 +191,13 @@ PetscErrorCode LiEtAlSolver<2>::generateET()
         for (l=0; l<body.numPoints; l++)
         {
           pointIdx = body.idxPointsOnProcess[l];
-          if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-              j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2)
+          source[0] = body.X[pointIdx];
+          source[1] = body.Y[pointIdx];
+          if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            source[0] = body.X[pointIdx];
-            source[1] = body.Y[pointIdx];
-            if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
-            {
-              ET_col = body.globalIdxPoints[l] + 1;
-              value = hy*delta(disp[0], disp[1], hx, hy);
-              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
-            }
+            ET_col = body.globalIdxPoints[l] + 1;
+            value = hy*delta(disp[0], disp[1], hx, hy);
+            ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
           }
         }
       }
@@ -248,9 +232,9 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
   PetscReal disp[3];
   PetscReal hx, hy, hz; // grid-spacings
   PetscReal maxDisp[3]; // lengths of the support of the discrete delta function
-  PetscReal widths[3] = {mesh->x[mesh->nx+1] - mesh->x[0],
-                         mesh->y[mesh->ny+1] - mesh->y[0],
-                         mesh->z[mesh->nz+1] - mesh->z[0]};
+  PetscReal widths[3] = {mesh->x[mesh->nx] - mesh->x[0],
+                         mesh->y[mesh->ny] - mesh->y[0],
+                         mesh->z[mesh->nz] - mesh->z[0]};
   BoundaryType bTypes[3] = {flow->boundaries[XPLUS][0].type,
                             flow->boundaries[YPLUS][0].type,
                             flow->boundaries[ZPLUS][0].type};
@@ -300,18 +284,13 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
           for (l=0; l<body.numPoints; l++)
           {
             pointIdx = body.idxPointsOnProcess[l];
-            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
-                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            source[2] = body.Z[pointIdx];
+            if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              source[0] = body.X[pointIdx];
-              source[1] = body.Y[pointIdx];
-              source[2] = body.Z[pointIdx];
-              if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
-              {
-                ET_col = body.globalIdxPoints[l];
-                (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
-              }
+              ET_col = body.globalIdxPoints[l];
+              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
             }
           }
         }
@@ -344,18 +323,13 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
           for (l=0; l<body.numPoints; l++)
           {
             pointIdx = body.idxPointsOnProcess[l];
-            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
-                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            source[2] = body.Z[pointIdx];
+            if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              source[0] = body.X[pointIdx];
-              source[1] = body.Y[pointIdx];
-              source[2] = body.Z[pointIdx];
-              if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
-              {
-                ET_col = body.globalIdxPoints[l] + 1;
-                (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
-              }
+              ET_col = body.globalIdxPoints[l] + 1;
+              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
             }
           }
         }
@@ -388,18 +362,13 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
           for (l=0; l<body.numPoints; l++)
           {
             pointIdx = body.idxPointsOnProcess[l];
-            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
-                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            source[2] = body.Z[pointIdx];
+            if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              source[0] = body.X[pointIdx];
-              source[1] = body.Y[pointIdx];
-              source[2] = body.Z[pointIdx];
-              if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
-              {
-                ET_col = body.globalIdxPoints[l] + 2;
-                (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
-              }
+              ET_col = body.globalIdxPoints[l] + 2;
+              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
             }
           }
         }
@@ -446,19 +415,14 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
           for (l=0; l<body.numPoints; l++)
           {
             pointIdx = body.idxPointsOnProcess[l];
-            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
-                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            source[2] = body.Z[pointIdx];
+            if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              source[0] = body.X[pointIdx];
-              source[1] = body.Y[pointIdx];
-              source[2] = body.Z[pointIdx];
-              if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
-              {
-                ET_col = body.globalIdxPoints[l];
-                value = hx*delta(disp[0], disp[1], disp[2], hx, hy, hz);
-                ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
-              }
+              ET_col = body.globalIdxPoints[l];
+              value = hx*delta(disp[0], disp[1], disp[2], hx, hy, hz);
+              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
         }
@@ -490,19 +454,14 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
           for (l=0; l<body.numPoints; l++)
           {
             pointIdx = body.idxPointsOnProcess[l];
-            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
-                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            source[2] = body.Z[pointIdx];
+            if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              source[0] = body.X[pointIdx];
-              source[1] = body.Y[pointIdx];
-              source[2] = body.Z[pointIdx];
-              if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
-              {
-                ET_col = body.globalIdxPoints[l] + 1;
-                value = hy*delta(disp[0], disp[1], disp[2], hx, hy, hz);
-                ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
-              }
+              ET_col = body.globalIdxPoints[l] + 1;
+              value = hy*delta(disp[0], disp[1], disp[2], hx, hy, hz);
+              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
         }
@@ -534,19 +493,14 @@ PetscErrorCode LiEtAlSolver<3>::generateET()
           for (l=0; l<body.numPoints; l++)
           {
             pointIdx = body.idxPointsOnProcess[l];
-            if (i >= body.I[pointIdx]-2 && i<= body.I[pointIdx]+2 &&
-                j >= body.J[pointIdx]-2 && j<= body.J[pointIdx]+2 &&
-                k >= body.K[pointIdx]-2 && k<= body.K[pointIdx]+2)
+            source[0] = body.X[pointIdx];
+            source[1] = body.Y[pointIdx];
+            source[2] = body.Z[pointIdx];
+            if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              source[0] = body.X[pointIdx];
-              source[1] = body.Y[pointIdx];
-              source[2] = body.Z[pointIdx];
-              if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
-              {
-                ET_col = body.globalIdxPoints[l] + 2;
-                value = hz*delta(disp[0], disp[1], disp[2], hx, hy, hz);
-                ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
-              }
+              ET_col = body.globalIdxPoints[l] + 2;
+              value = hz*delta(disp[0], disp[1], disp[2], hx, hy, hz);
+              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
         }

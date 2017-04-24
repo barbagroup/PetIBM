@@ -72,6 +72,9 @@ PetscErrorCode BodyPack::init(
     // create dmPack
     ierr = createDmPack(); CHKERRQ(ierr);
 
+    // create mapping
+    ierr = createMappings(); CHKERRQ(ierr);
+
     // create info
     ierr = createInfoString(); CHKERRQ(ierr);
 
@@ -92,6 +95,25 @@ PetscErrorCode BodyPack::createDmPack()
     {
         ierr = DMCompositeAddDM(dmPack, bodies[i].da); CHKERRQ(ierr);
     }
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc BodyPack::createMappings. */
+PetscErrorCode BodyPack::createMappings()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ISLocalToGlobalMapping      *temp;
+
+    ierr = DMCompositeGetISLocalToGlobalMappings(dmPack, &temp); CHKERRQ(ierr);
+
+    mapping.assign(temp, temp+nBodies); CHKERRQ(ierr);
+
+    // DO NOT DE-ALLOCATE THE MEMORY SPACE POINTED BY `temp`!!
 
     PetscFunctionReturn(0);
 }

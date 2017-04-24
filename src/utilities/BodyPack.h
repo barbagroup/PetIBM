@@ -18,6 +18,7 @@
 // PETSc
 # include <petscsys.h>
 # include <petscdm.h>
+# include <petscis.h>
 
 // YAML
 # include <yaml-cpp/yaml.h>
@@ -42,6 +43,9 @@ public:
 
     /** \brief a DMComposite of DMs of all `SingleBody`s. */
     DM              dmPack;
+
+    /** \brief local to global (in DMComposite) mappings for bodies. */
+    std::vector<ISLocalToGlobalMapping>     mapping;
 
     /** \brief a string for printing information. */
     std::string     info;
@@ -104,6 +108,14 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createDmPack();
+
+
+    /**
+     * \brief create ISLocalToGlobals for bodies.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode createMappings();
 
 
     /**

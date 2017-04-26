@@ -2,7 +2,7 @@
 
 ---
 
-## Current development
+## 0.2.0
 
 ---
 

@@ -73,9 +73,13 @@ PetscErrorCode TairaColoniusSolver<dim>::writeData()
 
   PetscFunctionBeginUser;
 
+  ierr = PetscLogStagePush(stageIntegrateForces); CHKERRQ(ierr);
   ierr = calculateForces(); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = PetscLogStagePush(NavierStokesSolver<dim>::stageWriteData); CHKERRQ(ierr);
   ierr = writeForces(); CHKERRQ(ierr);
   ierr = NavierStokesSolver<dim>::writeData(); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
 } // writeData

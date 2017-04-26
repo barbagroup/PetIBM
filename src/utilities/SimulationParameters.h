@@ -50,6 +50,14 @@ public:
 
   IBMethod ibm; ///< type of system to be solved
   
+  // parameters for decoupled solver (Li et al., 2016)
+  PetscInt decoupling_algorithm;      ///< decoupled IBPM: algo index for order of decoupling
+  PetscInt decoupling_forceEstimator; ///< decoupled IBPM: scheme index to estimate momentum forcing
+  PetscReal decoupling_atol,          ///< decoupled IBPM: absolute tolerance for sub-iterative process
+            decoupling_rtol;          ///< decoupled IBPM: relative tolerance for sub-iterative process
+  PetscInt decoupling_maxIters;       ///< decoupled IBPM: maximum number of iterations for sub-iterative process
+  PetscBool decoupling_printStats;    ///< decoupled IBPM: prints L2 norm and relative L2 norms when using sub-iterative process
+
   TimeIntegration convection, ///< time-scheme for the convection term
                   diffusion;  ///< time-scheme for the diffusion term
 

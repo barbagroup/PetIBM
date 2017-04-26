@@ -41,6 +41,8 @@ public:
   ~CartesianMesh();
   // parse input file and create Cartesian mesh
   void initialize(std::string filePath);
+  // read stations from file
+  PetscErrorCode read(std::string filePath);
   // write grid points into file
   PetscErrorCode write(std::string filePath);
 #ifdef PETSC_HAVE_HDF5

@@ -29,6 +29,8 @@ public:
 
   std::ofstream forcesFile; ///< stream the file containing the forces acting on each immersed boundary
   
+  PetscLogStage stageIntegrateForces;
+
   PetscErrorCode initializeBodies();
   PetscErrorCode getNumLagPoints(PetscInt &n);
   PetscErrorCode getNumLagPointsOnProcess(std::vector<PetscInt> &numOnProcess);

@@ -73,7 +73,8 @@ public:
                 stageSolveVelocitySystem,
                 stageRHSPoissonSystem,
                 stageSolvePoissonSystem,
-                stageProjectionStep;
+                stageProjectionStep,
+                stageWriteData;
 
   // initialize data common to NavierStokesSolver and derived classes
   PetscErrorCode initializeCommon();
@@ -106,6 +107,8 @@ public:
   
   // compute matrix \f$ B^N Q \f$
   virtual PetscErrorCode generateBNQ();
+  // generate gradient operator
+  PetscErrorCode generateGradient(Mat *G);
   // compute matrix \f$ Q^T B^N Q \f$
   PetscErrorCode generateQTBNQ();
   // calculate and specify to the Krylov solver the null-space of the LHS matrix
@@ -127,13 +130,13 @@ public:
   virtual PetscErrorCode generateR2();
 
   // advance in time
-  PetscErrorCode stepTime();
+  virtual PetscErrorCode stepTime();
   // solve system for intermediate velocity fluxes \f$ q^* \f$
   PetscErrorCode solveIntermediateVelocity();
   // solver Poisson system for pressure and body forces
-  PetscErrorCode solvePoissonSystem();
+  virtual PetscErrorCode solvePoissonSystem();
   // project velocity onto divergence-free field with satisfaction of the no-splip condition
-  PetscErrorCode projectionStep();
+  virtual PetscErrorCode projectionStep();
 
   // read fluxes from files
   PetscErrorCode readFluxes(std::string directory);
@@ -156,7 +159,7 @@ public:
   // write pressure field into file
   virtual PetscErrorCode writeLambda(std::string directory);
   // write KSP iteration counts into file
-  PetscErrorCode writeIterationCounts();
+  virtual PetscErrorCode writeIterationCounts();
   
 public:
   // constructors

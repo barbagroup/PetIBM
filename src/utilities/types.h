@@ -81,6 +81,7 @@ std::string stringFromTimeScheme(TimeScheme timeScheme);
 enum IBMethod
 {
   TAIRA_COLONIUS, ///< immersed boundary projection method (Taira & Colonius, 2007)
+  LI_ET_AL, ///< decoupled IBPM (Li et al., 2016)
   NAVIER_STOKES   ///< no immersed boundary (Perot, 1993)
 };
 IBMethod stringToIBMethod(std::string s);

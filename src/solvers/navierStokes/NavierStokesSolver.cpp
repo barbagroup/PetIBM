@@ -79,6 +79,7 @@ NavierStokesSolver<dim>::NavierStokesSolver(CartesianMesh *cartesianMesh,
   PetscLogStageRegister("RHSPoisson", &stageRHSPoissonSystem);
   PetscLogStageRegister("solvePoisson", &stageSolvePoissonSystem);
   PetscLogStageRegister("projectionStep", &stageProjectionStep);
+  PetscLogStageRegister("writeData", &stageWriteData);
 } // NavierStokesSolver
 
 
@@ -441,6 +442,7 @@ PetscErrorCode NavierStokesSolver<dim>::finalize()
 #include "inline/generateBNQ.inl"
 #include "inline/generateR2.inl"
 #include "inline/io.inl"
+#include "inline/generateGradient.inl"
 
 
 // template class specialization

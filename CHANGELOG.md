@@ -27,7 +27,9 @@
 
 ### Fixed
 * Update boundary ghost points only once per time step, at the beginning of the time step.
+* Bug-fix in the methods `generateBNQ()` of the class `TairaColoniusSolver` and `generateET` of the class `LiEtAlSolver`: calculate the correct widths of the computational domain (fixed index).
 
 ### Removed
 
 * Python script `restartFromSolution.py` (not finished and not necessary).
+* Non-zero initial guess as default for KSPs; the user should add `-ksp_initial_guess_nonzero true` to the command-line (or configuration file) to switch on a nonzero initial for a specific KSP.

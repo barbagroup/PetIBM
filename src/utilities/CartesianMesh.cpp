@@ -89,6 +89,11 @@ PetscErrorCode CartesianMesh::init(
     bg = types::IntVec2D(5, types::IntVec1D(3, 0));
     ed = types::IntVec2D(5, types::IntVec1D(3, 1));
     m = types::IntVec2D(5, types::IntVec1D(3, 0));
+    ao = std::vector<AO>(3);
+    UNLocalAllProcs = types::IntVec2D(3, types::IntVec1D(mpiSize, 0));
+    UPackNLocalAllProcs = types::IntVec1D(mpiSize, 0);
+    offsetsAllProcs = types::IntVec2D(3, types::IntVec1D(mpiSize, 0));
+    offsetsPackAllProcs = types::IntVec1D(mpiSize, 0);
 
 
     // store the address of bcInfo
@@ -660,9 +665,43 @@ PetscErrorCode CartesianMesh::initDMDA()
     ierr = createPressureDMDA(); CHKERRQ(ierr);
     ierr = createVelocityPack(); CHKERRQ(ierr);
 
+    // gather numbers of local velocity component
+    for(PetscInt f=0; f<dim; ++f)
+    {
+        // temporarily use UNLocal
+        UNLocal = m[f][0] * m[f][1] * m[f][2];
+
+        // get number of local velocity component from all processes
+        ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+        ierr = MPI_Allgather(&UNLocal, 1, MPIU_INT,
+                UNLocalAllProcs[f].data(), 1, MPIU_INT, *comm); CHKERRQ(ierr);
+    }
+
     // total number of local velocity points
-    UNLocal = m[0][0] * m[0][1] * m[0][2] + 
-        m[1][0] * m[1][1] * m[1][2] + m[2][0] * m[2][1] * m[2][2];
+    UNLocal = UNLocalAllProcs[0][mpiRank] + 
+        UNLocalAllProcs[1][mpiRank] + UNLocalAllProcs[2][mpiRank];
+
+    // offset on each process of each velocity component
+    for(PetscInt f=0; f<dim; ++f)
+    {
+        for(PetscMPIInt r=mpiSize-1; r>0; --r)
+            offsetsAllProcs[f][r] = UNLocalAllProcs[f][r-1];
+
+        for(PetscMPIInt r=1; r<mpiSize; ++r)
+            offsetsAllProcs[f][r] += offsetsAllProcs[r][r-1];
+    }
+
+    // calculate total number of all local velocity points on all processes
+    for(PetscMPIInt r=0; r<mpiSize; ++r) UPackNLocalAllProcs[r] = 
+        UNLocalAllProcs[0][r] + UNLocalAllProcs[1][r] + UNLocalAllProcs[2][r];
+
+    // offsets of all velocity points on each process in packed form
+    for(PetscMPIInt r=mpiSize-1; r>0; --r)
+        offsetsPackAllProcs[r] = UPackNLocalAllProcs[r-1];
+
+    for(PetscMPIInt r=1; r<mpiSize; ++r)
+        offsetsPackAllProcs[r] += offsetsPackAllProcs[r-1];
+
 
     // total number of local pressure points
     pNLocal = m[3][0] * m[3][1] * m[3][2];
@@ -755,6 +794,7 @@ PetscErrorCode CartesianMesh::createVelocityPack()
     for(unsigned int i=0; i<dim; ++i)
     {
         ierr = createSingleDMDA(i); CHKERRQ(ierr);
+        ierr = DMDAGetAO(da[i], &ao[i]); CHKERRQ(ierr);
         ierr = DMCompositeAddDM(UPack, da[i]); CHKERRQ(ierr);
     }
 
@@ -807,6 +847,147 @@ PetscErrorCode CartesianMesh::createMapping()
 
     // get mapping for pressure
     ierr = DMGetLocalToGlobalMapping(da[3], &pMapping); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getNaturalIndex(
+ *           const PetscInt &, const MatStencil &, PetscInt &). */
+PetscErrorCode CartesianMesh::getNaturalIndex(
+        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = getNaturalIndex(f, s.i, s.j, s.k, idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getNaturalIndex(const PetscInt &, const PetscInt &, 
+ *           const PetscInt &, const PetscInt &, PetscInt &).  */
+PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f, 
+        const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+        PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    // some overhead due to implicit if-condition, but this is also how PETSc
+    // does in their source code for similar functions
+    idx = i + j * n[f][0] + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getLocalIndex(
+ *           const PetscInt &, const MatStencil &, PetscInt &). */
+PetscErrorCode CartesianMesh::getLocalIndex(
+        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = DMDAConvertToCell(da[f], s, &idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getLocalIndex(const PetscInt &, const PetscInt &, 
+ *           const PetscInt &, const PetscInt &, PetscInt &).  */
+PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f, 
+        const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+        PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = getLocalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getGlobalIndex(
+ *           const PetscInt &, const MatStencil &, PetscInt &). */
+PetscErrorCode CartesianMesh::getGlobalIndex(
+        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = getNaturalIndex(f, s, idx); CHKERRQ(ierr);
+    ierr = AOApplicationToPetsc(ao[f], 1, &idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getGlobalIndex(const PetscInt &, const PetscInt &, 
+ *           const PetscInt &, const PetscInt &, PetscInt &).  */
+PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f, 
+        const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+        PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = getGlobalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getGlobalPackedIndex(
+ *           const PetscInt &, const MatStencil &, PetscInt &). */
+PetscErrorCode CartesianMesh::getGlobalPackedIndex(
+        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    PetscMPIInt         p;
+
+    // get the global index of the target in sub-DM (un-packed DM)
+    ierr = getGlobalIndex(f, s, idx); CHKERRQ(ierr);
+
+    // find which process owns the target
+    p = std::upper_bound(offsetsAllProcs[f].begin(), offsetsAllProcs[f].end(), 
+            idx) - offsetsAllProcs[f].begin() - 1;
+
+    // the beginngin index of process p in packed DM
+    idx = offsetsPackAllProcs[p]; 
+
+    // offset due to previous DMs
+    for(PetscInt i=0; i<f; ++i) idx += UNLocalAllProcs[i][p]; // offset from previous DMs
+
+    // the packed index will be this
+    idx += (idx - offsetsAllProcs[f][p]);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc CartesianMesh::getGlobalPackedIndex(const PetscInt &, const PetscInt &, 
+ *           const PetscInt &, const PetscInt &, PetscInt &).  */
+PetscErrorCode CartesianMesh::getGlobalPackedIndex(const PetscInt &f, 
+        const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+        PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = getGlobalPackedIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

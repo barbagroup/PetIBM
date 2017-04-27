@@ -18,6 +18,7 @@
 
 // here goes PETSc headers
 # include <petscsys.h>
+# include <petscao.h>
 # include <petscdmda.h>
 # include <petscdmcomposite.h>
 
@@ -27,7 +28,8 @@
 // here goes headers from our PetIBM
 # include "types.h"
 
-
+// TODO: if we can get the column index of ANY velocity point, should we still
+//       use ISLocalToGlobalMapping for creating operators?
 /** \brief class of composite Cartesian meshes of different field. */
 class CartesianMesh
 {
@@ -150,6 +152,137 @@ public:
 
 
     /**
+     * \brief get the local index of a velocity point by providing MatStencil.
+     *
+     * Note that the stencil must belong to this process.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param s MatStencil of target velocity point.
+     * \param idx returned local index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getLocalIndex(
+            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+
+
+    /**
+     * \brief get the local index of a velocity point by i, j, k.
+     *
+     * Note that the stencil must belong to this process. For 2D mesh, the
+     * value of k-index will be ignored.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param i i-index.
+     * \param j j-index.
+     * \param k k-index.
+     * \param idx returned local index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getLocalIndex(const PetscInt &f, 
+            const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+            PetscInt &idx);
+
+
+    /**
+     * \brief get the natural index of a velocity point by providing MatStencil.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param s MatStencil of target velocity point.
+     * \param idx returned natural index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getNaturalIndex(
+            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+
+
+    /**
+     * \brief get the natural index of a velocity point by i, j, k.
+     *
+     * For 2D mesh, the value of k-index will be ignored.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param i i-index.
+     * \param j j-index.
+     * \param k k-index.
+     * \param idx returned natural index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getNaturalIndex(const PetscInt &f, 
+            const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+            PetscInt &idx);
+
+
+    /**
+     * \brief get the global index of a velocity point in un-packed DM by 
+     *        providing MatStencil.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param s MatStencil of target velocity point.
+     * \param idx returned global index in un-packed DM.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalIndex(
+            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+
+
+    /**
+     * \brief get the global index of a velocity point in un-packed DM by 
+     *        i, j, k.
+     *
+     * For 2D mesh, the value of k-index will be ignored.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param i i-index.
+     * \param j j-index.
+     * \param k k-index.
+     * \param idx returned global index in un-packed DM.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalIndex(const PetscInt &f, 
+            const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+            PetscInt &idx);
+
+
+    /**
+     * \brief get the global index of a velocity point in packed DM by 
+     *        providing MatStencil.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param s MatStencil of target velocity point.
+     * \param idx returned global index in packed DM.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalPackedIndex(
+            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+
+
+    /**
+     * \brief get the global index of a velocity point in packed DM by 
+     *        i, j, k.
+     *
+     * For 2D mesh, the value of k-index will be ignored.
+     *
+     * \param f target field (u=0, v=1, w=2).
+     * \param i i-index.
+     * \param j j-index.
+     * \param k k-index.
+     * \param idx returned global index in packed DM.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalPackedIndex(const PetscInt &f, 
+            const PetscInt &i, const PetscInt &j, const PetscInt &k, 
+            PetscInt &idx);
+
+
+    /**
      * \brief set output format.
      *
      * Through this function, programs can change the type of output after 
@@ -188,6 +321,22 @@ protected:
     /** \brief the underlying data for mesh point spacing. */
     types::RealVec3D        dLTrue;
 
+    /** \brief references to underlying AO objects of velocity DMs. */
+    std::vector<AO>         ao;
+
+    /** \brief number of local velocity points (without ghosts) for all 
+     *         processes and all velocity fields. */
+    types::IntVec2D         UNLocalAllProcs;
+
+    /** \brief number of local packed velocity points (without ghost) for 
+     *         all processes. */
+    types::IntVec1D         UPackNLocalAllProcs;
+
+    /** \brief offsets of velocity points in un-packed DMs for each field. */
+    types::IntVec2D         offsetsAllProcs;
+
+    /** \brief offsets of packed velocity points in packed DM. */
+    types::IntVec1D         offsetsPackAllProcs;
 
     /**
      * \brief create vertex information.

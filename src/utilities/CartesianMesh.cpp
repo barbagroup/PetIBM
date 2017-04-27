@@ -688,7 +688,7 @@ PetscErrorCode CartesianMesh::initDMDA()
             offsetsAllProcs[f][r] = UNLocalAllProcs[f][r-1];
 
         for(PetscMPIInt r=1; r<mpiSize; ++r)
-            offsetsAllProcs[f][r] += offsetsAllProcs[r][r-1];
+            offsetsAllProcs[f][r] += offsetsAllProcs[f][r-1];
     }
 
     // calculate total number of all local velocity points on all processes
@@ -948,7 +948,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f,
 
 /** \copydoc CartesianMesh::getGlobalPackedIndex(
  *           const PetscInt &, const MatStencil &, PetscInt &). */
-PetscErrorCode CartesianMesh::getGlobalPackedIndex(
+PetscErrorCode CartesianMesh::getPackedGlobalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx)
 {
     PetscFunctionBeginUser;
@@ -957,12 +957,14 @@ PetscErrorCode CartesianMesh::getGlobalPackedIndex(
 
     PetscMPIInt         p;
 
+    PetscInt            unPackedIdx;
+
     // get the global index of the target in sub-DM (un-packed DM)
-    ierr = getGlobalIndex(f, s, idx); CHKERRQ(ierr);
+    ierr = getGlobalIndex(f, s, unPackedIdx); CHKERRQ(ierr);
 
     // find which process owns the target
     p = std::upper_bound(offsetsAllProcs[f].begin(), offsetsAllProcs[f].end(), 
-            idx) - offsetsAllProcs[f].begin() - 1;
+            unPackedIdx) - offsetsAllProcs[f].begin() - 1;
 
     // the beginngin index of process p in packed DM
     idx = offsetsPackAllProcs[p]; 
@@ -971,7 +973,7 @@ PetscErrorCode CartesianMesh::getGlobalPackedIndex(
     for(PetscInt i=0; i<f; ++i) idx += UNLocalAllProcs[i][p]; // offset from previous DMs
 
     // the packed index will be this
-    idx += (idx - offsetsAllProcs[f][p]);
+    idx += (unPackedIdx - offsetsAllProcs[f][p]);
 
     PetscFunctionReturn(0);
 }
@@ -979,7 +981,7 @@ PetscErrorCode CartesianMesh::getGlobalPackedIndex(
 
 /** \copydoc CartesianMesh::getGlobalPackedIndex(const PetscInt &, const PetscInt &, 
  *           const PetscInt &, const PetscInt &, PetscInt &).  */
-PetscErrorCode CartesianMesh::getGlobalPackedIndex(const PetscInt &f, 
+PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx)
 {
@@ -987,7 +989,7 @@ PetscErrorCode CartesianMesh::getGlobalPackedIndex(const PetscInt &f,
 
     PetscErrorCode      ierr;
 
-    ierr = getGlobalPackedIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
+    ierr = getPackedGlobalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

@@ -259,7 +259,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode getGlobalPackedIndex(
+    PetscErrorCode getPackedGlobalIndex(
             const PetscInt &f, const MatStencil &s, PetscInt &idx);
 
 
@@ -277,7 +277,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode getGlobalPackedIndex(const PetscInt &f, 
+    PetscErrorCode getPackedGlobalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
             PetscInt &idx);
 

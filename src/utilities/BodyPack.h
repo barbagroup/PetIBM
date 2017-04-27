@@ -27,28 +27,35 @@
 # include "SingleBody.h"
 
 
+// TODO: should we really need ISLocalToGlobalMapping?
 /** \brief class for a pack of multiple bodies. */
 class BodyPack
 {
 public:
 
     /** \brief dimension. */
-    PetscInt        dim;
+    PetscInt                    dim;
 
     /** \brief number of bodies in this pack. */
-    PetscInt        nBodies;
+    PetscInt                    nBodies;
+
+    /** \brief total number of Lagrangian points. */
+    PetscInt                    nPts;
+
+    /** \brief total number of local Lagrangian points. */
+    PetscInt                    nLclPts;
 
     /** \brief a vector of SingleBody instances. */
     std::vector<SingleBody>     bodies;
 
     /** \brief a DMComposite of DMs of all `SingleBody`s. */
-    DM              dmPack;
+    DM                          dmPack;
 
     /** \brief local to global (in DMComposite) mappings for bodies. */
     std::vector<ISLocalToGlobalMapping>     mapping;
 
     /** \brief a string for printing information. */
-    std::string     info;
+    std::string                 info;
 
 
     /** \brief default constructor. */
@@ -84,6 +91,75 @@ public:
      */
     PetscErrorCode printInfo();
 
+
+    /**
+     * \brief find which process owns the target Lagrangian point of target body.
+     *
+     * \param bIdx index of target body.
+     * \param ptIdx index of target point.
+     * \param proc returned process index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode findProc(
+            const PetscInt &bIdx, const PetscInt &ptIdx, PetscMPIInt &proc);
+
+
+    /**
+     * \brief find un-packed global index of a DoF of Lagrangian point of a body.
+     *
+     * \param bIdx index of target body.
+     * \param ptIdx index of target point.
+     * \param dof index of target DoF.
+     * \param idx returned un-packed global index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalIndex(const PetscInt &bIdx, 
+            const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx);
+
+
+    /**
+     * \brief find un-packed global index of a DoF of Lagrangian point of a body.
+     *
+     * \param bIdx index of target body.
+     * \param s MatStencil of target point.
+     * \param idx returned un-packed global index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalIndex(const PetscInt &bIdx, 
+            const MatStencil &s, PetscInt &idx);
+
+
+
+    /**
+     * \brief find packed global index of a DoF of Lagrangian point of a body.
+     *
+     * \param bIdx index of target body.
+     * \param ptIdx index of target point.
+     * \param dof index of target DoF.
+     * \param idx returned packed global index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx, 
+            const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx);
+
+
+
+    /**
+     * \brief find packed global index of a DoF of Lagrangian point of a body.
+     *
+     * \param bIdx index of target body.
+     * \param s MatStencil of target point.
+     * \param idx returned packed global index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx, 
+            const MatStencil &s, PetscInt &idx);
+
 protected:
 
     /** \brief reference to backgrounf CartesianMesh. */
@@ -100,6 +176,14 @@ protected:
 
     /** \brief the rank of this process. */
     PetscMPIInt                             mpiRank;
+
+
+    /** \brief number of local packed variables of all processes. */
+    types::IntVec1D                         nLclAllProcs;
+
+
+    /** \brief offsets of packed variables of all processes. */
+    types::IntVec1D                         offsetsAllProcs;
 
 
     /**

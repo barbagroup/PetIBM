@@ -52,6 +52,14 @@ PetscErrorCode BodyPack::init(
     // sizing the vector holding all SingleBody instances
     bodies.resize(nBodies);
 
+    // allocate other vectors
+    nLclAllProcs = types::IntVec1D(mpiSize, 0);
+    offsetsAllProcs = types::IntVec1D(mpiSize, 0);
+
+    // initialize variables
+    nPts = 0;
+    nLclPts = 0;
+
     // loop through all bodies in the YAML node
     for(PetscInt i=0; i<nBodies; ++i)
     {
@@ -67,7 +75,20 @@ PetscErrorCode BodyPack::init(
         type = node[i]["type"].as<std::string>("points");
 
         ierr = bodies[i].init(*mesh, file, name); CHKERRQ(ierr);
+
+        for(PetscMPIInt r=0; r<mpiSize; ++r)
+            nLclAllProcs[r] += bodies[i].nLclAllProcs[r];
+
+        // add to total number of points
+        nPts += bodies[i].nPts;
+
+        // add to total number of local points
+        nLclPts += bodies[i].nLclPts;
     }
+
+    // calculate offsets
+    for(PetscMPIInt r=mpiSize-1; r>0; r--) offsetsAllProcs[r] = nLclAllProcs[r-1];
+    for(PetscMPIInt r=1; r<mpiSize; r++) offsetsAllProcs[r] += offsetsAllProcs[r-1];
 
     // create dmPack
     ierr = createDmPack(); CHKERRQ(ierr);
@@ -124,24 +145,27 @@ PetscErrorCode BodyPack::createInfoString()
 {
     PetscFunctionBeginUser;
 
-    std::stringstream       ss;
+    if (mpiRank == 0)
+    {
+        std::stringstream       ss;
 
-    ss << std::string(80, '=') << std::endl;
-    ss << "Body Pack:" << std::endl;
-    ss << std::string(80, '=') << std::endl;
+        ss << std::string(80, '=') << std::endl;
+        ss << "Body Pack:" << std::endl;
+        ss << std::string(80, '=') << std::endl;
 
-    ss << "\tDimension: " << dim << std::endl << std::endl;
+        ss << "\tDimension: " << dim << std::endl << std::endl;
 
-    ss << "\tNumber of bodies: " << nBodies << std::endl << std::endl;
+        ss << "\tNumber of bodies: " << nBodies << std::endl << std::endl;
 
-    ss << "\tName of bodies: " << std::endl;
+        ss << "\tName of bodies: " << std::endl;
 
-    for(PetscInt i=0; i<nBodies; ++i)
-        ss << "\t\t" << i << ": " << bodies[i].name << std::endl;
+        for(PetscInt i=0; i<nBodies; ++i)
+            ss << "\t\t" << i << ": " << bodies[i].name << std::endl;
 
-    ss << std::endl;
+        ss << std::endl;
 
-    info = ss.str();
+        info = ss.str();
+    }
 
     PetscFunctionReturn(0);
 }
@@ -154,12 +178,100 @@ PetscErrorCode BodyPack::printInfo()
 
     PetscErrorCode      ierr;
 
-    ierr = PetscPrintf(*comm, info.c_str()); CHKERRQ(ierr);
+    ierr = PetscSynchronizedPrintf(*comm, info.c_str()); CHKERRQ(ierr);
+    ierr = PetscSynchronizedFlush(*comm, PETSC_STDOUT); CHKERRQ(ierr);
 
     for(PetscInt i=0; i<nBodies; ++i)
     {
         ierr = bodies[i].printInfo(); CHKERRQ(ierr);
     }
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc BodyPack::findProc(
+ *           const PetscInt &, const PetscInt &, PetscMPIInt &). */
+PetscErrorCode BodyPack::findProc(
+        const PetscInt &bIdx, const PetscInt &ptIdx, PetscMPIInt &proc)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    if ((bIdx < 0) || (bIdx >= nBodies))
+        SETERRQ2(*comm, PETSC_ERR_ARG_SIZ,
+                "Body index %d is out of range. Total number of bodies is %d.",
+                bIdx, nBodies);
+
+    ierr = bodies[bIdx].findProc(ptIdx, proc); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode BodyPack::getGlobalIndex(const PetscInt &bIdx, 
+        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    if ((bIdx < 0) || (bIdx >= nBodies))
+        SETERRQ2(*comm, PETSC_ERR_ARG_SIZ,
+                "Body index %d is out of range. Total number of bodies is %d.",
+                bIdx, nBodies);
+
+    ierr = bodies[bIdx].getGlobalIndex(ptIdx, dof, idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode BodyPack::getGlobalIndex(
+        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    ierr = getGlobalIndex(bIdx, s.i, s.c, idx); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode BodyPack::getPackedGlobalIndex(const PetscInt &bIdx, 
+        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    PetscMPIInt         p;
+    PetscInt            unPackedIdx;
+
+    ierr = findProc(bIdx, ptIdx, p); CHKERRQ(ierr);
+
+    ierr = getGlobalIndex(bIdx, ptIdx, dof, unPackedIdx); CHKERRQ(ierr);
+
+    idx = offsetsAllProcs[p];
+
+    for(PetscInt b=0; b<bIdx; ++b)
+        idx += bodies[b].nLclAllProcs[p];
+
+    idx += (unPackedIdx - bodies[bIdx].offsetsAllProcs[p]);
+
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode BodyPack::getPackedGlobalIndex(
+        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
 
     PetscFunctionReturn(0);
 }

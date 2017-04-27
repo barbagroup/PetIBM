@@ -30,6 +30,7 @@ TairaColoniusSolver<dim>::TairaColoniusSolver(CartesianMesh *cartesianMesh,
 {
   bda = PETSC_NULL;
   nullSpaceVec = PETSC_NULL;
+  PetscLogStageRegister("integrateForces", &stageIntegrateForces);
 } // TairaColoniusSolver
 
 

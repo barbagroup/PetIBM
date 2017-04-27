@@ -1,29 +1,29 @@
-/***************************************************************************//**
- * \file generateBNQ.inl
- * \author Anush Krishnan (anush@bu.edu)
- * \brief Implementation of the method `generateBNQ` of the class `NavierStokesSolver`.
+/*! Implementation of the method `generateQ` of the class `NavierStokesSolver`.
+ * \file generateGradient.inl
  */
 
 
-/**
- * \brief Assembles the matrix \f$ B^N Q \f$.
+/*!
+ * \brief Assembles the gradient operator.
  */
 template <PetscInt dim>
-PetscErrorCode NavierStokesSolver<dim>::generateBNQ()
+PetscErrorCode NavierStokesSolver<dim>::generateGradient(Mat *G)
 {
   return 0;
-} // generateBNQ
+} // generateGradient
 
 
 // two-dimensional specialization
 template <>
-PetscErrorCode NavierStokesSolver<2>::generateBNQ()
+PetscErrorCode NavierStokesSolver<2>::generateGradient(Mat *G)
 {
   PetscErrorCode ierr;
 
   PetscInt i, j,           // loop indices 
            m, n,           // local number of nodes along each direction
-           mstart, nstart; // startting indices
+           mstart, nstart; // starting indices
+
+  PetscFunctionBeginUser;
 
   PetscInt localIdx;
   PetscInt row, cols[2];
@@ -48,7 +48,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
   PetscReal **pMappingArray;
   ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
-  // determine nnz in matrix BNQ row by row
+  // determine nnz in matrix row by row
   localIdx = 0;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
@@ -76,18 +76,18 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
   }
   
   // allocate memory for matrix BNQ
-  ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
-  ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
-  ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
-  ierr = MatSeqAIJSetPreallocation(BNQ, 0, d_nnz); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
-  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
+  ierr = MatCreate(PETSC_COMM_WORLD, G); CHKERRQ(ierr);
+  ierr = MatSetSizes(*G, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+  ierr = MatSetFromOptions(*G); CHKERRQ(ierr);
+  ierr = MatSeqAIJSetPreallocation(*G, 0, d_nnz); CHKERRQ(ierr);
+  ierr = MatMPIAIJSetPreallocation(*G, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(*G, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate d_nnz and o_nnz
   ierr = PetscFree(d_nnz); CHKERRQ(ierr);
   ierr = PetscFree(o_nnz); CHKERRQ(ierr);
 
-  // assemble matrix Q row by row
+  // assemble matrix row by row
   localIdx = 0;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
@@ -98,7 +98,7 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
       row = localIdx + qStart;
       cols[0] = pMappingArray[j][i];
       cols[1] = pMappingArray[j][i+1];
-      ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
+      ierr = MatSetValues(*G, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
       localIdx++;
     }
   }
@@ -111,30 +111,22 @@ PetscErrorCode NavierStokesSolver<2>::generateBNQ()
       row = localIdx + qStart;
       cols[0] = pMappingArray[j][i];
       cols[1] = pMappingArray[j+1][i];
-      ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
+      ierr = MatSetValues(*G, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
       localIdx++;
     }
   }
   ierr = DMDAVecRestoreArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
-  ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
-
-  // compute matrix QT
-  ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
-  // scale Q to get BNQ
-  ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
+  ierr = MatAssemblyBegin(*G, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(*G, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
   
-  return 0;
-} // generateBNQ
+  PetscFunctionReturn(0);
+} // generateGradient
 
 
 // three-dimensional specialization
 template <>
-PetscErrorCode NavierStokesSolver<3>::generateBNQ()
+PetscErrorCode NavierStokesSolver<3>::generateGradient(Mat *G)
 {
   PetscErrorCode ierr;
 
@@ -142,6 +134,8 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
            m, n, p,                // local number of nodes along each direction
            mstart, nstart, pstart; // starting indices
   
+  PetscFunctionBeginUser;
+
   PetscInt localIdx;
   PetscInt row, cols[2];
   PetscReal values[2] = {-1.0, 1.0}; 
@@ -165,7 +159,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
   PetscReal ***pMappingArray;
   ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
-  // determine nnz in BNQ row by row
+  // determine nnz in row by row
   localIdx = 0;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
@@ -214,12 +208,12 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
   }
   
   // allocate memory for matrix BNQ
-  ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
-  ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
-  ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
-  ierr = MatSeqAIJSetPreallocation(BNQ, 0, d_nnz); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(BNQ, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
-  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
+  ierr = MatCreate(PETSC_COMM_WORLD, G); CHKERRQ(ierr);
+  ierr = MatSetSizes(*G, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+  ierr = MatSetFromOptions(*G); CHKERRQ(ierr);
+  ierr = MatSeqAIJSetPreallocation(*G, 0, d_nnz); CHKERRQ(ierr);
+  ierr = MatMPIAIJSetPreallocation(*G, 0, d_nnz, 0, o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(*G, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate d_nnz and o_nnz
   ierr = PetscFree(d_nnz); CHKERRQ(ierr);
@@ -238,7 +232,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
         row = localIdx + qStart;
         cols[0] = pMappingArray[k][j][i];
         cols[1] = pMappingArray[k][j][i+1];
-        ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
+        ierr = MatSetValues(*G, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         localIdx++;
       }
     }
@@ -254,7 +248,7 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
         row = localIdx + qStart;
         cols[0] = pMappingArray[k][j][i];
         cols[1] = pMappingArray[k][j+1][i];
-        ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
+        ierr = MatSetValues(*G, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         localIdx++;
       }
     }
@@ -270,23 +264,15 @@ PetscErrorCode NavierStokesSolver<3>::generateBNQ()
         row = localIdx + qStart;
         cols[0] = pMappingArray[k][j][i];
         cols[1] = pMappingArray[k+1][j][i];
-        ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
+        ierr = MatSetValues(*G, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         localIdx++;
       }
     }
   }
   ierr = DMDAVecRestoreArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
-  ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
+  ierr = MatAssemblyBegin(*G, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(*G, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-  // compute matrix QT
-  ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
-  // scale Q to get BNQ
-  ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
-
-  return 0;
-} // generateBNQ
+  PetscFunctionReturn(0);
+} // generateGradient

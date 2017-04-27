@@ -118,7 +118,8 @@ libsolvers_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libsolvers_a_OBJECTS = libsolvers_a-createSolver.$(OBJEXT) \
 	navierStokes/libsolvers_a-NavierStokesSolver.$(OBJEXT) \
-	tairaColonius/libsolvers_a-TairaColoniusSolver.$(OBJEXT)
+	tairaColonius/libsolvers_a-TairaColoniusSolver.$(OBJEXT) \
+	liEtAl/libsolvers_a-LiEtAlSolver.$(OBJEXT)
 libsolvers_a_OBJECTS = $(am_libsolvers_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -292,7 +293,8 @@ top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libsolvers.a
 libsolvers_a_SOURCES = createSolver.cpp \
                        navierStokes/NavierStokesSolver.cpp \
-                       tairaColonius/TairaColoniusSolver.cpp
+                       tairaColonius/TairaColoniusSolver.cpp \
+                       liEtAl/LiEtAlSolver.cpp
 
 libsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities \
 	-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
@@ -351,6 +353,14 @@ tairaColonius/$(DEPDIR)/$(am__dirstamp):
 tairaColonius/libsolvers_a-TairaColoniusSolver.$(OBJEXT):  \
 	tairaColonius/$(am__dirstamp) \
 	tairaColonius/$(DEPDIR)/$(am__dirstamp)
+liEtAl/$(am__dirstamp):
+	@$(MKDIR_P) liEtAl
+	@: > liEtAl/$(am__dirstamp)
+liEtAl/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) liEtAl/$(DEPDIR)
+	@: > liEtAl/$(DEPDIR)/$(am__dirstamp)
+liEtAl/libsolvers_a-LiEtAlSolver.$(OBJEXT): liEtAl/$(am__dirstamp) \
+	liEtAl/$(DEPDIR)/$(am__dirstamp)
 
 libsolvers.a: $(libsolvers_a_OBJECTS) $(libsolvers_a_DEPENDENCIES) $(EXTRA_libsolvers_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libsolvers.a
@@ -359,6 +369,7 @@ libsolvers.a: $(libsolvers_a_OBJECTS) $(libsolvers_a_DEPENDENCIES) $(EXTRA_libso
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f liEtAl/*.$(OBJEXT)
 	-rm -f navierStokes/*.$(OBJEXT)
 	-rm -f tairaColonius/*.$(OBJEXT)
 
@@ -366,6 +377,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsolvers_a-createSolver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@navierStokes/$(DEPDIR)/libsolvers_a-NavierStokesSolver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tairaColonius/$(DEPDIR)/libsolvers_a-TairaColoniusSolver.Po@am__quote@
 
@@ -426,6 +438,20 @@ tairaColonius/libsolvers_a-TairaColoniusSolver.obj: tairaColonius/TairaColoniusS
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tairaColonius/TairaColoniusSolver.cpp' object='tairaColonius/libsolvers_a-TairaColoniusSolver.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tairaColonius/libsolvers_a-TairaColoniusSolver.obj `if test -f 'tairaColonius/TairaColoniusSolver.cpp'; then $(CYGPATH_W) 'tairaColonius/TairaColoniusSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/tairaColonius/TairaColoniusSolver.cpp'; fi`
+
+liEtAl/libsolvers_a-LiEtAlSolver.o: liEtAl/LiEtAlSolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liEtAl/libsolvers_a-LiEtAlSolver.o -MD -MP -MF liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Tpo -c -o liEtAl/libsolvers_a-LiEtAlSolver.o `test -f 'liEtAl/LiEtAlSolver.cpp' || echo '$(srcdir)/'`liEtAl/LiEtAlSolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Tpo liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='liEtAl/LiEtAlSolver.cpp' object='liEtAl/libsolvers_a-LiEtAlSolver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liEtAl/libsolvers_a-LiEtAlSolver.o `test -f 'liEtAl/LiEtAlSolver.cpp' || echo '$(srcdir)/'`liEtAl/LiEtAlSolver.cpp
+
+liEtAl/libsolvers_a-LiEtAlSolver.obj: liEtAl/LiEtAlSolver.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liEtAl/libsolvers_a-LiEtAlSolver.obj -MD -MP -MF liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Tpo -c -o liEtAl/libsolvers_a-LiEtAlSolver.obj `if test -f 'liEtAl/LiEtAlSolver.cpp'; then $(CYGPATH_W) 'liEtAl/LiEtAlSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/liEtAl/LiEtAlSolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Tpo liEtAl/$(DEPDIR)/libsolvers_a-LiEtAlSolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='liEtAl/LiEtAlSolver.cpp' object='liEtAl/libsolvers_a-LiEtAlSolver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsolvers_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liEtAl/libsolvers_a-LiEtAlSolver.obj `if test -f 'liEtAl/LiEtAlSolver.cpp'; then $(CYGPATH_W) 'liEtAl/LiEtAlSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/liEtAl/LiEtAlSolver.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -539,6 +565,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f liEtAl/$(DEPDIR)/$(am__dirstamp)
+	-rm -f liEtAl/$(am__dirstamp)
 	-rm -f navierStokes/$(DEPDIR)/$(am__dirstamp)
 	-rm -f navierStokes/$(am__dirstamp)
 	-rm -f tairaColonius/$(DEPDIR)/$(am__dirstamp)
@@ -552,7 +580,7 @@ clean: clean-am
 clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) navierStokes/$(DEPDIR) tairaColonius/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) liEtAl/$(DEPDIR) navierStokes/$(DEPDIR) tairaColonius/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -598,7 +626,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) navierStokes/$(DEPDIR) tairaColonius/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) liEtAl/$(DEPDIR) navierStokes/$(DEPDIR) tairaColonius/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

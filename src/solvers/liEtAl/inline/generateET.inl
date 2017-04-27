@@ -1,5 +1,5 @@
-/*! Implementation of the method `generateBNQ` of the class `TairaColoniusSolver`.
- * \file generateBNQ.inl
+/*! Implementation of the method `generateET` of the class `LiEtAlSolver`.
+ * \file generateET.inl
  */
 
 
@@ -7,30 +7,27 @@
 
 
 /*!
- * \brief Assembles the matrices BNQ.
+ * \brief Assembles the matrices ET.
  */
 template <PetscInt dim>
-PetscErrorCode TairaColoniusSolver<dim>::generateBNQ()
+PetscErrorCode LiEtAlSolver<dim>::generateET()
 {
   return 0;
-} // generateBNQ
+} // generateET
 
 
 // two-dimensional specialization
 template <>
-PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
+PetscErrorCode LiEtAlSolver<2>::generateET()
 {
   PetscErrorCode ierr;
-
-  PetscFunctionBeginUser;
 
   PetscInt i, j, l,        // loop indices
            m, n,           // local number of nodes along each direction
            mstart, nstart; // starting indices
   
   PetscInt localIdx, procIdx;
-  PetscInt row, cols[2], BNQ_col, pointIdx;
-  PetscReal values[2] = {-1.0, 1.0}; // gradient coefficients
+  PetscInt row, ET_col, pointIdx;
   
   PetscReal value; // to hold the value of the discrete delta function
   PetscReal source[2], // source point, center of the domain of influence
@@ -44,34 +41,23 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
   // get boundary types
   BoundaryType bTypes[2] = {flow->boundaries[XPLUS][0].type,
                             flow->boundaries[YPLUS][0].type};
-  
-  PetscLogEvent  GENERATE_BNQ;
-  ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
-  ierr = PetscLogEventBegin(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
-  
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
-  
+
+  PetscFunctionBeginUser;
+
   // get ownership range of q
   PetscInt qStart, qEnd, qLocalSize;
   ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
   qLocalSize = qEnd-qStart;
 
-  // create arrays to store number of non-zero (nnz) values
-  // BNQ
-  PetscInt *BNQ_d_nnz, // nnz on diagonal
-           *BNQ_o_nnz; // nnz off diagonal
-  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &BNQ_d_nnz); CHKERRQ(ierr);
-  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &BNQ_o_nnz); CHKERRQ(ierr);
+  PetscInt *ET_d_nnz, // nnz on diagonal
+           *ET_o_nnz; // nnz off diagonal
+  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &ET_d_nnz); CHKERRQ(ierr);
+  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &ET_o_nnz); CHKERRQ(ierr);
 
-  // get ownership range of lambda
-  PetscInt lambdaStart, lambdaEnd, lambdaLocalSize;
-  ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
-  lambdaLocalSize = lambdaEnd-lambdaStart;
-
-  // get mapping of pressure values as 2D array
-  PetscReal **pMappingArray;
-  ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
+  // get ownership range of fTilde
+  PetscInt fStart, fEnd, fLocalSize;
+  ierr = VecGetOwnershipRange(fTilde, &fStart, &fEnd); CHKERRQ(ierr);
+  fLocalSize = fEnd-fStart;
 
   // determine nnz row by row
   localIdx = 0;
@@ -84,13 +70,11 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
     maxDisp[1] = 1.5*hy;
     for (i=mstart; i<mstart+m; i++)
     {
+      ET_d_nnz[localIdx] = 0;
+      ET_o_nnz[localIdx] = 0;
       hx = mesh->dx[i];
       target[0] = mesh->x[i+1];
       maxDisp[0] = 1.5*hx;
-      // G portion
-      cols[0] = pMappingArray[j][i];
-      cols[1] = pMappingArray[j][i+1];
-      countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
       // ET portion
       for (auto &body : bodies)
       { 
@@ -101,8 +85,8 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           source[1] = body.Y[pointIdx];
           if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            BNQ_col = body.globalIdxPoints[l];
-            (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
+            ET_col = body.globalIdxPoints[l];
+            (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
           }
         }
       }
@@ -118,13 +102,11 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
     maxDisp[1] = 1.5*hy;
     for (i=mstart; i<mstart+m; i++)
     {
+      ET_d_nnz[localIdx] = 0;
+      ET_o_nnz[localIdx] = 0;
       hx = mesh->dx[i];
       target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
       maxDisp[0] = 1.5*hx;
-      // G portion
-      cols[0] = pMappingArray[j][i];
-      cols[1] = pMappingArray[j+1][i];
-      countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
       // ET portion
       for (auto &body : bodies)
       { 
@@ -135,30 +117,28 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           source[1] = body.Y[pointIdx];
           if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            BNQ_col = body.globalIdxPoints[l] + 1;
-            (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
+            ET_col = body.globalIdxPoints[l] + 1;
+            (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
           }
         }
       }
       localIdx++;
     }
   }
-  
-  // allocate memory for matrices
-  // BNQ
-  ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
-  ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
-  ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
-  ierr = MatSeqAIJSetPreallocation(BNQ, 0, BNQ_d_nnz); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(BNQ, 0, BNQ_d_nnz, 0, BNQ_o_nnz); CHKERRQ(ierr);
-  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
+
+  // allocate memory for matrix ET
+  ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
+  ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+  ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
+  ierr = MatSeqAIJSetPreallocation(ET, 0, ET_d_nnz); CHKERRQ(ierr);
+  ierr = MatMPIAIJSetPreallocation(ET, 0, ET_d_nnz, 0, ET_o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(ET, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate nnz arrays
-  // BNQ
-  ierr = PetscFree(BNQ_d_nnz); CHKERRQ(ierr);
-  ierr = PetscFree(BNQ_o_nnz); CHKERRQ(ierr);
+  ierr = PetscFree(ET_d_nnz); CHKERRQ(ierr);
+  ierr = PetscFree(ET_o_nnz); CHKERRQ(ierr);
 
-  // assemble matrices Q and ET row by row
+  // assemble matrix ET row by row
   localIdx = 0;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAGetCorners(uda, &mstart, &nstart, NULL, &m, &n, NULL); CHKERRQ(ierr);
@@ -173,10 +153,6 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
       target[0] = mesh->x[i+1];
       maxDisp[0] = 1.5*hx;
       row = localIdx + qStart;
-      // G portion
-      cols[0] = pMappingArray[j][i];
-      cols[1] = pMappingArray[j][i+1];
-      ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
       // ET portion
       for (auto &body : bodies)
       { 
@@ -187,9 +163,9 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           source[1] = body.Y[pointIdx];
           if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            BNQ_col = body.globalIdxPoints[l];
+            ET_col = body.globalIdxPoints[l];
             value = hx*delta(disp[0], disp[1], hx, hy);
-            ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
+            ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
           }
         }
       }
@@ -209,10 +185,6 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
       target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
       maxDisp[0] = 1.5*hx;
       row = localIdx + qStart;
-      // G portion
-      cols[0] = pMappingArray[j][i];
-      cols[1] = pMappingArray[j+1][i];
-      ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
       // ET portion
       for (auto &body : bodies)
       { 
@@ -223,37 +195,28 @@ PetscErrorCode TairaColoniusSolver<2>::generateBNQ()
           source[1] = body.Y[pointIdx];
           if (isInfluenced<2>(target, source, maxDisp, widths, bTypes, disp))
           {
-            BNQ_col = body.globalIdxPoints[l] + 1;
+            ET_col = body.globalIdxPoints[l] + 1;
             value = hy*delta(disp[0], disp[1], hx, hy);
-            ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
+            ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
           }
         }
       }
       localIdx++;
     }
   }
-  ierr = DMDAVecRestoreArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
-  // assemble the matrices
-  // BNQ
-  ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
+  ierr = MatAssemblyBegin(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-  ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
-  ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
-  
-  ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) ET, NULL, "-ET_mat_view"); CHKERRQ(ierr);
 
   PetscFunctionReturn(0);
-} // generateBNQ
+} // generateET
 
 
 // three-dimensional specialization
 template <>
-PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
+PetscErrorCode LiEtAlSolver<3>::generateET()
 {
   PetscErrorCode ierr;
 
@@ -262,8 +225,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
            mstart, nstart, pstart; // starting indices
 
   PetscInt localIdx, procIdx;
-  PetscInt row, cols[2], BNQ_col, pointIdx;
-  PetscReal values[2] = {-1.0, 1.0}, value;
+  PetscInt row, ET_col, pointIdx;
+  PetscReal value;
   
   PetscReal source[3], target[3];
   PetscReal disp[3];
@@ -275,34 +238,24 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
   BoundaryType bTypes[3] = {flow->boundaries[XPLUS][0].type,
                             flow->boundaries[YPLUS][0].type,
                             flow->boundaries[ZPLUS][0].type};
-  
-  PetscLogEvent  GENERATE_BNQ;
-  ierr = PetscLogEventRegister("generateBNQ", 0, &GENERATE_BNQ); CHKERRQ(ierr);
-  ierr = PetscLogEventBegin(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
-  
-  PetscMPIInt numProcs;
-  ierr = MPI_Comm_size(PETSC_COMM_WORLD, &numProcs); CHKERRQ(ierr);
-  
+
+  PetscFunctionBeginUser;
+
   // get ownership range of q
   PetscInt qStart, qEnd, qLocalSize;
   ierr = VecGetOwnershipRange(q, &qStart, &qEnd); CHKERRQ(ierr);
   qLocalSize = qEnd-qStart;
 
   // create arrays to store number of non-zero (nnz) values
-  // BNQ
-  PetscInt *BNQ_d_nnz, // nnz on diagonal
-           *BNQ_o_nnz; // nnz off diagonal
-  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &BNQ_d_nnz); CHKERRQ(ierr);
-  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &BNQ_o_nnz); CHKERRQ(ierr);
-  
-  // get ownership range of lambda
-  PetscInt lambdaStart, lambdaEnd, lambdaLocalSize;
-  ierr = VecGetOwnershipRange(lambda, &lambdaStart, &lambdaEnd); CHKERRQ(ierr);
-  lambdaLocalSize = lambdaEnd-lambdaStart;
+  PetscInt *ET_d_nnz, // nnz on diagonal
+           *ET_o_nnz; // nnz off diagonal
+  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &ET_d_nnz); CHKERRQ(ierr);
+  ierr = PetscMalloc(qLocalSize*sizeof(PetscInt), &ET_o_nnz); CHKERRQ(ierr);
 
-  // get mapping of pressure values
-  PetscReal ***pMappingArray;
-  ierr = DMDAVecGetArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
+  // get ownership range of fTilde
+  PetscInt fStart, fEnd, fLocalSize;
+  ierr = VecGetOwnershipRange(fTilde, &fStart, &fEnd); CHKERRQ(ierr);
+  fLocalSize = fEnd-fStart;
 
   // determine nnz row by row
   localIdx = 0;
@@ -320,13 +273,11 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
       maxDisp[1] = 1.5*hy;
       for (i=mstart; i<mstart+m; i++)
       {
+        ET_d_nnz[localIdx] = 0;
+        ET_o_nnz[localIdx] = 0;
         hx = mesh->dx[i];
         target[0] = mesh->x[i+1];
         maxDisp[0] = 1.5*hx;
-        // G portion
-        cols[0] = pMappingArray[k][j][i];
-        cols[1] = pMappingArray[k][j][i+1];
-        countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
         // ET portion
         for (auto &body : bodies)
         { 
@@ -338,8 +289,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
             source[2] = body.Z[pointIdx];
             if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              BNQ_col = body.globalIdxPoints[l];
-              (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
+              ET_col = body.globalIdxPoints[l];
+              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
             }
           }
         }
@@ -361,13 +312,11 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
       maxDisp[1] = 1.5*hy;
       for (i=mstart; i<mstart+m; i++)
       {
+        ET_d_nnz[localIdx] = 0;
+        ET_o_nnz[localIdx] = 0;
         hx = mesh->dx[i];
         target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         maxDisp[0] = 1.5*hx;
-        // G portion
-        cols[0] = pMappingArray[k][j][i];
-        cols[1] = pMappingArray[k][j+1][i];
-        countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
         // ET portion
         for (auto &body : bodies)
         { 
@@ -379,8 +328,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
             source[2] = body.Z[pointIdx];
             if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              BNQ_col = body.globalIdxPoints[l] + 1;
-              (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
+              ET_col = body.globalIdxPoints[l] + 1;
+              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
             }
           }
         }
@@ -402,13 +351,11 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
       maxDisp[1] = 1.5*hy;
       for (i=mstart; i<mstart+m; i++)
       {
+        ET_d_nnz[localIdx] = 0;
+        ET_o_nnz[localIdx] = 0;
         hx = mesh->dx[i];
         target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         maxDisp[0] = 1.5*hx;
-        // G portion
-        cols[0] = pMappingArray[k][j][i];
-        cols[1] = pMappingArray[k+1][j][i];
-        countNumNonZeros(cols, 2, lambdaStart, lambdaEnd, BNQ_d_nnz[localIdx], BNQ_o_nnz[localIdx]);
         // ET portion
         for (auto &body : bodies)
         { 
@@ -420,8 +367,8 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
             source[2] = body.Z[pointIdx];
             if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              BNQ_col = body.globalIdxPoints[l] + 2;
-              (BNQ_col >= lambdaStart && BNQ_col < lambdaEnd) ? BNQ_d_nnz[localIdx]++ : BNQ_o_nnz[localIdx]++;
+              ET_col = body.globalIdxPoints[l] + 2;
+              (ET_col >= fStart && ET_col < fEnd) ? ET_d_nnz[localIdx]++ : ET_o_nnz[localIdx]++;
             }
           }
         }
@@ -430,21 +377,19 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
     }
   }
   
-  // allocate memory for matrices
-  // BNQ
-  ierr = MatCreate(PETSC_COMM_WORLD, &BNQ); CHKERRQ(ierr);
-  ierr = MatSetSizes(BNQ, qLocalSize, lambdaLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
-  ierr = MatSetFromOptions(BNQ); CHKERRQ(ierr);
-  ierr = MatSeqAIJSetPreallocation(BNQ, 0, BNQ_d_nnz); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(BNQ, 0, BNQ_d_nnz, 0, BNQ_o_nnz); CHKERRQ(ierr);
-  ierr = MatSetOption(BNQ, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
+  // allocate memory for matrix ET
+  ierr = MatCreate(PETSC_COMM_WORLD, &ET); CHKERRQ(ierr);
+  ierr = MatSetSizes(ET, qLocalSize, fLocalSize, PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
+  ierr = MatSetFromOptions(ET); CHKERRQ(ierr);
+  ierr = MatSeqAIJSetPreallocation(ET, 0, ET_d_nnz); CHKERRQ(ierr);
+  ierr = MatMPIAIJSetPreallocation(ET, 0, ET_d_nnz, 0, ET_o_nnz); CHKERRQ(ierr);
+  ierr = MatSetOption(ET, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
   // deallocate nnz arrays
-  // BNQ
-  ierr = PetscFree(BNQ_d_nnz); CHKERRQ(ierr);
-  ierr = PetscFree(BNQ_o_nnz); CHKERRQ(ierr);
+  ierr = PetscFree(ET_d_nnz); CHKERRQ(ierr);
+  ierr = PetscFree(ET_o_nnz); CHKERRQ(ierr);
 
-  // assemble matrix Q row by row
+  // assemble matrix ET row by row
   localIdx = 0;
   // rows corresponding to fluxes in x-direction
   ierr = DMDAGetCorners(uda, &mstart, &nstart, &pstart, &m, &n, &p); CHKERRQ(ierr);
@@ -464,10 +409,6 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         target[0] = mesh->x[i+1];
         maxDisp[0] = 1.5*hx;
         row = localIdx + qStart;
-        // G portion
-        cols[0] = pMappingArray[k][j][i];
-        cols[1] = pMappingArray[k][j][i+1];
-        ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         // ET portion
         for (auto &body : bodies)
         { 
@@ -479,9 +420,9 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
             source[2] = body.Z[pointIdx];
             if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              BNQ_col = body.globalIdxPoints[l];
-              value= hx*delta(disp[0], disp[1], disp[2], hx, hy, hz);
-              ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
+              ET_col = body.globalIdxPoints[l];
+              value = hx*delta(disp[0], disp[1], disp[2], hx, hy, hz);
+              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
         }
@@ -507,10 +448,6 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         maxDisp[0] = 1.5*hx;
         row = localIdx + qStart;
-        // G portion
-        cols[0] = pMappingArray[k][j][i];
-        cols[1] = pMappingArray[k][j+1][i];
-        ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         // ET portion
         for (auto &body : bodies)
         { 
@@ -522,9 +459,9 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
             source[2] = body.Z[pointIdx];
             if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              BNQ_col = body.globalIdxPoints[l] + 1;
-              value= hy*delta(disp[0], disp[1], disp[2], hx, hy, hz);
-              ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
+              ET_col = body.globalIdxPoints[l] + 1;
+              value = hy*delta(disp[0], disp[1], disp[2], hx, hy, hz);
+              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
         }
@@ -550,10 +487,6 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
         target[0] = 0.5*(mesh->x[i] + mesh->x[i+1]);
         maxDisp[0] = 1.5*hx;
         row = localIdx + qStart;
-        // G portion
-        cols[0] = pMappingArray[k][j][i];
-        cols[1] = pMappingArray[k+1][j][i];
-        ierr = MatSetValues(BNQ, 1, &row, 2, cols, values, INSERT_VALUES); CHKERRQ(ierr);
         // ET portion
         for (auto &body : bodies)
         { 
@@ -565,9 +498,9 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
             source[2] = body.Z[pointIdx];
             if (isInfluenced<3>(target, source, maxDisp, widths, bTypes, disp))
             {
-              BNQ_col = body.globalIdxPoints[l] + 2;
-              value= hz*delta(disp[0], disp[1], disp[2], hx, hy, hz);
-              ierr = MatSetValue(BNQ, row, BNQ_col, value, INSERT_VALUES); CHKERRQ(ierr);
+              ET_col = body.globalIdxPoints[l] + 2;
+              value = hz*delta(disp[0], disp[1], disp[2], hx, hy, hz);
+              ierr = MatSetValue(ET, row, ET_col, value, INSERT_VALUES); CHKERRQ(ierr);
             }
           }
         }
@@ -575,20 +508,11 @@ PetscErrorCode TairaColoniusSolver<3>::generateBNQ()
       }
     }
   }
-  ierr = DMDAVecRestoreArray(pda, pMapping, &pMappingArray); CHKERRQ(ierr);
 
-  // assembles matrices
-  // BNQ
-  ierr = MatAssemblyBegin(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(BNQ, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-Q_mat_view"); CHKERRQ(ierr);
+  ierr = MatAssemblyBegin(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(ET, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
-  ierr = MatTranspose(BNQ, MAT_INITIAL_MATRIX, &QT); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) QT, NULL, "-QT_mat_view"); CHKERRQ(ierr);
-  ierr = MatDiagonalScale(BNQ, BN, NULL); CHKERRQ(ierr);
-  ierr = PetscObjectViewFromOptions((PetscObject) BNQ, NULL, "-BNQ_mat_view"); CHKERRQ(ierr);
+  ierr = PetscObjectViewFromOptions((PetscObject) ET, NULL, "-ET_mat_view"); CHKERRQ(ierr);
 
-  ierr = PetscLogEventEnd(GENERATE_BNQ, 0, 0, 0, 0); CHKERRQ(ierr);
-
-  return 0;
-} // generateBNQ
+  PetscFunctionReturn(0);
+} // generateET

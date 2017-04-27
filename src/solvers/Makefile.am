@@ -2,7 +2,8 @@ noinst_LIBRARIES = libsolvers.a
 
 libsolvers_a_SOURCES = createSolver.cpp \
                        navierStokes/NavierStokesSolver.cpp \
-                       tairaColonius/TairaColoniusSolver.cpp
+                       tairaColonius/TairaColoniusSolver.cpp \
+                       liEtAl/LiEtAlSolver.cpp
 
 libsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities \
                         -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \

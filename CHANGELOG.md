@@ -8,6 +8,24 @@
 
 ### Added
 
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+---
+
+## 0.2.0
+
+---
+
+### Added
+
 * Compatibility with PETSc-3.7 (last tested 3.7.4; cannot use 3.5 and 3.6 anymore).
 * A change log.
 * Possibility to output the numerical solution in HDF5 format.
@@ -16,6 +34,7 @@
 * [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) as an optional external package (version v1.0-beta).
 * Examples to solve the 2D flow around a circular cylinder using AmgX.
 * Possibility to have multiple immersed boundaries.
+* Decoupled IBPM solver (as published in [Li et al., 2016](http://www.sciencedirect.com/science/article/pii/S0045793016302833))
 
 ### Changed
 
@@ -26,7 +45,9 @@
 
 ### Fixed
 * Update boundary ghost points only once per time step, at the beginning of the time step.
+* Bug-fix in the methods `generateBNQ()` of the class `TairaColoniusSolver` and `generateET` of the class `LiEtAlSolver`: calculate the correct widths of the computational domain (fixed index).
 
 ### Removed
 
 * Python script `restartFromSolution.py` (not finished and not necessary).
+* Non-zero initial guess as default for KSPs; the user should add `-ksp_initial_guess_nonzero true` to the command-line (or configuration file) to switch on a nonzero initial for a specific KSP.

@@ -10,6 +10,7 @@
 
 #include "navierStokes/NavierStokesSolver.h"
 #include "tairaColonius/TairaColoniusSolver.h"
+#include "liEtAl/LiEtAlSolver.h"
 
 #include <memory>
 

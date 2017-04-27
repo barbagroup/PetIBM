@@ -53,6 +53,12 @@ public:
     /** \brief point spacing of mesh points of all fields and in all directions. */
     types::DeltaLVec        dL;
 
+    /** \brief total number of velocity points. */
+    PetscInt                UN;
+
+    /** \brief total number of pressure points. */
+    PetscInt                pN;
+
     /** \brief a string for printing information. */
     std::string             info;
 
@@ -163,7 +169,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getLocalIndex(
-            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+            const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
 
     /**
@@ -182,7 +188,7 @@ public:
      */
     PetscErrorCode getLocalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-            PetscInt &idx);
+            PetscInt &idx) const;
 
 
     /**
@@ -195,7 +201,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getNaturalIndex(
-            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+            const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
 
     /**
@@ -213,7 +219,7 @@ public:
      */
     PetscErrorCode getNaturalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-            PetscInt &idx);
+            PetscInt &idx) const;
 
 
     /**
@@ -227,7 +233,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getGlobalIndex(
-            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+            const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
 
     /**
@@ -246,7 +252,7 @@ public:
      */
     PetscErrorCode getGlobalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-            PetscInt &idx);
+            PetscInt &idx) const;
 
 
     /**
@@ -260,7 +266,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getPackedGlobalIndex(
-            const PetscInt &f, const MatStencil &s, PetscInt &idx);
+            const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
 
     /**
@@ -279,7 +285,7 @@ public:
      */
     PetscErrorCode getPackedGlobalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-            PetscInt &idx);
+            PetscInt &idx) const;
 
 
     /**

@@ -171,8 +171,8 @@ PetscErrorCode BodyPack::createInfoString()
 }
 
 
-/** \copydoc BodyPack::printInfo. */
-PetscErrorCode BodyPack::printInfo()
+/** \copydoc BodyPack::printInfo() const. */
+PetscErrorCode BodyPack::printInfo() const
 {
     PetscFunctionBeginUser;
 
@@ -191,9 +191,9 @@ PetscErrorCode BodyPack::printInfo()
 
 
 /** \copydoc BodyPack::findProc(
- *           const PetscInt &, const PetscInt &, PetscMPIInt &). */
+ *           const PetscInt &, const PetscInt &, PetscMPIInt &) const. */
 PetscErrorCode BodyPack::findProc(
-        const PetscInt &bIdx, const PetscInt &ptIdx, PetscMPIInt &proc)
+        const PetscInt &bIdx, const PetscInt &ptIdx, PetscMPIInt &proc) const
 {
     PetscFunctionBeginUser;
 
@@ -210,8 +210,10 @@ PetscErrorCode BodyPack::findProc(
 }
 
 
+/** \copydoc BodyPack::getGlobalIndex(const PetscInt &bIdx, 
+        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx) const. */
 PetscErrorCode BodyPack::getGlobalIndex(const PetscInt &bIdx, 
-        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx)
+        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -228,8 +230,10 @@ PetscErrorCode BodyPack::getGlobalIndex(const PetscInt &bIdx,
 }
 
 
+/** \copydoc BodyPack::getGlobalIndex(
+        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx) const. */
 PetscErrorCode BodyPack::getGlobalIndex(
-        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx)
+        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -241,8 +245,10 @@ PetscErrorCode BodyPack::getGlobalIndex(
 }
 
 
+/** \copydoc BodyPack::getPackedGlobalIndex(const PetscInt &bIdx, 
+        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx) const. */
 PetscErrorCode BodyPack::getPackedGlobalIndex(const PetscInt &bIdx, 
-        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx)
+        const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -266,12 +272,16 @@ PetscErrorCode BodyPack::getPackedGlobalIndex(const PetscInt &bIdx,
 }
 
 
+/** \copydoc BodyPack::getPackedGlobalIndex(
+        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx) const. */
 PetscErrorCode BodyPack::getPackedGlobalIndex(
-        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx)
+        const PetscInt &bIdx, const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
+
+    ierr = getPackedGlobalIndex(bIdx, s.i, s.c, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

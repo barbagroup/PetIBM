@@ -310,8 +310,8 @@ PetscErrorCode SingleBody::createInfoString()
 }
 
 
-/** \copydoc SingleBody::printInfo. */
-PetscErrorCode SingleBody::printInfo()
+/** \copydoc SingleBody::printInfo() const. */
+PetscErrorCode SingleBody::printInfo() const
 {
     PetscFunctionBeginUser;
 
@@ -325,8 +325,8 @@ PetscErrorCode SingleBody::printInfo()
 }
 
 
-/** \copydoc SingleBody::findProc. */
-PetscErrorCode SingleBody::findProc(const PetscInt &i, PetscMPIInt &p)
+/** \copydoc SingleBody::findProc(const PetscInt &i, PetscMPIInt &p) const. */
+PetscErrorCode SingleBody::findProc(const PetscInt &i, PetscMPIInt &p) const
 {
     PetscFunctionBeginUser;
 
@@ -344,9 +344,9 @@ PetscErrorCode SingleBody::findProc(const PetscInt &i, PetscMPIInt &p)
 
 
 /** \copydoc SingleBody::findGlobalIndex(
- *           const PetscInt &, const PetscInt &, PetscInt &). */
+ *           const PetscInt &, const PetscInt &, PetscInt &) const. */
 PetscErrorCode SingleBody::getGlobalIndex(
-        const PetscInt &i, const PetscInt &dof, PetscInt &idx)
+        const PetscInt &i, const PetscInt &dof, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -366,8 +366,9 @@ PetscErrorCode SingleBody::getGlobalIndex(
 }
 
 
-/** \copydoc SingleBody::findGlobalIndex(const MatStencil &s, PetscInt &idx). */
-PetscErrorCode SingleBody::getGlobalIndex(const MatStencil &s, PetscInt &idx)
+/** \copydoc SingleBody::findGlobalIndex(const MatStencil &, PetscInt &) const. */
+PetscErrorCode SingleBody::getGlobalIndex(
+        const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 

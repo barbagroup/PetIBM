@@ -89,7 +89,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode printInfo();
+    PetscErrorCode printInfo() const;
 
 
     /**
@@ -101,8 +101,8 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode findProc(
-            const PetscInt &bIdx, const PetscInt &ptIdx, PetscMPIInt &proc);
+    PetscErrorCode findProc(const PetscInt &bIdx, 
+            const PetscInt &ptIdx, PetscMPIInt &proc) const;
 
 
     /**
@@ -116,7 +116,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getGlobalIndex(const PetscInt &bIdx, 
-            const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx);
+            const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx) const;
 
 
     /**
@@ -129,7 +129,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getGlobalIndex(const PetscInt &bIdx, 
-            const MatStencil &s, PetscInt &idx);
+            const MatStencil &s, PetscInt &idx) const;
 
 
 
@@ -144,7 +144,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx, 
-            const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx);
+            const PetscInt &ptIdx, const PetscInt &dof, PetscInt &idx) const;
 
 
 
@@ -158,7 +158,7 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx, 
-            const MatStencil &s, PetscInt &idx);
+            const MatStencil &s, PetscInt &idx) const;
 
 protected:
 

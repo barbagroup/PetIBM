@@ -123,7 +123,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode printInfo();
+    PetscErrorCode printInfo() const;
 
 
     /**
@@ -137,7 +137,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode findProc(const PetscInt &i, PetscMPIInt &p);
+    PetscErrorCode findProc(const PetscInt &i, PetscMPIInt &p) const;
 
 
     /**
@@ -150,7 +150,8 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode getGlobalIndex(const PetscInt &i, const PetscInt &dof, PetscInt &idx);
+    PetscErrorCode getGlobalIndex(
+            const PetscInt &i, const PetscInt &dof, PetscInt &idx) const;
 
 
     /**
@@ -162,7 +163,7 @@ public:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode getGlobalIndex(const MatStencil &s, PetscInt &idx);
+    PetscErrorCode getGlobalIndex(const MatStencil &s, PetscInt &idx) const;
 
 protected:
 

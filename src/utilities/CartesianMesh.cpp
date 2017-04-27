@@ -178,6 +178,9 @@ PetscErrorCode CartesianMesh::createPressureMesh()
         dL[3][i] = &dLTrue[3][i][0];
     }
 
+    // total number of pressure points
+    pN = n[3][0] * n[3][1] * n[3][2];   // for 2D, n[3][2] should be 1
+
     // in 2D simulation, we still use the varaible dL in z-direction
     if (dim == 2) dL[3][2] = &dLTrue[3][2][0];
 
@@ -214,6 +217,9 @@ PetscErrorCode CartesianMesh::createVertexMesh()
 PetscErrorCode CartesianMesh::createVelocityMesh()
 {
     PetscFunctionBeginUser;
+
+    // initialize UN
+    UN = 0;
 
     // loop through all velocity component
     // note: index 0, 1, 2 represent u, v, w respectively
@@ -303,6 +309,9 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
             // the 1st ghost point with the index -1, i.e., dL[comp][dir][-1]
             dL[comp][dir] = &dLTrue[comp][dir][1];
         }
+
+        // add to UN; for 2D, n in z-direction should be 1
+        UN += (n[comp][0] * n[comp][1] * n[comp][2]); 
     }
 
 
@@ -853,9 +862,9 @@ PetscErrorCode CartesianMesh::createMapping()
 
 
 /** \copydoc CartesianMesh::getNaturalIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &). */
+ *           const PetscInt &, const MatStencil &, PetscInt &) const. */
 PetscErrorCode CartesianMesh::getNaturalIndex(
-        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+        const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -868,10 +877,10 @@ PetscErrorCode CartesianMesh::getNaturalIndex(
 
 
 /** \copydoc CartesianMesh::getNaturalIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &).  */
+ *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
 PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-        PetscInt &idx)
+        PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -884,9 +893,9 @@ PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f,
 
 
 /** \copydoc CartesianMesh::getLocalIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &). */
+ *           const PetscInt &, const MatStencil &, PetscInt &) const. */
 PetscErrorCode CartesianMesh::getLocalIndex(
-        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+        const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -899,10 +908,10 @@ PetscErrorCode CartesianMesh::getLocalIndex(
 
 
 /** \copydoc CartesianMesh::getLocalIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &).  */
+ *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
 PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-        PetscInt &idx)
+        PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -915,9 +924,9 @@ PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f,
 
 
 /** \copydoc CartesianMesh::getGlobalIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &). */
+ *           const PetscInt &, const MatStencil &, PetscInt &) const. */
 PetscErrorCode CartesianMesh::getGlobalIndex(
-        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+        const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -931,10 +940,10 @@ PetscErrorCode CartesianMesh::getGlobalIndex(
 
 
 /** \copydoc CartesianMesh::getGlobalIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &).  */
+ *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
 PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-        PetscInt &idx)
+        PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -947,9 +956,9 @@ PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f,
 
 
 /** \copydoc CartesianMesh::getGlobalPackedIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &). */
+ *           const PetscInt &, const MatStencil &, PetscInt &) const. */
 PetscErrorCode CartesianMesh::getPackedGlobalIndex(
-        const PetscInt &f, const MatStencil &s, PetscInt &idx)
+        const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 
@@ -980,10 +989,10 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
 
 
 /** \copydoc CartesianMesh::getGlobalPackedIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &).  */
+ *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
 PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
-        PetscInt &idx)
+        PetscInt &idx) const
 {
     PetscFunctionBeginUser;
 

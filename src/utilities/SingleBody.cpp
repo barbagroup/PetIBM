@@ -10,6 +10,7 @@
 // STL
 # include <fstream>
 # include <sstream>
+# include <algorithm>
 
 // PetIBM
 # include "misc.h"
@@ -107,6 +108,10 @@ PetscErrorCode SingleBody::preInit(
     // set the dimension
     dim = mesh->dim;
 
+    // allocate vectors
+    nLclAllProcs = types::IntVec1D(mpiSize, 0);
+    offsetsAllProcs = types::IntVec1D(mpiSize, 0);
+
     PetscFunctionReturn(0);
 }
 
@@ -118,8 +123,8 @@ PetscErrorCode SingleBody::postInit()
 
     PetscErrorCode      ierr;
 
-    // create a distributed 1D DMDA with DoF equal to dim; nLclPts, bg, ed and
-    // da are set up here
+    // create a distributed 1D DMDA with DoF equal to dim; nLclPts, bgPt, edPt,
+    // da, nLclAllProcs, and offsetsAllProcs are set up here
     ierr = createDMDA(); CHKERRQ(ierr);
 
     // set up background mesh indices for Lagrangian points owned locally
@@ -218,7 +223,7 @@ PetscErrorCode SingleBody::findCellIdx()
     for(PetscInt d=0; d<dim; ++d)
     {
         PetscInt    c = 0;
-        for(PetscInt i=bg; i<ed; ++i)
+        for(PetscInt i=bgPt; i<edPt; ++i)
         {
             ierr = misc::findCell1D(coords[d][i], 
                     mesh->coord[4][d], meshIdx[d][c]); CHKERRQ(ierr);
@@ -246,9 +251,20 @@ PetscErrorCode SingleBody::createDMDA()
     ierr = DMDAGetLocalInfo(da, &lclInfo); CHKERRQ(ierr);
 
     // copy necessary local info
-    bg = lclInfo.xs;
+    bgPt = lclInfo.xs;
     nLclPts = lclInfo.xm;
-    ed = bg + nLclPts;
+    edPt = bgPt + nLclPts;
+
+    // gather local info from other processes
+    ierr = MPI_Allgather(&nLclPts, 1, MPIU_INT,
+            nLclAllProcs.data(), 1, MPIU_INT, *comm); CHKERRQ(ierr);
+
+    // each point has dim degree of freedom, so we have to multiply that
+    for(auto &it: nLclAllProcs) it *= dim;
+
+    // calculate the offset of the un-packed DM
+    for(PetscMPIInt r=mpiSize-1; r>0; r--) offsetsAllProcs[r] = nLclAllProcs[r-1];
+    for(PetscMPIInt r=1; r<mpiSize; r++) offsetsAllProcs[r] += offsetsAllProcs[r-1];
 
     PetscFunctionReturn(0);
 }
@@ -261,24 +277,11 @@ PetscErrorCode SingleBody::createInfoString()
 
     PetscErrorCode          ierr;
 
-    types::IntVec1D         nOnProcs(mpiSize);
-    types::IntVec1D         bgOnProcs(mpiSize);
-    types::IntVec1D         edOnProcs(mpiSize);
+    std::stringstream       ss;
 
-    // gather information from all processes to Rank 0
-    ierr = MPI_Gather(&nLclPts, 1, MPIU_INT, 
-            nOnProcs.data(), 1, MPIU_INT, 0, *comm); CHKERRQ(ierr);
-
-    ierr = MPI_Gather(&bg, 1, MPIU_INT, 
-            bgOnProcs.data(), 1, MPIU_INT, 0, *comm); CHKERRQ(ierr);
-
-    ierr = MPI_Gather(&ed, 1, MPIU_INT, 
-            edOnProcs.data(), 1, MPIU_INT, 0, *comm); CHKERRQ(ierr);
-
-    // only rank 0 prepares the info string
+    // only rank 0 prepares the header of info string
     if (mpiRank == 0)
     {
-        std::stringstream       ss;
 
         ss << std::string(80, '=') << std::endl;
         ss << "Body " << name << ":" << std::endl;
@@ -293,21 +296,13 @@ PetscErrorCode SingleBody::createInfoString()
             << " processes" << std::endl << std::endl;
 
         ss << "\tDistribution of Lagrangian points:" << std::endl << std::endl;
-
-        for(PetscInt i=0; i<mpiSize; ++i)
-        {
-            ss << "\t\tRank " << i << ":" << std::endl;
-            ss << "\t\t\tNumber of points: " << nOnProcs[i] << std::endl;
-            ss << "\t\t\tRange of point indices: ["
-                << bgOnProcs[i] << ", " << edOnProcs[i] << ")" << std::endl;
-        }
-
-        ss << std::endl;
-
-        info = ss.str();
     }
-    else
-        info = "This is not a master process.\n";
+
+    ss << "\t\tRank " << mpiRank << ":" << std::endl;
+    ss << "\t\t\tNumber of points: " << nLclPts << std::endl;
+    ss << "\t\t\tRange of points: [" << bgPt << ", " << edPt << ")" << std::endl;
+
+    info = ss.str();
 
     ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
 
@@ -322,7 +317,63 @@ PetscErrorCode SingleBody::printInfo()
 
     PetscErrorCode      ierr;
 
-    ierr = PetscPrintf(*comm, info.c_str()); CHKERRQ(ierr);
+    ierr = PetscSynchronizedPrintf(*comm, info.c_str()); CHKERRQ(ierr);
+    ierr = PetscSynchronizedFlush(*comm, PETSC_STDOUT); CHKERRQ(ierr);
+    ierr = PetscPrintf(*comm, "\n"); CHKERRQ(ierr);
 
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBody::findProc. */
+PetscErrorCode SingleBody::findProc(const PetscInt &i, PetscMPIInt &p)
+{
+    PetscFunctionBeginUser;
+
+    if ((i < 0) || (i >= nPts))
+        SETERRQ2(*comm, PETSC_ERR_ARG_SIZ, 
+                "Index %d of Lagrangian point on the body %s is out of range.",
+                i, name.c_str());
+
+    // find the process that own THE 1ST DoF OF THE POINT i
+    p = std::upper_bound(offsetsAllProcs.begin(), 
+            offsetsAllProcs.end(), (i-1)*dim+1) - offsetsAllProcs.begin() - 1;
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBody::findGlobalIndex(
+ *           const PetscInt &, const PetscInt &, PetscInt &). */
+PetscErrorCode SingleBody::getGlobalIndex(
+        const PetscInt &i, const PetscInt &dof, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    if ((i < 0) || (i >= nPts))
+        SETERRQ2(*comm, PETSC_ERR_ARG_SIZ, 
+                "Index %d of Lagrangian point on the body %s is out of range.",
+                i, name.c_str());
+
+    if ((dof < 0) || (dof >= dim))
+        SETERRQ2(*comm, PETSC_ERR_ARG_SIZ,
+                "DoF %d is not correct. The dimension is %d.", dof, dim);
+
+    // for single body DM, the global is simple due to we use 1D DMDA.
+    idx = (i - 1) * dim + dof;
+    
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc SingleBody::findGlobalIndex(const MatStencil &s, PetscInt &idx). */
+PetscErrorCode SingleBody::getGlobalIndex(const MatStencil &s, PetscInt &idx)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    ierr = getGlobalIndex(s.i, s.c, idx); CHKERRQ(ierr);
+    
     PetscFunctionReturn(0);
 }

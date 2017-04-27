@@ -24,6 +24,8 @@
 /** \brief class for a single body. */
 class SingleBody
 {
+    friend class BodyPack;
+
 public:
 
     /** \brief dimension. */
@@ -46,10 +48,10 @@ public:
     types::IntVec2D     meshIdx;
 
     /** \brief the beginning index of local Lagrangian points in all points. */
-    PetscInt            bg;
+    PetscInt            bgPt;
 
     /** \brief the ending index of local Lagrangian points in all points. */
-    PetscInt            ed;
+    PetscInt            edPt;
 
     /** \brief the underlying parallel 1D DMDA onject. */
     DM                  da;
@@ -123,6 +125,45 @@ public:
      */
     PetscErrorCode printInfo();
 
+
+    /**
+     * \brief find which process owns the Lagrangian point with index i.
+     *
+     * \param i index of target Lagrangian point of this body.
+     * \param p return process id.
+     *
+     * Note: all degree of freedom of a Lagrangian point are on the same 
+     * process, so we don't need to know which degree of freedom users is asking.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode findProc(const PetscInt &i, PetscMPIInt &p);
+
+
+    /**
+     * \brief find the global index in un-packed DM of specified DoF of a 
+     *        Lagrangian point.
+     *
+     * \param i index of target Lagrangian point of this body.
+     * \param dof target degree of freedom.
+     * \param idx returned index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalIndex(const PetscInt &i, const PetscInt &dof, PetscInt &idx);
+
+
+    /**
+     * \brief find the global index in un-packed DM of specified DoF of a 
+     *        Lagrangian point.
+     *
+     * \param s MatStencil of target point and DoF.
+     * \param idx returned index.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getGlobalIndex(const MatStencil &s, PetscInt &idx);
+
 protected:
 
     /** \brief reference to backgrounf CartesianMesh. */
@@ -139,6 +180,14 @@ protected:
 
     /** \brief the rank of this process. */
     PetscMPIInt                             mpiRank;
+
+
+    /** \brief number of varaibles (nLcLPts x dim) on each process. */
+    types::IntVec1D                         nLclAllProcs;
+
+
+    /** \brief offset on each process. */
+    types::IntVec1D                         offsetsAllProcs;
 
 
     /**

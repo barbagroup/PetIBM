@@ -16,7 +16,8 @@ class Solver
 {
 public:
   virtual ~Solver(){ }
-  virtual PetscErrorCode create(const Mat &A) = 0;
+  virtual PetscErrorCode create(const Mat &A, const DM &daPack, 
+          const PetscBool &split=PETSC_FALSE) = 0;
   virtual PetscErrorCode solve(Vec &x, Vec &b) = 0;
   virtual PetscErrorCode getIters(PetscInt &iters) = 0;
 

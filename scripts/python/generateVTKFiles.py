@@ -119,25 +119,23 @@ def main(args):
   print('[variables] {}'.format(args.variables))
 
   # list of time-steps to post-process
-  time_steps = ioPetIBM.get_time_steps(args.directory, args.time_steps)
+  time_steps = ioPetIBM.get_time_steps(args.time_steps, args.directory)
 
   # read mesh grid
   grid = ioPetIBM.read_grid(args.directory)
 
   for time_step in time_steps:
     if 'velocity' in args.variables:
-      velocity = ioPetIBM.read_velocity(args.directory, time_step, grid,
-                                        periodic=args.periodic)
+      velocity = ioPetIBM.read_velocity(
+          time_step, grid, args.periodic, args.directory)
       # need to get velocity at cell-centers, not staggered arrangement
       velocity = interpolate_cell_centers(velocity)
-      ioPetIBM.write_vtk(velocity, args.directory, time_step,
-                         name='velocity',
+      ioPetIBM.write_vtk(velocity, time_step, 'velocity', args.directory,
                          view=[args.bottom_left, args.top_right],
                          stride=args.stride)
     if 'pressure' in args.variables:
-      pressure = ioPetIBM.read_pressure(args.directory, time_step, grid)
-      ioPetIBM.write_vtk(pressure, args.directory, time_step,
-                         name='pressure',
+      pressure = ioPetIBM.read_pressure(time_step, grid, args.directory)
+      ioPetIBM.write_vtk(pressure, time_step, 'pressure', args.directory,
                          view=[args.bottom_left, args.top_right],
                          stride=args.stride)
 

@@ -289,7 +289,7 @@ def write_vtk(field, time_step, name,
     print('Make directory: {}'.format(vtk_directory))
     os.makedirs(vtk_directory)
   vtk_file_path = os.path.join(vtk_directory,
-                               name + '{:0>7}'.format(time_step))
+                               name + '{:0>7}.vtk'.format(time_step))
   # get coordinates within the view
   x = field[0].x[mx]
   y = field[0].y[my]

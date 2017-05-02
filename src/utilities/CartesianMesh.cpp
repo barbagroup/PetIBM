@@ -81,9 +81,10 @@ PetscErrorCode CartesianMesh::init(
     min = types::RealVec1D(3, 0.0);
     max = types::RealVec1D(3, 1.0);
     n = types::IntVec2D(5, types::IntVec1D(3, 1));
-    coord = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 0.0)));
+    coordTrue = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 0.0)));
+    coord = types::GhostedVec3D(5, types::GhostedVec2D(3, nullptr));
     dLTrue = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 1.0)));
-    dL = types::DeltaLVec(5, std::vector<PetscReal*>(3, nullptr));
+    dL = types::GhostedVec3D(5, types::GhostedVec2D(3, nullptr));
     da = std::vector<DM>(5, PETSC_NULL);
     nProc = types::IntVec1D(3, PETSC_DECIDE);
     bg = types::IntVec2D(5, types::IntVec1D(3, 0));
@@ -162,27 +163,34 @@ PetscErrorCode CartesianMesh::createPressureMesh()
     // loop through all axes to get the coordinates of pressure points
     for(unsigned int i=0; i<dim; ++i)
     {
-        coord[3][i].resize(n[3][i]);
+        coordTrue[3][i].resize(n[3][i]);
 
         // the following three lines calculate the coord of pressure points
-        std::partial_sum(
-                dLTrue[3][i].begin(), dLTrue[3][i].end(), coord[3][i].begin());
+        std::partial_sum(dLTrue[3][i].begin(), 
+                dLTrue[3][i].end(), coordTrue[3][i].begin());
 
         auto f = [i, this] (double &a, double &b) -> double 
                     { return a + this->min[i] - 0.5 * b; };
 
-        std::transform(coord[3][i].begin(), coord[3][i].end(), 
-                dLTrue[3][i].begin(), coord[3][i].begin(), f);
+        std::transform(coordTrue[3][i].begin(), coordTrue[3][i].end(), 
+                dLTrue[3][i].begin(), coordTrue[3][i].begin(), f);
 
         // no ghost points in pressure grid, so dL[0] = dLTrue[0]
         dL[3][i] = &dLTrue[3][i][0];
+
+        // same for coordinates
+        coord[3][i] = &coordTrue[3][i][0];
     }
 
     // total number of pressure points
     pN = n[3][0] * n[3][1] * n[3][2];   // for 2D, n[3][2] should be 1
 
     // in 2D simulation, we still use the varaible dL in z-direction
-    if (dim == 2) dL[3][2] = &dLTrue[3][2][0];
+    if (dim == 2)
+    {
+        dL[3][2] = &dLTrue[3][2][0];
+        coord[3][2] = &coordTrue[3][2][0];
+    }
 
     PetscFunctionReturn(0);
 }
@@ -199,15 +207,22 @@ PetscErrorCode CartesianMesh::createVertexMesh()
     {
         // number of vertexes is one more than pressure cells
         n[4][i] = n[3][i] + 1;
-        coord[4][i].resize(n[4][i]);
+        coordTrue[4][i].resize(n[4][i]);
 
         // create coordinates of vertexes
         std::partial_sum(dLTrue[3][i].begin(), dLTrue[3][i].end(), 
-                coord[4][i].begin()+1); // here we assume coord[4][0] = 0.0
+                coordTrue[4][i].begin()+1); // first assume coord[4][i][0]=0.0
 
-        std::for_each(coord[4][i].begin(), coord[4][i].end(),
+        // shift aacording to real coord[4][i][0], which is min
+        std::for_each(coordTrue[4][i].begin(), coordTrue[4][i].end(),
                 [i, this] (double &a) -> void { a += this->min[i]; });
+
+        // no ghost points in vertex mesh, so coord[4][i][0]=coordTrue[4][i][0]
+        coord[4][i] = &coordTrue[4][i][0];
     }
+
+    // in 2D simulation, we still use the varaible coord in z-direction
+    if (dim == 2) coord[4][2] = &coordTrue[4][2][0];
 
     PetscFunctionReturn(0);
 }
@@ -234,12 +249,12 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
                 // there will no velocity point on boundary (it's a ghost point)
                 n[comp][dir] = n[3][dir] - 1;
 
-                // coordinates will match the interior part of the vertex grid
-                coord[comp][dir] = RealVec1D(
-                        coord[4][dir].begin()+1, coord[4][dir].end()-1);
-
-                // we store the dL of ghost points, so the size is n+2
+                // we store the dL and coord of ghost points, so the size is n+2
                 dLTrue[comp][dir].resize(n[comp][dir]+2);
+                coordTrue[comp][dir].resize(n[comp][dir]+2);
+
+                // coordinates will match the those of the vertex grid
+                coordTrue[comp][dir] = coordTrue[4][dir];
 
                 // cell size will be a half of the sum of adjacent pressure cell
                 auto f = [] (const PetscReal &x, const PetscReal &y)
@@ -259,11 +274,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
                     // add 1 to the number of valid grid point
                     n[comp][dir] += 1;
 
-                    // add the coordinate to the extra point
-                    coord[comp][dir].push_back(coord[4][dir].back());
-
-
-                    // the space for larger ghost point in dLTrue is now used to 
+                    // the space for right ghost point in dLTrue is now used to 
                     // store the grid point on periodic BC
                     dLTrue[comp][dir].back() = 
                         f(dLTrue[3][dir][0], dLTrue[3][dir].back());
@@ -275,6 +286,11 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
                     // we have to create one more space for the larger ghost
                     // point, and its dL is the same as the 1st valid point
                     dLTrue[comp][dir].push_back(dLTrue[comp][dir][1]);
+
+                    // add the coordinate of the extra point, which is the first
+                    // interior point add a shift of domain size.
+                    coordTrue[comp][dir].push_back(
+                            max[dir] + dLTrue[3][dir].front());
                 }
                 // for other cases, we simply get the dL for the larger ghost
                 // note: the smaller ghost point has already got value from
@@ -289,25 +305,50 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
             {
                 n[comp][dir] = n[3][dir];
 
-                // coordinate and cel size will match that of pressure point
-                coord[comp][dir] = coord[3][dir];
-
                 // we store the dL of ghost points, so the size is n+2
                 dLTrue[comp][dir].resize(n[comp][dir]+2);
+                coordTrue[comp][dir].resize(n[comp][dir]+2);
 
-                // the dL of valid points is the same as pressure grid
+                // coordinate and cel size will match that of pressure point,
+                // except the two ghost points
+                std::copy(coordTrue[3][dir].begin(), coordTrue[3][dir].end(),
+                        coordTrue[comp][dir].begin()+1);
                 std::copy(dLTrue[3][dir].begin(), dLTrue[3][dir].end(), 
                         dLTrue[comp][dir].begin()+1);
 
-                // get the dL for the smaller and larger ghost points
-                dLTrue[comp][dir].front() = dLTrue[3][dir].front();
-                dLTrue[comp][dir].back() = dLTrue[3][dir].back();
+                // get the dL for the two ghost points
+                // for periodic BCs, it's the same as the 1st cell on the other side
+                if ((*bcInfo)[BCLoc(dir*2)][Field(comp)].type == BCType::PERIODIC)
+                {
+                    // set the coordinate of the two ghost points
+                    coordTrue[comp][dir].front() = 
+                        min[dir] - dLTrue[3][dir].back() / 2.0;
+                    coordTrue[comp][dir].back() = 
+                        max[dir] + dLTrue[3][dir].front() / 2.0;
+
+                    // dL
+                    dLTrue[comp][dir].front() = dLTrue[3][dir].back();
+                    dLTrue[comp][dir].back() = dLTrue[3][dir].front();
+                }
+                else // for other BCs, it's just a mirror of the first/last cells
+                {
+                    // set the coordinate of the two ghost points
+                    coordTrue[comp][dir].front() = 
+                        min[dir] - dLTrue[3][dir].front() / 2.0;
+                    coordTrue[comp][dir].back() = 
+                        max[dir] + dLTrue[3][dir].back() / 2.0;
+
+                    // dL
+                    dLTrue[comp][dir].front() = dLTrue[3][dir].front();
+                    dLTrue[comp][dir].back() = dLTrue[3][dir].back();
+                }
             }
 
 
-            // variable dL will point to the 1st valid grid point, so we can access
-            // the 1st ghost point with the index -1, i.e., dL[comp][dir][-1]
+            // dL and coord will point to the 1st valid grid point, so we can 
+            // access the 1st ghost point with the index -1, e.g., dL[0][0][-1]
             dL[comp][dir] = &dLTrue[comp][dir][1];
+            coord[comp][dir] = &coordTrue[comp][dir][1];
         }
 
         // add to UN; for 2D, n in z-direction should be 1
@@ -318,11 +359,13 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
     // for 2D simulation, we still use dL in z-direction in our code
     if (dim == 2)
     {
-        dL[0][2] = &dLTrue[0][2][0];
-        dL[1][2] = &dLTrue[1][2][0];
-        dL[2][0] = &dLTrue[2][0][0];
-        dL[2][1] = &dLTrue[2][1][0];
+        dL[0][2] = &dLTrue[0][2][0]; dL[1][2] = &dLTrue[1][2][0];
+        dL[2][0] = &dLTrue[2][0][0]; dL[2][1] = &dLTrue[2][1][0];
         dL[2][2] = &dLTrue[2][2][0];
+
+        coord[0][2] = &coordTrue[0][2][0]; coord[1][2] = &coordTrue[1][2][0];
+        coord[2][0] = &coordTrue[2][0][0]; coord[2][1] = &coordTrue[2][1][0];
+        coord[2][2] = &coordTrue[2][2][0];
     }
 
     PetscFunctionReturn(0);
@@ -461,15 +504,9 @@ PetscErrorCode CartesianMesh::writeBinary(
         streamFile << n[3][0] << "\t" << n[3][1] << "\t"
             << ((dim==3)? std::to_string(n[3][2]) : "") << std::endl;
 
-        for(auto it: coord[4][0]) 
-            streamFile << std::setprecision(16) << it << std::endl;
-
-        for(auto it: coord[4][1]) 
-            streamFile << std::setprecision(16) << it << std::endl;
-
-        if (dim == 3)
-            for(auto it: coord[4][2]) 
-                streamFile << std::setprecision(16) << it << std::endl;
+        for(PetscInt f=0; f<dim; ++f)
+            for(auto it=coord[4][f]; it<coord[4][f]+n[4][f]; ++it)
+                streamFile << std::setprecision(16) << *it << std::endl;
 
         streamFile.close();
     }
@@ -512,17 +549,20 @@ PetscErrorCode CartesianMesh::writeVTK(
 
         // x coordinates of the vertexes
         fs << "X_COORDINATES " << n[4][0] << " double" << std::endl;
-        for(auto it: coord[4][0]) fs << std::setprecision(16) << it << " ";
+        for(auto it=coord[4][0]; it<coord[4][0]+n[4][0]; ++it)
+            fs << std::setprecision(16) << it << " ";
         fs << std::endl;
 
         // y coordinates of the vertexes
         fs << "Y_COORDINATES " << n[4][1] << " double" << std::endl;
-        for(auto it: coord[4][1]) fs << std::setprecision(16) << it << " ";
+        for(auto it=coord[4][1]; it<coord[4][1]+n[4][1]; ++it)
+            fs << std::setprecision(16) << it << " ";
         fs << std::endl;
 
         // z coordinates of the vertexes
         fs << "Z_COORDINATES " << n[4][2] << " double" << std::endl;
-        for(auto it: coord[4][2]) fs << std::setprecision(16) << it << " ";
+        for(auto it=coord[4][2]; it<coord[4][2]+n[4][2]; ++it)
+            fs << std::setprecision(16) << it << " ";
         fs << std::endl;
 
         // close the file
@@ -588,7 +628,7 @@ PetscErrorCode CartesianMesh::writeHDF5(
 
                 // write the dataset to the h5 file
                 h5err = H5Dwrite(dsetID, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, 
-                        H5P_DEFAULT, coord[comp][dir].data());
+                        H5P_DEFAULT, coord[comp][dir]);
 
                 // close the data space handle
                 h5err = H5Sclose(dspID);

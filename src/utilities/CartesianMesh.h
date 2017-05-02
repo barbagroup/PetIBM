@@ -48,10 +48,10 @@ public:
     types::IntVec2D         n;
 
     /** \brief coordinates of mesh points of all fields and in all directions. */
-    types::RealVec3D        coord;
+    types::GhostedVec3D     coord;
 
     /** \brief point spacing of mesh points of all fields and in all directions. */
-    types::DeltaLVec        dL;
+    types::GhostedVec3D     dL;
 
     /** \brief total number of velocity points. */
     PetscInt                UN;
@@ -326,6 +326,9 @@ protected:
 
     /** \brief the underlying data for mesh point spacing. */
     types::RealVec3D        dLTrue;
+
+    /** \brief the underlying data for mesh point coordinates. */
+    types::RealVec3D        coordTrue;
 
     /** \brief references to underlying AO objects of velocity DMs. */
     std::vector<AO>         ao;

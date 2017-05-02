@@ -136,24 +136,6 @@ namespace types
     extern std::map<OutputType, std::string> out2str;
 
 
-    /** \brief a class type that mimics 2D array but accepts negtive index. */
-    class RawArray2D
-    {
-        public:
-            RawArray2D();
-            RawArray2D(const size_t &_iN, const size_t &_jN, 
-                    const int &_iBg=0, const int &_jBg=0);
-            ~RawArray2D();
-            double * operator[](const int &j);
-            double const * operator[](const int &j) const;
-
-        private:
-            size_t  iN, jN;
-            int     iBg, jBg;
-            std::shared_ptr<double> data; 
-    };
-
-
     /** \brief 1D std::vector holding PetscInt. */
     typedef std::vector<PetscInt>   IntVec1D;
     /** \brief 2D std::vector holding PetscInt. */
@@ -170,13 +152,10 @@ namespace types
     typedef std::vector<RealVec2D>  RealVec3D;
 
 
-    /** \brief a 1D vector for dL in each direction and each field, which allows
-     *         use to use index "-1". */
-    typedef std::vector<std::vector<PetscReal*>> DeltaLVec;
-
-
-    /** \brief a 1D vector holding cell area informations for each field. */
-    typedef std::vector<RawArray2D>             DeltaAVec;
+    /** \brief a vector of pointer to mimic a collection of ghosted 1D vectors. */
+    typedef std::vector<PetscReal*>             GhostedVec2D;
+    /** \brief a vector of vector pointer to mimic a collection of ghosted 2D vectors. */
+    typedef std::vector<GhostedVec2D>           GhostedVec3D;
 
 
     /** \brief a structure holding information of a single boundary condition. */

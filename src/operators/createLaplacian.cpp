@@ -223,11 +223,11 @@ inline PetscErrorCode setRowValues(
 
         // alias for cleaner code
         const PetscReal &dLSelf = mesh.dL[f][dir][self];
-        const PetscReal &dLNeg = mesh.dL[f][dir][self-1];
-        const PetscReal &dLPos = mesh.dL[f][dir][self+1];
+        const PetscReal &dLNeg = mesh.coord[f][dir][self] - mesh.coord[f][dir][self-1];
+        const PetscReal &dLPos = mesh.coord[f][dir][self+1] - mesh.coord[f][dir][self];
 
-        values[dir*2+1] = 1.0 / (0.5 * (dLNeg + dLSelf) * dLSelf);
-        values[dir*2+2] = 1.0 / (0.5 * (dLSelf + dLPos) * dLSelf);
+        values[dir*2+1] = 1.0 / (dLNeg * dLSelf);
+        values[dir*2+2] = 1.0 / (dLPos * dLSelf);
     }
 
     // update diagonal value

@@ -37,6 +37,10 @@ public:
     /** \copydoc LinSolver::getIters. */
     virtual PetscErrorCode getIters(PetscInt &iters);
 
+    /** \copydoc LinSolver::printInfo. */
+    virtual PetscErrorCode printInfo(
+            PetscViewer viewer=PETSC_VIEWER_STDOUT_WORLD);
+
 private:
 
     /** \brief the underlying AmgX wrapper. */

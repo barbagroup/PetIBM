@@ -13,6 +13,7 @@
 # include <petscsys.h>
 # include <petscvec.h>
 # include <petscmat.h>
+# include <petscviewer.h>
 
 // PetIBM
 # include "types.h"
@@ -68,6 +69,14 @@ public:
      * \return PetscErrorCode.
      */
     virtual PetscErrorCode getIters(PetscInt &iters) = 0;
+
+    /**
+     * \brief print info.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode printInfo(
+            PetscViewer viewer=PETSC_VIEWER_STDOUT_WORLD) = 0;
 
 protected:
 

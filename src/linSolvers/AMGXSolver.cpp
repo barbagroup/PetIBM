@@ -60,3 +60,11 @@ PetscErrorCode AMGXSolver::getIters(PetscInt &iters)
 
     PetscFunctionReturn(0);
 } // getIters
+
+/** \copydoc AMGXSolver::printInfo. */
+PetscErrorCode AMGXSolver::printInfo(PetscViewer viewer)
+{
+    PetscFunctionBeginUser;
+    // TODO: implement it.
+    PetscFunctionReturn(0);
+}

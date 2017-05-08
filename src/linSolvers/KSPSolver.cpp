@@ -85,3 +85,16 @@ PetscErrorCode KSPSolver::getIters(PetscInt &iters)
 
     PetscFunctionReturn(0);
 } // getIters
+
+
+/** \copydoc KSPSolver::printInfo. */
+PetscErrorCode KSPSolver::printInfo(PetscViewer viewer)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    ierr = KSPView(ksp, viewer); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}

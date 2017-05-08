@@ -13,6 +13,7 @@
 // here goes headers from our PetIBM
 # include "CartesianMesh.h"
 # include "Boundary.h"
+# include "BodyPack.h"
 # include "types.h"
 
 
@@ -225,3 +226,18 @@ PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
  */
 PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &Bn);
+
+/**
+ * \brief create a Delta matrix.
+ *
+ * Rows represent Lagrangian points, while columes represent velocity mesh 
+ * points.
+ *
+ * \param mesh an instance of CartesianMesh, which is background mesh.
+ * \param bodies an instance of BodyPack.
+ * \param Delta returned delta matrix.
+ *
+ * \return PetscErrorCode.
+ */
+PetscErrorCode createDelta(
+        const CartesianMesh &mesh, const BodyPack &bodies, Mat &Delta);

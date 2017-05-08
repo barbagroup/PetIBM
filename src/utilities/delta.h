@@ -1,31 +1,63 @@
-/*! Definition of the functions related to the delta functions.
+/***************************************************************************//**
  * \file delta.h
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \brief Definition of functions regarding to descritized delta functions.
  */
 
 
-#if !defined(DELTA_H)
-#define DELTA_H
+# pragma once
 
-#include "types.h"
 
+// PETSc
 #include <petscsys.h>
 
 
-// Returns the value of the discrete Delta function from Roma et al. (1999).
-PetscReal dhRoma(PetscReal x, PetscReal h);
+/** \brief namespace for all kinds of descritized delta functions. */
+namespace delta
+{
+    /*!
+     * \brief one-dimensional discrete delta function from Roma et al. (1999).
+     *
+     * \param rx distance between target and source.
+     * \param drx window size.
+     *
+     * \returns The value of the discrete delta function.
+     */
+    PetscReal Roma_et_al(
+            const PetscReal &rx, const PetscReal &drx);
 
-// Two-dimensional discrete delta function from Roma et al. (1999).
-PetscReal delta(PetscReal x, PetscReal y, PetscReal hx, PetscReal hy);
 
-// Three-dimensional discrete delta function from Roma et al. (1999).
-PetscReal delta(PetscReal x, PetscReal y, PetscReal z, PetscReal hx, PetscReal hy, PetscReal hz);
+    /*!
+     * \brief two-dimensional discrete delta function from Roma et al. (1999).
+     *
+     * \param rx distance of the 1st component between target and source.
+     * \param drx window size of the 1st component.
+     * \param ry distance of the 2nd component between target and source.
+     * \param dry window size of the 2nd component.
+     *
+     * \returns The value of the discrete delta function.
+     */
+    PetscReal Roma_et_al(
+            const PetscReal &rx, const PetscReal &drx,
+            const PetscReal &ry, const PetscReal &dry);
 
-// Defines if a point is in the disk or sphere of influence of another
-// and calculates the displacement vector.
-template<PetscInt dim>
-PetscBool isInfluenced(PetscReal (&target)[dim], PetscReal (&source)[dim],
-                       PetscReal (&maxDisp)[dim],
-                       PetscReal (&widths)[dim], BoundaryType (&bTypes)[dim],
-                       PetscReal *disp);
 
-#endif
+    /*!
+     * \brief three-dimensional discrete delta function from Roma et al. (1999).
+     *
+     * \param rx distance of the 1st component between target and source.
+     * \param drx window size of the 1st component.
+     * \param ry distance of the 2nd component between target and source.
+     * \param dry window size of the 2nd component.
+     * \param rz distance of the 3rd component between target and source.
+     * \param drz window size of the 3rd component.
+     *
+     * \returns The value of the discrete delta function.
+     */
+    PetscReal Roma_et_al(
+            const PetscReal &rx, const PetscReal &drx,
+            const PetscReal &ry, const PetscReal &dry,
+            const PetscReal &rz, const PetscReal &drz);
+}

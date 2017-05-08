@@ -13,7 +13,6 @@
 # include <algorithm>
 
 // PetIBM
-# include "misc.h"
 # include "SingleBody.h"
 
 
@@ -173,7 +172,7 @@ PetscErrorCode SingleBody::readFromFile(const std::string &file)
 
 
     // initialize the size of coordinate array
-    coords = types::RealVec2D(3, types::RealVec1D(nPts, 0.0));
+    coords = types::RealVec2D(nPts, types::RealVec1D(3, 0.0));
 
     // loop through all points and save their coordinates
     while(std::getline(inFile, line))
@@ -181,7 +180,7 @@ PetscErrorCode SingleBody::readFromFile(const std::string &file)
         std::stringstream   sline(line);
 
         for(PetscInt d=0; d<dim; ++d)
-            if (! (sline >> coords[d][c]))
+            if (! (sline >> coords[c][d]))
                 SETERRQ2(*comm, PETSC_ERR_FILE_READ,
                         "The number of doubles at line %d in file %s does not "
                         "match the dimension.\n", c+2, file.c_str());
@@ -217,18 +216,24 @@ PetscErrorCode SingleBody::findCellIdx()
 
     // initialize meshIdx, which only contains background mesh indices of local
     // Lagrangian points. The indices are defined by pressure cell.
-    meshIdx = types::IntVec2D(3, types::IntVec1D(nLclPts, 0));
+    meshIdx = types::IntVec2D(nLclPts, types::IntVec1D(3, 0));
 
     // loop through points owned locally and find indices
-    for(PetscInt d=0; d<dim; ++d)
+    for(PetscInt i=bgPt, c=0; i<edPt; ++i, ++c)
     {
-        PetscInt    c = 0;
-        for(PetscInt i=bgPt; i<edPt; ++i)
+        for(PetscInt d=0; d<dim; ++d)
         {
-            ierr = misc::findCell1D(coords[d][i], 
-                    mesh->coord[4][d], meshIdx[d][c]); CHKERRQ(ierr);
+            if (*(mesh->coord[4][d] + mesh->n[4][d] -1) <= coords[i][d])
+                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_MAX_VALUE, 
+                        "body coordinate %e is outside domain !", coords[i][d]);
 
-            c += 1;
+            if (*(mesh->coord[4][d]) >= coords[i][d])
+                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_MIN_VALUE, 
+                        "body coordinate %e is outside domain !", coords[i][d]);
+
+            meshIdx[c][d] = std::upper_bound(
+                    mesh->coord[4][d], mesh->coord[4][d]+mesh->n[4][d],
+                    coords[i][d]) - mesh->coord[4][d] - 1;
         }
     }
 
@@ -337,7 +342,7 @@ PetscErrorCode SingleBody::findProc(const PetscInt &i, PetscMPIInt &p) const
 
     // find the process that own THE 1ST DoF OF THE POINT i
     p = std::upper_bound(offsetsAllProcs.begin(), 
-            offsetsAllProcs.end(), (i-1)*dim+1) - offsetsAllProcs.begin() - 1;
+            offsetsAllProcs.end(), i*dim) - offsetsAllProcs.begin() - 1;
 
     PetscFunctionReturn(0);
 }
@@ -360,7 +365,7 @@ PetscErrorCode SingleBody::getGlobalIndex(
                 "DoF %d is not correct. The dimension is %d.", dof, dim);
 
     // for single body DM, the global is simple due to we use 1D DMDA.
-    idx = (i - 1) * dim + dof;
+    idx = i * dim + dof;
     
     PetscFunctionReturn(0);
 }

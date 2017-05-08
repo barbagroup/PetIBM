@@ -23,33 +23,6 @@
 /** \brief a namespace holding miscellaneous functions. */
 namespace misc
 {
-    /** \brief find the pressure cell ID in which a given point is located (only in one direction).
-     *
-     * \param p the coordinate of the given point in a specific direction.
-     * \param x the deviding points (vortex) of the pressure cells in a specific direction.
-     * \param loc returned ID of the cell
-     *
-     * \return PetscErrorCode 
-     *
-     * \todo discuss if the point is in the first or the last cell, will PetIBM work?
-     */
-    inline PetscErrorCode findCell1D(
-            const PetscReal &p, const std::vector<PetscReal> &x, PetscInt &loc)
-    {
-        PetscFunctionBeginUser;
-
-        if (x.back() < p || x[0] > p)
-            SETERRQ1(PETSC_COMM_WORLD, 56, 
-                    "body coordinate %e is outside domain !", p);
-
-        auto it = std::lower_bound(x.begin(), x.end(), p);
-
-        loc = it - x.begin() - 1;
-
-        PetscFunctionReturn(0);
-    }
-
-
     /** \brief  calculate and returned cell sizes of stretched grid in one direction.
      *
      * \param bg an input; start of the stretched region.

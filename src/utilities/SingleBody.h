@@ -21,6 +21,8 @@
 # include "CartesianMesh.h"
 
 
+// TODO: the way we store coords and meshIdx is different from CartesianMesh. 
+//       Will this cause confusion?
 /** \brief class for a single body. */
 class SingleBody
 {

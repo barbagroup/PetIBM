@@ -160,6 +160,36 @@ public:
     PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx, 
             const MatStencil &s, PetscInt &idx) const;
 
+
+    /**
+     * \brief calculate the averaged force of each body.
+     *
+     * \param f packed force Vec of Lagrangian points.
+     * \param fAvg return averaged force for each body.
+     *
+     * Note: fAvg doesn't have to have correct size. This function will resizing
+     * the fAvg.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode calculateAvgForces(const Vec &f, types::RealVec2D &fAvg);
+
+
+    /**
+     * \brief calculate averaged forces for each body and directly write to a file.
+     *
+     * \param t current simulation time.
+     * \param f packed Lagrangian force Vec.
+     * \param dir directory in which the file will be.
+     * \param file the file name without extension.
+     *
+     * Note: the forces will be appended to the file if the file already exists.
+     *
+     * \return PetscErrorCode. 
+     */
+    PetscErrorCode writeAvgForce(const PetscReal &dt, const Vec &f, 
+            const std::string &dir, const std::string &file);
+
 protected:
 
     /** \brief reference to backgrounf CartesianMesh. */

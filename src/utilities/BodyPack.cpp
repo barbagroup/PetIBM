@@ -285,3 +285,67 @@ PetscErrorCode BodyPack::getPackedGlobalIndex(
 
     PetscFunctionReturn(0);
 }
+
+
+/** \copydoc BodyPack::calculateAvgForces(const Vec &, types::RealVec2D &). */
+PetscErrorCode BodyPack::calculateAvgForces(
+        const Vec &f, types::RealVec2D &fAvg)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode          ierr;
+
+    std::vector<Vec>        unPacked(nBodies);
+
+    fAvg.resize(nBodies);
+
+    ierr = DMCompositeGetAccessArray(
+            dmPack, f, nBodies, nullptr, unPacked.data()); CHKERRQ(ierr);
+
+    for(PetscInt i=0; i<nBodies; ++i)
+    {
+        fAvg[i].resize(dim);
+        ierr = bodies[i].calculateAvgForces(unPacked[i], fAvg[i]); CHKERRQ(ierr);
+    }
+
+    ierr = DMCompositeRestoreAccessArray(
+            dmPack, f, nBodies, nullptr, unPacked.data()); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc BodyPack::writeAvgForce. */
+PetscErrorCode BodyPack::writeAvgForce(const PetscReal &dt,
+        const Vec &f, const std::string &dir, const std::string &file)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    types::RealVec2D    fAvgs;
+
+    PetscViewer         viewer;
+
+    ierr = calculateAvgForces(f, fAvgs); CHKERRQ(ierr);
+
+    ierr = PetscViewerCreate(*comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, (dir+"/"+file+".txt").c_str()); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "%f", dt); CHKERRQ(ierr);
+
+    for(PetscInt i=0; i<nBodies; ++i)
+    {
+        for(PetscInt dof=0; dof<dim; ++dof)
+        {
+            ierr = PetscViewerASCIIPrintf(
+                    viewer, "\t%f", fAvgs[i][dof]); CHKERRQ(ierr);
+        }
+    }
+    ierr = PetscViewerASCIIPrintf(viewer, "\n"); CHKERRQ(ierr);
+
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}

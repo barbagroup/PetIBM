@@ -167,6 +167,20 @@ public:
      */
     PetscErrorCode getGlobalIndex(const MatStencil &s, PetscInt &idx) const;
 
+
+    /**
+     * \brief calculate the averaged force of this body.
+     *
+     * \param f Vec of forces on each Lagrangian point of this body.
+     * \param fAvg return averaged force.
+     *
+     * Note: fAvg should have correct size. This function won't check if fAvg
+     * has been allocated correctly.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode calculateAvgForces(const Vec &f, types::RealVec1D &fAvg);
+
 protected:
 
     /** \brief reference to backgrounf CartesianMesh. */

@@ -383,3 +383,35 @@ PetscErrorCode SingleBody::getGlobalIndex(
     
     PetscFunctionReturn(0);
 }
+
+
+/** \copydoc SingleBody::calculateAvgForces(const Vec &, types::RealVec1D &). */
+PetscErrorCode SingleBody::calculateAvgForces(
+        const Vec &f, types::RealVec1D &fAvg)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    PetscReal           **fArry;
+
+    types::RealVec1D    fAvgLocal(dim, 0.0);
+
+    ierr = DMDAVecGetArrayDOF(da, f, &fArry); CHKERRQ(ierr);
+
+    for(PetscInt i=bgPt; i<edPt; ++i)
+    {
+        for(PetscInt dof=0; dof<dim; ++dof)
+        {
+            fAvgLocal[dof] += fArry[i][dof];
+        }
+    }
+    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+    
+    ierr = MPI_Allreduce(fAvgLocal.data(), fAvg.data(), dim, 
+            MPIU_REAL, MPI_SUM, *comm); CHKERRQ(ierr);
+
+    ierr = DMDAVecRestoreArrayDOF(da, f, &fArry); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}

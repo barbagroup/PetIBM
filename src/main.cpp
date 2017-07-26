@@ -1,6 +1,6 @@
-#ifndef DIMENSIONS
-#define DIMENSIONS 2
-#endif
+/** Navier-Stokes solver
+ * \file main.cpp
+ */
 
 #include <petsc.h>
 

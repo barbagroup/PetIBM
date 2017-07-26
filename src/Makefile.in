@@ -86,10 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = petibm2d-navierstokes$(EXEEXT) \
-	petibm3d-navierstokes$(EXEEXT)
+bin_PROGRAMS = petibm-navierstokes$(EXEEXT)
 @WITH_AMGXWRAPPER_TRUE@am__append_1 = $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
-@WITH_AMGXWRAPPER_TRUE@am__append_2 = $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -108,26 +106,15 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_petibm2d_navierstokes_OBJECTS =  \
-	petibm2d_navierstokes-main.$(OBJEXT)
-petibm2d_navierstokes_OBJECTS = $(am_petibm2d_navierstokes_OBJECTS)
-petibm2d_navierstokes_DEPENDENCIES =  \
+am_petibm_navierstokes_OBJECTS = petibm_navierstokes-main.$(OBJEXT)
+petibm_navierstokes_OBJECTS = $(am_petibm_navierstokes_OBJECTS)
+petibm_navierstokes_DEPENDENCIES =  \
 	$(top_builddir)/src/applications/libnavierstokes.a \
 	$(top_builddir)/src/utilities/libutilities.a \
 	$(top_builddir)/src/operators/liboperators.a \
 	$(top_builddir)/src/linSolvers/liblinsolvers.a \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
 	$(am__append_1)
-am_petibm3d_navierstokes_OBJECTS =  \
-	petibm3d_navierstokes-main.$(OBJEXT)
-petibm3d_navierstokes_OBJECTS = $(am_petibm3d_navierstokes_OBJECTS)
-petibm3d_navierstokes_DEPENDENCIES =  \
-	$(top_builddir)/src/applications/libnavierstokes.a \
-	$(top_builddir)/src/utilities/libutilities.a \
-	$(top_builddir)/src/operators/liboperators.a \
-	$(top_builddir)/src/linSolvers/liblinsolvers.a \
-	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
-	$(am__append_2)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -161,10 +148,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(petibm2d_navierstokes_SOURCES) \
-	$(petibm3d_navierstokes_SOURCES)
-DIST_SOURCES = $(petibm2d_navierstokes_SOURCES) \
-	$(petibm3d_navierstokes_SOURCES)
+SOURCES = $(petibm_navierstokes_SOURCES)
+DIST_SOURCES = $(petibm_navierstokes_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -346,36 +331,20 @@ SUBDIRS = utilities \
 					linSolvers \
 					applications
 
-petibm2d_navierstokes_SOURCES = main.cpp
-petibm2d_navierstokes_CPPFLAGS = -I$(top_srcdir)/src/utilities \
-				  											 -I$(top_srcdir)/src/operators \
-					 											 -I$(top_srcdir)/src/linSolvers \
-																 -I$(top_srcdir)/src/applications \
-																 -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-																 -D DIMENSIONS=2
+petibm_navierstokes_SOURCES = main.cpp
+petibm_navierstokes_CPPFLAGS = -I$(top_srcdir)/src/utilities \
+				  										 -I$(top_srcdir)/src/operators \
+					 										 -I$(top_srcdir)/src/linSolvers \
+															 -I$(top_srcdir)/src/applications \
+															 -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
-petibm2d_navierstokes_LDADD =  \
+petibm_navierstokes_LDADD =  \
 	$(top_builddir)/src/applications/libnavierstokes.a \
 	$(top_builddir)/src/utilities/libutilities.a \
 	$(top_builddir)/src/operators/liboperators.a \
 	$(top_builddir)/src/linSolvers/liblinsolvers.a \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
 	-lstdc++fs $(am__append_1)
-petibm3d_navierstokes_SOURCES = main.cpp
-petibm3d_navierstokes_CPPFLAGS = -I$(top_srcdir)/src/utilities \
-				  											 -I$(top_srcdir)/src/operators \
-																 -I$(top_srcdir)/src/linSolvers \
-																 -I$(top_srcdir)/src/applications \
-																 -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-																 -D DIMENSIONS=3
-
-petibm3d_navierstokes_LDADD =  \
-	$(top_builddir)/src/applications/libnavierstokes.a \
-	$(top_builddir)/src/utilities/libutilities.a \
-	$(top_builddir)/src/operators/liboperators.a \
-	$(top_builddir)/src/linSolvers/liblinsolvers.a \
-	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
-	-lstdc++fs $(am__append_2)
 all: all-recursive
 
 .SUFFIXES:
@@ -452,13 +421,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-petibm2d-navierstokes$(EXEEXT): $(petibm2d_navierstokes_OBJECTS) $(petibm2d_navierstokes_DEPENDENCIES) $(EXTRA_petibm2d_navierstokes_DEPENDENCIES) 
-	@rm -f petibm2d-navierstokes$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(petibm2d_navierstokes_OBJECTS) $(petibm2d_navierstokes_LDADD) $(LIBS)
-
-petibm3d-navierstokes$(EXEEXT): $(petibm3d_navierstokes_OBJECTS) $(petibm3d_navierstokes_DEPENDENCIES) $(EXTRA_petibm3d_navierstokes_DEPENDENCIES) 
-	@rm -f petibm3d-navierstokes$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(petibm3d_navierstokes_OBJECTS) $(petibm3d_navierstokes_LDADD) $(LIBS)
+petibm-navierstokes$(EXEEXT): $(petibm_navierstokes_OBJECTS) $(petibm_navierstokes_DEPENDENCIES) $(EXTRA_petibm_navierstokes_DEPENDENCIES) 
+	@rm -f petibm-navierstokes$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(petibm_navierstokes_OBJECTS) $(petibm_navierstokes_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -466,8 +431,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm2d_navierstokes-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm3d_navierstokes-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm_navierstokes-main.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -485,33 +449,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-petibm2d_navierstokes-main.o: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm2d_navierstokes-main.o -MD -MP -MF $(DEPDIR)/petibm2d_navierstokes-main.Tpo -c -o petibm2d_navierstokes-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm2d_navierstokes-main.Tpo $(DEPDIR)/petibm2d_navierstokes-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm2d_navierstokes-main.o' libtool=no @AMDEPBACKSLASH@
+petibm_navierstokes-main.o: main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_navierstokes-main.o -MD -MP -MF $(DEPDIR)/petibm_navierstokes-main.Tpo -c -o petibm_navierstokes-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_navierstokes-main.Tpo $(DEPDIR)/petibm_navierstokes-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm_navierstokes-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm2d_navierstokes-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_navierstokes-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
 
-petibm2d_navierstokes-main.obj: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm2d_navierstokes-main.obj -MD -MP -MF $(DEPDIR)/petibm2d_navierstokes-main.Tpo -c -o petibm2d_navierstokes-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm2d_navierstokes-main.Tpo $(DEPDIR)/petibm2d_navierstokes-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm2d_navierstokes-main.obj' libtool=no @AMDEPBACKSLASH@
+petibm_navierstokes-main.obj: main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_navierstokes-main.obj -MD -MP -MF $(DEPDIR)/petibm_navierstokes-main.Tpo -c -o petibm_navierstokes-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_navierstokes-main.Tpo $(DEPDIR)/petibm_navierstokes-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm_navierstokes-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm2d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm2d_navierstokes-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
-
-petibm3d_navierstokes-main.o: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm3d_navierstokes-main.o -MD -MP -MF $(DEPDIR)/petibm3d_navierstokes-main.Tpo -c -o petibm3d_navierstokes-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm3d_navierstokes-main.Tpo $(DEPDIR)/petibm3d_navierstokes-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm3d_navierstokes-main.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm3d_navierstokes-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
-
-petibm3d_navierstokes-main.obj: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm3d_navierstokes-main.obj -MD -MP -MF $(DEPDIR)/petibm3d_navierstokes-main.Tpo -c -o petibm3d_navierstokes-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm3d_navierstokes-main.Tpo $(DEPDIR)/petibm3d_navierstokes-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm3d_navierstokes-main.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm3d_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm3d_navierstokes-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_navierstokes_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_navierstokes-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.

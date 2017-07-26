@@ -86,7 +86,10 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-subdir = external/AmgXWrapper-1.0-beta2
+bin_PROGRAMS = navierstokes2d$(EXEEXT) navierstokes3d$(EXEEXT)
+@WITH_AMGXWRAPPER_TRUE@am__append_1 = $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
+@WITH_AMGXWRAPPER_TRUE@am__append_2 = $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
+subdir = src/applications
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
 	$(top_srcdir)/m4/configure_amgx.m4 \
@@ -102,18 +105,24 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libamgxwrapper_a_AR = $(AR) $(ARFLAGS)
-libamgxwrapper_a_LIBADD =
-am__dirstamp = $(am__leading_dot)dirstamp
-am_libamgxwrapper_a_OBJECTS =  \
-	src/libamgxwrapper_a-AmgXSolver.$(OBJEXT)
-libamgxwrapper_a_OBJECTS = $(am_libamgxwrapper_a_OBJECTS)
+am__installdirs = "$(DESTDIR)$(bindir)"
+PROGRAMS = $(bin_PROGRAMS)
+am_navierstokes2d_OBJECTS = navierstokes2d-navierstokes.$(OBJEXT)
+navierstokes2d_OBJECTS = $(am_navierstokes2d_OBJECTS)
+navierstokes2d_DEPENDENCIES =  \
+	$(top_builddir)/src/utilities/libutilities.a \
+	$(top_builddir)/src/operators/liboperators.a \
+	$(top_builddir)/src/linSolvers/liblinsolvers.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_1)
+am_navierstokes3d_OBJECTS = navierstokes3d-navierstokes.$(OBJEXT)
+navierstokes3d_OBJECTS = $(am_navierstokes3d_OBJECTS)
+navierstokes3d_DEPENDENCIES =  \
+	$(top_builddir)/src/utilities/libutilities.a \
+	$(top_builddir)/src/operators/liboperators.a \
+	$(top_builddir)/src/linSolvers/liblinsolvers.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_2)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -147,8 +156,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libamgxwrapper_a_SOURCES)
-DIST_SOURCES = $(libamgxwrapper_a_SOURCES)
+SOURCES = $(navierstokes2d_SOURCES) $(navierstokes3d_SOURCES)
+DIST_SOURCES = $(navierstokes2d_SOURCES) $(navierstokes3d_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -282,12 +291,30 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@WITH_AMGXWRAPPER_TRUE@noinst_LIBRARIES = libamgxwrapper.a
-libamgxwrapper_a_SOURCES = src/AmgXSolver.cpp
-libamgxwrapper_a_CPPFLAGS = -I$(srcdir)/src \
-                            -I$(AMGX_DIR)/examples \
-                            -I$(CUDA_DIR)/include
+navierstokes2d_SOURCES = navierstokes.cpp
+navierstokes2d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
+													-I$(top_srcdir)/src/operators \
+													-I$(top_srcdir)/src/linSolvers \
+													-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
+													-D DIMENSIONS=2
 
+navierstokes2d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
+	$(top_builddir)/src/operators/liboperators.a \
+	$(top_builddir)/src/linSolvers/liblinsolvers.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_1)
+navierstokes3d_SOURCES = navierstokes.cpp
+navierstokes3d_CPPFLAGS = -I$(top_srcdir)/src/utilities \
+													-I$(top_srcdir)/src/operators \
+													-I$(top_srcdir)/src/linSolvers \
+													-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
+													-D DIMENSIONS=3
+
+navierstokes3d_LDADD = $(top_builddir)/src/utilities/libutilities.a \
+	$(top_builddir)/src/operators/liboperators.a \
+	$(top_builddir)/src/linSolvers/liblinsolvers.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(am__append_2)
 all: all-am
 
 .SUFFIXES:
@@ -301,9 +328,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign external/AmgXWrapper-1.0-beta2/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/applications/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign external/AmgXWrapper-1.0-beta2/Makefile
+	  $(AUTOMAKE) --foreign src/applications/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -321,31 +348,65 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-src/$(am__dirstamp):
-	@$(MKDIR_P) src
-	@: > src/$(am__dirstamp)
-src/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/$(DEPDIR)
-	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/libamgxwrapper_a-AmgXSolver.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
-libamgxwrapper.a: $(libamgxwrapper_a_OBJECTS) $(libamgxwrapper_a_DEPENDENCIES) $(EXTRA_libamgxwrapper_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libamgxwrapper.a
-	$(AM_V_AR)$(libamgxwrapper_a_AR) libamgxwrapper.a $(libamgxwrapper_a_OBJECTS) $(libamgxwrapper_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libamgxwrapper.a
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+navierstokes2d$(EXEEXT): $(navierstokes2d_OBJECTS) $(navierstokes2d_DEPENDENCIES) $(EXTRA_navierstokes2d_DEPENDENCIES) 
+	@rm -f navierstokes2d$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(navierstokes2d_OBJECTS) $(navierstokes2d_LDADD) $(LIBS)
+
+navierstokes3d$(EXEEXT): $(navierstokes3d_OBJECTS) $(navierstokes3d_DEPENDENCIES) $(EXTRA_navierstokes3d_DEPENDENCIES) 
+	@rm -f navierstokes3d$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(navierstokes3d_OBJECTS) $(navierstokes3d_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navierstokes2d-navierstokes.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navierstokes3d-navierstokes.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -363,19 +424,33 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-src/libamgxwrapper_a-AmgXSolver.o: src/AmgXSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libamgxwrapper_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libamgxwrapper_a-AmgXSolver.o -MD -MP -MF src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Tpo -c -o src/libamgxwrapper_a-AmgXSolver.o `test -f 'src/AmgXSolver.cpp' || echo '$(srcdir)/'`src/AmgXSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Tpo src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/AmgXSolver.cpp' object='src/libamgxwrapper_a-AmgXSolver.o' libtool=no @AMDEPBACKSLASH@
+navierstokes2d-navierstokes.o: navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierstokes2d-navierstokes.o -MD -MP -MF $(DEPDIR)/navierstokes2d-navierstokes.Tpo -c -o navierstokes2d-navierstokes.o `test -f 'navierstokes.cpp' || echo '$(srcdir)/'`navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/navierstokes2d-navierstokes.Tpo $(DEPDIR)/navierstokes2d-navierstokes.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierstokes.cpp' object='navierstokes2d-navierstokes.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libamgxwrapper_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libamgxwrapper_a-AmgXSolver.o `test -f 'src/AmgXSolver.cpp' || echo '$(srcdir)/'`src/AmgXSolver.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierstokes2d-navierstokes.o `test -f 'navierstokes.cpp' || echo '$(srcdir)/'`navierstokes.cpp
 
-src/libamgxwrapper_a-AmgXSolver.obj: src/AmgXSolver.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libamgxwrapper_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libamgxwrapper_a-AmgXSolver.obj -MD -MP -MF src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Tpo -c -o src/libamgxwrapper_a-AmgXSolver.obj `if test -f 'src/AmgXSolver.cpp'; then $(CYGPATH_W) 'src/AmgXSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/src/AmgXSolver.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Tpo src/$(DEPDIR)/libamgxwrapper_a-AmgXSolver.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/AmgXSolver.cpp' object='src/libamgxwrapper_a-AmgXSolver.obj' libtool=no @AMDEPBACKSLASH@
+navierstokes2d-navierstokes.obj: navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierstokes2d-navierstokes.obj -MD -MP -MF $(DEPDIR)/navierstokes2d-navierstokes.Tpo -c -o navierstokes2d-navierstokes.obj `if test -f 'navierstokes.cpp'; then $(CYGPATH_W) 'navierstokes.cpp'; else $(CYGPATH_W) '$(srcdir)/navierstokes.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/navierstokes2d-navierstokes.Tpo $(DEPDIR)/navierstokes2d-navierstokes.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierstokes.cpp' object='navierstokes2d-navierstokes.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libamgxwrapper_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libamgxwrapper_a-AmgXSolver.obj `if test -f 'src/AmgXSolver.cpp'; then $(CYGPATH_W) 'src/AmgXSolver.cpp'; else $(CYGPATH_W) '$(srcdir)/src/AmgXSolver.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes2d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierstokes2d-navierstokes.obj `if test -f 'navierstokes.cpp'; then $(CYGPATH_W) 'navierstokes.cpp'; else $(CYGPATH_W) '$(srcdir)/navierstokes.cpp'; fi`
+
+navierstokes3d-navierstokes.o: navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierstokes3d-navierstokes.o -MD -MP -MF $(DEPDIR)/navierstokes3d-navierstokes.Tpo -c -o navierstokes3d-navierstokes.o `test -f 'navierstokes.cpp' || echo '$(srcdir)/'`navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/navierstokes3d-navierstokes.Tpo $(DEPDIR)/navierstokes3d-navierstokes.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierstokes.cpp' object='navierstokes3d-navierstokes.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierstokes3d-navierstokes.o `test -f 'navierstokes.cpp' || echo '$(srcdir)/'`navierstokes.cpp
+
+navierstokes3d-navierstokes.obj: navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierstokes3d-navierstokes.obj -MD -MP -MF $(DEPDIR)/navierstokes3d-navierstokes.Tpo -c -o navierstokes3d-navierstokes.obj `if test -f 'navierstokes.cpp'; then $(CYGPATH_W) 'navierstokes.cpp'; else $(CYGPATH_W) '$(srcdir)/navierstokes.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/navierstokes3d-navierstokes.Tpo $(DEPDIR)/navierstokes3d-navierstokes.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierstokes.cpp' object='navierstokes3d-navierstokes.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(navierstokes3d_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierstokes3d-navierstokes.obj `if test -f 'navierstokes.cpp'; then $(CYGPATH_W) 'navierstokes.cpp'; else $(CYGPATH_W) '$(srcdir)/navierstokes.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -461,8 +536,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(PROGRAMS)
 installdirs:
+	for dir in "$(DESTDIR)$(bindir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -489,18 +567,16 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f src/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf src/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -523,7 +599,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-am
 
@@ -546,7 +622,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf src/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -562,22 +638,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am
+.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
+	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 

@@ -10,7 +10,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/PetIBM.cpp])
 AC_CONFIG_HEADERS([config/config.h])
-AM_SILENT_RULES([yes])
+AM_SILENT_RULES([no])
 AM_MAINTAINER_MODE([disable])
 AC_LANG([C++])
 
@@ -57,18 +57,13 @@ PACKAGE_SETUP_ENVIRONMENT
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/utilities/Makefile
-                 src/solvers/Makefile
+                 src/operators/Makefile
+                 src/linSolvers/Makefile
+                 src/applications/Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.7.0/Makefile
-                 external/AmgXWrapper-1.0-beta2/Makefile
-                 tests/Makefile
-                 tests/CartesianMesh/Makefile
-                 tests/NavierStokes/Makefile
-                 tests/TairaColonius/Makefile
-                 tests/convectiveTerm/Makefile
-                 tests/diffusiveTerm/Makefile
-                 examples/Makefile])
+                 external/AmgXWrapper-1.0-beta2/Makefile])
 
 # output message
 AC_OUTPUT

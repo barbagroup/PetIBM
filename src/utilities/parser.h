@@ -25,13 +25,13 @@ namespace parser
 {
     /** \brief parse the config.yaml in a given case directory
      *
-     * \param dir the directory of the targeting case
+     * \param filepath path of the configuration file
      * \param node returned YAML node
      *
      * \return PetscErrorCode
      */
     PetscErrorCode parseYAMLConfigFile(
-            const std::string &dir, YAML::Node &node);
+            const std::string &filepath, YAML::Node &node);
 
     /**
      * \brief parse YAML node to get information of SimulationParameters

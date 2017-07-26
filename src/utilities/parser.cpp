@@ -16,22 +16,22 @@ using namespace types;
 
 /** \copydoc parser::parseYAMLConfigFile */
 PetscErrorCode parser::parseYAMLConfigFile(
-        const std::string &dir, YAML::Node &node)
+        const std::string &filepath, YAML::Node &node)
 {
+		PetscErrorCode  ierr;
+
     PetscFunctionBeginUser;
 
-    PetscErrorCode  ierr;
+    stdfs::path path = stdfs::system_complete(filepath);
 
-    stdfs::path p = stdfs::system_complete(dir);
+    if (! stdfs::exists(path))
+        SETERRQ1(PETSC_COMM_WORLD, 65,
+                 "Configuration file (%s) does not exist.", path.c_str());
 
-    if (! stdfs::exists(p.append("config.yaml")))
-        SETERRQ1(PETSC_COMM_WORLD, 65, 
-                "Can not find config.yaml in %s !!", p.parent_path().c_str());
+    node = YAML::LoadFile(path);
 
-    node = YAML::LoadFile(p);
-
-    node["caseDir"] = p.parent_path().c_str();
-    node["configFile"] = p.filename().c_str();
+    node["caseDir"] = path.parent_path().c_str();
+    node["configFile"] = path.filename().c_str();
 
     PetscFunctionReturn(0);
 }

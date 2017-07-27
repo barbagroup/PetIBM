@@ -8,7 +8,7 @@ AC_INIT([PetIBM], [0.3.0dev], [mesnardo@gwu.edu, pychuang@email.gwu.edu])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
-AC_CONFIG_SRCDIR([src/main.cpp])
+AC_CONFIG_SRCDIR([src/utilities/delta.cpp])
 AC_CONFIG_HEADERS([config/config.h])
 AM_SILENT_RULES([no])
 AM_MAINTAINER_MODE([disable])
@@ -60,6 +60,8 @@ AC_CONFIG_FILES([Makefile
                  src/operators/Makefile
                  src/linSolvers/Makefile
                  src/applications/Makefile
+                 src/applications/navierstokes/Makefile
+                 src/applications/decoupledibpm/Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.7.0/Makefile

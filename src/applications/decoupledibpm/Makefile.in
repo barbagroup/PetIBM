@@ -121,9 +121,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_petibm_decoupledibpm_OBJECTS = petibm_decoupledibpm-main.$(OBJEXT)
 petibm_decoupledibpm_OBJECTS = $(am_petibm_decoupledibpm_OBJECTS)
 petibm_decoupledibpm_DEPENDENCIES = $(top_builddir)/src/applications/decoupledibpm/libdecoupledibpm.a \
-	$(top_builddir)/src/utilities/libutilities.a \
-	$(top_builddir)/src/operators/liboperators.a \
 	$(top_builddir)/src/linSolvers/liblinsolvers.a \
+	$(top_builddir)/src/operators/liboperators.a \
+	$(top_builddir)/src/utilities/libutilities.a \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
 	$(am__append_1)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -305,16 +305,16 @@ libdecoupledibpm_a_CPPFLAGS = -I$(top_srcdir)/src/utilities \
                               -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
 petibm_decoupledibpm_SOURCES = main.cpp
-petibm_decoupledibpm_CPPFLAGS = -I$(top_srcdir)/src/utilities \
-				  					 					  -I$(top_srcdir)/src/operators \
-					 										  -I$(top_srcdir)/src/linSolvers \
-															  -I$(top_srcdir)/src/applications \
+petibm_decoupledibpm_CPPFLAGS = -I$(top_srcdir)/src/applications \
+																-I$(top_srcdir)/src/linSolvers \
+																-I$(top_srcdir)/src/operators \
+															  -I$(top_srcdir)/src/utilities \
 															  -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
 petibm_decoupledibpm_LDADD = $(top_builddir)/src/applications/decoupledibpm/libdecoupledibpm.a \
-	$(top_builddir)/src/utilities/libutilities.a \
-	$(top_builddir)/src/operators/liboperators.a \
 	$(top_builddir)/src/linSolvers/liblinsolvers.a \
+	$(top_builddir)/src/operators/liboperators.a \
+	$(top_builddir)/src/utilities/libutilities.a \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
 	-lstdc++fs $(am__append_1)
 all: all-am

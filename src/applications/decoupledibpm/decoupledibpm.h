@@ -8,6 +8,7 @@
 #include "CartesianMesh.h"
 #include "FlowDescription.h"
 #include "SimulationParameters.h"
+#include "BodyPack.h"
 #include "Solutions.h"
 #include "Boundary.h"
 #include "TimeIntegration.h"
@@ -38,7 +39,8 @@ public:
 	 */
 	DecoupledIBPMSolver(CartesianMesh &mesh,
 	                    FlowDescription &flow,
-	                    SimulationParameters &parameters);
+	                    SimulationParameters &parameters,
+	                    BodyPack &bodies);
 
 	/**
 	 * \brief Default destructor.
@@ -73,6 +75,16 @@ public:
 	PetscErrorCode writeIterations(int timeIndex, std::string filePath);
 
 	/**
+	 * \brief Write the integrated forces acting on the bodies into a file.
+	 *
+	 * \param time Time value
+	 * \param directory Directory where to save the file
+	 * \param fileName Name of the file to save (without the extension)
+	 */
+	PetscErrorCode writeIntegratedForces(
+			int time, std::string directory, std::string fileName);
+
+	/**
 	 * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
 	 */
 	PetscErrorCode finalize();
@@ -81,6 +93,7 @@ private:
 	CartesianMesh mesh;  ///< Structured Cartesian mesh
 	FlowDescription flow;  ///< Flow conditions
 	SimulationParameters parameters;  ///< Simulation parameters
+	BodyPack bodies;
 	Solutions solution;  ///< Velocity and pressure fields
 	Boundary bc;  ///< Information about the domain boundaries
 	TimeIntegration convection,  ///< Time scheme for the convective terms
@@ -98,6 +111,10 @@ private:
 	    M,
 	    MHat,
 	    BNHat,
+	    EHat,
+	    HHat,
+	    BNHHat,
+	    EBNHHat,
 	    A,  ///< Matrix resulting from implicit treatment
 	    BNG, ///< Projection operator
 	    DBNG;  ///< Poisson matrix
@@ -109,16 +126,24 @@ private:
 	    gradP;  ///< Pressure-gradient vector
 	std::vector<Vec> Conv,  ///< Convective terms from previous time steps
 	                 Diff;  ///< Diffusive terms from previous time steps
+	Vec f,
+	    df,
+	    Eu,
+	    Hf;
 
 	std::shared_ptr<LinSolver> vSolver,  ///< Velocity linear solver
-	                           pSolver;  ///< Poisson linear solver
+	                           pSolver,  ///< Poisson linear solver
+	                           fSolver;  ///< Forces linear solver
 
 	PetscLogStage stageInitialize,  ///< Log initialize phase
 	              stageRHSVelocity,  ///< Log RHS of velocity system
 	              stageSolveVelocity,  ///< Log velocity solve
 	              stageRHSPoisson,  ///< Log RHS of Poisson system
 	              stageSolvePoisson,  ///< Log Poisson solve
+	              stageRHSForces,  ///< Log RHS of forces system
+	              stageSolveForces,  ///< Log forces solver
 	              stageProjectionStep,  ///< Log projection step
+	              stageIntegrateForces,  ///< Log force integration
 	              stageWrite;  ///< Log write phase
 
 	/**
@@ -145,6 +170,16 @@ private:
 	 * \brief Solve the Poisson system.
 	 */
 	PetscErrorCode solvePoisson();
+
+	/**
+	 * \brief Assemble the RHS vector of the system for the boundary forces.
+	 */
+	PetscErrorCode assembleRHSForces();
+
+	/**
+	 * \brief Solve the system for the boundary forces.
+	 */
+	PetscErrorCode solveForces();
 
 	/**
 	 * \brief Project the velocity field onto the divergence-free space and update

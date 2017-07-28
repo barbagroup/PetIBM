@@ -7,6 +7,7 @@
 #include <string>
 
 #include "decoupledibpm.h"
+#include "types.h"
 
 
 DecoupledIBPMSolver::DecoupledIBPMSolver()
@@ -17,18 +18,23 @@ DecoupledIBPMSolver::DecoupledIBPMSolver()
 
 DecoupledIBPMSolver::DecoupledIBPMSolver(CartesianMesh &mesh2,
                                          FlowDescription &flow2,
-                                         SimulationParameters &parameters2)
+                                         SimulationParameters &parameters2,
+                                         BodyPack &bodies2)
 {
 	mesh = mesh2;
 	flow = flow2;
 	parameters = parameters2;
+	bodies = bodies2;
 	// register events
 	PetscLogStageRegister("initialize", &stageInitialize);
 	PetscLogStageRegister("rhsVelocity", &stageRHSVelocity);
 	PetscLogStageRegister("solveVelocity", &stageSolveVelocity);
 	PetscLogStageRegister("rhsPoisson", &stageRHSPoisson);
 	PetscLogStageRegister("solvePoisson", &stageSolvePoisson);
+	PetscLogStageRegister("rhsForces", &stageRHSForces);
+	PetscLogStageRegister("solveForces", &stageSolveForces);
 	PetscLogStageRegister("projectionStep", &stageProjectionStep);
+	PetscLogStageRegister("integrateForces", &stageIntegrateForces);
 	PetscLogStageRegister("write", &stageWrite);
 } // DecoupledIBPMSolver
 
@@ -49,6 +55,7 @@ PetscErrorCode DecoupledIBPMSolver::initialize()
 
 	// set initial solution
 	ierr = solution.init(mesh, parameters.output.format); CHKERRQ(ierr);
+	ierr = solution.applyIC(flow); CHKERRQ(ierr);
 
 	// initialize boundary conditions
 	ierr = bc.init(mesh); CHKERRQ(ierr);
@@ -74,6 +81,9 @@ PetscErrorCode DecoupledIBPMSolver::initialize()
 	for (int i=0; i<Diff.size(); ++i) {
 		ierr = VecDuplicate(solution.UGlobal, &Diff[i]); CHKERRQ(ierr);
 	}
+	ierr = MatCreateVecs(HHat, &f, &Hf); CHKERRQ(ierr);
+	ierr = VecDuplicate(f, &df); CHKERRQ(ierr);
+	ierr = VecDuplicate(f, &Eu); CHKERRQ(ierr);
 
 	{
 		MatNullSpace nsp;
@@ -90,6 +100,10 @@ PetscErrorCode DecoupledIBPMSolver::initialize()
 	ierr = createLinSolver("poisson", parameters.pSolver.config,
 	                       parameters.pSolver.type, pSolver); CHKERRQ(ierr);
 	ierr = pSolver->setMatrix(DBNG); CHKERRQ(ierr);
+
+	ierr = createLinSolver("forces", "solversPetscOptions.info",
+	                       types::str2et["CPU"], fSolver); CHKERRQ(ierr);
+	ierr = fSolver->setMatrix(EBNHHat); CHKERRQ(ierr);
 
 	ierr = PetscLogStagePop();
 
@@ -116,6 +130,22 @@ PetscErrorCode DecoupledIBPMSolver::assembleOperators()
 	ierr = createGradient(mesh, G, PETSC_FALSE); CHKERRQ(ierr);
 	ierr = createConvection(mesh, bc, N); CHKERRQ(ierr);
 
+	ierr = createDelta(mesh, bodies, EHat); CHKERRQ(ierr);
+	ierr = MatTranspose(EHat, MAT_INITIAL_MATRIX, &HHat); CHKERRQ(ierr);
+
+	{
+		Vec diag1, diag2;
+		ierr = MatCreateVecs(R, nullptr, &diag1); CHKERRQ(ierr);
+		ierr = MatCreateVecs(MHat, nullptr, &diag2); CHKERRQ(ierr);
+		ierr = MatGetDiagonal(R, diag1); CHKERRQ(ierr);
+		ierr = MatGetDiagonal(MHat, diag2); CHKERRQ(ierr);
+		ierr = MatDiagonalScale(EHat, nullptr, diag1); CHKERRQ(ierr);
+		ierr = MatDiagonalScale(EHat, nullptr, diag2); CHKERRQ(ierr);
+		ierr = MatDiagonalScale(HHat, diag1, nullptr); CHKERRQ(ierr);
+		ierr = VecDestroy(&diag1); CHKERRQ(ierr);
+		ierr = VecDestroy(&diag2); CHKERRQ(ierr);
+	}
+
 	ierr = MatMatMult(BNHat, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT,
 	                  &BNG); CHKERRQ(ierr);
 	ierr = MatMatMult(D, BNG, MAT_INITIAL_MATRIX,
@@ -124,6 +154,13 @@ PetscErrorCode DecoupledIBPMSolver::assembleOperators()
 	ierr = MatDuplicate(I, MAT_COPY_VALUES, &A); CHKERRQ(ierr);
 	ierr = MatAXPY(A, - diffusion.implicitCoeff * flow.nu,
 	               L, DIFFERENT_NONZERO_PATTERN); CHKERRQ(ierr);
+
+	ierr = MatMatMult(BNHat, HHat,
+	                  MAT_INITIAL_MATRIX, PETSC_DEFAULT,
+	                  &BNHHat); CHKERRQ(ierr);
+	ierr = MatMatMult(EHat, BNHHat,
+	                  MAT_INITIAL_MATRIX, PETSC_DEFAULT,
+	                  &EBNHHat); CHKERRQ(ierr);
 
 	PetscFunctionReturn(0);
 } // assembleOperators
@@ -137,6 +174,8 @@ PetscErrorCode DecoupledIBPMSolver::solve()
 
 	ierr = assembleRHSVelocity(); CHKERRQ(ierr);
 	ierr = solveVelocity(); CHKERRQ(ierr);
+	ierr = assembleRHSForces(); CHKERRQ(ierr);
+	ierr = solveForces(); CHKERRQ(ierr);
 	ierr = assembleRHSPoisson(); CHKERRQ(ierr);
 	ierr = solvePoisson(); CHKERRQ(ierr);
 	ierr = projectionStep(); CHKERRQ(ierr);
@@ -195,6 +234,11 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSVelocity()
 	// add inhomogeneous boundary values to RHS
 	ierr = VecAXPY(rhs1, 1.0, bc1); CHKERRQ(ierr);
 
+	// prepare distributed boundary forces
+	ierr = MatMult(HHat, f, Hf); CHKERRQ(ierr);
+	// add distributed forces to RHS
+	ierr = VecAXPY(rhs1, 1.0, Hf); CHKERRQ(ierr);
+
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
 	PetscFunctionReturn(0);
@@ -251,6 +295,41 @@ PetscErrorCode DecoupledIBPMSolver::solvePoisson()
 } // solvePoisson
 
 
+PetscErrorCode DecoupledIBPMSolver::assembleRHSForces()
+{
+	PetscErrorCode ierr;
+
+	PetscFunctionBeginUser;
+
+	ierr = PetscLogStagePush(stageRHSForces); CHKERRQ(ierr);
+
+	ierr = MatMult(EHat, solution.UGlobal, Eu); CHKERRQ(ierr);
+	ierr = VecScale(Eu, -1.0); CHKERRQ(ierr);
+	ierr = VecSet(df, 0.0); CHKERRQ(ierr);
+
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+	PetscFunctionReturn(0);
+} // assembleRHSForces
+
+
+PetscErrorCode DecoupledIBPMSolver::solveForces()
+{
+	PetscErrorCode ierr;
+
+	PetscFunctionBeginUser;
+
+	ierr = PetscLogStagePush(stageSolveForces); CHKERRQ(ierr);
+
+	// solve for the forces correction
+	ierr = fSolver->solve(df, Eu); CHKERRQ(ierr);
+
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+	PetscFunctionReturn(0);
+} // solveForces
+
+
 PetscErrorCode DecoupledIBPMSolver::projectionStep()
 {
 	PetscErrorCode ierr;
@@ -264,6 +343,8 @@ PetscErrorCode DecoupledIBPMSolver::projectionStep()
 	ierr = VecAXPY(solution.UGlobal, -1.0, rhs1); CHKERRQ(ierr);
 	// correct pressure field
 	ierr = VecAXPY(solution.pGlobal, 1.0, phi); CHKERRQ(ierr);
+	// correct boundary forces
+	ierr = VecAXPY(f, 1.0, df); CHKERRQ(ierr);
 
 	ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -310,12 +391,31 @@ PetscErrorCode DecoupledIBPMSolver::writeIterations(int timeIndex,
 		ierr = vSolver->getIters(nIters); CHKERRQ(ierr);
 		outfile << nIters << '\t';
 		ierr = pSolver->getIters(nIters); CHKERRQ(ierr);
+		outfile << nIters << '\t';
+		ierr = fSolver->getIters(nIters); CHKERRQ(ierr);
 		outfile << nIters << std::endl;
 		outfile.close();
 	}
 
 	PetscFunctionReturn(0);
 } // writeIterations
+
+
+PetscErrorCode DecoupledIBPMSolver::writeIntegratedForces(
+			int time, std::string directory, std::string fileName)
+{
+	PetscErrorCode ierr;
+
+	PetscFunctionBeginUser;
+
+	ierr = PetscLogStagePush(stageIntegrateForces); CHKERRQ(ierr);
+
+	ierr = bodies.writeAvgForce(time, f, directory, fileName); CHKERRQ(ierr);
+
+	ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+	PetscFunctionReturn(0);
+} // writeIntegratedForces
 
 
 PetscErrorCode DecoupledIBPMSolver::finalize()
@@ -335,6 +435,10 @@ PetscErrorCode DecoupledIBPMSolver::finalize()
 	for (int i=0; i<Diff.size(); ++i) {
 		ierr = VecDestroy(&Diff[i]); CHKERRQ(ierr);
 	}
+	ierr = VecDestroy(&f); CHKERRQ(ierr);
+	ierr = VecDestroy(&df); CHKERRQ(ierr);
+	ierr = VecDestroy(&Hf); CHKERRQ(ierr);
+	ierr = VecDestroy(&Eu); CHKERRQ(ierr);
 
 	ierr = MatDestroy(&A); CHKERRQ(ierr);
 	ierr = MatDestroy(&DBNG); CHKERRQ(ierr);
@@ -351,9 +455,14 @@ PetscErrorCode DecoupledIBPMSolver::finalize()
 	ierr = MatDestroy(&RInv); CHKERRQ(ierr);
 	ierr = MatDestroy(&R); CHKERRQ(ierr);
 	ierr = MatDestroy(&I); CHKERRQ(ierr);
+	ierr = MatDestroy(&EHat); CHKERRQ(ierr);
+	ierr = MatDestroy(&HHat); CHKERRQ(ierr);
+	ierr = MatDestroy(&BNHHat); CHKERRQ(ierr);
+	ierr = MatDestroy(&EBNHHat); CHKERRQ(ierr);
 
 	vSolver.~shared_ptr();
 	pSolver.~shared_ptr();
+	fSolver.~shared_ptr();
 
 	PetscFunctionReturn(0);
 } // finalize

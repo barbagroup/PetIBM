@@ -2,6 +2,9 @@
  * \file main.cpp
  */
 
+#include <iomanip>
+#include <sys/stat.h>
+
 #include <petsc.h>
 
 #include <yaml-cpp/yaml.h>
@@ -25,6 +28,7 @@ int main(int argc, char **argv)
 	YAML::Node config;
 	char path[PETSC_MAX_PATH_LEN];
 	std::string directory,
+	            solutionDirectory,
 							configpath;
 	PetscBool flg;
 
@@ -34,6 +38,8 @@ int main(int argc, char **argv)
 	                             path, sizeof(path), &flg); CHKERRQ(ierr);
 	if (flg)
 		directory = path;
+	solutionDirectory = directory + "/solution";
+	mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	configpath = directory + "/config.yaml";
 	ierr = PetscOptionsGetString(nullptr, nullptr,"-config",
 	                             path, sizeof(path), &flg); CHKERRQ(ierr);
@@ -69,12 +75,18 @@ int main(int argc, char **argv)
 	for (int ite=start+1; ite<=end; ite++)
 	{
 		ierr = solver.solve(); CHKERRQ(ierr);
+		ierr = solver.writeIterations(ite, iterationsFile); CHKERRQ(ierr);
 		if (ite % nsave == 0)
 		{
-			ierr = solver.write(
-					config["caseDir"].as<std::string>(), "01"); CHKERRQ(ierr);
+			ierr = PetscPrintf(PETSC_COMM_WORLD,
+			                   "[time-step %d] Writing solution... ",
+			                   ite); CHKERRQ(ierr);
+			std::stringstream ss;
+			ss << std::setfill('0') << std::setw(7) << ite;
+			ierr = solver.write(solutionDirectory,
+			                    ss.str()); CHKERRQ(ierr);
+			ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
 		}
-		ierr = solver.writeIterations(ite, iterationsFile); CHKERRQ(ierr);
 	}
 
 	ierr = solver.finalize(); CHKERRQ(ierr);

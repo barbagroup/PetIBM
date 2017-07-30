@@ -73,11 +73,11 @@ PetscErrorCode NavierStokesSolver::initialize()
 	ierr = VecDuplicate(solution.pGlobal, &rhs2); CHKERRQ(ierr);
 	ierr = VecDuplicate(solution.UGlobal, &gradP); CHKERRQ(ierr);
 	Conv.resize(convection.nExplicit);
-	for (int i=0; i<Conv.size(); ++i) {
+	for (unsigned int i=0; i<Conv.size(); ++i) {
 		ierr = VecDuplicate(solution.UGlobal, &Conv[i]); CHKERRQ(ierr);
 	}
 	Diff.resize(diffusion.nExplicit);
-	for (int i=0; i<Diff.size(); ++i) {
+	for (unsigned int i=0; i<Diff.size(); ++i) {
 		ierr = VecDuplicate(solution.UGlobal, &Diff[i]); CHKERRQ(ierr);
 	}
 
@@ -168,18 +168,18 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
 	ierr = VecScale(rhs1, 1.0 / parameters.step.dt); CHKERRQ(ierr);
 
 	// prepare convection terms from time index n
-	for(int i=Conv.size()-1; i>0; i--) {
+	for(unsigned int i=Conv.size()-1; i>0; i--) {
 		ierr = VecSwap(Conv[i], Conv[i-1]); CHKERRQ(ierr);
 	}
 	ierr = MatMult(N, solution.UGlobal, Conv[0]); CHKERRQ(ierr);
 	ierr = VecScale(Conv[0], -1.0); CHKERRQ(ierr);
 	// add all explicit convective terms to RHS
-	for(int i=0; i<Conv.size(); ++i) {
+	for(unsigned int i=0; i<Conv.size(); ++i) {
 		ierr = VecAXPY(rhs1, convection.explicitCoeffs[i], Conv[i]); CHKERRQ(ierr);
 	}
 
 	// prepare diffusion terms from time index n
-	for(int i=Diff.size()-1; i>0; i--) {
+	for(unsigned int i=Diff.size()-1; i>0; i--) {
 		ierr = VecSwap(Diff[i], Diff[i-1]); CHKERRQ(ierr);
 	}
 	ierr = MatMult(L, solution.UGlobal, Diff[0]); CHKERRQ(ierr);
@@ -187,7 +187,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
 	                  Diff[0]); CHKERRQ(ierr);
 	ierr = VecScale(Diff[0], flow.nu); CHKERRQ(ierr);
 	// add all explicit diffusive terms to RHS
-	for(int i=0; i<Diff.size(); ++i) {
+	for(unsigned int i=0; i<Diff.size(); ++i) {
 		ierr = VecAXPY(rhs1, diffusion.explicitCoeffs[i], Diff[i]); CHKERRQ(ierr);
 	}
 
@@ -338,10 +338,10 @@ PetscErrorCode NavierStokesSolver::finalize()
 	ierr = VecDestroy(&rhs1); CHKERRQ(ierr);
 	ierr = VecDestroy(&rhs2); CHKERRQ(ierr);
 	ierr = VecDestroy(&gradP); CHKERRQ(ierr);
-	for (int i=0; i<Conv.size(); ++i) {
+	for (unsigned int i=0; i<Conv.size(); ++i) {
 		ierr = VecDestroy(&Conv[i]); CHKERRQ(ierr);
 	}
-	for (int i=0; i<Diff.size(); ++i) {
+	for (unsigned int i=0; i<Diff.size(); ++i) {
 		ierr = VecDestroy(&Diff[i]); CHKERRQ(ierr);
 	}
 

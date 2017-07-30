@@ -462,12 +462,12 @@ inline PetscReal kernelW(
     wSelf = flux[2][k][j][i];
 
     // prepare u
-    uW = (flux[0][k][j][i-1] + flux[0][k+1][j][i-1]) / 2,0;
-    uE = (flux[0][k][j][i] + flux[0][k+1][j][i]) / 2,0;
+    uW = (flux[0][k][j][i-1] + flux[0][k+1][j][i-1]) / 2.0;
+    uE = (flux[0][k][j][i] + flux[0][k+1][j][i]) / 2.0;
 
     // prepare v
-    vS = (flux[1][k][j-1][i] + flux[1][k+1][j-1][i]) / 2,0;
-    vN = (flux[1][k][j][i] + flux[1][k+1][j][i]) / 2,0;
+    vS = (flux[1][k][j-1][i] + flux[1][k+1][j-1][i]) / 2.0;
+    vN = (flux[1][k][j][i] + flux[1][k+1][j][i]) / 2.0;
 
     // prepare w
     wW = (wSelf + flux[2][k][j][i-1]) / 2.0;

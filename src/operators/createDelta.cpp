@@ -108,15 +108,15 @@ PetscErrorCode createDelta(const utilities::CartesianMesh &mesh,
 
                 if (mesh.dim == 3)
                 {
-                    for(PetscInt k=0; k<targets[2].size(); ++k)
+                    for(unsigned int k=0; k<targets[2].size(); ++k)
                     {
                         const PetscReal &hz = mesh.dL[dof][2][targets[2][k]];
 
-                        for(PetscInt j=0; j<targets[1].size(); ++j)
+                        for(unsigned int j=0; j<targets[1].size(); ++j)
                         {
                             const PetscReal &hy = mesh.dL[dof][1][targets[1][j]];
 
-                            for(PetscInt i=0; i<targets[0].size(); ++i)
+                            for(unsigned int i=0; i<targets[0].size(); ++i)
                             {
                                 const PetscReal &hx = mesh.dL[dof][0][targets[0][i]];
 
@@ -140,11 +140,11 @@ PetscErrorCode createDelta(const utilities::CartesianMesh &mesh,
                 }
                 else
                 {
-                    for(PetscInt j=0; j<targets[1].size(); ++j)
+                    for(unsigned int j=0; j<targets[1].size(); ++j)
                     {
                         const PetscReal &hy = mesh.dL[dof][1][targets[1][j]];
 
-                        for(PetscInt i=0; i<targets[0].size(); ++i)
+                        for(unsigned int i=0; i<targets[0].size(); ++i)
                         {
                             const PetscReal &hx = mesh.dL[dof][0][targets[0][i]];
 

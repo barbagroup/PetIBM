@@ -210,7 +210,7 @@ inline PetscErrorCode setRowValues(
 
 
     // get the local index for points in stencils
-    for(PetscInt id=0; id<stencils.size(); ++id)
+    for(unsigned int id=0; id<stencils.size(); ++id)
     {
         ierr = DMDAConvertToCell(
                 mesh.da[f], stencils[id], &lclIds[id]); CHKERRQ(ierr);
@@ -247,7 +247,7 @@ inline PetscErrorCode setRowValues(
             values.data(), INSERT_VALUES); CHKERRQ(ierr);
 
     // save the values for boundary ghost points
-    for(PetscInt id=0; id<stencils.size(); ++id)
+    for(unsigned int id=0; id<stencils.size(); ++id)
         if (cols[id] == -1) rowModifiers[stencils[id]] = {cols[0], values[id]};
 
     PetscFunctionReturn(0);

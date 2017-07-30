@@ -162,10 +162,8 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
     // loop through all axes to get the coordinates of pressure points
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
     {
         coordTrue[3][i].resize(n[3][i]);
 
@@ -207,7 +205,7 @@ PetscErrorCode CartesianMesh::createVertexMesh()
 
     // loop through all axes to get the coordinates of mesh vertexes
     // note: index 3 means pressure mesh; 4 means vertexes
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
     {
         // number of vertexes is one more than pressure cells
         n[4][i] = n[3][i] + 1;
@@ -242,10 +240,10 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 
     // loop through all velocity component
     // note: index 0, 1, 2 represent u, v, w respectively
-    for(unsigned int comp=0; comp<dim; comp++)
+    for(int comp=0; comp<dim; comp++)
     {
         // loop through each direction, i.e., x, y, z directions
-        for(unsigned int dir=0; dir<dim; ++dir)
+        for(int dir=0; dir<dim; ++dir)
         {
             // when the direction corresponding to velocity component
             if (dir == comp)
@@ -404,15 +402,15 @@ PetscErrorCode CartesianMesh::createInfoString()
     ss << "\tNumber of Cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "):\n";
     ss << "\t\tPressure Grid: ";
     ss << n[3][0];
-    for(unsigned int dir=1; dir<dim; ++dir) ss << " x " << n[3][dir];
+    for(int dir=1; dir<dim; ++dir) ss << " x " << n[3][dir];
     ss << std::endl;
 
-    for(unsigned int comp=0; comp<dim; ++comp)
+    for(int comp=0; comp<dim; ++comp)
     {
         ss << "\t\t" << fd2str[Field(comp)] 
             << "-Velocity Grid: ";
         ss << n[comp][0];
-        for(unsigned int dir=1; dir<dim; ++dir) ss << " x " << n[comp][dir];
+        for(int dir=1; dir<dim; ++dir) ss << " x " << n[comp][dir];
         ss << std::endl;
     }
     ss << std::endl;
@@ -442,7 +440,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
     IntVec2D        start = IntVec2D(5, IntVec1D(mpiSize * 3)),
                     end = IntVec2D(5, IntVec1D(mpiSize * 3));
 
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
     {
         ierr = MPI_Allgather(bg[i].data(), 3, MPIU_INT, 
                 start[i].data(), 3, MPIU_INT, *comm); CHKERRQ(ierr);
@@ -465,7 +463,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
         ss << "[" << start[3][i*3+2] << ", " << end[3][i*3+2] << ") ";
         ss << std::endl;
 
-        for(unsigned int comp=0; comp<dim; ++comp)
+        for(int comp=0; comp<dim; ++comp)
         {
             ss << pre << "\t" << fd2str[Field(comp)] << "-Velocity Grid: ";
             ss << "[" << start[comp][i*3] << ", " << end[comp][i*3] << "), ";
@@ -844,7 +842,7 @@ PetscErrorCode CartesianMesh::createVelocityPack()
 
     ierr = DMCompositeCreate(*comm, &UPack); CHKERRQ(ierr);
 
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
     {
         ierr = createSingleDMDA(i); CHKERRQ(ierr);
         ierr = DMDAGetAO(da[i], &ao[i]); CHKERRQ(ierr);

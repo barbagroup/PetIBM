@@ -169,7 +169,6 @@ using namespace petibm::utilities::types;
     Node convert<BCInfoHolder>::encode(const BCInfoHolder &bc)
     {
         Node    node(NodeType::Sequence);
-        int     counter = 0;
         for(auto loc: bc)
         {
             Node childNode(NodeType::Map);
@@ -333,8 +332,6 @@ namespace parser
 PetscErrorCode parseYAMLConfigFile(
         const std::string &filepath, YAML::Node &node)
 {
-		PetscErrorCode  ierr;
-
     PetscFunctionBeginUser;
 
     stdfs::path path = stdfs::system_complete(filepath);
@@ -395,7 +392,7 @@ PetscErrorCode parseFlowDescription(const YAML::Node &flowNode,
     IC.resize(dim);
 
     // asign values to IC
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
         IC[i] = flowNode["initialVelocity"][i].as<PetscReal>();
 
     // perturbation

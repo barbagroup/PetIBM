@@ -35,8 +35,6 @@ PetscErrorCode Boundary::init(const CartesianMesh &_mesh)
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
     // create a shared pointer to mesh; bad practice...
     mesh = std::shared_ptr<const CartesianMesh>(&_mesh, [](const CartesianMesh*){}); 
 

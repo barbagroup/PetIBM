@@ -95,8 +95,6 @@ PetscErrorCode SingleBody::preInit(
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
     // set up the name
     name = _name;
 
@@ -216,8 +214,6 @@ PetscErrorCode SingleBody::readFromFile(const std::string &file)
 PetscErrorCode SingleBody::findCellIdx()
 {
     PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
 
     // initialize meshIdx, which only contains background mesh indices of local
     // Lagrangian points. The indices are defined by pressure cell.

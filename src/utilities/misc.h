@@ -45,8 +45,6 @@ namespace misc
 
         dL.resize(n);
 
-        PetscReal       h;
-
         // calculate the size of the first cell
         dL[0] = (ed - bg) * (r - 1.0) / (std::pow(r, n) - 1.0);
 

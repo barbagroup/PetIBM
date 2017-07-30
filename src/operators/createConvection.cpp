@@ -17,16 +17,21 @@
 # include <petscmat.h>
 
 // PetIBM
-# include "CartesianMesh.h"
-# include "Boundary.h"
+# include "utilities/CartesianMesh.h"
+# include "utilities/Boundary.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 /** \brief a private struct used in MatShell. */
 struct NonLinearCtx
 {
-    std::shared_ptr<const CartesianMesh>    mesh;
-    std::shared_ptr<const Boundary>         bc;
-    std::vector<Vec>                        qLocal;
+    std::shared_ptr<const utilities::CartesianMesh>    mesh;
+    std::shared_ptr<const utilities::Boundary>         bc;
+    std::vector<Vec>                                   qLocal;
 };
 
 /**
@@ -78,8 +83,9 @@ inline PetscReal kernelW(
 
 
 /** \copydoc createConvection. */
-PetscErrorCode createConvection(
-        const CartesianMesh &mesh, const Boundary &bd, Mat &H)
+PetscErrorCode createConvection(const utilities::CartesianMesh &mesh,
+                                const utilities::Boundary &bd,
+                                Mat &H)
 {
     PetscFunctionBeginUser;
 
@@ -95,8 +101,10 @@ PetscErrorCode createConvection(
 
     // allocate space for ctx
     ctx = new NonLinearCtx;
-    ctx->mesh = std::shared_ptr<const CartesianMesh>(&mesh, [](const CartesianMesh*){});
-    ctx->bc = std::shared_ptr<const Boundary>(&bd, [](const Boundary*){});
+    ctx->mesh = std::shared_ptr<const utilities::CartesianMesh>(
+    		&mesh, [](const utilities::CartesianMesh*){});
+    ctx->bc = std::shared_ptr<const utilities::Boundary>(
+    		&bd, [](const utilities::Boundary*){});
     ctx->qLocal.resize(ctx->mesh->dim);
     
     // create necessary local vectors
@@ -474,3 +482,6 @@ inline PetscReal kernelW(
         (vN * wN - vS * wS) / ctx->mesh->dL[2][1][j] +
         (wF * wF - wB * wB) / ctx->mesh->dL[2][2][k];
 }
+
+} // end of namespace operators
+} // end of namespace petibm

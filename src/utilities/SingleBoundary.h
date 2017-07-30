@@ -24,6 +24,11 @@
 # include "types.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 class SingleBoundary
 {
 public:
@@ -102,3 +107,6 @@ protected:
 private:
 
 };
+
+} // end of namespace utilities
+} // end of namespace petibm

@@ -5,15 +5,20 @@
 
 #pragma once
 
-#include "CartesianMesh.h"
-#include "FlowDescription.h"
-#include "SimulationParameters.h"
-#include "Solutions.h"
-#include "Boundary.h"
-#include "TimeIntegration.h"
-#include "LinSolver.h"
-#include "operators.h"
+#include "utilities/CartesianMesh.h"
+#include "utilities/FlowDescription.h"
+#include "utilities/SimulationParameters.h"
+#include "utilities/Solutions.h"
+#include "utilities/Boundary.h"
+#include "utilities/TimeIntegration.h"
+#include "linSolvers/LinSolver.h"
+#include "operators/operators.h"
 
+
+namespace petibm
+{
+namespace applications
+{
 
 /**
  * \class NavierStokesSolver
@@ -36,9 +41,9 @@ public:
 	 * \param flow Flow conditions
 	 * \param parameters Simulation parameters
 	 */
-	NavierStokesSolver(CartesianMesh &mesh,
-	                   FlowDescription &flow,
-	                   SimulationParameters &parameters);
+	NavierStokesSolver(utilities::CartesianMesh &mesh,
+	                   utilities::FlowDescription &flow,
+	                   utilities::SimulationParameters &parameters);
 
 	/**
 	 * \brief Default destructor.
@@ -78,13 +83,13 @@ public:
 	PetscErrorCode finalize();
 
 private:
-	CartesianMesh mesh;  ///< Structured Cartesian mesh
-	FlowDescription flow;  ///< Flow conditions
-	SimulationParameters parameters;  ///< Simulation parameters
-	Solutions solution;  ///< Velocity and pressure fields
-	Boundary bc;  ///< Information about the domain boundaries
-	TimeIntegration convection,  ///< Time scheme for the convective terms
-	                diffusion;  ///< Time scheme for the diffusive terms
+	utilities::CartesianMesh mesh;  ///< Structured Cartesian mesh
+	utilities::FlowDescription flow;  ///< Flow conditions
+	utilities::SimulationParameters parameters;  ///< Simulation parameters
+	utilities::Solutions solution;  ///< Velocity and pressure fields
+	utilities::Boundary bc;  ///< Information about the domain boundaries
+	utilities::TimeIntegration convection,  ///< Time scheme for the convective terms
+	                           diffusion;  ///< Time scheme for the diffusive terms
 
 	Mat L,  ///< Laplacian operator
 	    LCorrection,  ///< Laplacian correction for boundary conditions
@@ -110,8 +115,8 @@ private:
 	std::vector<Vec> Conv,  ///< Convective terms from previous time steps
 	                 Diff;  ///< Diffusive terms from previous time steps
 
-	std::shared_ptr<LinSolver> vSolver,  ///< Velocity linear solver
-	                           pSolver;  ///< Poisson linear solver
+	std::shared_ptr<linsolvers::LinSolver> vSolver,  ///< Velocity linear solver
+	                                       pSolver;  ///< Poisson linear solver
 
 	PetscLogStage stageInitialize,  ///< Log initialize phase
 	              stageRHSVelocity,  ///< Log RHS of velocity system
@@ -152,3 +157,6 @@ private:
 	 */
 	PetscErrorCode projectionStep();
 };
+
+} // end of namespace applications
+} // end of namespace petibm

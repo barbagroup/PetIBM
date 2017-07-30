@@ -11,16 +11,21 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "CartesianMesh.h"
-# include "Boundary.h"
-# include "types.h"
+# include "utilities/CartesianMesh.h"
+# include "utilities/Boundary.h"
+# include "utilities/types.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 /** \brief a private struct for matrix-free constraint mat. */
 struct DivergenceCtx
 {
-    std::shared_ptr<const Boundary>     bc;
-    types::MatrixModifier               modifier;
+    std::shared_ptr<const utilities::Boundary>     bc;
+    utilities::types::MatrixModifier               modifier;
 };
 
 
@@ -43,9 +48,11 @@ typedef std::function<PetscReal(
 
 
 /** \copydoc createDivergence. */
-PetscErrorCode createDivergence(
-        const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &D, Mat &DCorrection, const PetscBool &normalize)
+PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
+                                const utilities::Boundary &bc, 
+                                Mat &D,
+                                Mat &DCorrection,
+                                const PetscBool &normalize)
 {
     PetscFunctionBeginUser;
 
@@ -60,8 +67,9 @@ PetscErrorCode createDivergence(
 
     // initialize modifier, regardless what's inside it now
     ctx = new DivergenceCtx;
-    ctx->modifier = types::MatrixModifier(mesh.dim);
-    ctx->bc = std::shared_ptr<const Boundary>(&bc, [](const Boundary*){});
+    ctx->modifier = utilities::types::MatrixModifier(mesh.dim);
+    ctx->bc = std::shared_ptr<const utilities::Boundary>(
+    		&bc, [](const utilities::Boundary*){});
 
 
     // set up getNeighbor
@@ -261,3 +269,6 @@ PetscErrorCode DCorrectionDestroy(Mat mat)
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

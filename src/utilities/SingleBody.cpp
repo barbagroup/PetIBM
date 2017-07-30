@@ -16,6 +16,11 @@
 # include "SingleBody.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 /** \copydoc SingleBody::SingleBody(). */
 SingleBody::SingleBody() = default;
 
@@ -415,3 +420,6 @@ PetscErrorCode SingleBody::calculateAvgForces(
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

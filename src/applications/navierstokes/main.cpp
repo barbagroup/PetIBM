@@ -10,10 +10,10 @@
 #include <yaml-cpp/yaml.h>
 
 #include "navierstokes.h"
-#include "CartesianMesh.h"
-#include "FlowDescription.h"
-#include "SimulationParameters.h"
-#include "parser.h"
+#include "utilities/CartesianMesh.h"
+#include "utilities/FlowDescription.h"
+#include "utilities/SimulationParameters.h"
+#include "utilities/parser.h"
 
 
 int main(int argc, char **argv)
@@ -22,9 +22,9 @@ int main(int argc, char **argv)
 
 	ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
 
-	SimulationParameters params;
-	FlowDescription flow;
-	CartesianMesh mesh;
+	petibm::utilities::SimulationParameters params;
+	petibm::utilities::FlowDescription flow;
+	petibm::utilities::CartesianMesh mesh;
 	YAML::Node config;
 	char path[PETSC_MAX_PATH_LEN];
 	std::string directory,
@@ -47,7 +47,8 @@ int main(int argc, char **argv)
 		configpath = path;
 
 	// parse configuration file
-	ierr = parser::parseYAMLConfigFile(configpath, config); CHKERRQ(ierr);
+	ierr = petibm::utilities::parser::parseYAMLConfigFile(
+			configpath, config); CHKERRQ(ierr);
 
 	ierr = params.init(PETSC_COMM_WORLD,
 	                   config["simulationParameters"], directory); CHKERRQ(ierr);
@@ -63,7 +64,7 @@ int main(int argc, char **argv)
 	ierr = mesh.printInfo(); CHKERRQ(ierr);
 	ierr = mesh.write(params.caseDir, "grid"); CHKERRQ(ierr);
 	
-	NavierStokesSolver solver = NavierStokesSolver(
+	petibm::applications::NavierStokesSolver solver = petibm::applications::NavierStokesSolver(
 			mesh, flow, params); CHKERRQ(ierr);
 
 	ierr = solver.initialize(); CHKERRQ(ierr);

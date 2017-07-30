@@ -20,6 +20,10 @@
 # include "types.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
 /** \brief a namespace holding miscellaneous functions. */
 namespace misc
 {
@@ -115,4 +119,7 @@ namespace misc
 
         PetscFunctionReturn(0);
     }
-}
+
+} // end of namespace misc
+} // end of namespace utilities
+} // end of namespace petibm

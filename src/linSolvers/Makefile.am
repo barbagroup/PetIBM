@@ -3,7 +3,7 @@ noinst_LIBRARIES = liblinsolvers.a
 liblinsolvers_a_SOURCES = KSPSolver.cpp \
 												  LinSolver.cpp
 
-liblinsolvers_a_CPPFLAGS = -I$(top_srcdir)/src/utilities
+liblinsolvers_a_CPPFLAGS = -I$(top_srcdir)/src
 
 if WITH_AMGXWRAPPER
 liblinsolvers_a_SOURCES += AMGXSolver.cpp

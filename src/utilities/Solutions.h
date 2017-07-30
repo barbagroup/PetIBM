@@ -23,6 +23,11 @@
 # include "CartesianMesh.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 class Solutions
 {
 public:
@@ -86,3 +91,6 @@ private:
 
 
 std::ostream &operator<< (std::ostream &os, const Solutions &soln);
+
+} // end of namespace utilities
+} // end of namespace petibm

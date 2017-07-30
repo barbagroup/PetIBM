@@ -22,6 +22,11 @@
 # include "types.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 /**
  * \class FlowDescription
  * \brief Stores information that describes the flow.
@@ -131,3 +136,6 @@ protected:
  * \return output stream
  */
 std::ostream &operator<<(std::ostream &os, const FlowDescription &flow);
+
+} // end of namespace utilities
+} // end of namespace petibm

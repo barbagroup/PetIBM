@@ -18,6 +18,12 @@
 // here goes headers from our PetIBM
 # include "types.h"
 
+
+namespace petibm
+{
+namespace utilities
+{
+
 /**
 * \class TimeIntegration
 * \brief Stores information about temporal integration schemes.
@@ -53,3 +59,6 @@ public:
     PetscErrorCode init(const types::TimeScheme &method);
 
 }; // TimeIntegration
+
+} // end of namespace utilities
+} // end of namespace petibm

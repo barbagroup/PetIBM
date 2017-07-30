@@ -11,9 +11,14 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "CartesianMesh.h"
-# include "types.h"
+# include "utilities/CartesianMesh.h"
+# include "utilities/types.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 /** \brief STL vector holding MatStencil. */
 typedef std::vector<MatStencil> StencilVec;
@@ -25,13 +30,14 @@ typedef std::function<StencilVec(
 
 
 /** \brief a function type for functions computing matrix entries' values. */
-typedef std::function<types::RealVec1D(
+typedef std::function<utilities::types::RealVec1D(
         const PetscInt &, const PetscInt &, const PetscInt &)> Kernel;
 
 
 /** \copydoc createGradient. */
-PetscErrorCode createGradient(
-        const CartesianMesh &mesh, Mat &G, const PetscBool &normalize)
+PetscErrorCode createGradient(const utilities::CartesianMesh &mesh,
+                              Mat &G,
+                              const PetscBool &normalize)
 {
     PetscFunctionBeginUser;
 
@@ -56,17 +62,20 @@ PetscErrorCode createGradient(
     // set up the kernel that calculates the entry values
     if (normalize)
         kernel[0] = kernel[1] = kernel[2] = std::bind(
-                []() -> types::RealVec1D { return {-1.0, 1.0}; });
+                []() -> utilities::types::RealVec1D { return {-1.0, 1.0}; });
     else
     {
         kernel[0] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-            -> types::RealVec1D {PetscReal v=1.0/mesh.dL[0][0][i]; return {-v, v};};
+            -> utilities::types::RealVec1D {PetscReal v=1.0/mesh.dL[0][0][i];
+            	                              return {-v, v};};
 
         kernel[1] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-            -> types::RealVec1D {PetscReal v=1.0/mesh.dL[1][1][j]; return {-v, v};};
+            -> utilities::types::RealVec1D {PetscReal v=1.0/mesh.dL[1][1][j];
+            	                              return {-v, v};};
 
         kernel[2] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-            -> types::RealVec1D {PetscReal v=1.0/mesh.dL[2][2][k]; return {-v, v};};
+            -> utilities::types::RealVec1D {PetscReal v=1.0/mesh.dL[2][2][k];
+            	                              return {-v, v};};
     }
 
 
@@ -92,7 +101,7 @@ PetscErrorCode createGradient(
 
                     StencilVec          loc = getNeighbor[field](i, j, k);
 
-                    types::RealVec1D    values = kernel[field](i, j, k);
+                    utilities::types::RealVec1D values = kernel[field](i, j, k);
 
                     // get velocity index local to this process
                     ierr = DMDAConvertToCell(mesh.da[field], loc[0], &rId); 
@@ -123,3 +132,6 @@ PetscErrorCode createGradient(
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

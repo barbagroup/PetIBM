@@ -16,8 +16,13 @@
 # include <petscviewer.h>
 
 // PetIBM
-# include "types.h"
+# include "utilities/types.h"
 
+
+namespace petibm
+{
+namespace linsolvers
+{
 
 /**
  * \class LinSolver.
@@ -117,5 +122,9 @@ protected:
  * \return PetscErrorCode.
  */
 PetscErrorCode createLinSolver(const std::string &solverName, 
-        const std::string &configFile, const types::ExecuteType &type,
+        const std::string &configFile,
+        const petibm::utilities::types::ExecuteType &type,
         std::shared_ptr<LinSolver> &solver);
+
+} // end of namespace linsolvers
+} // end of namespace petibm

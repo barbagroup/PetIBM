@@ -27,8 +27,12 @@
 # include "parser.h"
 
 
-using namespace types;
+namespace petibm
+{
+namespace utilities
+{
 
+using namespace types;
 
 //  TODO: move CMD parsing to other part in PetIBM
 
@@ -1050,3 +1054,6 @@ std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh)
     os << mesh.info;
     return os;
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

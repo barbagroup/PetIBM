@@ -10,11 +10,11 @@
 #include <yaml-cpp/yaml.h>
 
 #include "decoupledibpm.h"
-#include "CartesianMesh.h"
-#include "FlowDescription.h"
-#include "SimulationParameters.h"
-#include "BodyPack.h"
-#include "parser.h"
+#include "utilities/CartesianMesh.h"
+#include "utilities/FlowDescription.h"
+#include "utilities/SimulationParameters.h"
+#include "utilities/BodyPack.h"
+#include "utilities/parser.h"
 
 
 int main(int argc, char **argv)
@@ -23,10 +23,10 @@ int main(int argc, char **argv)
 
 	ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
 
-	SimulationParameters params;
-	FlowDescription flow;
-	CartesianMesh mesh;
-	BodyPack bodies;
+	petibm::utilities::SimulationParameters params;
+	petibm::utilities::FlowDescription flow;
+	petibm::utilities::CartesianMesh mesh;
+	petibm::utilities::BodyPack bodies;
 	YAML::Node config;
 	char path[PETSC_MAX_PATH_LEN];
 	std::string directory,
@@ -49,7 +49,8 @@ int main(int argc, char **argv)
 		configpath = path;
 
 	// parse configuration file
-	ierr = parser::parseYAMLConfigFile(configpath, config); CHKERRQ(ierr);
+	ierr = petibm::utilities::parser::parseYAMLConfigFile(
+			configpath, config); CHKERRQ(ierr);
 
 	ierr = params.init(PETSC_COMM_WORLD,
 	                   config["simulationParameters"], directory); CHKERRQ(ierr);
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
 	ierr = bodies.init(mesh, config["bodies"]); CHKERRQ(ierr);
 	ierr = bodies.printInfo(); CHKERRQ(ierr);
 	
-	DecoupledIBPMSolver solver = DecoupledIBPMSolver(
+	petibm::applications::DecoupledIBPMSolver solver = petibm::applications::DecoupledIBPMSolver(
 			mesh, flow, params, bodies); CHKERRQ(ierr);
 
 	ierr = solver.initialize(); CHKERRQ(ierr);

@@ -11,8 +11,15 @@
 #include "delta.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+namespace delta
+{
+
 /** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &). */
-PetscReal delta::Roma_et_al(const PetscReal &rx, const PetscReal &drx)
+PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx)
 {
     PetscReal r = fabs(rx) / drx;
 
@@ -29,7 +36,7 @@ PetscReal delta::Roma_et_al(const PetscReal &rx, const PetscReal &drx)
 
 /** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &, 
  *           const PetscReal &, const PetscReal &). */
-PetscReal delta::Roma_et_al(
+PetscReal Roma_et_al(
         const PetscReal &rx, const PetscReal &drx,
         const PetscReal &ry, const PetscReal &dry)
 {
@@ -40,7 +47,7 @@ PetscReal delta::Roma_et_al(
 /** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &, 
  *           const PetscReal &, const PetscReal &, const PetscReal &, 
  *           const PetscReal &). */
-PetscReal delta::Roma_et_al(
+PetscReal Roma_et_al(
         const PetscReal &rx, const PetscReal &drx,
         const PetscReal &ry, const PetscReal &dry,
         const PetscReal &rz, const PetscReal &drz)
@@ -48,3 +55,7 @@ PetscReal delta::Roma_et_al(
     return delta::Roma_et_al(rx, drx) * delta::Roma_et_al(ry, dry) * 
         delta::Roma_et_al(rz, drz);
 } // Roma_et_al
+
+} // end of namespace delta
+} // end of namespace utilities
+} // end of namespace petibm

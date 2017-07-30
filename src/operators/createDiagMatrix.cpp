@@ -15,8 +15,13 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "CartesianMesh.h"
+# include "utilities/CartesianMesh.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 /** \brief a short name for the signatures of kernels. 
  * 
@@ -39,8 +44,9 @@ typedef std::function<PetscReal(
  *
  * \return PetscErrorCode
  */
-PetscErrorCode createDiagMatrix(const CartesianMesh &mesh, 
-        const std::vector<KernelType> &kernels, Mat &M)
+PetscErrorCode createDiagMatrix(const utilities::CartesianMesh &mesh, 
+                                const std::vector<KernelType> &kernels,
+                                Mat &M)
 {
     PetscFunctionBeginUser;
 
@@ -90,7 +96,7 @@ PetscErrorCode createDiagMatrix(const CartesianMesh &mesh,
 
 
 /** \copydoc createR(const CartesianMesh &, Mat &). */
-PetscErrorCode createR(const CartesianMesh &mesh, Mat &R)
+PetscErrorCode createR(const utilities::CartesianMesh &mesh, Mat &R)
 {
     PetscFunctionBeginUser;
 
@@ -119,7 +125,7 @@ PetscErrorCode createR(const CartesianMesh &mesh, Mat &R)
 
 
 /** \copydoc createRInv(const CartesianMesh &, Mat &). */
-PetscErrorCode createRInv(const CartesianMesh &mesh, Mat &RInv)
+PetscErrorCode createRInv(const utilities::CartesianMesh &mesh, Mat &RInv)
 {
     PetscFunctionBeginUser;
 
@@ -148,7 +154,7 @@ PetscErrorCode createRInv(const CartesianMesh &mesh, Mat &RInv)
 
 
 /** \copydoc createMHead(const CartesianMesh &, Mat &). */
-PetscErrorCode createMHead(const CartesianMesh &mesh, Mat &MHead)
+PetscErrorCode createMHead(const utilities::CartesianMesh &mesh, Mat &MHead)
 {
     PetscFunctionBeginUser;
 
@@ -177,7 +183,7 @@ PetscErrorCode createMHead(const CartesianMesh &mesh, Mat &MHead)
 
 
 /** \copydoc createM(const CartesianMesh &, Mat &). */
-PetscErrorCode createM(const CartesianMesh &mesh, Mat &M)
+PetscErrorCode createM(const utilities::CartesianMesh &mesh, Mat &M)
 {
     PetscFunctionBeginUser;
 
@@ -206,7 +212,7 @@ PetscErrorCode createM(const CartesianMesh &mesh, Mat &M)
 
 
 /** \copydoc createIdentity(const CartesianMesh &, Mat &). */
-PetscErrorCode createIdentity(const CartesianMesh &mesh, Mat &I)
+PetscErrorCode createIdentity(const utilities::CartesianMesh &mesh, Mat &I)
 {
     PetscFunctionBeginUser;
 
@@ -232,3 +238,6 @@ PetscErrorCode createIdentity(const CartesianMesh &mesh, Mat &I)
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

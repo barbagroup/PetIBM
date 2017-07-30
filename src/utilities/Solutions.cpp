@@ -14,6 +14,11 @@
 #include "Solutions.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 using namespace types;
 
 /** \copydoc Solutions::Solutions() */
@@ -329,3 +334,6 @@ std::ostream &operator<< (std::ostream &os, const Solutions &soln)
     os << soln.info;
     return os;
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

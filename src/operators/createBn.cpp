@@ -14,6 +14,11 @@
 # include <petscmat.h>
 
 
+namespace petibm
+{
+namespace operators
+{
+
 /** \copydoc createBnHead. */
 PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &BnHead)
@@ -212,3 +217,6 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

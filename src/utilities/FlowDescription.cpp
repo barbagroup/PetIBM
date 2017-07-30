@@ -14,8 +14,12 @@
 # include "parser.h"
 
 
-using namespace types;
+namespace petibm
+{
+namespace utilities
+{
 
+using namespace types;
 
 /** \copydoc FlowDescription::FlowDescription() */
 FlowDescription::FlowDescription() = default;
@@ -170,3 +174,6 @@ std::ostream &operator<<(std::ostream &os, const FlowDescription &flow)
     os << flow.info;
     return os;
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

@@ -25,6 +25,11 @@
 # include "types.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 /**
  * \class SimulationParameters
  * \brief Stores various parameters used in the simulation.
@@ -138,3 +143,6 @@ protected:
  * \return 
  */
 std::ostream &operator<<(std::ostream &os, const SimulationParameters &param);
+
+} // end of namespace utilities
+} // end of namespace petibm

@@ -9,15 +9,21 @@
 #include "navierstokes.h"
 
 
+namespace petibm
+{
+namespace applications
+{
+
 NavierStokesSolver::NavierStokesSolver()
 {
 
 } // NavierStokesSolver
 
 
-NavierStokesSolver::NavierStokesSolver(CartesianMesh &mesh2,
-                                       FlowDescription &flow2,
-                                       SimulationParameters &parameters2)
+NavierStokesSolver::NavierStokesSolver(
+		utilities::CartesianMesh &mesh2,
+		utilities::FlowDescription &flow2,
+		utilities::SimulationParameters &parameters2)
 {
 	mesh = mesh2;
 	flow = flow2;
@@ -83,12 +89,14 @@ PetscErrorCode NavierStokesSolver::initialize()
 		ierr = MatNullSpaceDestroy(&nsp); CHKERRQ(ierr);
 	}
 
-	ierr = createLinSolver("velocity", parameters.vSolver.config,
-	                       parameters.vSolver.type, vSolver); CHKERRQ(ierr);
+	ierr = linsolvers::createLinSolver("velocity", parameters.vSolver.config,
+	                                   parameters.vSolver.type,
+	                                   vSolver); CHKERRQ(ierr);
 	ierr = vSolver->setMatrix(A); CHKERRQ(ierr);
 
-	ierr = createLinSolver("poisson", parameters.pSolver.config,
-	                       parameters.pSolver.type, pSolver); CHKERRQ(ierr);
+	ierr = linsolvers::createLinSolver("poisson", parameters.pSolver.config,
+	                                   parameters.pSolver.type,
+	                                   pSolver); CHKERRQ(ierr);
 	ierr = pSolver->setMatrix(DBNG); CHKERRQ(ierr);
 
 	ierr = PetscLogStagePop();
@@ -103,18 +111,19 @@ PetscErrorCode NavierStokesSolver::assembleOperators()
 
 	PetscFunctionBeginUser;
 
-	ierr = createIdentity(mesh, I); CHKERRQ(ierr);
-	ierr = createR(mesh, R); CHKERRQ(ierr);
-	ierr = createRInv(mesh, RInv); CHKERRQ(ierr);
-	ierr = createM(mesh, M); CHKERRQ(ierr);
-	ierr = createMHead(mesh, MHat); CHKERRQ(ierr);
-	ierr = createLaplacian(mesh, bc, L, LCorrection); CHKERRQ(ierr);
-	ierr = createBnHead(L, parameters.step.dt,
-	                    diffusion.implicitCoeff * flow.nu, 1,
-	                    BNHat); CHKERRQ(ierr);
-	ierr = createDivergence(mesh, bc, D, DCorrection, PETSC_FALSE); CHKERRQ(ierr);
-	ierr = createGradient(mesh, G, PETSC_FALSE); CHKERRQ(ierr);
-	ierr = createConvection(mesh, bc, N); CHKERRQ(ierr);
+	ierr = operators::createIdentity(mesh, I); CHKERRQ(ierr);
+	ierr = operators::createR(mesh, R); CHKERRQ(ierr);
+	ierr = operators::createRInv(mesh, RInv); CHKERRQ(ierr);
+	ierr = operators::createM(mesh, M); CHKERRQ(ierr);
+	ierr = operators::createMHead(mesh, MHat); CHKERRQ(ierr);
+	ierr = operators::createLaplacian(mesh, bc, L, LCorrection); CHKERRQ(ierr);
+	ierr = operators::createBnHead(L, parameters.step.dt,
+	                               diffusion.implicitCoeff * flow.nu, 1,
+	                               BNHat); CHKERRQ(ierr);
+	ierr = operators::createDivergence(mesh, bc, D, DCorrection,
+	                                   PETSC_FALSE); CHKERRQ(ierr);
+	ierr = operators::createGradient(mesh, G, PETSC_FALSE); CHKERRQ(ierr);
+	ierr = operators::createConvection(mesh, bc, N); CHKERRQ(ierr);
 
 	ierr = MatMatMult(BNHat, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT,
 	                  &BNG); CHKERRQ(ierr);
@@ -357,3 +366,6 @@ PetscErrorCode NavierStokesSolver::finalize()
 
 	PetscFunctionReturn(0);
 } // finalize
+
+} // end of namespace applications
+} // end of namespace petibm

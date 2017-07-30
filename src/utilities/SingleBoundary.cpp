@@ -12,6 +12,11 @@
 #include "SingleBoundary.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 /** \copydoc SingleBoundary::SingleBoundary() */
 SingleBoundary::SingleBoundary() = default;
 
@@ -522,3 +527,6 @@ PetscErrorCode SingleBoundary::copyValues2LocalVecsTrue(std::vector<Vec> &lclVec
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

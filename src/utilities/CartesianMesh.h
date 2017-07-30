@@ -28,6 +28,12 @@
 // here goes headers from our PetIBM
 # include "types.h"
 
+
+namespace petibm
+{
+namespace utilities
+{
+
 // TODO: if we can get the column index of ANY velocity point, should we still
 //       use ISLocalToGlobalMapping for creating operators?
 /** \brief class of composite Cartesian meshes of different field. */
@@ -475,3 +481,6 @@ protected:
  * \return output stream.
  */
 std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh);
+
+} // end of namespace utilities
+} // end of namespace petibm

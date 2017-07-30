@@ -11,8 +11,12 @@
 #include "Boundary.h"
 
 
-using namespace types;
+namespace petibm
+{
+namespace utilities
+{
 
+using namespace types;
 
 /** \copydoc Boundary::Boundary() */
 Boundary::Boundary() = default;
@@ -120,3 +124,6 @@ PetscErrorCode Boundary::copyValues2LocalVecs(std::vector<Vec> &lclVecs) const
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

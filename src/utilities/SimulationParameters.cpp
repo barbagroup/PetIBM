@@ -12,8 +12,12 @@
 # include "parser.h"
 
 
-using namespace types;
+namespace petibm
+{
+namespace utilities
+{
 
+using namespace types;
 
 /** \copydoc SimulationParameters::SimulationParameters() */
 SimulationParameters::SimulationParameters() = default;
@@ -176,3 +180,6 @@ std::ostream &operator<<(std::ostream &os, const SimulationParameters &param)
     os << param.info;
     return os;
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

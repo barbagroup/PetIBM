@@ -12,6 +12,11 @@
 #include "LinSolver.h"
 
 
+namespace petibm
+{
+namespace linsolvers
+{
+
 /*!
  * \class KSPSolver
  * \brief Iterative solver using PETSc KSP.
@@ -48,3 +53,6 @@ private:
     virtual PetscErrorCode init();
 
 }; // KSPSolver
+
+} // end of namespace linsolvers
+} // end of namespace petibm

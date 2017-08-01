@@ -64,8 +64,10 @@ AC_CONFIG_FILES([Makefile
                  src/applications/decoupledibpm/Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
-                 external/gtest-1.7.0/Makefile
-                 external/AmgXWrapper-1.0-beta2/Makefile])
+                 external/gtest-1.8.0/Makefile
+                 external/AmgXWrapper-1.0-beta2/Makefile
+                 tests/Makefile
+                 tests/utilities/Makefile])
 
 # output message
 AC_OUTPUT

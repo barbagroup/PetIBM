@@ -224,13 +224,12 @@ PetscErrorCode SingleBody::findCellIdx()
     {
         for(PetscInt d=0; d<dim; ++d)
         {
-            if (*(mesh->coord[4][d] + mesh->n[4][d] -1) <= coords[i][d])
-                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_MAX_VALUE, 
-                        "body coordinate %e is outside domain !", coords[i][d]);
-
-            if (*(mesh->coord[4][d]) >= coords[i][d])
-                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_MIN_VALUE, 
-                        "body coordinate %e is outside domain !", coords[i][d]);
+        	  if (mesh->min[d] >= coords[i][d] || mesh->max[d] <= coords[i][d])
+        	  {
+                SETERRQ3(PETSC_COMM_WORLD, PETSC_ERR_MAX_VALUE, 
+                        "body coordinate %g is outside domain [%g, %g] !",
+                        coords[i][d], mesh->min[d], mesh->max[d]);
+        	  }
 
             meshIdx[c][d] = std::upper_bound(
                     mesh->coord[4][d], mesh->coord[4][d]+mesh->n[4][d],

@@ -1,10 +1,12 @@
 TESTS = delta-test \
         singlebody-test \
-        cartesianmesh-test
+        cartesianmesh-test \
+        singleboundary-test
 
 check_PROGRAMS = delta-test \
                  singlebody-test \
-                 cartesianmesh-test
+                 cartesianmesh-test \
+                 singleboundary-test
 
 AM_CPPFLAGS = -I$(top_srcdir)/src \
               -I$(top_srcdir)/external/gtest-1.8.0/include \
@@ -29,6 +31,11 @@ cartesianmesh_test_DEPENDENCIES = input_data
 cartesianmesh_test_SOURCES = cartesianmesh_test.cpp
 cartesianmesh_test_CPPFLAGS = $(AM_CPPFLAGS)
 cartesianmesh_test_LDADD = $(LDADD)
+
+singleboundary_test_DEPENDENCIES = input_data
+singleboundary_test_SOURCES = singleboundary_test.cpp
+singleboundary_test_CPPFLAGS = $(AM_CPPFLAGS)
+singleboundary_test_LDADD = $(LDADD)
 
 input_data:
 	if test "$(top_srcdir)" != "$(top_builddir)" ; then \

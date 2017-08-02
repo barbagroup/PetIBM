@@ -85,8 +85,10 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-TESTS = utilities-tests$(EXEEXT)
-check_PROGRAMS = utilities-tests$(EXEEXT)
+TESTS = delta-test$(EXEEXT) singlebody-test$(EXEEXT) \
+	cartesianmesh-test$(EXEEXT)
+check_PROGRAMS = delta-test$(EXEEXT) singlebody-test$(EXEEXT) \
+	cartesianmesh-test$(EXEEXT)
 subdir = tests/utilities
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -103,8 +105,17 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_utilities_tests_OBJECTS = utilities_tests-main.$(OBJEXT)
-utilities_tests_OBJECTS = $(am_utilities_tests_OBJECTS)
+am_cartesianmesh_test_OBJECTS =  \
+	cartesianmesh_test-cartesianmesh_test.$(OBJEXT)
+cartesianmesh_test_OBJECTS = $(am_cartesianmesh_test_OBJECTS)
+am__DEPENDENCIES_1 = $(top_builddir)/src/utilities/libutilities.a \
+	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+	$(top_builddir)/external/gtest-1.8.0/libgtest.a
+am_delta_test_OBJECTS = delta_test-delta_test.$(OBJEXT)
+delta_test_OBJECTS = $(am_delta_test_OBJECTS)
+am_singlebody_test_OBJECTS =  \
+	singlebody_test-singlebody_test.$(OBJEXT)
+singlebody_test_OBJECTS = $(am_singlebody_test_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -138,8 +149,10 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(utilities_tests_SOURCES)
-DIST_SOURCES = $(utilities_tests_SOURCES)
+SOURCES = $(cartesianmesh_test_SOURCES) $(delta_test_SOURCES) \
+	$(singlebody_test_SOURCES)
+DIST_SOURCES = $(cartesianmesh_test_SOURCES) $(delta_test_SOURCES) \
+	$(singlebody_test_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -479,17 +492,27 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-utilities_tests_DEPENDENCIES = input_data
-utilities_tests_SOURCES = main.cpp
-utilities_tests_CPPFLAGS = -I$(top_srcdir)/src \
-                           -I$(top_srcdir)/external/gtest-1.8.0/include \
-                           -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
+AM_CPPFLAGS = -I$(top_srcdir)/src \
+              -I$(top_srcdir)/external/gtest-1.8.0/include \
+              -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
-utilities_tests_LDADD = $(top_builddir)/src/utilities/libutilities.a \
-                        $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
-                        $(top_builddir)/external/gtest-1.8.0/libgtest.a \
-                        -lstdc++fs
+LDADD = $(top_builddir)/src/utilities/libutilities.a \
+        $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
+        $(top_builddir)/external/gtest-1.8.0/libgtest.a \
+        -lstdc++fs
 
+delta_test_DEPENDENCIES = input_data
+delta_test_SOURCES = delta_test.cpp
+delta_test_CPPFLAGS = $(AM_CPPFLAGS)
+delta_test_LDADD = $(LDADD)
+singlebody_test_DEPENDENCIES = input_data
+singlebody_test_SOURCES = singlebody_test.cpp
+singlebody_test_CPPFLAGS = $(AM_CPPFLAGS)
+singlebody_test_LDADD = $(LDADD)
+cartesianmesh_test_DEPENDENCIES = input_data
+cartesianmesh_test_SOURCES = cartesianmesh_test.cpp
+cartesianmesh_test_CPPFLAGS = $(AM_CPPFLAGS)
+cartesianmesh_test_LDADD = $(LDADD)
 all: all-am
 
 .SUFFIXES:
@@ -527,9 +550,17 @@ $(am__aclocal_m4_deps):
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
-utilities-tests$(EXEEXT): $(utilities_tests_OBJECTS) $(utilities_tests_DEPENDENCIES) $(EXTRA_utilities_tests_DEPENDENCIES) 
-	@rm -f utilities-tests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(utilities_tests_OBJECTS) $(utilities_tests_LDADD) $(LIBS)
+cartesianmesh-test$(EXEEXT): $(cartesianmesh_test_OBJECTS) $(cartesianmesh_test_DEPENDENCIES) $(EXTRA_cartesianmesh_test_DEPENDENCIES) 
+	@rm -f cartesianmesh-test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(cartesianmesh_test_OBJECTS) $(cartesianmesh_test_LDADD) $(LIBS)
+
+delta-test$(EXEEXT): $(delta_test_OBJECTS) $(delta_test_DEPENDENCIES) $(EXTRA_delta_test_DEPENDENCIES) 
+	@rm -f delta-test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(delta_test_OBJECTS) $(delta_test_LDADD) $(LIBS)
+
+singlebody-test$(EXEEXT): $(singlebody_test_OBJECTS) $(singlebody_test_DEPENDENCIES) $(EXTRA_singlebody_test_DEPENDENCIES) 
+	@rm -f singlebody-test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(singlebody_test_OBJECTS) $(singlebody_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -537,7 +568,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utilities_tests-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/delta_test-delta_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/singlebody_test-singlebody_test.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -555,19 +588,47 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-utilities_tests-main.o: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(utilities_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT utilities_tests-main.o -MD -MP -MF $(DEPDIR)/utilities_tests-main.Tpo -c -o utilities_tests-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/utilities_tests-main.Tpo $(DEPDIR)/utilities_tests-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='utilities_tests-main.o' libtool=no @AMDEPBACKSLASH@
+cartesianmesh_test-cartesianmesh_test.o: cartesianmesh_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianmesh_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cartesianmesh_test-cartesianmesh_test.o -MD -MP -MF $(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Tpo -c -o cartesianmesh_test-cartesianmesh_test.o `test -f 'cartesianmesh_test.cpp' || echo '$(srcdir)/'`cartesianmesh_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Tpo $(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='cartesianmesh_test.cpp' object='cartesianmesh_test-cartesianmesh_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(utilities_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o utilities_tests-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianmesh_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cartesianmesh_test-cartesianmesh_test.o `test -f 'cartesianmesh_test.cpp' || echo '$(srcdir)/'`cartesianmesh_test.cpp
 
-utilities_tests-main.obj: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(utilities_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT utilities_tests-main.obj -MD -MP -MF $(DEPDIR)/utilities_tests-main.Tpo -c -o utilities_tests-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/utilities_tests-main.Tpo $(DEPDIR)/utilities_tests-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='utilities_tests-main.obj' libtool=no @AMDEPBACKSLASH@
+cartesianmesh_test-cartesianmesh_test.obj: cartesianmesh_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianmesh_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cartesianmesh_test-cartesianmesh_test.obj -MD -MP -MF $(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Tpo -c -o cartesianmesh_test-cartesianmesh_test.obj `if test -f 'cartesianmesh_test.cpp'; then $(CYGPATH_W) 'cartesianmesh_test.cpp'; else $(CYGPATH_W) '$(srcdir)/cartesianmesh_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Tpo $(DEPDIR)/cartesianmesh_test-cartesianmesh_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='cartesianmesh_test.cpp' object='cartesianmesh_test-cartesianmesh_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(utilities_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o utilities_tests-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cartesianmesh_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cartesianmesh_test-cartesianmesh_test.obj `if test -f 'cartesianmesh_test.cpp'; then $(CYGPATH_W) 'cartesianmesh_test.cpp'; else $(CYGPATH_W) '$(srcdir)/cartesianmesh_test.cpp'; fi`
+
+delta_test-delta_test.o: delta_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(delta_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT delta_test-delta_test.o -MD -MP -MF $(DEPDIR)/delta_test-delta_test.Tpo -c -o delta_test-delta_test.o `test -f 'delta_test.cpp' || echo '$(srcdir)/'`delta_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/delta_test-delta_test.Tpo $(DEPDIR)/delta_test-delta_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='delta_test.cpp' object='delta_test-delta_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(delta_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o delta_test-delta_test.o `test -f 'delta_test.cpp' || echo '$(srcdir)/'`delta_test.cpp
+
+delta_test-delta_test.obj: delta_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(delta_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT delta_test-delta_test.obj -MD -MP -MF $(DEPDIR)/delta_test-delta_test.Tpo -c -o delta_test-delta_test.obj `if test -f 'delta_test.cpp'; then $(CYGPATH_W) 'delta_test.cpp'; else $(CYGPATH_W) '$(srcdir)/delta_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/delta_test-delta_test.Tpo $(DEPDIR)/delta_test-delta_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='delta_test.cpp' object='delta_test-delta_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(delta_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o delta_test-delta_test.obj `if test -f 'delta_test.cpp'; then $(CYGPATH_W) 'delta_test.cpp'; else $(CYGPATH_W) '$(srcdir)/delta_test.cpp'; fi`
+
+singlebody_test-singlebody_test.o: singlebody_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(singlebody_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT singlebody_test-singlebody_test.o -MD -MP -MF $(DEPDIR)/singlebody_test-singlebody_test.Tpo -c -o singlebody_test-singlebody_test.o `test -f 'singlebody_test.cpp' || echo '$(srcdir)/'`singlebody_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/singlebody_test-singlebody_test.Tpo $(DEPDIR)/singlebody_test-singlebody_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='singlebody_test.cpp' object='singlebody_test-singlebody_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(singlebody_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o singlebody_test-singlebody_test.o `test -f 'singlebody_test.cpp' || echo '$(srcdir)/'`singlebody_test.cpp
+
+singlebody_test-singlebody_test.obj: singlebody_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(singlebody_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT singlebody_test-singlebody_test.obj -MD -MP -MF $(DEPDIR)/singlebody_test-singlebody_test.Tpo -c -o singlebody_test-singlebody_test.obj `if test -f 'singlebody_test.cpp'; then $(CYGPATH_W) 'singlebody_test.cpp'; else $(CYGPATH_W) '$(srcdir)/singlebody_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/singlebody_test-singlebody_test.Tpo $(DEPDIR)/singlebody_test-singlebody_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='singlebody_test.cpp' object='singlebody_test-singlebody_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(singlebody_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o singlebody_test-singlebody_test.obj `if test -f 'singlebody_test.cpp'; then $(CYGPATH_W) 'singlebody_test.cpp'; else $(CYGPATH_W) '$(srcdir)/singlebody_test.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -762,9 +823,23 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-utilities-tests.log: utilities-tests$(EXEEXT)
-	@p='utilities-tests$(EXEEXT)'; \
-	b='utilities-tests'; \
+delta-test.log: delta-test$(EXEEXT)
+	@p='delta-test$(EXEEXT)'; \
+	b='delta-test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+singlebody-test.log: singlebody-test$(EXEEXT)
+	@p='singlebody-test$(EXEEXT)'; \
+	b='singlebody-test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+cartesianmesh-test.log: cartesianmesh-test$(EXEEXT)
+	@p='cartesianmesh-test$(EXEEXT)'; \
+	b='cartesianmesh-test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

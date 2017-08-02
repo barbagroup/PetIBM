@@ -7,6 +7,8 @@
 #include <random>
 #include <algorithm>
 
+#include <petsc.h>
+
 #include "gtest/gtest.h"
 
 #include "utilities/delta.h"
@@ -43,3 +45,16 @@ TEST(utilitiesDeltaRomaEtAlTest, decreasingInfluence)
 	for (unsigned int i=0; i<vals.size()-1; i++)
 		ASSERT_GT(Roma_et_al(vals[i], h), Roma_et_al(vals[i+1], h));
 }
+
+// Run all tests
+int main(int argc, char **argv)
+{
+	PetscErrorCode ierr, status;
+
+	::testing::InitGoogleTest(&argc, argv);
+	ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
+	status = RUN_ALL_TESTS();
+	ierr = PetscFinalize(); CHKERRQ(ierr);
+
+	return status;
+} // main

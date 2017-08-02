@@ -1,32 +1,50 @@
 flowDescription:
   nu: 0.001
-  initialVelocity: [0.0, 0.0]
+  initialVelocity: [0.0, 0.0, 0.0]
   boundaryConditions:
     - location: xMinus
       u: [DIRICHLET, 0.0]
       v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
     - location: xPlus
       u: [DIRICHLET, 0.0]
       v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
     - location: yMinus
       u: [DIRICHLET, 0.0]
       v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
     - location: yPlus
       u: [DIRICHLET, 1.0]
       v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: zMinus
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]
+      w: [PERIODIC, 0.0]
+    - location: zPlus
+      u: [PERIODIC, 0.0]
+      v: [PERIODIC, 0.0]
+      w: [PERIODIC, 0.0]
 
 
 cartesianMesh:
   - direction: x
-    start: 0.0
+    start: 0.1
     subDomains:
-      - end: 1.0
+      - end: 1.1
         cells: 10
         stretchRatio: 1.0
   - direction: y
-    start: 0.0
+    start: 0.1
     subDomains:
-      - end: 1.0
+      - end: 1.1
+        cells: 10
+        stretchRatio: 1.0
+  - direction: z
+    start: 0.1
+    subDomains:
+      - end: 1.1
         cells: 10
         stretchRatio: 1.0
 
@@ -50,4 +68,4 @@ simulationParameters:
 
 bodies:
   - type: points
-    pointsFile: body.txt
+    pointsFile: body3d.txt

@@ -114,8 +114,7 @@ am_cartesianmesh_test_OBJECTS =  \
 	cartesianmesh_test-cartesianmesh_test.$(OBJEXT)
 cartesianmesh_test_OBJECTS = $(am_cartesianmesh_test_OBJECTS)
 am__DEPENDENCIES_1 = $(top_builddir)/src/libpetibm.la \
-	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la \
-	$(top_builddir)/external/gtest-1.8.0/libgtest.la
+	$(top_builddir)/external/gtest-1.8.0/libgtest.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -535,8 +534,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src \
               -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
 LDADD = $(top_builddir)/src/libpetibm.la \
-        $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la \
-        $(top_builddir)/external/gtest-1.8.0/libgtest.la \
+        $(top_builddir)/external/gtest-1.8.0/libgtest.a \
         -lstdc++fs
 
 delta_test_DEPENDENCIES = input_data

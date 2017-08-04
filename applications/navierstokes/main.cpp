@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 	ierr = mesh.printInfo(); CHKERRQ(ierr);
 	ierr = mesh.write(params.caseDir, "grid"); CHKERRQ(ierr);
 	
-	petibm::applications::NavierStokesSolver solver = petibm::applications::NavierStokesSolver(
+	NavierStokesSolver solver = NavierStokesSolver(
 			mesh, flow, params); CHKERRQ(ierr);
 
 	ierr = solver.initialize(); CHKERRQ(ierr);

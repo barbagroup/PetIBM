@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	ierr = bodies.init(mesh, config["bodies"]); CHKERRQ(ierr);
 	ierr = bodies.printInfo(); CHKERRQ(ierr);
 	
-	petibm::applications::DecoupledIBPMSolver solver = petibm::applications::DecoupledIBPMSolver(
+	DecoupledIBPMSolver solver = DecoupledIBPMSolver(
 			mesh, flow, params, bodies); CHKERRQ(ierr);
 
 	ierr = solver.initialize(); CHKERRQ(ierr);

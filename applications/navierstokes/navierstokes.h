@@ -14,11 +14,8 @@
 #include "linSolvers/LinSolver.h"
 #include "operators/operators.h"
 
+using namespace petibm;
 
-namespace petibm
-{
-namespace applications
-{
 
 /**
  * \class NavierStokesSolver
@@ -157,6 +154,3 @@ private:
 	 */
 	PetscErrorCode projectionStep();
 };
-
-} // end of namespace applications
-} // end of namespace petibm

@@ -8,11 +8,8 @@
 
 #include "navierstokes.h"
 
+using namespace petibm;
 
-namespace petibm
-{
-namespace applications
-{
 
 NavierStokesSolver::NavierStokesSolver()
 {
@@ -366,6 +363,3 @@ PetscErrorCode NavierStokesSolver::finalize()
 
 	PetscFunctionReturn(0);
 } // finalize
-
-} // end of namespace applications
-} // end of namespace petibm

@@ -15,11 +15,8 @@
 #include "linSolvers/LinSolver.h"
 #include "operators/operators.h"
 
+using namespace petibm;
 
-namespace petibm
-{
-namespace applications
-{
 
 /**
  * \class DecoupledIBPMSolver
@@ -193,6 +190,3 @@ private:
 	PetscErrorCode projectionStep();
 
 }; // DecoupledIBPMSolver
-
-} // end of namespace applications
-} // end of namespace petibm

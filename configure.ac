@@ -7,12 +7,14 @@ AC_PREREQ([2.69])
 AC_INIT([PetIBM], [0.3.0dev], [mesnardo@gwu.edu, pychuang@email.gwu.edu])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/utilities/delta.cpp])
 AC_CONFIG_HEADERS([config/config.h])
 AM_SILENT_RULES([no])
 AM_MAINTAINER_MODE([disable])
 AC_LANG([C++])
+LT_PREREQ([2.2])
+LT_INIT([dlopen])
 
 # check for programs
 AC_PROG_CC
@@ -21,8 +23,6 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_AWK
 AC_PROG_INSTALL
-AC_PROG_RANLIB
-AM_PROG_AR
 AC_PROG_MKDIR_P
 AC_PROG_CC_C_O
 CONFIGURE_DOXYGEN
@@ -59,15 +59,15 @@ AC_CONFIG_FILES([Makefile
                  src/utilities/Makefile
                  src/operators/Makefile
                  src/linSolvers/Makefile
-                 src/applications/Makefile
-                 src/applications/navierstokes/Makefile
-                 src/applications/decoupledibpm/Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.8.0/Makefile
                  external/AmgXWrapper-1.0-beta2/Makefile
                  tests/Makefile
-                 tests/utilities/Makefile])
+                 tests/utilities/Makefile
+                 applications/Makefile
+                 applications/navierstokes/Makefile
+                 applications/decoupledibpm/Makefile])
 
 # output message
 AC_OUTPUT

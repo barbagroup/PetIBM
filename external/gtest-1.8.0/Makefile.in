@@ -86,6 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 subdir = external/gtest-1.8.0
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -93,6 +95,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -102,25 +107,21 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libgtest_a_AR = $(AR) $(ARFLAGS)
-libgtest_a_LIBADD =
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libgtest_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libgtest_a_OBJECTS = src/libgtest_a-gtest-all.$(OBJEXT) \
-	src/libgtest_a-gtest.$(OBJEXT) \
-	src/libgtest_a-gtest-death-test.$(OBJEXT) \
-	src/libgtest_a-gtest-filepath.$(OBJEXT) \
-	src/libgtest_a-gtest_main.$(OBJEXT) \
-	src/libgtest_a-gtest-port.$(OBJEXT) \
-	src/libgtest_a-gtest-printers.$(OBJEXT) \
-	src/libgtest_a-gtest-test-part.$(OBJEXT) \
-	src/libgtest_a-gtest-typed-test.$(OBJEXT)
-libgtest_a_OBJECTS = $(am_libgtest_a_OBJECTS)
+am_libgtest_la_OBJECTS = src/libgtest_la-gtest-all.lo \
+	src/libgtest_la-gtest.lo src/libgtest_la-gtest-death-test.lo \
+	src/libgtest_la-gtest-filepath.lo \
+	src/libgtest_la-gtest_main.lo src/libgtest_la-gtest-port.lo \
+	src/libgtest_la-gtest-printers.lo \
+	src/libgtest_la-gtest-test-part.lo \
+	src/libgtest_la-gtest-typed-test.lo
+libgtest_la_OBJECTS = $(am_libgtest_la_OBJECTS)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -137,25 +138,26 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
-AM_V_lt = $(am__v_lt_@AM_V@)
-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
-am__v_lt_0 = --silent
-am__v_lt_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
 am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
 am__v_CXX_0 = @echo "  CXX     " $@;
 am__v_CXX_1 = 
 CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libgtest_a_SOURCES)
-DIST_SOURCES = $(libgtest_a_SOURCES)
+SOURCES = $(libgtest_la_SOURCES)
+DIST_SOURCES = $(libgtest_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -204,13 +206,17 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DLLTOOL = @DLLTOOL@
 DOXYGEN = @DOXYGEN@
 DOXYGEN_DIR = @DOXYGEN_DIR@
+DSYMUTIL = @DSYMUTIL@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FGREP = @FGREP@
 GREP = @GREP@
 HAVE_DOXYGEN = @HAVE_DOXYGEN@
 INSTALL = @INSTALL@
@@ -218,14 +224,25 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
+LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
+NM = @NM@
+NMEDIT = @NMEDIT@
+OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
@@ -241,6 +258,7 @@ PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -252,20 +270,29 @@ abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -290,24 +317,24 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libgtest.a
-libgtest_a_SOURCES = src/gtest-all.cc \
-                     src/gtest.cc \
-                     src/gtest-death-test.cc \
-                     src/gtest-filepath.cc \
-                     src/gtest_main.cc \
-                     src/gtest-port.cc \
-                     src/gtest-printers.cc \
-                     src/gtest-test-part.cc \
-                     src/gtest-typed-test.cc
+noinst_LTLIBRARIES = libgtest.la
+libgtest_la_SOURCES = src/gtest-all.cc \
+                      src/gtest.cc \
+                      src/gtest-death-test.cc \
+                      src/gtest-filepath.cc \
+                      src/gtest_main.cc \
+                      src/gtest-port.cc \
+                      src/gtest-printers.cc \
+                      src/gtest-test-part.cc \
+                      src/gtest-typed-test.cc
 
-libgtest_a_CPPFLAGS = -I$(srcdir)/include \
-                      -I$(srcdir)/src
+libgtest_la_CPPFLAGS = -I$(srcdir)/include \
+                       -I$(srcdir)/src
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cc .o .obj
+.SUFFIXES: .cc .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -338,54 +365,61 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
 src/$(am__dirstamp):
 	@$(MKDIR_P) src
 	@: > src/$(am__dirstamp)
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-all.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-all.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-death-test.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-death-test.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-filepath.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-filepath.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest_main.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest_main.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-port.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-port.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-printers.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-printers.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-test-part.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-test-part.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libgtest_a-gtest-typed-test.$(OBJEXT): src/$(am__dirstamp) \
+src/libgtest_la-gtest-typed-test.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 
-libgtest.a: $(libgtest_a_OBJECTS) $(libgtest_a_DEPENDENCIES) $(EXTRA_libgtest_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libgtest.a
-	$(AM_V_AR)$(libgtest_a_AR) libgtest.a $(libgtest_a_OBJECTS) $(libgtest_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libgtest.a
+libgtest.la: $(libgtest_la_OBJECTS) $(libgtest_la_DEPENDENCIES) $(EXTRA_libgtest_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(CXXLINK)  $(libgtest_la_OBJECTS) $(libgtest_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
+	-rm -f src/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-death-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-filepath.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-port.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-printers.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-test-part.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest-typed-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_a-gtest_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-all.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-death-test.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-filepath.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-port.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-printers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-test-part.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest-typed-test.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libgtest_la-gtest_main.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -403,131 +437,83 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-src/libgtest_a-gtest-all.o: src/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-all.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-all.Tpo -c -o src/libgtest_a-gtest-all.o `test -f 'src/gtest-all.cc' || echo '$(srcdir)/'`src/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-all.Tpo src/$(DEPDIR)/libgtest_a-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-all.cc' object='src/libgtest_a-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+.cc.lo:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-all.o `test -f 'src/gtest-all.cc' || echo '$(srcdir)/'`src/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-src/libgtest_a-gtest-all.obj: src/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-all.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-all.Tpo -c -o src/libgtest_a-gtest-all.obj `if test -f 'src/gtest-all.cc'; then $(CYGPATH_W) 'src/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-all.Tpo src/$(DEPDIR)/libgtest_a-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-all.cc' object='src/libgtest_a-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-all.lo: src/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-all.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-all.Tpo -c -o src/libgtest_la-gtest-all.lo `test -f 'src/gtest-all.cc' || echo '$(srcdir)/'`src/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-all.Tpo src/$(DEPDIR)/libgtest_la-gtest-all.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-all.cc' object='src/libgtest_la-gtest-all.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-all.obj `if test -f 'src/gtest-all.cc'; then $(CYGPATH_W) 'src/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-all.lo `test -f 'src/gtest-all.cc' || echo '$(srcdir)/'`src/gtest-all.cc
 
-src/libgtest_a-gtest.o: src/gtest.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest.Tpo -c -o src/libgtest_a-gtest.o `test -f 'src/gtest.cc' || echo '$(srcdir)/'`src/gtest.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest.Tpo src/$(DEPDIR)/libgtest_a-gtest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest.cc' object='src/libgtest_a-gtest.o' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest.lo: src/gtest.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest.Tpo -c -o src/libgtest_la-gtest.lo `test -f 'src/gtest.cc' || echo '$(srcdir)/'`src/gtest.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest.Tpo src/$(DEPDIR)/libgtest_la-gtest.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest.cc' object='src/libgtest_la-gtest.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest.o `test -f 'src/gtest.cc' || echo '$(srcdir)/'`src/gtest.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest.lo `test -f 'src/gtest.cc' || echo '$(srcdir)/'`src/gtest.cc
 
-src/libgtest_a-gtest.obj: src/gtest.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest.Tpo -c -o src/libgtest_a-gtest.obj `if test -f 'src/gtest.cc'; then $(CYGPATH_W) 'src/gtest.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest.Tpo src/$(DEPDIR)/libgtest_a-gtest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest.cc' object='src/libgtest_a-gtest.obj' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-death-test.lo: src/gtest-death-test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-death-test.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-death-test.Tpo -c -o src/libgtest_la-gtest-death-test.lo `test -f 'src/gtest-death-test.cc' || echo '$(srcdir)/'`src/gtest-death-test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-death-test.Tpo src/$(DEPDIR)/libgtest_la-gtest-death-test.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-death-test.cc' object='src/libgtest_la-gtest-death-test.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest.obj `if test -f 'src/gtest.cc'; then $(CYGPATH_W) 'src/gtest.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-death-test.lo `test -f 'src/gtest-death-test.cc' || echo '$(srcdir)/'`src/gtest-death-test.cc
 
-src/libgtest_a-gtest-death-test.o: src/gtest-death-test.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-death-test.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-death-test.Tpo -c -o src/libgtest_a-gtest-death-test.o `test -f 'src/gtest-death-test.cc' || echo '$(srcdir)/'`src/gtest-death-test.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-death-test.Tpo src/$(DEPDIR)/libgtest_a-gtest-death-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-death-test.cc' object='src/libgtest_a-gtest-death-test.o' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-filepath.lo: src/gtest-filepath.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-filepath.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-filepath.Tpo -c -o src/libgtest_la-gtest-filepath.lo `test -f 'src/gtest-filepath.cc' || echo '$(srcdir)/'`src/gtest-filepath.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-filepath.Tpo src/$(DEPDIR)/libgtest_la-gtest-filepath.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-filepath.cc' object='src/libgtest_la-gtest-filepath.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-death-test.o `test -f 'src/gtest-death-test.cc' || echo '$(srcdir)/'`src/gtest-death-test.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-filepath.lo `test -f 'src/gtest-filepath.cc' || echo '$(srcdir)/'`src/gtest-filepath.cc
 
-src/libgtest_a-gtest-death-test.obj: src/gtest-death-test.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-death-test.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-death-test.Tpo -c -o src/libgtest_a-gtest-death-test.obj `if test -f 'src/gtest-death-test.cc'; then $(CYGPATH_W) 'src/gtest-death-test.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-death-test.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-death-test.Tpo src/$(DEPDIR)/libgtest_a-gtest-death-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-death-test.cc' object='src/libgtest_a-gtest-death-test.obj' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest_main.lo: src/gtest_main.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest_main.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest_main.Tpo -c -o src/libgtest_la-gtest_main.lo `test -f 'src/gtest_main.cc' || echo '$(srcdir)/'`src/gtest_main.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest_main.Tpo src/$(DEPDIR)/libgtest_la-gtest_main.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest_main.cc' object='src/libgtest_la-gtest_main.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-death-test.obj `if test -f 'src/gtest-death-test.cc'; then $(CYGPATH_W) 'src/gtest-death-test.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-death-test.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest_main.lo `test -f 'src/gtest_main.cc' || echo '$(srcdir)/'`src/gtest_main.cc
 
-src/libgtest_a-gtest-filepath.o: src/gtest-filepath.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-filepath.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-filepath.Tpo -c -o src/libgtest_a-gtest-filepath.o `test -f 'src/gtest-filepath.cc' || echo '$(srcdir)/'`src/gtest-filepath.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-filepath.Tpo src/$(DEPDIR)/libgtest_a-gtest-filepath.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-filepath.cc' object='src/libgtest_a-gtest-filepath.o' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-port.lo: src/gtest-port.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-port.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-port.Tpo -c -o src/libgtest_la-gtest-port.lo `test -f 'src/gtest-port.cc' || echo '$(srcdir)/'`src/gtest-port.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-port.Tpo src/$(DEPDIR)/libgtest_la-gtest-port.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-port.cc' object='src/libgtest_la-gtest-port.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-filepath.o `test -f 'src/gtest-filepath.cc' || echo '$(srcdir)/'`src/gtest-filepath.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-port.lo `test -f 'src/gtest-port.cc' || echo '$(srcdir)/'`src/gtest-port.cc
 
-src/libgtest_a-gtest-filepath.obj: src/gtest-filepath.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-filepath.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-filepath.Tpo -c -o src/libgtest_a-gtest-filepath.obj `if test -f 'src/gtest-filepath.cc'; then $(CYGPATH_W) 'src/gtest-filepath.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-filepath.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-filepath.Tpo src/$(DEPDIR)/libgtest_a-gtest-filepath.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-filepath.cc' object='src/libgtest_a-gtest-filepath.obj' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-printers.lo: src/gtest-printers.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-printers.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-printers.Tpo -c -o src/libgtest_la-gtest-printers.lo `test -f 'src/gtest-printers.cc' || echo '$(srcdir)/'`src/gtest-printers.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-printers.Tpo src/$(DEPDIR)/libgtest_la-gtest-printers.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-printers.cc' object='src/libgtest_la-gtest-printers.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-filepath.obj `if test -f 'src/gtest-filepath.cc'; then $(CYGPATH_W) 'src/gtest-filepath.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-filepath.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-printers.lo `test -f 'src/gtest-printers.cc' || echo '$(srcdir)/'`src/gtest-printers.cc
 
-src/libgtest_a-gtest_main.o: src/gtest_main.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest_main.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest_main.Tpo -c -o src/libgtest_a-gtest_main.o `test -f 'src/gtest_main.cc' || echo '$(srcdir)/'`src/gtest_main.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest_main.Tpo src/$(DEPDIR)/libgtest_a-gtest_main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest_main.cc' object='src/libgtest_a-gtest_main.o' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-test-part.lo: src/gtest-test-part.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-test-part.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-test-part.Tpo -c -o src/libgtest_la-gtest-test-part.lo `test -f 'src/gtest-test-part.cc' || echo '$(srcdir)/'`src/gtest-test-part.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-test-part.Tpo src/$(DEPDIR)/libgtest_la-gtest-test-part.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-test-part.cc' object='src/libgtest_la-gtest-test-part.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest_main.o `test -f 'src/gtest_main.cc' || echo '$(srcdir)/'`src/gtest_main.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-test-part.lo `test -f 'src/gtest-test-part.cc' || echo '$(srcdir)/'`src/gtest-test-part.cc
 
-src/libgtest_a-gtest_main.obj: src/gtest_main.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest_main.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest_main.Tpo -c -o src/libgtest_a-gtest_main.obj `if test -f 'src/gtest_main.cc'; then $(CYGPATH_W) 'src/gtest_main.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest_main.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest_main.Tpo src/$(DEPDIR)/libgtest_a-gtest_main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest_main.cc' object='src/libgtest_a-gtest_main.obj' libtool=no @AMDEPBACKSLASH@
+src/libgtest_la-gtest-typed-test.lo: src/gtest-typed-test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_la-gtest-typed-test.lo -MD -MP -MF src/$(DEPDIR)/libgtest_la-gtest-typed-test.Tpo -c -o src/libgtest_la-gtest-typed-test.lo `test -f 'src/gtest-typed-test.cc' || echo '$(srcdir)/'`src/gtest-typed-test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_la-gtest-typed-test.Tpo src/$(DEPDIR)/libgtest_la-gtest-typed-test.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-typed-test.cc' object='src/libgtest_la-gtest-typed-test.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest_main.obj `if test -f 'src/gtest_main.cc'; then $(CYGPATH_W) 'src/gtest_main.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest_main.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_la-gtest-typed-test.lo `test -f 'src/gtest-typed-test.cc' || echo '$(srcdir)/'`src/gtest-typed-test.cc
 
-src/libgtest_a-gtest-port.o: src/gtest-port.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-port.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-port.Tpo -c -o src/libgtest_a-gtest-port.o `test -f 'src/gtest-port.cc' || echo '$(srcdir)/'`src/gtest-port.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-port.Tpo src/$(DEPDIR)/libgtest_a-gtest-port.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-port.cc' object='src/libgtest_a-gtest-port.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-port.o `test -f 'src/gtest-port.cc' || echo '$(srcdir)/'`src/gtest-port.cc
+mostlyclean-libtool:
+	-rm -f *.lo
 
-src/libgtest_a-gtest-port.obj: src/gtest-port.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-port.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-port.Tpo -c -o src/libgtest_a-gtest-port.obj `if test -f 'src/gtest-port.cc'; then $(CYGPATH_W) 'src/gtest-port.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-port.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-port.Tpo src/$(DEPDIR)/libgtest_a-gtest-port.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-port.cc' object='src/libgtest_a-gtest-port.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-port.obj `if test -f 'src/gtest-port.cc'; then $(CYGPATH_W) 'src/gtest-port.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-port.cc'; fi`
-
-src/libgtest_a-gtest-printers.o: src/gtest-printers.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-printers.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-printers.Tpo -c -o src/libgtest_a-gtest-printers.o `test -f 'src/gtest-printers.cc' || echo '$(srcdir)/'`src/gtest-printers.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-printers.Tpo src/$(DEPDIR)/libgtest_a-gtest-printers.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-printers.cc' object='src/libgtest_a-gtest-printers.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-printers.o `test -f 'src/gtest-printers.cc' || echo '$(srcdir)/'`src/gtest-printers.cc
-
-src/libgtest_a-gtest-printers.obj: src/gtest-printers.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-printers.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-printers.Tpo -c -o src/libgtest_a-gtest-printers.obj `if test -f 'src/gtest-printers.cc'; then $(CYGPATH_W) 'src/gtest-printers.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-printers.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-printers.Tpo src/$(DEPDIR)/libgtest_a-gtest-printers.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-printers.cc' object='src/libgtest_a-gtest-printers.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-printers.obj `if test -f 'src/gtest-printers.cc'; then $(CYGPATH_W) 'src/gtest-printers.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-printers.cc'; fi`
-
-src/libgtest_a-gtest-test-part.o: src/gtest-test-part.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-test-part.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-test-part.Tpo -c -o src/libgtest_a-gtest-test-part.o `test -f 'src/gtest-test-part.cc' || echo '$(srcdir)/'`src/gtest-test-part.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-test-part.Tpo src/$(DEPDIR)/libgtest_a-gtest-test-part.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-test-part.cc' object='src/libgtest_a-gtest-test-part.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-test-part.o `test -f 'src/gtest-test-part.cc' || echo '$(srcdir)/'`src/gtest-test-part.cc
-
-src/libgtest_a-gtest-test-part.obj: src/gtest-test-part.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-test-part.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-test-part.Tpo -c -o src/libgtest_a-gtest-test-part.obj `if test -f 'src/gtest-test-part.cc'; then $(CYGPATH_W) 'src/gtest-test-part.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-test-part.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-test-part.Tpo src/$(DEPDIR)/libgtest_a-gtest-test-part.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-test-part.cc' object='src/libgtest_a-gtest-test-part.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-test-part.obj `if test -f 'src/gtest-test-part.cc'; then $(CYGPATH_W) 'src/gtest-test-part.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-test-part.cc'; fi`
-
-src/libgtest_a-gtest-typed-test.o: src/gtest-typed-test.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-typed-test.o -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-typed-test.Tpo -c -o src/libgtest_a-gtest-typed-test.o `test -f 'src/gtest-typed-test.cc' || echo '$(srcdir)/'`src/gtest-typed-test.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-typed-test.Tpo src/$(DEPDIR)/libgtest_a-gtest-typed-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-typed-test.cc' object='src/libgtest_a-gtest-typed-test.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-typed-test.o `test -f 'src/gtest-typed-test.cc' || echo '$(srcdir)/'`src/gtest-typed-test.cc
-
-src/libgtest_a-gtest-typed-test.obj: src/gtest-typed-test.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libgtest_a-gtest-typed-test.obj -MD -MP -MF src/$(DEPDIR)/libgtest_a-gtest-typed-test.Tpo -c -o src/libgtest_a-gtest-typed-test.obj `if test -f 'src/gtest-typed-test.cc'; then $(CYGPATH_W) 'src/gtest-typed-test.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-typed-test.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libgtest_a-gtest-typed-test.Tpo src/$(DEPDIR)/libgtest_a-gtest-typed-test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/gtest-typed-test.cc' object='src/libgtest_a-gtest-typed-test.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtest_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libgtest_a-gtest-typed-test.obj `if test -f 'src/gtest-typed-test.cc'; then $(CYGPATH_W) 'src/gtest-typed-test.cc'; else $(CYGPATH_W) '$(srcdir)/src/gtest-typed-test.cc'; fi`
+clean-libtool:
+	-rm -rf .libs _libs
+	-rm -rf src/.libs src/_libs
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -613,7 +599,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -649,7 +635,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf src/$(DEPDIR)
@@ -704,7 +691,8 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -719,17 +707,18 @@ uninstall-am:
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	clean-libtool clean-noinstLTLIBRARIES cscopelist-am ctags \
+	ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 

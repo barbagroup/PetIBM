@@ -12,9 +12,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/src \
               -I$(top_srcdir)/external/gtest-1.8.0/include \
               -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
 
-LDADD = $(top_builddir)/src/utilities/libutilities.a \
-        $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a \
-        $(top_builddir)/external/gtest-1.8.0/libgtest.a \
+LDADD = $(top_builddir)/src/libpetibm.la \
+        $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la \
+        $(top_builddir)/external/gtest-1.8.0/libgtest.la \
         -lstdc++fs
 
 delta_test_DEPENDENCIES = input_data

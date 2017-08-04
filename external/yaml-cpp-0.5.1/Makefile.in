@@ -86,6 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 subdir = external/yaml-cpp-0.5.1
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -93,6 +95,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -102,45 +107,32 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libyamlcpp_a_AR = $(AR) $(ARFLAGS)
-libyamlcpp_a_LIBADD =
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libyamlcpp_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libyamlcpp_a_OBJECTS = src/libyamlcpp_a-binary.$(OBJEXT) \
-	src/libyamlcpp_a-convert.$(OBJEXT) \
-	src/libyamlcpp_a-directives.$(OBJEXT) \
-	src/libyamlcpp_a-emit.$(OBJEXT) \
-	src/libyamlcpp_a-emitfromevents.$(OBJEXT) \
-	src/libyamlcpp_a-emitter.$(OBJEXT) \
-	src/libyamlcpp_a-emitterstate.$(OBJEXT) \
-	src/libyamlcpp_a-emitterutils.$(OBJEXT) \
-	src/libyamlcpp_a-exp.$(OBJEXT) \
-	src/libyamlcpp_a-memory.$(OBJEXT) \
-	src/libyamlcpp_a-node.$(OBJEXT) \
-	src/libyamlcpp_a-node_data.$(OBJEXT) \
-	src/libyamlcpp_a-nodebuilder.$(OBJEXT) \
-	src/libyamlcpp_a-nodeevents.$(OBJEXT) \
-	src/libyamlcpp_a-null.$(OBJEXT) \
-	src/libyamlcpp_a-ostream_wrapper.$(OBJEXT) \
-	src/libyamlcpp_a-parse.$(OBJEXT) \
-	src/libyamlcpp_a-parser.$(OBJEXT) \
-	src/libyamlcpp_a-regex.$(OBJEXT) \
-	src/libyamlcpp_a-scanner.$(OBJEXT) \
-	src/libyamlcpp_a-scanscalar.$(OBJEXT) \
-	src/libyamlcpp_a-scantag.$(OBJEXT) \
-	src/libyamlcpp_a-scantoken.$(OBJEXT) \
-	src/libyamlcpp_a-simplekey.$(OBJEXT) \
-	src/libyamlcpp_a-singledocparser.$(OBJEXT) \
-	src/libyamlcpp_a-stream.$(OBJEXT) \
-	src/libyamlcpp_a-tag.$(OBJEXT) \
-	src/contrib/libyamlcpp_a-graphbuilder.$(OBJEXT) \
-	src/contrib/libyamlcpp_a-graphbuilderadapter.$(OBJEXT)
-libyamlcpp_a_OBJECTS = $(am_libyamlcpp_a_OBJECTS)
+am_libyamlcpp_la_OBJECTS = src/libyamlcpp_la-binary.lo \
+	src/libyamlcpp_la-convert.lo src/libyamlcpp_la-directives.lo \
+	src/libyamlcpp_la-emit.lo src/libyamlcpp_la-emitfromevents.lo \
+	src/libyamlcpp_la-emitter.lo src/libyamlcpp_la-emitterstate.lo \
+	src/libyamlcpp_la-emitterutils.lo src/libyamlcpp_la-exp.lo \
+	src/libyamlcpp_la-memory.lo src/libyamlcpp_la-node.lo \
+	src/libyamlcpp_la-node_data.lo \
+	src/libyamlcpp_la-nodebuilder.lo \
+	src/libyamlcpp_la-nodeevents.lo src/libyamlcpp_la-null.lo \
+	src/libyamlcpp_la-ostream_wrapper.lo \
+	src/libyamlcpp_la-parse.lo src/libyamlcpp_la-parser.lo \
+	src/libyamlcpp_la-regex.lo src/libyamlcpp_la-scanner.lo \
+	src/libyamlcpp_la-scanscalar.lo src/libyamlcpp_la-scantag.lo \
+	src/libyamlcpp_la-scantoken.lo src/libyamlcpp_la-simplekey.lo \
+	src/libyamlcpp_la-singledocparser.lo \
+	src/libyamlcpp_la-stream.lo src/libyamlcpp_la-tag.lo \
+	src/contrib/libyamlcpp_la-graphbuilder.lo \
+	src/contrib/libyamlcpp_la-graphbuilderadapter.lo
+libyamlcpp_la_OBJECTS = $(am_libyamlcpp_la_OBJECTS)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -157,25 +149,26 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
-AM_V_lt = $(am__v_lt_@AM_V@)
-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
-am__v_lt_0 = --silent
-am__v_lt_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
 am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
 am__v_CXX_0 = @echo "  CXX     " $@;
 am__v_CXX_1 = 
 CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libyamlcpp_a_SOURCES)
-DIST_SOURCES = $(libyamlcpp_a_SOURCES)
+SOURCES = $(libyamlcpp_la_SOURCES)
+DIST_SOURCES = $(libyamlcpp_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -224,13 +217,17 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DLLTOOL = @DLLTOOL@
 DOXYGEN = @DOXYGEN@
 DOXYGEN_DIR = @DOXYGEN_DIR@
+DSYMUTIL = @DSYMUTIL@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FGREP = @FGREP@
 GREP = @GREP@
 HAVE_DOXYGEN = @HAVE_DOXYGEN@
 INSTALL = @INSTALL@
@@ -238,14 +235,25 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
+LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
+NM = @NM@
+NMEDIT = @NMEDIT@
+OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
@@ -261,6 +269,7 @@ PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -272,20 +281,29 @@ abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -310,45 +328,45 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libyamlcpp.a
-libyamlcpp_a_SOURCES = src/binary.cpp \
-                       src/convert.cpp \
-                       src/directives.cpp \
-                       src/emit.cpp \
-                       src/emitfromevents.cpp \
-                       src/emitter.cpp \
-                       src/emitterstate.cpp \
-                       src/emitterutils.cpp \
-                       src/exp.cpp \
-                       src/memory.cpp \
-                       src/node.cpp \
-                       src/node_data.cpp \
-                       src/nodebuilder.cpp \
-                       src/nodeevents.cpp \
-                       src/null.cpp \
-                       src/ostream_wrapper.cpp \
-                       src/parse.cpp \
-                       src/parser.cpp \
-                       src/regex.cpp \
-                       src/scanner.cpp \
-                       src/scanscalar.cpp \
-                       src/scantag.cpp \
-                       src/scantoken.cpp \
-                       src/simplekey.cpp \
-                       src/singledocparser.cpp \
-                       src/stream.cpp \
-                       src/tag.cpp \
-                       src/contrib/graphbuilder.cpp \
-                       src/contrib/graphbuilderadapter.cpp
+noinst_LTLIBRARIES = libyamlcpp.la
+libyamlcpp_la_SOURCES = src/binary.cpp \
+                        src/convert.cpp \
+                        src/directives.cpp \
+                        src/emit.cpp \
+                        src/emitfromevents.cpp \
+                        src/emitter.cpp \
+                        src/emitterstate.cpp \
+                        src/emitterutils.cpp \
+                        src/exp.cpp \
+                        src/memory.cpp \
+                        src/node.cpp \
+                        src/node_data.cpp \
+                        src/nodebuilder.cpp \
+                        src/nodeevents.cpp \
+                        src/null.cpp \
+                        src/ostream_wrapper.cpp \
+                        src/parse.cpp \
+                        src/parser.cpp \
+                        src/regex.cpp \
+                        src/scanner.cpp \
+                        src/scanscalar.cpp \
+                        src/scantag.cpp \
+                        src/scantoken.cpp \
+                        src/simplekey.cpp \
+                        src/singledocparser.cpp \
+                        src/stream.cpp \
+                        src/tag.cpp \
+                        src/contrib/graphbuilder.cpp \
+                        src/contrib/graphbuilderadapter.cpp
 
-libyamlcpp_a_CPPFLAGS = -I$(srcdir)/include \
-                        -I$(srcdir)/src \
-                        -I$(top_srcdir)/external/boost-1.57.0
+libyamlcpp_la_CPPFLAGS = -I$(srcdir)/include \
+                         -I$(srcdir)/src \
+                         -I$(top_srcdir)/external/boost-1.57.0
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -379,67 +397,75 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
 src/$(am__dirstamp):
 	@$(MKDIR_P) src
 	@: > src/$(am__dirstamp)
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-binary.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-binary.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-convert.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-convert.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-directives.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-directives.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-emit.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-emit.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-emitfromevents.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-emitfromevents.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-emitter.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-emitter.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-emitterstate.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-emitterstate.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-emitterutils.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-emitterutils.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-exp.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-exp.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-memory.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-memory.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-node.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-node.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-node_data.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-node_data.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-nodebuilder.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-nodebuilder.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-nodeevents.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-nodeevents.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-null.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-null.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-ostream_wrapper.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-ostream_wrapper.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-parse.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-parse.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-parser.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-parser.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-regex.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-regex.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-scanner.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-scanner.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-scanscalar.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-scanscalar.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-scantag.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-scantag.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-scantoken.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-scantoken.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-simplekey.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-simplekey.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-singledocparser.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-singledocparser.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-stream.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-stream.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libyamlcpp_a-tag.$(OBJEXT): src/$(am__dirstamp) \
+src/libyamlcpp_la-tag.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/contrib/$(am__dirstamp):
 	@$(MKDIR_P) src/contrib
@@ -447,55 +473,55 @@ src/contrib/$(am__dirstamp):
 src/contrib/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/contrib/$(DEPDIR)
 	@: > src/contrib/$(DEPDIR)/$(am__dirstamp)
-src/contrib/libyamlcpp_a-graphbuilder.$(OBJEXT):  \
+src/contrib/libyamlcpp_la-graphbuilder.lo:  \
 	src/contrib/$(am__dirstamp) \
 	src/contrib/$(DEPDIR)/$(am__dirstamp)
-src/contrib/libyamlcpp_a-graphbuilderadapter.$(OBJEXT):  \
+src/contrib/libyamlcpp_la-graphbuilderadapter.lo:  \
 	src/contrib/$(am__dirstamp) \
 	src/contrib/$(DEPDIR)/$(am__dirstamp)
 
-libyamlcpp.a: $(libyamlcpp_a_OBJECTS) $(libyamlcpp_a_DEPENDENCIES) $(EXTRA_libyamlcpp_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libyamlcpp.a
-	$(AM_V_AR)$(libyamlcpp_a_AR) libyamlcpp.a $(libyamlcpp_a_OBJECTS) $(libyamlcpp_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libyamlcpp.a
+libyamlcpp.la: $(libyamlcpp_la_OBJECTS) $(libyamlcpp_la_DEPENDENCIES) $(EXTRA_libyamlcpp_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(CXXLINK)  $(libyamlcpp_la_OBJECTS) $(libyamlcpp_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
+	-rm -f src/*.lo
 	-rm -f src/contrib/*.$(OBJEXT)
+	-rm -f src/contrib/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-binary.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-convert.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-directives.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-emit.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-emitter.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-emitterstate.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-emitterutils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-exp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-memory.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-node.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-node_data.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-nodeevents.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-null.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-parse.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-parser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-regex.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-scanner.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-scanscalar.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-scantag.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-scantoken.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-simplekey.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-singledocparser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-stream.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_a-tag.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-binary.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-convert.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-directives.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-emit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-emitfromevents.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-emitter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-emitterstate.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-emitterutils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-exp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-node_data.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-nodebuilder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-nodeevents.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-null.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-ostream_wrapper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-parse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-regex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-scanner.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-scanscalar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-scantag.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-scantoken.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-simplekey.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-singledocparser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-stream.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libyamlcpp_la-tag.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilderadapter.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -513,411 +539,224 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-src/libyamlcpp_a-binary.o: src/binary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-binary.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-binary.Tpo -c -o src/libyamlcpp_a-binary.o `test -f 'src/binary.cpp' || echo '$(srcdir)/'`src/binary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-binary.Tpo src/$(DEPDIR)/libyamlcpp_a-binary.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/binary.cpp' object='src/libyamlcpp_a-binary.o' libtool=no @AMDEPBACKSLASH@
+.cpp.lo:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-binary.o `test -f 'src/binary.cpp' || echo '$(srcdir)/'`src/binary.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-src/libyamlcpp_a-binary.obj: src/binary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-binary.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-binary.Tpo -c -o src/libyamlcpp_a-binary.obj `if test -f 'src/binary.cpp'; then $(CYGPATH_W) 'src/binary.cpp'; else $(CYGPATH_W) '$(srcdir)/src/binary.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-binary.Tpo src/$(DEPDIR)/libyamlcpp_a-binary.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/binary.cpp' object='src/libyamlcpp_a-binary.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-binary.lo: src/binary.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-binary.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-binary.Tpo -c -o src/libyamlcpp_la-binary.lo `test -f 'src/binary.cpp' || echo '$(srcdir)/'`src/binary.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-binary.Tpo src/$(DEPDIR)/libyamlcpp_la-binary.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/binary.cpp' object='src/libyamlcpp_la-binary.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-binary.obj `if test -f 'src/binary.cpp'; then $(CYGPATH_W) 'src/binary.cpp'; else $(CYGPATH_W) '$(srcdir)/src/binary.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-binary.lo `test -f 'src/binary.cpp' || echo '$(srcdir)/'`src/binary.cpp
 
-src/libyamlcpp_a-convert.o: src/convert.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-convert.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-convert.Tpo -c -o src/libyamlcpp_a-convert.o `test -f 'src/convert.cpp' || echo '$(srcdir)/'`src/convert.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-convert.Tpo src/$(DEPDIR)/libyamlcpp_a-convert.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/convert.cpp' object='src/libyamlcpp_a-convert.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-convert.lo: src/convert.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-convert.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-convert.Tpo -c -o src/libyamlcpp_la-convert.lo `test -f 'src/convert.cpp' || echo '$(srcdir)/'`src/convert.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-convert.Tpo src/$(DEPDIR)/libyamlcpp_la-convert.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/convert.cpp' object='src/libyamlcpp_la-convert.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-convert.o `test -f 'src/convert.cpp' || echo '$(srcdir)/'`src/convert.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-convert.lo `test -f 'src/convert.cpp' || echo '$(srcdir)/'`src/convert.cpp
 
-src/libyamlcpp_a-convert.obj: src/convert.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-convert.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-convert.Tpo -c -o src/libyamlcpp_a-convert.obj `if test -f 'src/convert.cpp'; then $(CYGPATH_W) 'src/convert.cpp'; else $(CYGPATH_W) '$(srcdir)/src/convert.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-convert.Tpo src/$(DEPDIR)/libyamlcpp_a-convert.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/convert.cpp' object='src/libyamlcpp_a-convert.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-directives.lo: src/directives.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-directives.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-directives.Tpo -c -o src/libyamlcpp_la-directives.lo `test -f 'src/directives.cpp' || echo '$(srcdir)/'`src/directives.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-directives.Tpo src/$(DEPDIR)/libyamlcpp_la-directives.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/directives.cpp' object='src/libyamlcpp_la-directives.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-convert.obj `if test -f 'src/convert.cpp'; then $(CYGPATH_W) 'src/convert.cpp'; else $(CYGPATH_W) '$(srcdir)/src/convert.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-directives.lo `test -f 'src/directives.cpp' || echo '$(srcdir)/'`src/directives.cpp
 
-src/libyamlcpp_a-directives.o: src/directives.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-directives.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-directives.Tpo -c -o src/libyamlcpp_a-directives.o `test -f 'src/directives.cpp' || echo '$(srcdir)/'`src/directives.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-directives.Tpo src/$(DEPDIR)/libyamlcpp_a-directives.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/directives.cpp' object='src/libyamlcpp_a-directives.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-emit.lo: src/emit.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-emit.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-emit.Tpo -c -o src/libyamlcpp_la-emit.lo `test -f 'src/emit.cpp' || echo '$(srcdir)/'`src/emit.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-emit.Tpo src/$(DEPDIR)/libyamlcpp_la-emit.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emit.cpp' object='src/libyamlcpp_la-emit.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-directives.o `test -f 'src/directives.cpp' || echo '$(srcdir)/'`src/directives.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-emit.lo `test -f 'src/emit.cpp' || echo '$(srcdir)/'`src/emit.cpp
 
-src/libyamlcpp_a-directives.obj: src/directives.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-directives.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-directives.Tpo -c -o src/libyamlcpp_a-directives.obj `if test -f 'src/directives.cpp'; then $(CYGPATH_W) 'src/directives.cpp'; else $(CYGPATH_W) '$(srcdir)/src/directives.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-directives.Tpo src/$(DEPDIR)/libyamlcpp_a-directives.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/directives.cpp' object='src/libyamlcpp_a-directives.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-emitfromevents.lo: src/emitfromevents.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-emitfromevents.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-emitfromevents.Tpo -c -o src/libyamlcpp_la-emitfromevents.lo `test -f 'src/emitfromevents.cpp' || echo '$(srcdir)/'`src/emitfromevents.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-emitfromevents.Tpo src/$(DEPDIR)/libyamlcpp_la-emitfromevents.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitfromevents.cpp' object='src/libyamlcpp_la-emitfromevents.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-directives.obj `if test -f 'src/directives.cpp'; then $(CYGPATH_W) 'src/directives.cpp'; else $(CYGPATH_W) '$(srcdir)/src/directives.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-emitfromevents.lo `test -f 'src/emitfromevents.cpp' || echo '$(srcdir)/'`src/emitfromevents.cpp
 
-src/libyamlcpp_a-emit.o: src/emit.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emit.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emit.Tpo -c -o src/libyamlcpp_a-emit.o `test -f 'src/emit.cpp' || echo '$(srcdir)/'`src/emit.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emit.Tpo src/$(DEPDIR)/libyamlcpp_a-emit.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emit.cpp' object='src/libyamlcpp_a-emit.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-emitter.lo: src/emitter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-emitter.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-emitter.Tpo -c -o src/libyamlcpp_la-emitter.lo `test -f 'src/emitter.cpp' || echo '$(srcdir)/'`src/emitter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-emitter.Tpo src/$(DEPDIR)/libyamlcpp_la-emitter.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitter.cpp' object='src/libyamlcpp_la-emitter.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emit.o `test -f 'src/emit.cpp' || echo '$(srcdir)/'`src/emit.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-emitter.lo `test -f 'src/emitter.cpp' || echo '$(srcdir)/'`src/emitter.cpp
 
-src/libyamlcpp_a-emit.obj: src/emit.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emit.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emit.Tpo -c -o src/libyamlcpp_a-emit.obj `if test -f 'src/emit.cpp'; then $(CYGPATH_W) 'src/emit.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emit.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emit.Tpo src/$(DEPDIR)/libyamlcpp_a-emit.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emit.cpp' object='src/libyamlcpp_a-emit.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-emitterstate.lo: src/emitterstate.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-emitterstate.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-emitterstate.Tpo -c -o src/libyamlcpp_la-emitterstate.lo `test -f 'src/emitterstate.cpp' || echo '$(srcdir)/'`src/emitterstate.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-emitterstate.Tpo src/$(DEPDIR)/libyamlcpp_la-emitterstate.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitterstate.cpp' object='src/libyamlcpp_la-emitterstate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emit.obj `if test -f 'src/emit.cpp'; then $(CYGPATH_W) 'src/emit.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emit.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-emitterstate.lo `test -f 'src/emitterstate.cpp' || echo '$(srcdir)/'`src/emitterstate.cpp
 
-src/libyamlcpp_a-emitfromevents.o: src/emitfromevents.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitfromevents.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Tpo -c -o src/libyamlcpp_a-emitfromevents.o `test -f 'src/emitfromevents.cpp' || echo '$(srcdir)/'`src/emitfromevents.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Tpo src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitfromevents.cpp' object='src/libyamlcpp_a-emitfromevents.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-emitterutils.lo: src/emitterutils.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-emitterutils.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-emitterutils.Tpo -c -o src/libyamlcpp_la-emitterutils.lo `test -f 'src/emitterutils.cpp' || echo '$(srcdir)/'`src/emitterutils.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-emitterutils.Tpo src/$(DEPDIR)/libyamlcpp_la-emitterutils.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitterutils.cpp' object='src/libyamlcpp_la-emitterutils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitfromevents.o `test -f 'src/emitfromevents.cpp' || echo '$(srcdir)/'`src/emitfromevents.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-emitterutils.lo `test -f 'src/emitterutils.cpp' || echo '$(srcdir)/'`src/emitterutils.cpp
 
-src/libyamlcpp_a-emitfromevents.obj: src/emitfromevents.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitfromevents.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Tpo -c -o src/libyamlcpp_a-emitfromevents.obj `if test -f 'src/emitfromevents.cpp'; then $(CYGPATH_W) 'src/emitfromevents.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitfromevents.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Tpo src/$(DEPDIR)/libyamlcpp_a-emitfromevents.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitfromevents.cpp' object='src/libyamlcpp_a-emitfromevents.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-exp.lo: src/exp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-exp.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-exp.Tpo -c -o src/libyamlcpp_la-exp.lo `test -f 'src/exp.cpp' || echo '$(srcdir)/'`src/exp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-exp.Tpo src/$(DEPDIR)/libyamlcpp_la-exp.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/exp.cpp' object='src/libyamlcpp_la-exp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitfromevents.obj `if test -f 'src/emitfromevents.cpp'; then $(CYGPATH_W) 'src/emitfromevents.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitfromevents.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-exp.lo `test -f 'src/exp.cpp' || echo '$(srcdir)/'`src/exp.cpp
 
-src/libyamlcpp_a-emitter.o: src/emitter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitter.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitter.Tpo -c -o src/libyamlcpp_a-emitter.o `test -f 'src/emitter.cpp' || echo '$(srcdir)/'`src/emitter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitter.Tpo src/$(DEPDIR)/libyamlcpp_a-emitter.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitter.cpp' object='src/libyamlcpp_a-emitter.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-memory.lo: src/memory.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-memory.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-memory.Tpo -c -o src/libyamlcpp_la-memory.lo `test -f 'src/memory.cpp' || echo '$(srcdir)/'`src/memory.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-memory.Tpo src/$(DEPDIR)/libyamlcpp_la-memory.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/memory.cpp' object='src/libyamlcpp_la-memory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitter.o `test -f 'src/emitter.cpp' || echo '$(srcdir)/'`src/emitter.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-memory.lo `test -f 'src/memory.cpp' || echo '$(srcdir)/'`src/memory.cpp
 
-src/libyamlcpp_a-emitter.obj: src/emitter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitter.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitter.Tpo -c -o src/libyamlcpp_a-emitter.obj `if test -f 'src/emitter.cpp'; then $(CYGPATH_W) 'src/emitter.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitter.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitter.Tpo src/$(DEPDIR)/libyamlcpp_a-emitter.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitter.cpp' object='src/libyamlcpp_a-emitter.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-node.lo: src/node.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-node.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-node.Tpo -c -o src/libyamlcpp_la-node.lo `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-node.Tpo src/$(DEPDIR)/libyamlcpp_la-node.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/node.cpp' object='src/libyamlcpp_la-node.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitter.obj `if test -f 'src/emitter.cpp'; then $(CYGPATH_W) 'src/emitter.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitter.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-node.lo `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
 
-src/libyamlcpp_a-emitterstate.o: src/emitterstate.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitterstate.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitterstate.Tpo -c -o src/libyamlcpp_a-emitterstate.o `test -f 'src/emitterstate.cpp' || echo '$(srcdir)/'`src/emitterstate.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitterstate.Tpo src/$(DEPDIR)/libyamlcpp_a-emitterstate.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitterstate.cpp' object='src/libyamlcpp_a-emitterstate.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-node_data.lo: src/node_data.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-node_data.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-node_data.Tpo -c -o src/libyamlcpp_la-node_data.lo `test -f 'src/node_data.cpp' || echo '$(srcdir)/'`src/node_data.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-node_data.Tpo src/$(DEPDIR)/libyamlcpp_la-node_data.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/node_data.cpp' object='src/libyamlcpp_la-node_data.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitterstate.o `test -f 'src/emitterstate.cpp' || echo '$(srcdir)/'`src/emitterstate.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-node_data.lo `test -f 'src/node_data.cpp' || echo '$(srcdir)/'`src/node_data.cpp
 
-src/libyamlcpp_a-emitterstate.obj: src/emitterstate.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitterstate.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitterstate.Tpo -c -o src/libyamlcpp_a-emitterstate.obj `if test -f 'src/emitterstate.cpp'; then $(CYGPATH_W) 'src/emitterstate.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitterstate.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitterstate.Tpo src/$(DEPDIR)/libyamlcpp_a-emitterstate.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitterstate.cpp' object='src/libyamlcpp_a-emitterstate.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-nodebuilder.lo: src/nodebuilder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-nodebuilder.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-nodebuilder.Tpo -c -o src/libyamlcpp_la-nodebuilder.lo `test -f 'src/nodebuilder.cpp' || echo '$(srcdir)/'`src/nodebuilder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-nodebuilder.Tpo src/$(DEPDIR)/libyamlcpp_la-nodebuilder.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/nodebuilder.cpp' object='src/libyamlcpp_la-nodebuilder.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitterstate.obj `if test -f 'src/emitterstate.cpp'; then $(CYGPATH_W) 'src/emitterstate.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitterstate.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-nodebuilder.lo `test -f 'src/nodebuilder.cpp' || echo '$(srcdir)/'`src/nodebuilder.cpp
 
-src/libyamlcpp_a-emitterutils.o: src/emitterutils.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitterutils.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitterutils.Tpo -c -o src/libyamlcpp_a-emitterutils.o `test -f 'src/emitterutils.cpp' || echo '$(srcdir)/'`src/emitterutils.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitterutils.Tpo src/$(DEPDIR)/libyamlcpp_a-emitterutils.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitterutils.cpp' object='src/libyamlcpp_a-emitterutils.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-nodeevents.lo: src/nodeevents.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-nodeevents.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-nodeevents.Tpo -c -o src/libyamlcpp_la-nodeevents.lo `test -f 'src/nodeevents.cpp' || echo '$(srcdir)/'`src/nodeevents.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-nodeevents.Tpo src/$(DEPDIR)/libyamlcpp_la-nodeevents.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/nodeevents.cpp' object='src/libyamlcpp_la-nodeevents.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitterutils.o `test -f 'src/emitterutils.cpp' || echo '$(srcdir)/'`src/emitterutils.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-nodeevents.lo `test -f 'src/nodeevents.cpp' || echo '$(srcdir)/'`src/nodeevents.cpp
 
-src/libyamlcpp_a-emitterutils.obj: src/emitterutils.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-emitterutils.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-emitterutils.Tpo -c -o src/libyamlcpp_a-emitterutils.obj `if test -f 'src/emitterutils.cpp'; then $(CYGPATH_W) 'src/emitterutils.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitterutils.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-emitterutils.Tpo src/$(DEPDIR)/libyamlcpp_a-emitterutils.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/emitterutils.cpp' object='src/libyamlcpp_a-emitterutils.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-null.lo: src/null.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-null.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-null.Tpo -c -o src/libyamlcpp_la-null.lo `test -f 'src/null.cpp' || echo '$(srcdir)/'`src/null.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-null.Tpo src/$(DEPDIR)/libyamlcpp_la-null.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/null.cpp' object='src/libyamlcpp_la-null.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-emitterutils.obj `if test -f 'src/emitterutils.cpp'; then $(CYGPATH_W) 'src/emitterutils.cpp'; else $(CYGPATH_W) '$(srcdir)/src/emitterutils.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-null.lo `test -f 'src/null.cpp' || echo '$(srcdir)/'`src/null.cpp
 
-src/libyamlcpp_a-exp.o: src/exp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-exp.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-exp.Tpo -c -o src/libyamlcpp_a-exp.o `test -f 'src/exp.cpp' || echo '$(srcdir)/'`src/exp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-exp.Tpo src/$(DEPDIR)/libyamlcpp_a-exp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/exp.cpp' object='src/libyamlcpp_a-exp.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-ostream_wrapper.lo: src/ostream_wrapper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-ostream_wrapper.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-ostream_wrapper.Tpo -c -o src/libyamlcpp_la-ostream_wrapper.lo `test -f 'src/ostream_wrapper.cpp' || echo '$(srcdir)/'`src/ostream_wrapper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-ostream_wrapper.Tpo src/$(DEPDIR)/libyamlcpp_la-ostream_wrapper.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ostream_wrapper.cpp' object='src/libyamlcpp_la-ostream_wrapper.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-exp.o `test -f 'src/exp.cpp' || echo '$(srcdir)/'`src/exp.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-ostream_wrapper.lo `test -f 'src/ostream_wrapper.cpp' || echo '$(srcdir)/'`src/ostream_wrapper.cpp
 
-src/libyamlcpp_a-exp.obj: src/exp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-exp.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-exp.Tpo -c -o src/libyamlcpp_a-exp.obj `if test -f 'src/exp.cpp'; then $(CYGPATH_W) 'src/exp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/exp.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-exp.Tpo src/$(DEPDIR)/libyamlcpp_a-exp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/exp.cpp' object='src/libyamlcpp_a-exp.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-parse.lo: src/parse.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-parse.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-parse.Tpo -c -o src/libyamlcpp_la-parse.lo `test -f 'src/parse.cpp' || echo '$(srcdir)/'`src/parse.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-parse.Tpo src/$(DEPDIR)/libyamlcpp_la-parse.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parse.cpp' object='src/libyamlcpp_la-parse.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-exp.obj `if test -f 'src/exp.cpp'; then $(CYGPATH_W) 'src/exp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/exp.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-parse.lo `test -f 'src/parse.cpp' || echo '$(srcdir)/'`src/parse.cpp
 
-src/libyamlcpp_a-memory.o: src/memory.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-memory.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-memory.Tpo -c -o src/libyamlcpp_a-memory.o `test -f 'src/memory.cpp' || echo '$(srcdir)/'`src/memory.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-memory.Tpo src/$(DEPDIR)/libyamlcpp_a-memory.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/memory.cpp' object='src/libyamlcpp_a-memory.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-parser.lo: src/parser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-parser.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-parser.Tpo -c -o src/libyamlcpp_la-parser.lo `test -f 'src/parser.cpp' || echo '$(srcdir)/'`src/parser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-parser.Tpo src/$(DEPDIR)/libyamlcpp_la-parser.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parser.cpp' object='src/libyamlcpp_la-parser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-memory.o `test -f 'src/memory.cpp' || echo '$(srcdir)/'`src/memory.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-parser.lo `test -f 'src/parser.cpp' || echo '$(srcdir)/'`src/parser.cpp
 
-src/libyamlcpp_a-memory.obj: src/memory.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-memory.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-memory.Tpo -c -o src/libyamlcpp_a-memory.obj `if test -f 'src/memory.cpp'; then $(CYGPATH_W) 'src/memory.cpp'; else $(CYGPATH_W) '$(srcdir)/src/memory.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-memory.Tpo src/$(DEPDIR)/libyamlcpp_a-memory.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/memory.cpp' object='src/libyamlcpp_a-memory.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-regex.lo: src/regex.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-regex.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-regex.Tpo -c -o src/libyamlcpp_la-regex.lo `test -f 'src/regex.cpp' || echo '$(srcdir)/'`src/regex.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-regex.Tpo src/$(DEPDIR)/libyamlcpp_la-regex.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/regex.cpp' object='src/libyamlcpp_la-regex.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-memory.obj `if test -f 'src/memory.cpp'; then $(CYGPATH_W) 'src/memory.cpp'; else $(CYGPATH_W) '$(srcdir)/src/memory.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-regex.lo `test -f 'src/regex.cpp' || echo '$(srcdir)/'`src/regex.cpp
 
-src/libyamlcpp_a-node.o: src/node.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-node.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-node.Tpo -c -o src/libyamlcpp_a-node.o `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-node.Tpo src/$(DEPDIR)/libyamlcpp_a-node.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/node.cpp' object='src/libyamlcpp_a-node.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-scanner.lo: src/scanner.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-scanner.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-scanner.Tpo -c -o src/libyamlcpp_la-scanner.lo `test -f 'src/scanner.cpp' || echo '$(srcdir)/'`src/scanner.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-scanner.Tpo src/$(DEPDIR)/libyamlcpp_la-scanner.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scanner.cpp' object='src/libyamlcpp_la-scanner.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-node.o `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-scanner.lo `test -f 'src/scanner.cpp' || echo '$(srcdir)/'`src/scanner.cpp
 
-src/libyamlcpp_a-node.obj: src/node.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-node.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-node.Tpo -c -o src/libyamlcpp_a-node.obj `if test -f 'src/node.cpp'; then $(CYGPATH_W) 'src/node.cpp'; else $(CYGPATH_W) '$(srcdir)/src/node.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-node.Tpo src/$(DEPDIR)/libyamlcpp_a-node.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/node.cpp' object='src/libyamlcpp_a-node.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-scanscalar.lo: src/scanscalar.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-scanscalar.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-scanscalar.Tpo -c -o src/libyamlcpp_la-scanscalar.lo `test -f 'src/scanscalar.cpp' || echo '$(srcdir)/'`src/scanscalar.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-scanscalar.Tpo src/$(DEPDIR)/libyamlcpp_la-scanscalar.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scanscalar.cpp' object='src/libyamlcpp_la-scanscalar.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-node.obj `if test -f 'src/node.cpp'; then $(CYGPATH_W) 'src/node.cpp'; else $(CYGPATH_W) '$(srcdir)/src/node.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-scanscalar.lo `test -f 'src/scanscalar.cpp' || echo '$(srcdir)/'`src/scanscalar.cpp
 
-src/libyamlcpp_a-node_data.o: src/node_data.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-node_data.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-node_data.Tpo -c -o src/libyamlcpp_a-node_data.o `test -f 'src/node_data.cpp' || echo '$(srcdir)/'`src/node_data.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-node_data.Tpo src/$(DEPDIR)/libyamlcpp_a-node_data.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/node_data.cpp' object='src/libyamlcpp_a-node_data.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-scantag.lo: src/scantag.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-scantag.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-scantag.Tpo -c -o src/libyamlcpp_la-scantag.lo `test -f 'src/scantag.cpp' || echo '$(srcdir)/'`src/scantag.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-scantag.Tpo src/$(DEPDIR)/libyamlcpp_la-scantag.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scantag.cpp' object='src/libyamlcpp_la-scantag.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-node_data.o `test -f 'src/node_data.cpp' || echo '$(srcdir)/'`src/node_data.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-scantag.lo `test -f 'src/scantag.cpp' || echo '$(srcdir)/'`src/scantag.cpp
 
-src/libyamlcpp_a-node_data.obj: src/node_data.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-node_data.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-node_data.Tpo -c -o src/libyamlcpp_a-node_data.obj `if test -f 'src/node_data.cpp'; then $(CYGPATH_W) 'src/node_data.cpp'; else $(CYGPATH_W) '$(srcdir)/src/node_data.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-node_data.Tpo src/$(DEPDIR)/libyamlcpp_a-node_data.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/node_data.cpp' object='src/libyamlcpp_a-node_data.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-scantoken.lo: src/scantoken.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-scantoken.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-scantoken.Tpo -c -o src/libyamlcpp_la-scantoken.lo `test -f 'src/scantoken.cpp' || echo '$(srcdir)/'`src/scantoken.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-scantoken.Tpo src/$(DEPDIR)/libyamlcpp_la-scantoken.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scantoken.cpp' object='src/libyamlcpp_la-scantoken.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-node_data.obj `if test -f 'src/node_data.cpp'; then $(CYGPATH_W) 'src/node_data.cpp'; else $(CYGPATH_W) '$(srcdir)/src/node_data.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-scantoken.lo `test -f 'src/scantoken.cpp' || echo '$(srcdir)/'`src/scantoken.cpp
 
-src/libyamlcpp_a-nodebuilder.o: src/nodebuilder.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-nodebuilder.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Tpo -c -o src/libyamlcpp_a-nodebuilder.o `test -f 'src/nodebuilder.cpp' || echo '$(srcdir)/'`src/nodebuilder.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Tpo src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/nodebuilder.cpp' object='src/libyamlcpp_a-nodebuilder.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-simplekey.lo: src/simplekey.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-simplekey.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-simplekey.Tpo -c -o src/libyamlcpp_la-simplekey.lo `test -f 'src/simplekey.cpp' || echo '$(srcdir)/'`src/simplekey.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-simplekey.Tpo src/$(DEPDIR)/libyamlcpp_la-simplekey.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/simplekey.cpp' object='src/libyamlcpp_la-simplekey.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-nodebuilder.o `test -f 'src/nodebuilder.cpp' || echo '$(srcdir)/'`src/nodebuilder.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-simplekey.lo `test -f 'src/simplekey.cpp' || echo '$(srcdir)/'`src/simplekey.cpp
 
-src/libyamlcpp_a-nodebuilder.obj: src/nodebuilder.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-nodebuilder.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Tpo -c -o src/libyamlcpp_a-nodebuilder.obj `if test -f 'src/nodebuilder.cpp'; then $(CYGPATH_W) 'src/nodebuilder.cpp'; else $(CYGPATH_W) '$(srcdir)/src/nodebuilder.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Tpo src/$(DEPDIR)/libyamlcpp_a-nodebuilder.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/nodebuilder.cpp' object='src/libyamlcpp_a-nodebuilder.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-singledocparser.lo: src/singledocparser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-singledocparser.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-singledocparser.Tpo -c -o src/libyamlcpp_la-singledocparser.lo `test -f 'src/singledocparser.cpp' || echo '$(srcdir)/'`src/singledocparser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-singledocparser.Tpo src/$(DEPDIR)/libyamlcpp_la-singledocparser.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/singledocparser.cpp' object='src/libyamlcpp_la-singledocparser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-nodebuilder.obj `if test -f 'src/nodebuilder.cpp'; then $(CYGPATH_W) 'src/nodebuilder.cpp'; else $(CYGPATH_W) '$(srcdir)/src/nodebuilder.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-singledocparser.lo `test -f 'src/singledocparser.cpp' || echo '$(srcdir)/'`src/singledocparser.cpp
 
-src/libyamlcpp_a-nodeevents.o: src/nodeevents.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-nodeevents.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-nodeevents.Tpo -c -o src/libyamlcpp_a-nodeevents.o `test -f 'src/nodeevents.cpp' || echo '$(srcdir)/'`src/nodeevents.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-nodeevents.Tpo src/$(DEPDIR)/libyamlcpp_a-nodeevents.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/nodeevents.cpp' object='src/libyamlcpp_a-nodeevents.o' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-stream.lo: src/stream.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-stream.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-stream.Tpo -c -o src/libyamlcpp_la-stream.lo `test -f 'src/stream.cpp' || echo '$(srcdir)/'`src/stream.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-stream.Tpo src/$(DEPDIR)/libyamlcpp_la-stream.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/stream.cpp' object='src/libyamlcpp_la-stream.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-nodeevents.o `test -f 'src/nodeevents.cpp' || echo '$(srcdir)/'`src/nodeevents.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-stream.lo `test -f 'src/stream.cpp' || echo '$(srcdir)/'`src/stream.cpp
 
-src/libyamlcpp_a-nodeevents.obj: src/nodeevents.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-nodeevents.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-nodeevents.Tpo -c -o src/libyamlcpp_a-nodeevents.obj `if test -f 'src/nodeevents.cpp'; then $(CYGPATH_W) 'src/nodeevents.cpp'; else $(CYGPATH_W) '$(srcdir)/src/nodeevents.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-nodeevents.Tpo src/$(DEPDIR)/libyamlcpp_a-nodeevents.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/nodeevents.cpp' object='src/libyamlcpp_a-nodeevents.obj' libtool=no @AMDEPBACKSLASH@
+src/libyamlcpp_la-tag.lo: src/tag.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_la-tag.lo -MD -MP -MF src/$(DEPDIR)/libyamlcpp_la-tag.Tpo -c -o src/libyamlcpp_la-tag.lo `test -f 'src/tag.cpp' || echo '$(srcdir)/'`src/tag.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_la-tag.Tpo src/$(DEPDIR)/libyamlcpp_la-tag.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/tag.cpp' object='src/libyamlcpp_la-tag.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-nodeevents.obj `if test -f 'src/nodeevents.cpp'; then $(CYGPATH_W) 'src/nodeevents.cpp'; else $(CYGPATH_W) '$(srcdir)/src/nodeevents.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_la-tag.lo `test -f 'src/tag.cpp' || echo '$(srcdir)/'`src/tag.cpp
 
-src/libyamlcpp_a-null.o: src/null.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-null.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-null.Tpo -c -o src/libyamlcpp_a-null.o `test -f 'src/null.cpp' || echo '$(srcdir)/'`src/null.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-null.Tpo src/$(DEPDIR)/libyamlcpp_a-null.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/null.cpp' object='src/libyamlcpp_a-null.o' libtool=no @AMDEPBACKSLASH@
+src/contrib/libyamlcpp_la-graphbuilder.lo: src/contrib/graphbuilder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/contrib/libyamlcpp_la-graphbuilder.lo -MD -MP -MF src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilder.Tpo -c -o src/contrib/libyamlcpp_la-graphbuilder.lo `test -f 'src/contrib/graphbuilder.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilder.Tpo src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilder.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/contrib/graphbuilder.cpp' object='src/contrib/libyamlcpp_la-graphbuilder.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-null.o `test -f 'src/null.cpp' || echo '$(srcdir)/'`src/null.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/contrib/libyamlcpp_la-graphbuilder.lo `test -f 'src/contrib/graphbuilder.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilder.cpp
 
-src/libyamlcpp_a-null.obj: src/null.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-null.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-null.Tpo -c -o src/libyamlcpp_a-null.obj `if test -f 'src/null.cpp'; then $(CYGPATH_W) 'src/null.cpp'; else $(CYGPATH_W) '$(srcdir)/src/null.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-null.Tpo src/$(DEPDIR)/libyamlcpp_a-null.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/null.cpp' object='src/libyamlcpp_a-null.obj' libtool=no @AMDEPBACKSLASH@
+src/contrib/libyamlcpp_la-graphbuilderadapter.lo: src/contrib/graphbuilderadapter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/contrib/libyamlcpp_la-graphbuilderadapter.lo -MD -MP -MF src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilderadapter.Tpo -c -o src/contrib/libyamlcpp_la-graphbuilderadapter.lo `test -f 'src/contrib/graphbuilderadapter.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilderadapter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilderadapter.Tpo src/contrib/$(DEPDIR)/libyamlcpp_la-graphbuilderadapter.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/contrib/graphbuilderadapter.cpp' object='src/contrib/libyamlcpp_la-graphbuilderadapter.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-null.obj `if test -f 'src/null.cpp'; then $(CYGPATH_W) 'src/null.cpp'; else $(CYGPATH_W) '$(srcdir)/src/null.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/contrib/libyamlcpp_la-graphbuilderadapter.lo `test -f 'src/contrib/graphbuilderadapter.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilderadapter.cpp
 
-src/libyamlcpp_a-ostream_wrapper.o: src/ostream_wrapper.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-ostream_wrapper.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Tpo -c -o src/libyamlcpp_a-ostream_wrapper.o `test -f 'src/ostream_wrapper.cpp' || echo '$(srcdir)/'`src/ostream_wrapper.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Tpo src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ostream_wrapper.cpp' object='src/libyamlcpp_a-ostream_wrapper.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-ostream_wrapper.o `test -f 'src/ostream_wrapper.cpp' || echo '$(srcdir)/'`src/ostream_wrapper.cpp
+mostlyclean-libtool:
+	-rm -f *.lo
 
-src/libyamlcpp_a-ostream_wrapper.obj: src/ostream_wrapper.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-ostream_wrapper.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Tpo -c -o src/libyamlcpp_a-ostream_wrapper.obj `if test -f 'src/ostream_wrapper.cpp'; then $(CYGPATH_W) 'src/ostream_wrapper.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ostream_wrapper.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Tpo src/$(DEPDIR)/libyamlcpp_a-ostream_wrapper.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ostream_wrapper.cpp' object='src/libyamlcpp_a-ostream_wrapper.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-ostream_wrapper.obj `if test -f 'src/ostream_wrapper.cpp'; then $(CYGPATH_W) 'src/ostream_wrapper.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ostream_wrapper.cpp'; fi`
-
-src/libyamlcpp_a-parse.o: src/parse.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-parse.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-parse.Tpo -c -o src/libyamlcpp_a-parse.o `test -f 'src/parse.cpp' || echo '$(srcdir)/'`src/parse.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-parse.Tpo src/$(DEPDIR)/libyamlcpp_a-parse.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parse.cpp' object='src/libyamlcpp_a-parse.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-parse.o `test -f 'src/parse.cpp' || echo '$(srcdir)/'`src/parse.cpp
-
-src/libyamlcpp_a-parse.obj: src/parse.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-parse.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-parse.Tpo -c -o src/libyamlcpp_a-parse.obj `if test -f 'src/parse.cpp'; then $(CYGPATH_W) 'src/parse.cpp'; else $(CYGPATH_W) '$(srcdir)/src/parse.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-parse.Tpo src/$(DEPDIR)/libyamlcpp_a-parse.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parse.cpp' object='src/libyamlcpp_a-parse.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-parse.obj `if test -f 'src/parse.cpp'; then $(CYGPATH_W) 'src/parse.cpp'; else $(CYGPATH_W) '$(srcdir)/src/parse.cpp'; fi`
-
-src/libyamlcpp_a-parser.o: src/parser.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-parser.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-parser.Tpo -c -o src/libyamlcpp_a-parser.o `test -f 'src/parser.cpp' || echo '$(srcdir)/'`src/parser.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-parser.Tpo src/$(DEPDIR)/libyamlcpp_a-parser.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parser.cpp' object='src/libyamlcpp_a-parser.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-parser.o `test -f 'src/parser.cpp' || echo '$(srcdir)/'`src/parser.cpp
-
-src/libyamlcpp_a-parser.obj: src/parser.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-parser.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-parser.Tpo -c -o src/libyamlcpp_a-parser.obj `if test -f 'src/parser.cpp'; then $(CYGPATH_W) 'src/parser.cpp'; else $(CYGPATH_W) '$(srcdir)/src/parser.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-parser.Tpo src/$(DEPDIR)/libyamlcpp_a-parser.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parser.cpp' object='src/libyamlcpp_a-parser.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-parser.obj `if test -f 'src/parser.cpp'; then $(CYGPATH_W) 'src/parser.cpp'; else $(CYGPATH_W) '$(srcdir)/src/parser.cpp'; fi`
-
-src/libyamlcpp_a-regex.o: src/regex.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-regex.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-regex.Tpo -c -o src/libyamlcpp_a-regex.o `test -f 'src/regex.cpp' || echo '$(srcdir)/'`src/regex.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-regex.Tpo src/$(DEPDIR)/libyamlcpp_a-regex.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/regex.cpp' object='src/libyamlcpp_a-regex.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-regex.o `test -f 'src/regex.cpp' || echo '$(srcdir)/'`src/regex.cpp
-
-src/libyamlcpp_a-regex.obj: src/regex.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-regex.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-regex.Tpo -c -o src/libyamlcpp_a-regex.obj `if test -f 'src/regex.cpp'; then $(CYGPATH_W) 'src/regex.cpp'; else $(CYGPATH_W) '$(srcdir)/src/regex.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-regex.Tpo src/$(DEPDIR)/libyamlcpp_a-regex.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/regex.cpp' object='src/libyamlcpp_a-regex.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-regex.obj `if test -f 'src/regex.cpp'; then $(CYGPATH_W) 'src/regex.cpp'; else $(CYGPATH_W) '$(srcdir)/src/regex.cpp'; fi`
-
-src/libyamlcpp_a-scanner.o: src/scanner.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scanner.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scanner.Tpo -c -o src/libyamlcpp_a-scanner.o `test -f 'src/scanner.cpp' || echo '$(srcdir)/'`src/scanner.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scanner.Tpo src/$(DEPDIR)/libyamlcpp_a-scanner.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scanner.cpp' object='src/libyamlcpp_a-scanner.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scanner.o `test -f 'src/scanner.cpp' || echo '$(srcdir)/'`src/scanner.cpp
-
-src/libyamlcpp_a-scanner.obj: src/scanner.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scanner.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scanner.Tpo -c -o src/libyamlcpp_a-scanner.obj `if test -f 'src/scanner.cpp'; then $(CYGPATH_W) 'src/scanner.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scanner.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scanner.Tpo src/$(DEPDIR)/libyamlcpp_a-scanner.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scanner.cpp' object='src/libyamlcpp_a-scanner.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scanner.obj `if test -f 'src/scanner.cpp'; then $(CYGPATH_W) 'src/scanner.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scanner.cpp'; fi`
-
-src/libyamlcpp_a-scanscalar.o: src/scanscalar.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scanscalar.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scanscalar.Tpo -c -o src/libyamlcpp_a-scanscalar.o `test -f 'src/scanscalar.cpp' || echo '$(srcdir)/'`src/scanscalar.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scanscalar.Tpo src/$(DEPDIR)/libyamlcpp_a-scanscalar.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scanscalar.cpp' object='src/libyamlcpp_a-scanscalar.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scanscalar.o `test -f 'src/scanscalar.cpp' || echo '$(srcdir)/'`src/scanscalar.cpp
-
-src/libyamlcpp_a-scanscalar.obj: src/scanscalar.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scanscalar.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scanscalar.Tpo -c -o src/libyamlcpp_a-scanscalar.obj `if test -f 'src/scanscalar.cpp'; then $(CYGPATH_W) 'src/scanscalar.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scanscalar.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scanscalar.Tpo src/$(DEPDIR)/libyamlcpp_a-scanscalar.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scanscalar.cpp' object='src/libyamlcpp_a-scanscalar.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scanscalar.obj `if test -f 'src/scanscalar.cpp'; then $(CYGPATH_W) 'src/scanscalar.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scanscalar.cpp'; fi`
-
-src/libyamlcpp_a-scantag.o: src/scantag.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scantag.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scantag.Tpo -c -o src/libyamlcpp_a-scantag.o `test -f 'src/scantag.cpp' || echo '$(srcdir)/'`src/scantag.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scantag.Tpo src/$(DEPDIR)/libyamlcpp_a-scantag.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scantag.cpp' object='src/libyamlcpp_a-scantag.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scantag.o `test -f 'src/scantag.cpp' || echo '$(srcdir)/'`src/scantag.cpp
-
-src/libyamlcpp_a-scantag.obj: src/scantag.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scantag.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scantag.Tpo -c -o src/libyamlcpp_a-scantag.obj `if test -f 'src/scantag.cpp'; then $(CYGPATH_W) 'src/scantag.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scantag.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scantag.Tpo src/$(DEPDIR)/libyamlcpp_a-scantag.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scantag.cpp' object='src/libyamlcpp_a-scantag.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scantag.obj `if test -f 'src/scantag.cpp'; then $(CYGPATH_W) 'src/scantag.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scantag.cpp'; fi`
-
-src/libyamlcpp_a-scantoken.o: src/scantoken.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scantoken.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scantoken.Tpo -c -o src/libyamlcpp_a-scantoken.o `test -f 'src/scantoken.cpp' || echo '$(srcdir)/'`src/scantoken.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scantoken.Tpo src/$(DEPDIR)/libyamlcpp_a-scantoken.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scantoken.cpp' object='src/libyamlcpp_a-scantoken.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scantoken.o `test -f 'src/scantoken.cpp' || echo '$(srcdir)/'`src/scantoken.cpp
-
-src/libyamlcpp_a-scantoken.obj: src/scantoken.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-scantoken.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-scantoken.Tpo -c -o src/libyamlcpp_a-scantoken.obj `if test -f 'src/scantoken.cpp'; then $(CYGPATH_W) 'src/scantoken.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scantoken.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-scantoken.Tpo src/$(DEPDIR)/libyamlcpp_a-scantoken.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/scantoken.cpp' object='src/libyamlcpp_a-scantoken.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-scantoken.obj `if test -f 'src/scantoken.cpp'; then $(CYGPATH_W) 'src/scantoken.cpp'; else $(CYGPATH_W) '$(srcdir)/src/scantoken.cpp'; fi`
-
-src/libyamlcpp_a-simplekey.o: src/simplekey.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-simplekey.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-simplekey.Tpo -c -o src/libyamlcpp_a-simplekey.o `test -f 'src/simplekey.cpp' || echo '$(srcdir)/'`src/simplekey.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-simplekey.Tpo src/$(DEPDIR)/libyamlcpp_a-simplekey.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/simplekey.cpp' object='src/libyamlcpp_a-simplekey.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-simplekey.o `test -f 'src/simplekey.cpp' || echo '$(srcdir)/'`src/simplekey.cpp
-
-src/libyamlcpp_a-simplekey.obj: src/simplekey.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-simplekey.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-simplekey.Tpo -c -o src/libyamlcpp_a-simplekey.obj `if test -f 'src/simplekey.cpp'; then $(CYGPATH_W) 'src/simplekey.cpp'; else $(CYGPATH_W) '$(srcdir)/src/simplekey.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-simplekey.Tpo src/$(DEPDIR)/libyamlcpp_a-simplekey.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/simplekey.cpp' object='src/libyamlcpp_a-simplekey.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-simplekey.obj `if test -f 'src/simplekey.cpp'; then $(CYGPATH_W) 'src/simplekey.cpp'; else $(CYGPATH_W) '$(srcdir)/src/simplekey.cpp'; fi`
-
-src/libyamlcpp_a-singledocparser.o: src/singledocparser.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-singledocparser.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-singledocparser.Tpo -c -o src/libyamlcpp_a-singledocparser.o `test -f 'src/singledocparser.cpp' || echo '$(srcdir)/'`src/singledocparser.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-singledocparser.Tpo src/$(DEPDIR)/libyamlcpp_a-singledocparser.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/singledocparser.cpp' object='src/libyamlcpp_a-singledocparser.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-singledocparser.o `test -f 'src/singledocparser.cpp' || echo '$(srcdir)/'`src/singledocparser.cpp
-
-src/libyamlcpp_a-singledocparser.obj: src/singledocparser.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-singledocparser.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-singledocparser.Tpo -c -o src/libyamlcpp_a-singledocparser.obj `if test -f 'src/singledocparser.cpp'; then $(CYGPATH_W) 'src/singledocparser.cpp'; else $(CYGPATH_W) '$(srcdir)/src/singledocparser.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-singledocparser.Tpo src/$(DEPDIR)/libyamlcpp_a-singledocparser.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/singledocparser.cpp' object='src/libyamlcpp_a-singledocparser.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-singledocparser.obj `if test -f 'src/singledocparser.cpp'; then $(CYGPATH_W) 'src/singledocparser.cpp'; else $(CYGPATH_W) '$(srcdir)/src/singledocparser.cpp'; fi`
-
-src/libyamlcpp_a-stream.o: src/stream.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-stream.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-stream.Tpo -c -o src/libyamlcpp_a-stream.o `test -f 'src/stream.cpp' || echo '$(srcdir)/'`src/stream.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-stream.Tpo src/$(DEPDIR)/libyamlcpp_a-stream.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/stream.cpp' object='src/libyamlcpp_a-stream.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-stream.o `test -f 'src/stream.cpp' || echo '$(srcdir)/'`src/stream.cpp
-
-src/libyamlcpp_a-stream.obj: src/stream.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-stream.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-stream.Tpo -c -o src/libyamlcpp_a-stream.obj `if test -f 'src/stream.cpp'; then $(CYGPATH_W) 'src/stream.cpp'; else $(CYGPATH_W) '$(srcdir)/src/stream.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-stream.Tpo src/$(DEPDIR)/libyamlcpp_a-stream.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/stream.cpp' object='src/libyamlcpp_a-stream.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-stream.obj `if test -f 'src/stream.cpp'; then $(CYGPATH_W) 'src/stream.cpp'; else $(CYGPATH_W) '$(srcdir)/src/stream.cpp'; fi`
-
-src/libyamlcpp_a-tag.o: src/tag.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-tag.o -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-tag.Tpo -c -o src/libyamlcpp_a-tag.o `test -f 'src/tag.cpp' || echo '$(srcdir)/'`src/tag.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-tag.Tpo src/$(DEPDIR)/libyamlcpp_a-tag.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/tag.cpp' object='src/libyamlcpp_a-tag.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-tag.o `test -f 'src/tag.cpp' || echo '$(srcdir)/'`src/tag.cpp
-
-src/libyamlcpp_a-tag.obj: src/tag.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/libyamlcpp_a-tag.obj -MD -MP -MF src/$(DEPDIR)/libyamlcpp_a-tag.Tpo -c -o src/libyamlcpp_a-tag.obj `if test -f 'src/tag.cpp'; then $(CYGPATH_W) 'src/tag.cpp'; else $(CYGPATH_W) '$(srcdir)/src/tag.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libyamlcpp_a-tag.Tpo src/$(DEPDIR)/libyamlcpp_a-tag.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/tag.cpp' object='src/libyamlcpp_a-tag.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/libyamlcpp_a-tag.obj `if test -f 'src/tag.cpp'; then $(CYGPATH_W) 'src/tag.cpp'; else $(CYGPATH_W) '$(srcdir)/src/tag.cpp'; fi`
-
-src/contrib/libyamlcpp_a-graphbuilder.o: src/contrib/graphbuilder.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/contrib/libyamlcpp_a-graphbuilder.o -MD -MP -MF src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Tpo -c -o src/contrib/libyamlcpp_a-graphbuilder.o `test -f 'src/contrib/graphbuilder.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilder.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Tpo src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/contrib/graphbuilder.cpp' object='src/contrib/libyamlcpp_a-graphbuilder.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/contrib/libyamlcpp_a-graphbuilder.o `test -f 'src/contrib/graphbuilder.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilder.cpp
-
-src/contrib/libyamlcpp_a-graphbuilder.obj: src/contrib/graphbuilder.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/contrib/libyamlcpp_a-graphbuilder.obj -MD -MP -MF src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Tpo -c -o src/contrib/libyamlcpp_a-graphbuilder.obj `if test -f 'src/contrib/graphbuilder.cpp'; then $(CYGPATH_W) 'src/contrib/graphbuilder.cpp'; else $(CYGPATH_W) '$(srcdir)/src/contrib/graphbuilder.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Tpo src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilder.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/contrib/graphbuilder.cpp' object='src/contrib/libyamlcpp_a-graphbuilder.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/contrib/libyamlcpp_a-graphbuilder.obj `if test -f 'src/contrib/graphbuilder.cpp'; then $(CYGPATH_W) 'src/contrib/graphbuilder.cpp'; else $(CYGPATH_W) '$(srcdir)/src/contrib/graphbuilder.cpp'; fi`
-
-src/contrib/libyamlcpp_a-graphbuilderadapter.o: src/contrib/graphbuilderadapter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/contrib/libyamlcpp_a-graphbuilderadapter.o -MD -MP -MF src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Tpo -c -o src/contrib/libyamlcpp_a-graphbuilderadapter.o `test -f 'src/contrib/graphbuilderadapter.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilderadapter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Tpo src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/contrib/graphbuilderadapter.cpp' object='src/contrib/libyamlcpp_a-graphbuilderadapter.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/contrib/libyamlcpp_a-graphbuilderadapter.o `test -f 'src/contrib/graphbuilderadapter.cpp' || echo '$(srcdir)/'`src/contrib/graphbuilderadapter.cpp
-
-src/contrib/libyamlcpp_a-graphbuilderadapter.obj: src/contrib/graphbuilderadapter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT src/contrib/libyamlcpp_a-graphbuilderadapter.obj -MD -MP -MF src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Tpo -c -o src/contrib/libyamlcpp_a-graphbuilderadapter.obj `if test -f 'src/contrib/graphbuilderadapter.cpp'; then $(CYGPATH_W) 'src/contrib/graphbuilderadapter.cpp'; else $(CYGPATH_W) '$(srcdir)/src/contrib/graphbuilderadapter.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Tpo src/contrib/$(DEPDIR)/libyamlcpp_a-graphbuilderadapter.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/contrib/graphbuilderadapter.cpp' object='src/contrib/libyamlcpp_a-graphbuilderadapter.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libyamlcpp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o src/contrib/libyamlcpp_a-graphbuilderadapter.obj `if test -f 'src/contrib/graphbuilderadapter.cpp'; then $(CYGPATH_W) 'src/contrib/graphbuilderadapter.cpp'; else $(CYGPATH_W) '$(srcdir)/src/contrib/graphbuilderadapter.cpp'; fi`
+clean-libtool:
+	-rm -rf .libs _libs
+	-rm -rf src/.libs src/_libs
+	-rm -rf src/contrib/.libs src/contrib/_libs
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1003,7 +842,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -1041,7 +880,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf src/$(DEPDIR) src/contrib/$(DEPDIR)
@@ -1096,7 +936,8 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -1111,17 +952,18 @@ uninstall-am:
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	clean-libtool clean-noinstLTLIBRARIES cscopelist-am ctags \
+	ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 

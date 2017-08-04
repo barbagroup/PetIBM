@@ -9,11 +9,8 @@
 #include "decoupledibpm.h"
 #include "utilities/types.h"
 
+using namespace petibm;
 
-namespace petibm
-{
-namespace applications
-{
 
 DecoupledIBPMSolver::DecoupledIBPMSolver()
 {
@@ -476,6 +473,3 @@ PetscErrorCode DecoupledIBPMSolver::finalize()
 
 	PetscFunctionReturn(0);
 } // finalize
-
-} // end of namespace applications
-} // end of namespace petibm

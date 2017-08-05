@@ -10,7 +10,8 @@ check_PROGRAMS = delta-test \
 
 AM_CPPFLAGS = -I$(top_srcdir)/src \
               -I$(top_srcdir)/external/gtest-1.8.0/include \
-              -I$(top_srcdir)/external/yaml-cpp-0.5.1/include
+              -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
+              -I$(top_srcdir)/external/boost-1.57.0
 
 LDADD = $(top_builddir)/src/libpetibm.la \
         $(top_builddir)/external/gtest-1.8.0/libgtest.a \

@@ -22,6 +22,7 @@ AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_AWK
+AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 AC_PROG_CC_C_O
@@ -35,14 +36,15 @@ AC_TYPE_INT64_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # check for header files
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h stddef.h stdlib.h string.h strings.h sys/param.h sys/time.h sys/timeb.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h stddef.h stdlib.h string.h strings.h sys/param.h sys/socket.h sys/time.h sys/timeb.h unistd.h wchar.h wctype.h])
 
 # check for library functions
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday memset mkdir munmap pow regcomp rmdir socket sqrt strcasecmp strchr strdup strerror strrchr strstr strtol strtoull])
+AC_FUNC_ERROR_AT_LINE
+AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday localtime_r memset mkdir munmap pow regcomp rmdir socket sqrt strcasecmp strchr strdup strerror strrchr strstr strtol strtoull])
 
 # check for optional and required third-party libraries
 PACKAGE_INITIALIZE_ENVIRONMENT

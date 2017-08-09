@@ -19467,7 +19467,7 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile src/Makefile src/utilities/Makefile src/operators/Makefile src/linSolvers/Makefile external/Makefile external/yaml-cpp-0.5.1/Makefile external/gtest-1.8.0/Makefile external/AmgXWrapper-1.0-beta2/Makefile tests/Makefile tests/utilities/Makefile applications/Makefile applications/navierstokes/Makefile applications/decoupledibpm/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/utilities/Makefile src/operators/Makefile src/linSolvers/Makefile external/Makefile external/yaml-cpp-0.5.1/Makefile external/gtest-1.8.0/Makefile external/AmgXWrapper-1.0-beta2/Makefile tests/Makefile tests/utilities/Makefile tests/operators/Makefile applications/Makefile applications/navierstokes/Makefile applications/decoupledibpm/Makefile"
 
 
 # output message
@@ -20611,6 +20611,7 @@ do
     "external/AmgXWrapper-1.0-beta2/Makefile") CONFIG_FILES="$CONFIG_FILES external/AmgXWrapper-1.0-beta2/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "tests/utilities/Makefile") CONFIG_FILES="$CONFIG_FILES tests/utilities/Makefile" ;;
+    "tests/operators/Makefile") CONFIG_FILES="$CONFIG_FILES tests/operators/Makefile" ;;
     "applications/Makefile") CONFIG_FILES="$CONFIG_FILES applications/Makefile" ;;
     "applications/navierstokes/Makefile") CONFIG_FILES="$CONFIG_FILES applications/navierstokes/Makefile" ;;
     "applications/decoupledibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/decoupledibpm/Makefile" ;;

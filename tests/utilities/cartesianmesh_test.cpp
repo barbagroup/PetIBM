@@ -27,7 +27,7 @@ protected:
 	{
 		YAML::Node config;
 		FlowDescription flow;
-		parser::parseYAMLConfigFile("data/config3d.yaml", config);
+		parser::parseYAMLConfigFile("utilities/data/config3d.yaml", config);
 		flow = FlowDescription(PETSC_COMM_WORLD, config["flowDescription"]);
 		mesh = CartesianMesh(PETSC_COMM_WORLD,
 		                     config["cartesianMesh"],
@@ -38,6 +38,7 @@ protected:
 	virtual void TearDown(){  };
 
 	CartesianMesh mesh;
+	std::string directory = ".";
 }; // CartesianMeshTest
 
 
@@ -45,7 +46,7 @@ TEST_F(CartesianMeshTest, init3D)
 {
 	YAML::Node config;
 	FlowDescription flow;
-	parser::parseYAMLConfigFile("data/config3d.yaml", config);
+	parser::parseYAMLConfigFile("utilities/data/config3d.yaml", config);
 	flow = FlowDescription(PETSC_COMM_WORLD, config["flowDescription"]);
 	mesh.init(PETSC_COMM_WORLD,
             config["cartesianMesh"],

@@ -1,8 +1,3 @@
-TESTS = delta-test \
-        singlebody-test \
-        cartesianmesh-test \
-        singleboundary-test
-
 check_PROGRAMS = delta-test \
                  singlebody-test \
                  cartesianmesh-test \

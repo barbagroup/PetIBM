@@ -67,6 +67,7 @@ AC_CONFIG_FILES([Makefile
                  external/AmgXWrapper-1.0-beta2/Makefile
                  tests/Makefile
                  tests/utilities/Makefile
+                 tests/operators/Makefile
                  applications/Makefile
                  applications/navierstokes/Makefile
                  applications/decoupledibpm/Makefile])

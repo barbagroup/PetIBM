@@ -31,21 +31,21 @@ protected:
 		YAML::Node config;
 		FlowDescription flow;
 		// create 2D mesh and body
-		parser::parseYAMLConfigFile("data/config2d.yaml", config);
+		parser::parseYAMLConfigFile("utilities/data/config2d.yaml", config);
 		flow = FlowDescription(PETSC_COMM_WORLD, config["flowDescription"]);
 		mesh2d = CartesianMesh(PETSC_COMM_WORLD,
 		                       config["cartesianMesh"],
 		                       flow.BCInfo,
 		                       types::str2out["Binary"]);
-		body2d = SingleBody(mesh2d, "data/body2d.txt", "body2d");
+		body2d = SingleBody(mesh2d, "utilities/data/body2d.txt", "body2d");
 		// create 3D mesh and body
-		parser::parseYAMLConfigFile("data/config3d.yaml", config);
+		parser::parseYAMLConfigFile("utilities/data/config3d.yaml", config);
 		flow = FlowDescription(PETSC_COMM_WORLD, config["flowDescription"]);
 		mesh3d = CartesianMesh(PETSC_COMM_WORLD,
 		                       config["cartesianMesh"],
 		                       flow.BCInfo,
 		                       types::str2out["Binary"]);
-		body3d = SingleBody(mesh3d, "data/body3d.txt", "body3d");
+		body3d = SingleBody(mesh3d, "utilities/data/body3d.txt", "body3d");
 	};
 	
 	virtual void TearDown(){  };
@@ -58,7 +58,7 @@ protected:
 
 TEST_F(SingleBodyTest, initWithFilePath2D)
 {
-	body2d.init(mesh2d, "data/body2d.txt", "body2d");
+	body2d.init(mesh2d, "utilities/data/body2d.txt", "body2d");
 	ASSERT_EQ(2, body2d.dim);
 	ASSERT_EQ("body2d", body2d.name);
 	ASSERT_EQ(4, body2d.nPts);
@@ -78,7 +78,7 @@ TEST_F(SingleBodyTest, initWithFilePath2D)
 
 TEST_F(SingleBodyTest, initWithFilePath3D)
 {
-	body3d.init(mesh3d, "data/body3d.txt", "body3d");
+	body3d.init(mesh3d, "utilities/data/body3d.txt", "body3d");
 	ASSERT_EQ(3, body3d.dim);
 	ASSERT_EQ("body3d", body3d.name);
 	ASSERT_EQ(8, body3d.nPts);

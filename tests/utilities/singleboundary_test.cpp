@@ -29,7 +29,7 @@ protected:
 		YAML::Node config;
 		FlowDescription flow;
 		CartesianMesh mesh;
-		parser::parseYAMLConfigFile("data/config3d.yaml", config);
+		parser::parseYAMLConfigFile("utilities/data/config3d.yaml", config);
 		flow = FlowDescription(PETSC_COMM_WORLD, config["flowDescription"]);
 		mesh = CartesianMesh(PETSC_COMM_WORLD,
 		                     config["cartesianMesh"],
@@ -46,7 +46,7 @@ protected:
 TEST_F(SingleBoundaryTest, init)
 {
 	YAML::Node config;
-	parser::parseYAMLConfigFile("data/config3d.yaml", config);
+	parser::parseYAMLConfigFile("utilities/data/config3d.yaml", config);
 	FlowDescription flow = FlowDescription(PETSC_COMM_WORLD,
 	                                       config["flowDescription"]);
 	CartesianMesh mesh = CartesianMesh(PETSC_COMM_WORLD,

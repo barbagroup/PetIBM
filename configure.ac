@@ -47,8 +47,7 @@ AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday memset mkdir munmap 
 # check for optional and required third-party libraries
 PACKAGE_INITIALIZE_ENVIRONMENT
 CONFIGURE_PETSC
-AC_ARG_WITH([amgx],, [CHECK_VERSION_OPENMPI
-                      CONFIGURE_CUDA
+AC_ARG_WITH([amgx],, [CONFIGURE_CUDA
                       CONFIGURE_AMGX])
 AM_CONDITIONAL([WITH_AMGXWRAPPER], [test "x$WITH_AMGX" = xyes])
 PACKAGE_SETUP_ENVIRONMENT

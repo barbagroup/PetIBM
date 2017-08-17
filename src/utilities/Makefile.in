@@ -93,8 +93,7 @@ POST_UNINSTALL = :
 
 subdir = src/utilities
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
-	$(top_srcdir)/m4/configure_amgx.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \

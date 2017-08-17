@@ -6549,121 +6549,6 @@ if test "${with_amgx+set}" = set; then :
   withval=$with_amgx;
 
 echo
-echo "========================"
-echo "Check version of OpenMPI"
-echo "========================"
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "mpi.h" "ac_cv_header_mpi_h" "$ac_includes_default"
-if test "x$ac_cv_header_mpi_h" = xyes; then :
-
-else
-  as_fn_error $? "could not find header file mpi.h" "$LINENO" 5
-fi
-
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenMPI" >&5
-$as_echo_n "checking for OpenMPI... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#include <mpi.h>
-
-int
-main ()
-{
-
-#ifdef OMPI_MPI_H
-#else
-asdf
-#endif
-
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  IS_OMPI=yes
-else
-  IS_OMPI=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${IS_OMPI}" >&5
-$as_echo "${IS_OMPI}" >&6; }
-if test "$IS_OMPI" = no; then
-  as_fn_error $? "must use OpenMPI (AmgX works with OpenMPI)" "$LINENO" 5
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for version of OpenMPI" >&5
-$as_echo_n "checking for version of OpenMPI... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#include <mpi.h>
-# define CHECK (OMPI_MAJOR_VERSION >= 1 && OMPI_MINOR_VERSION >= 8)
-
-int
-main ()
-{
-
-#if (CHECK)
-#else
-asdf
-#endif
-
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  OMPI_VERSION_VALID=yes
-else
-  OMPI_VERSION_VALID=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${OMPI_VERSION_VALID}" >&5
-$as_echo "${OMPI_VERSION_VALID}" >&6; }
-if test "$OMPI_VERSION_VALID" = no; then
-  as_fn_error $? "OpenMPI should not be older than version 1.8 (AmgX currently only accept OpenMPI 1.8)" "$LINENO" 5
-fi
-
-
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
-
-echo
-
-
-
-
-echo
 echo "================================="
 echo "Configuring optional package CUDA"
 echo "================================="
@@ -6720,40 +6605,6 @@ else
 fi
 
 
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CUDA version" >&5
-$as_echo_n "checking for CUDA version... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#include <cuda_runtime.h>
-#define CUDART_VERSION_EQ65 (CUDART_VERSION==6050)
-
-int
-main ()
-{
-
-#if (CUDART_VERSION_EQ65)
-#else
-asdf
-#endif
-
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  CUDART_VERSION_VALID=yes
-else
-  CUDART_VERSION_VALID=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${CUDART_VERSION_VALID}" >&5
-$as_echo "${CUDART_VERSION_VALID}" >&6; }
-if test "$CUDART_VERSION_VALID" = no; then
-  as_fn_error $? "invalid CUDA version detected; please use CUDA 6.5" "$LINENO" 5
-fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cudaRuntimeGetVersion in -lcudart" >&5
 $as_echo_n "checking for cudaRuntimeGetVersion in -lcudart... " >&6; }
@@ -6965,7 +6816,7 @@ fi
 $as_echo "$as_me: using AMGX_DIR: $AMGX_DIR" >&6;}
 
 AMGX_INC_PATH=-I`find $AMGX_DIR -name amgx_c.h | sed -e 's/\/amgx_c.h//g'`
-AMGX_LIB_PATH=-L`find $AMGX_DIR -name libamgxsh.so | sed -e 's/\/libamgxsh.so//g'`
+AMGX_LIB_PATH=-L$AMGX_DIR/lib
 AMGX_LIBRARY=-lamgxsh
 
 CPPFLAGS="$AMGX_INC_PATH $CPPFLAGS"

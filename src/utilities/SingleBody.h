@@ -21,6 +21,11 @@
 # include "CartesianMesh.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 // TODO: the way we store coords and meshIdx is different from CartesianMesh. 
 //       Will this cause confusion?
 /** \brief class for a single body. */
@@ -259,3 +264,6 @@ protected:
      */
     PetscErrorCode createInfoString();
 };
+
+} // end of namespace utilities
+} // end of namespace petibm

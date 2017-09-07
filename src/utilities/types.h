@@ -19,6 +19,10 @@
 # include <petscmat.h>
 
 
+/** \brief shortcut of namespace std::experimental::filesystem */
+namespace stdfs = std::experimental::filesystem;
+
+
 /** \brief operator < for MatStencil for using it as a key to map. 
  *
  * For the detail of implimentation, please refer to 
@@ -27,8 +31,10 @@
 bool operator<(const MatStencil &, const MatStencil &);
 
 
-/** \brief shortcut of namespace std::experimental::filesystem */
-namespace stdfs = std::experimental::filesystem;
+namespace petibm
+{
+namespace utilities
+{
 
 /** \brief frequently used types are defined here */
 namespace types
@@ -244,7 +250,10 @@ namespace types
      *         matrix coefficient based on BCs.
      */
     typedef std::vector<std::map<MatStencil, RowModifier>> MatrixModifier;
-}
+
+} // end of namespace types
+} // end of namespace utilities
+} // end of namespace petibm
 
 /**
  * \class PetscInt

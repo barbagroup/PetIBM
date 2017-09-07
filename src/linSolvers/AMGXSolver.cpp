@@ -7,6 +7,11 @@
 #include "AMGXSolver.h"
 
 
+namespace petibm
+{
+namespace linsolvers
+{
+
 /** \copydoc KSPSolver::KSPSolver. */
 AMGXSolver::AMGXSolver(const std::string &_name, const std::string &_options):
     LinSolver(_name, _options) { init(); }
@@ -68,3 +73,6 @@ PetscErrorCode AMGXSolver::printInfo(PetscViewer viewer)
     // TODO: implement it.
     PetscFunctionReturn(0);
 }
+
+} // end of namespace linsolvers
+} // end of namespace petibm

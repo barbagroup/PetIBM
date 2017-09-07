@@ -1,32 +1,16 @@
-SUBDIRS = utilities solvers
+SUBDIRS = utilities \
+          operators \
+          linSolvers
 
-bin_PROGRAMS = petibm2d \
-               petibm3d
+lib_LTLIBRARIES = libpetibm.la
 
-petibm2d_SOURCES = PetIBM.cpp
+libpetibm_la_SOURCES =
 
-petibm2d_CPPFLAGS = -I$(srcdir)/utilities \
-                    -I$(srcdir)/solvers \
-                    -D DIMENSIONS=2
-
-petibm2d_LDADD = solvers/libsolvers.a \
-                 utilities/libutilities.a \
-                 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
+libpetibm_la_LIBADD = $(top_builddir)/src/linSolvers/liblinsolvers.la \
+                      $(top_builddir)/src/operators/liboperators.la \
+                      $(top_builddir)/src/utilities/libutilities.la \
+                      $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la
 
 if WITH_AMGXWRAPPER
-petibm2d_LDADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
-endif
-
-petibm3d_SOURCES = PetIBM.cpp
-
-petibm3d_CPPFLAGS = -I$(srcdir)/utilities \
-                    -I$(srcdir)/solvers \
-                    -D DIMENSIONS=3
-
-petibm3d_LDADD = solvers/libsolvers.a \
-                 utilities/libutilities.a \
-                 $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
-
-if WITH_AMGXWRAPPER
-petibm3d_LDADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
+libpetibm_la_LIBADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.la
 endif

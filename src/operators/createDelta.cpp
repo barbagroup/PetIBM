@@ -11,27 +11,36 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "CartesianMesh.h"
-# include "BodyPack.h"
-# include "SingleBody.h"
-# include "types.h"
-# include "delta.h"
+# include "utilities/CartesianMesh.h"
+# include "utilities/BodyPack.h"
+# include "utilities/SingleBody.h"
+# include "utilities/types.h"
+# include "utilities/delta.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 // TODO: it's anti-readiable that we mix the use of local and global Lagrangian index
 // TODO: no pre-allocation for D matrix, this may be inefficient, though it works
 
 
 PetscErrorCode getWindowAndDistance(const PetscInt &dim,
-        const types::IntVec1D &n, const types::GhostedVec2D &coords,
-        const std::vector<bool> &periodic, const types::RealVec1D &L,
-        const types::IntVec1D &IJK, const types::RealVec1D &XYZ,
-        types::IntVec2D &targets, types::RealVec2D &targetdLs);
+        const utilities::types::IntVec1D &n,
+        const utilities::types::GhostedVec2D &coords,
+        const std::vector<bool> &periodic,
+        const utilities::types::RealVec1D &L,
+        const utilities::types::IntVec1D &IJK,
+        const utilities::types::RealVec1D &XYZ,
+        utilities::types::IntVec2D &targets,
+        utilities::types::RealVec2D &targetdLs);
 
 
 /** \copydoc createDelta(const CartesianMesh &, const BodyPack &, Mat &). */
-PetscErrorCode createDelta(
-        const CartesianMesh &mesh, const BodyPack &bodies, Mat &D)
+PetscErrorCode createDelta(const utilities::CartesianMesh &mesh,
+                           const utilities::BodyPack &bodies, Mat &D)
 {
     PetscFunctionBeginUser;
 
@@ -41,12 +50,12 @@ PetscErrorCode createDelta(
     std::vector<bool>   periodic(mesh.dim);
 
     // domain sizes for periodic cases
-    types::RealVec1D    L(mesh.dim);
+    utilities::types::RealVec1D    L(mesh.dim);
 
     // get periodic flags and domain sizes
     for(PetscInt f=0; f<mesh.dim; ++f)
     {
-        using namespace types; // only valid in this for loop
+        using namespace utilities::types; // only valid in this for loop
 
         periodic[f] = ((*mesh.bcInfo)[BCLoc(2*f)][u].type == PERIODIC);
 
@@ -67,23 +76,23 @@ PetscErrorCode createDelta(
     for(PetscInt bIdx=0; bIdx<bodies.nBodies; ++bIdx)
     {
         // get an alias of current body for code simplicity
-        const SingleBody    &bd = bodies.bodies[bIdx];
+        const utilities::SingleBody    &bd = bodies.bodies[bIdx];
 
         // loop through all local points of this body
         for(PetscInt iLcl=0, iGlb=bd.bgPt; iLcl<bd.nLclPts; iLcl++, iGlb++)
         {
             // get alias of coordinates and background index of current point
-            const types::IntVec1D   &IJK = bd.meshIdx[iLcl];
-            const types::RealVec1D  &XYZ = bd.coords[iGlb];
+            const utilities::types::IntVec1D   &IJK = bd.meshIdx[iLcl];
+            const utilities::types::RealVec1D  &XYZ = bd.coords[iGlb];
 
             // loop through all degree of freedom
             for(PetscInt dof=0; dof<bd.dim; ++dof)
             {
                 PetscInt            row; // row in packed matrix
-                types::IntVec2D     targets; // index of valid velocity points
-                types::RealVec2D    targetdLs; // distance to velocity points
-                types::IntVec1D     cols;
-                types::RealVec1D    values;
+                utilities::types::IntVec2D     targets; // index of valid velocity points
+                utilities::types::RealVec2D    targetdLs; // distance to velocity points
+                utilities::types::IntVec1D     cols;
+                utilities::types::RealVec1D    values;
 
                 // get row index
                 ierr = bodies.getPackedGlobalIndex(
@@ -99,15 +108,15 @@ PetscErrorCode createDelta(
 
                 if (mesh.dim == 3)
                 {
-                    for(PetscInt k=0; k<targets[2].size(); ++k)
+                    for(unsigned int k=0; k<targets[2].size(); ++k)
                     {
                         const PetscReal &hz = mesh.dL[dof][2][targets[2][k]];
 
-                        for(PetscInt j=0; j<targets[1].size(); ++j)
+                        for(unsigned int j=0; j<targets[1].size(); ++j)
                         {
                             const PetscReal &hy = mesh.dL[dof][1][targets[1][j]];
 
-                            for(PetscInt i=0; i<targets[0].size(); ++i)
+                            for(unsigned int i=0; i<targets[0].size(); ++i)
                             {
                                 const PetscReal &hx = mesh.dL[dof][0][targets[0][i]];
 
@@ -118,8 +127,10 @@ PetscErrorCode createDelta(
                                         dof, targets[0][i], targets[1][j], 
                                         targets[0][k], col); CHKERRQ(ierr);
 
-                                value = delta::Roma_et_al(targetdLs[0][i], hx,
-                                        targetdLs[1][j], hy, targetdLs[2][k], hz);
+                                value = utilities::delta::Roma_et_al(
+                                    targetdLs[0][i], hx,
+                                    targetdLs[1][j], hy,
+                                    targetdLs[2][k], hz);
 
                                 cols.push_back(col);
                                 values.push_back(value);
@@ -129,11 +140,11 @@ PetscErrorCode createDelta(
                 }
                 else
                 {
-                    for(PetscInt j=0; j<targets[1].size(); ++j)
+                    for(unsigned int j=0; j<targets[1].size(); ++j)
                     {
                         const PetscReal &hy = mesh.dL[dof][1][targets[1][j]];
 
-                        for(PetscInt i=0; i<targets[0].size(); ++i)
+                        for(unsigned int i=0; i<targets[0].size(); ++i)
                         {
                             const PetscReal &hx = mesh.dL[dof][0][targets[0][i]];
 
@@ -144,7 +155,7 @@ PetscErrorCode createDelta(
                                     dof, targets[0][i], targets[1][j], 
                                     0, col); CHKERRQ(ierr);
 
-                            value = delta::Roma_et_al(
+                            value = utilities::delta::Roma_et_al(
                                     targetdLs[0][i], hx, targetdLs[1][j], hy);
 
                             cols.push_back(col);
@@ -168,10 +179,14 @@ PetscErrorCode createDelta(
 
 
 PetscErrorCode getWindowAndDistance(const PetscInt &dim,
-        const types::IntVec1D &n, const types::GhostedVec2D &coords,
-        const std::vector<bool> &periodic, const types::RealVec1D &L,
-        const types::IntVec1D &IJK, const types::RealVec1D &XYZ,
-        types::IntVec2D &targets, types::RealVec2D &targetdLs)
+        const utilities::types::IntVec1D &n,
+        const utilities::types::GhostedVec2D &coords,
+        const std::vector<bool> &periodic,
+        const utilities::types::RealVec1D &L,
+        const utilities::types::IntVec1D &IJK,
+        const utilities::types::RealVec1D &XYZ,
+        utilities::types::IntVec2D &targets,
+        utilities::types::RealVec2D &targetdLs)
 {
     PetscFunctionBeginUser;
 
@@ -209,3 +224,6 @@ PetscErrorCode getWindowAndDistance(const PetscInt &dim,
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

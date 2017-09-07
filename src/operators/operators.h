@@ -11,11 +11,16 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "CartesianMesh.h"
-# include "Boundary.h"
-# include "BodyPack.h"
-# include "types.h"
+# include "utilities/CartesianMesh.h"
+# include "utilities/Boundary.h"
+# include "utilities/BodyPack.h"
+# include "utilities/types.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 /**
  * \brief create normalization matrix R.
@@ -27,7 +32,7 @@
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createR(const CartesianMesh &mesh, Mat &R);
+PetscErrorCode createR(const utilities::CartesianMesh &mesh, Mat &R);
 
 
 /**
@@ -40,7 +45,7 @@ PetscErrorCode createR(const CartesianMesh &mesh, Mat &R);
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createRInv(const CartesianMesh &mesh, Mat &RInv);
+PetscErrorCode createRInv(const utilities::CartesianMesh &mesh, Mat &RInv);
 
 
 /**
@@ -53,7 +58,7 @@ PetscErrorCode createRInv(const CartesianMesh &mesh, Mat &RInv);
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createMHead(const CartesianMesh &mesh, Mat &MHead);
+PetscErrorCode createMHead(const utilities::CartesianMesh &mesh, Mat &MHead);
 
 
 /**
@@ -66,7 +71,7 @@ PetscErrorCode createMHead(const CartesianMesh &mesh, Mat &MHead);
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createM(const CartesianMesh &mesh, Mat &M);
+PetscErrorCode createM(const utilities::CartesianMesh &mesh, Mat &M);
 
 
 /**
@@ -79,7 +84,7 @@ PetscErrorCode createM(const CartesianMesh &mesh, Mat &M);
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createIdentity(const CartesianMesh &mesh, Mat &I);
+PetscErrorCode createIdentity(const utilities::CartesianMesh &mesh, Mat &I);
 
 
 /**
@@ -94,8 +99,9 @@ PetscErrorCode createIdentity(const CartesianMesh &mesh, Mat &I);
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createGradient(const CartesianMesh &mesh, 
-        Mat &G, const PetscBool &normalize=PETSC_TRUE);
+PetscErrorCode createGradient(const utilities::CartesianMesh &mesh, 
+                              Mat &G,
+                              const PetscBool &normalize=PETSC_TRUE);
 
 
 /**
@@ -112,9 +118,11 @@ PetscErrorCode createGradient(const CartesianMesh &mesh,
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &D, Mat &DCorrection, 
-        const PetscBool &normalize=PETSC_TRUE);
+PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
+                                const utilities::Boundary &bc, 
+                                Mat &D,
+                                Mat &DCorrection, 
+                                const PetscBool &normalize=PETSC_TRUE);
 
 
 /**
@@ -129,8 +137,10 @@ PetscErrorCode createDivergence(const CartesianMesh &mesh, const Boundary &bc,
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createLaplacian(
-        const CartesianMesh &mesh, const Boundary &bc, Mat &L, Mat &LCorrection);
+PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
+                               const utilities::Boundary &bc,
+                               Mat &L,
+                               Mat &LCorrection);
 
 
 /**
@@ -146,8 +156,9 @@ PetscErrorCode createLaplacian(
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createConvection(
-        const CartesianMesh &mesh, const Boundary &bd, Mat &H);
+PetscErrorCode createConvection(const utilities::CartesianMesh &mesh,
+                                const utilities::Boundary &bd,
+                                Mat &H);
 
 
 /**
@@ -239,5 +250,9 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
  *
  * \return PetscErrorCode.
  */
-PetscErrorCode createDelta(
-        const CartesianMesh &mesh, const BodyPack &bodies, Mat &Delta);
+PetscErrorCode createDelta(const utilities::CartesianMesh &mesh,
+                           const utilities::BodyPack &bodies,
+                           Mat &Delta);
+
+} // end of namespace operators
+} // end of namespace petibm

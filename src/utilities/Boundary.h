@@ -19,6 +19,11 @@
 # include "types.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 class Boundary
 {
 public:
@@ -58,3 +63,6 @@ protected:
 private:
 
 };
+
+} // end of namespace utilities
+} // end of namespace petibm

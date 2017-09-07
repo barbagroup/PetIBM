@@ -14,6 +14,11 @@
 # include "LinSolver.h"
 
 
+namespace petibm
+{
+namespace linsolvers
+{
+
 /*!
  * \class AMGXSolver
  * \brief Iterative solver using wrapper for AmgX.
@@ -50,3 +55,6 @@ private:
     virtual PetscErrorCode init();
 
 }; // AMGXSolver
+
+} // end of namespace linsolvers
+} // end of namespace petibm

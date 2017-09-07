@@ -11,8 +11,12 @@
 #include "TimeIntegration.h"
 
 
-using namespace types;
+namespace petibm
+{
+namespace utilities
+{
 
+using namespace types;
 
 /** \copydoc TimeIntegration::TimeIntegration(). */
 TimeIntegration::TimeIntegration() = default;
@@ -66,3 +70,6 @@ PetscErrorCode TimeIntegration::init(const TimeScheme &method)
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

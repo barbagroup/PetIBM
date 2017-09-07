@@ -11,6 +11,11 @@
 # include "BodyPack.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 /** \copydoc BodyPack::BodyPack(). */
 BodyPack::BodyPack() = default;
 
@@ -349,3 +354,6 @@ PetscErrorCode BodyPack::writeAvgForce(const PetscReal &dt,
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

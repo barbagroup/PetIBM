@@ -15,20 +15,26 @@
 # endif
 
 
+namespace petibm
+{
+namespace linsolvers
+{
+
 /** \copydoc createLinSolver. */
 PetscErrorCode createLinSolver(const std::string &solverName, 
-        const std::string &configFile, const types::ExecuteType &type,
+        const std::string &configFile,
+        const petibm::utilities::types::ExecuteType &type,
         std::shared_ptr<LinSolver> &solver)
 {
     PetscFunctionBeginUser;
 
     switch (type)
     {
-        case types::ExecuteType::CPU:
+        case petibm::utilities::types::ExecuteType::CPU:
             solver = std::shared_ptr<LinSolver>(
                     new KSPSolver(solverName, configFile));
             break;
-        case types::ExecuteType::GPU:
+        case petibm::utilities::types::ExecuteType::GPU:
 # ifdef HAVE_AMGX
             solver = std::shared_ptr<LinSolver>(
                     new AMGXSolver(solverName, configFile));
@@ -44,3 +50,6 @@ PetscErrorCode createLinSolver(const std::string &solverName,
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace linsolvers
+} // end of namespace petibm

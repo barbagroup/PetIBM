@@ -1,0 +1,2 @@
+SUBDIRS = navierstokes \
+					decoupledibpm

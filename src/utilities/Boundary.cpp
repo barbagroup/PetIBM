@@ -11,8 +11,12 @@
 #include "Boundary.h"
 
 
-using namespace types;
+namespace petibm
+{
+namespace utilities
+{
 
+using namespace types;
 
 /** \copydoc Boundary::Boundary() */
 Boundary::Boundary() = default;
@@ -30,8 +34,6 @@ Boundary::Boundary(const CartesianMesh &mesh) { init(mesh); }
 PetscErrorCode Boundary::init(const CartesianMesh &_mesh)
 {
     PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
 
     // create a shared pointer to mesh; bad practice...
     mesh = std::shared_ptr<const CartesianMesh>(&_mesh, [](const CartesianMesh*){}); 
@@ -120,3 +122,6 @@ PetscErrorCode Boundary::copyValues2LocalVecs(std::vector<Vec> &lclVecs) const
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

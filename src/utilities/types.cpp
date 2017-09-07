@@ -28,6 +28,10 @@ bool operator<(const MatStencil &l, const MatStencil &r)
 }
 
 
+namespace petibm
+{
+namespace utilities
+{
 /** \copydoc types */
 namespace types
 {
@@ -109,4 +113,7 @@ namespace types
     /** \copydoc types::out2str */
     std::map<OutputType, std::string> out2str {
         {Binary, "Binary"}, {VTK, "VTK"}, {HDF5, "HDF5"}};
-}
+
+} // end of namespace types
+} // end of namespace utilities
+} // end of namespace petibm

@@ -5,223 +5,9 @@
  * Distributed under terms of the MIT license.
  */
 
-
 // here goes our own headers
 # include "parser.h"
 # include "misc.h"
-
-
-using namespace types;
-
-
-/** \copydoc parser::parseYAMLConfigFile */
-PetscErrorCode parser::parseYAMLConfigFile(
-        const std::string &dir, YAML::Node &node)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode  ierr;
-
-    stdfs::path p = stdfs::system_complete(dir);
-
-    if (! stdfs::exists(p.append("config.yaml")))
-        SETERRQ1(PETSC_COMM_WORLD, 65, 
-                "Can not find config.yaml in %s !!", p.parent_path().c_str());
-
-    node = YAML::LoadFile(p);
-
-    node["caseDir"] = p.parent_path().c_str();
-    node["configFile"] = p.filename().c_str();
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc parser::parseSimulationParameters */
-PetscErrorCode parser::parseSimulationParameters(const YAML::Node &param,
-        OutputInfo  &output, LinSolverInfo &velocity, LinSolverInfo &poisson,
-        SchemeInfo  &methods, SteppingInfo &stepping)
-{
-    PetscFunctionBeginUser;
-
-    output = param.as<OutputInfo>();
-    velocity = param["velocitySolver"].as<LinSolverInfo>();
-    poisson = param["poissonSolver"].as<LinSolverInfo>();
-    methods = param.as<SchemeInfo>();
-    stepping = param.as<SteppingInfo>();
-
-    PetscFunctionReturn(0);
-}
-
-
-
-/** \copydoc parser::parseFlowDescription */
-PetscErrorCode parser::parseFlowDescription(
-        const YAML::Node &flowNode, PetscInt &dim, PetscReal &nu, 
-        PetscBool &customIC, RealVec1D &IC, Perturbation &pertb, 
-        PetscInt &nBC, BCInfoHolder &BCInfo)
-{
-    PetscFunctionBeginUser;
-
-    // viscosity
-    nu = flowNode["nu"].as<PetscReal>();
-
-    // the flag for customized initial velocity
-    customIC = flowNode["initialCustomField"].as<PetscBool>(PETSC_FALSE);
-
-    // get dimension
-    dim = flowNode["initialVelocity"].size();
-
-    // reset the size of IC to dim
-    IC.resize(dim);
-
-    // asign values to IC
-    for(unsigned int i=0; i<dim; ++i)
-        IC[i] = flowNode["initialVelocity"][i].as<PetscReal>();
-
-    // perturbation
-    pertb = flowNode["perturbation"].as<
-        Perturbation>(Perturbation());
-
-    // boundary conditions
-    BCInfo = flowNode["boundaryConditions"].as<BCInfoHolder>();
-
-    // number of bcs
-    nBC = BCInfo.size();
-
-    // check the number of BCs
-    if (nBC != (2*dim))
-        SETERRQ2(PETSC_COMM_WORLD, 60, "The number of BCs does not match ! "
-                "There should be %d BCs, while we only get %d from YAML file.",
-                2 * dim, nBC);
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc parser::parseMesh */
-PetscErrorCode parser::parseMesh(
-        const YAML::Node &meshNode, PetscInt &dim, RealVec1D &bg, 
-        RealVec1D &ed, IntVec1D &nTotal, RealVec2D &dL)
-{
-    using namespace types;
-
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-
-    // get the dimension of the mesh; no checking here
-    dim = meshNode.size();
-
-    // loop through all dimensions
-    for(auto ax: meshNode)
-    {
-        // note that the order of dimensions in the YAML file is not guaranteed,
-        // so we have to use some temporary variables
-        PetscInt    dir, nTotalAx;
-        PetscReal   bgAx, edAx;
-        RealVec1D    dLAx;
-
-        // parse current dimension
-        ierr = parseOneAxis(ax, dir, bgAx, edAx, nTotalAx, dLAx); CHKERRQ(ierr);
-
-        // assign results back
-        bg[dir] = bgAx;
-        ed[dir] = edAx;
-        nTotal[dir] = nTotalAx;
-        dL[dir] = dLAx;
-    }
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc parser::parseOneAxis */
-PetscErrorCode parser::parseOneAxis(
-        const YAML::Node &axis, PetscInt &dir, PetscReal &bg, 
-        PetscReal &ed, PetscInt &nTotal, RealVec1D &dL)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-
-    // a map to transform a string to int
-
-    // get the direction
-    dir = PetscInt(axis["direction"].as<Dir>());
-
-    // get the far left boundary
-    bg = axis["start"].as<PetscReal>();
-
-    // parse sub-domains
-    ierr = parseSubDomains(axis["subDomains"], bg, nTotal, ed, dL); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc parser::parseSubDomains */
-PetscErrorCode parser::parseSubDomains(
-        const YAML::Node &subs, const PetscReal bg,
-        PetscInt &nTotal, PetscReal &ed, RealVec1D &dL)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode  ierr;
-
-    // initialize nTotal
-    nTotal = 0;
-
-    // initialize max
-    ed = bg;
-
-    // initialize dL
-    dL = RealVec1D();
-
-    // loop through all subdomains
-    for(auto sub: subs)
-    {
-        RealVec1D   dLSub;  // cell sizes of the subdomains
-        PetscInt    nSub;  // number of the cells of the subdomains
-
-        // the 1st ed is passed by value, while the 2nd one is by reference
-        ierr = parseOneSubDomain(sub, ed, nSub, ed, dLSub); CHKERRQ(ierr);
-
-        // add number of the subdomain to total number of cells
-        nTotal += nSub;
-
-        // append the subdomain dL to global dL
-        dL.insert(dL.end(), dLSub.begin(), dLSub.end());
-    }
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc parser::parseOneSubDomain */
-PetscErrorCode parser::parseOneSubDomain(
-        const YAML::Node &sub, const PetscReal bg,
-        PetscInt &n, PetscReal &ed, RealVec1D &dL)
-{
-    PetscFunctionBeginUser;
-
-    // get the number of the cells in this subdomain
-    n = sub["cells"].as<PetscInt>();
-
-    // get the end of the subdomain
-    ed = sub["end"].as<PetscReal>();
-    
-    // get the stretching ratio
-    PetscReal   r = sub["stretchRatio"].as<PetscReal>();
-
-    // obtain the cell sizes
-    if (std::abs(r - 1.0) <= 1e-12)
-        dL = RealVec1D(n, (ed - bg) / n);  // uniform grid
-    else
-        misc::stretchGrid(bg, ed, n, r, dL);  // stretch grid
-
-    PetscFunctionReturn(0);
-}
 
 
 /**
@@ -231,6 +17,9 @@ PetscErrorCode parser::parseOneSubDomain(
  */
 namespace YAML
 {
+
+using namespace petibm::utilities::types;
+
     // for Dir
     Node convert<Dir>::encode(const Dir &dir)
     {
@@ -366,7 +155,8 @@ namespace YAML
         return Load(out.c_str());
     }
 
-    bool convert<BCTypeValuePair>::decode(const Node &node, BCTypeValuePair &bcInfo)
+    bool convert<BCTypeValuePair>::decode(const Node &node,
+                                          BCTypeValuePair &bcInfo)
     {
         if((! node[0].IsDefined()) || (! node[1].IsDefined())) return false;
 
@@ -379,7 +169,6 @@ namespace YAML
     Node convert<BCInfoHolder>::encode(const BCInfoHolder &bc)
     {
         Node    node(NodeType::Sequence);
-        int     counter = 0;
         for(auto loc: bc)
         {
             Node childNode(NodeType::Map);
@@ -398,10 +187,8 @@ namespace YAML
         for(auto loc: node)
             for(auto comp: loc)
                 if (comp.first.as<std::string>() != "location")
-                    bc
-                        [loc["location"].as<BCLoc>()]
-                        [comp.first.as<Field>()]
-                            = comp.second.as<BCTypeValuePair>();
+                    bc[loc["location"].as<BCLoc>()][comp.first.as<Field>()]
+                    		= comp.second.as<BCTypeValuePair>();
         return true;
     }
 
@@ -468,8 +255,8 @@ namespace YAML
 
     bool convert<OutputInfo>::decode(const Node &node, OutputInfo &output)
     {
-        using namespace types;
-        output.format = node["outputFormat"].as<OutputType>(OutputType::Binary);
+        output.format = 
+        		node["outputFormat"].as<OutputType>(OutputType::Binary);
         output.outputFlux = node["outputFlux"].as<PetscBool>(PETSC_TRUE);
         output.outputVelocity = node["outputVelocity"].as<PetscBool>(PETSC_FALSE);
         return true;
@@ -486,7 +273,6 @@ namespace YAML
 
     bool convert<LinSolverInfo>::decode(const Node &node, LinSolverInfo &solver)
     {
-        using namespace types;
         solver.type = node["type"].as<ExecuteType>(ExecuteType::CPU);
         solver.config = node["config"].as<std::string>("");
         return true;
@@ -504,7 +290,6 @@ namespace YAML
 
     bool convert<SchemeInfo>::decode(const Node &node, SchemeInfo &scheme)
     {
-        using namespace types;
         scheme.ibm = node["ibm"].as<IBMethod>(IBMethod::NAVIER_STOKES);
         scheme.convection = node["convection"].as<TimeScheme>(TimeScheme::ADAMS_BASHFORTH_2);
         scheme.diffusion = node["diffusion"].as<TimeScheme>(TimeScheme::CRANK_NICOLSON);
@@ -525,8 +310,6 @@ namespace YAML
 
     bool convert<SteppingInfo>::decode(const Node &node, SteppingInfo &stepping)
     {
-        using namespace types;
-
         stepping.dt = node["dt"].as<PetscReal>();
         stepping.nStart = node["startStep"].as<PetscInt>(0);
         stepping.nTotal = node["nt"].as<PetscInt>(1);
@@ -535,4 +318,227 @@ namespace YAML
         return true;
     }
     
+} // end of namespace YAML
+
+
+namespace petibm
+{
+namespace utilities
+{
+namespace parser
+{
+
+/** \copydoc parser::parseYAMLConfigFile */
+PetscErrorCode parseYAMLConfigFile(
+        const std::string &filepath, YAML::Node &node)
+{
+    PetscFunctionBeginUser;
+
+    stdfs::path path = stdfs::system_complete(filepath);
+
+    if (! stdfs::exists(path))
+        SETERRQ1(PETSC_COMM_WORLD, 65,
+                 "Configuration file (%s) does not exist.", path.c_str());
+
+    node = YAML::LoadFile(path);
+
+    node["caseDir"] = path.parent_path().c_str();
+    node["configFile"] = path.filename().c_str();
+
+    PetscFunctionReturn(0);
 }
+
+
+/** \copydoc parser::parseSimulationParameters */
+PetscErrorCode parseSimulationParameters(const YAML::Node &param,
+                                         types::OutputInfo  &output,
+                                         types::LinSolverInfo &velocity,
+                                         types::LinSolverInfo &poisson,
+                                         types::SchemeInfo &methods,
+                                         types::SteppingInfo &stepping)
+{
+    PetscFunctionBeginUser;
+
+    output = param.as<types::OutputInfo>();
+    velocity = param["velocitySolver"].as<types::LinSolverInfo>();
+    poisson = param["poissonSolver"].as<types::LinSolverInfo>();
+    methods = param.as<types::SchemeInfo>();
+    stepping = param.as<types::SteppingInfo>();
+
+    PetscFunctionReturn(0);
+}
+
+
+
+/** \copydoc parser::parseFlowDescription */
+PetscErrorCode parseFlowDescription(const YAML::Node &flowNode,
+                                    PetscInt &dim, PetscReal &nu,
+                                    PetscBool &customIC, types::RealVec1D &IC,
+                                    types::Perturbation &pertb, PetscInt &nBC,
+                                    types::BCInfoHolder &BCInfo)
+{
+    PetscFunctionBeginUser;
+
+    // viscosity
+    nu = flowNode["nu"].as<PetscReal>();
+
+    // the flag for customized initial velocity
+    customIC = flowNode["initialCustomField"].as<PetscBool>(PETSC_FALSE);
+
+    // get dimension
+    dim = flowNode["initialVelocity"].size();
+
+    // reset the size of IC to dim
+    IC.resize(dim);
+
+    // asign values to IC
+    for(int i=0; i<dim; ++i)
+        IC[i] = flowNode["initialVelocity"][i].as<PetscReal>();
+
+    // perturbation
+    pertb = flowNode["perturbation"].as<types::Perturbation>(
+    		types::Perturbation());
+
+    // boundary conditions
+    BCInfo = flowNode["boundaryConditions"].as<types::BCInfoHolder>();
+
+    // number of bcs
+    nBC = BCInfo.size();
+
+    // check the number of BCs
+    if (nBC != (2*dim))
+        SETERRQ2(PETSC_COMM_WORLD, 60, "The number of BCs does not match ! "
+                "There should be %d BCs, while we only get %d from YAML file.",
+                2 * dim, nBC);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc parser::parseMesh */
+PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
+                         types::RealVec1D &bg, types::RealVec1D &ed,
+                         types::IntVec1D &nTotal, types::RealVec2D &dL)
+{
+    using namespace types;
+
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    // get the dimension of the mesh; no checking here
+    dim = meshNode.size();
+
+    // loop through all dimensions
+    for(auto ax: meshNode)
+    {
+        // note that the order of dimensions in the YAML file is not guaranteed,
+        // so we have to use some temporary variables
+        PetscInt    dir, nTotalAx;
+        PetscReal   bgAx, edAx;
+        types::RealVec1D    dLAx;
+
+        // parse current dimension
+        ierr = parseOneAxis(ax, dir, bgAx, edAx, nTotalAx, dLAx); CHKERRQ(ierr);
+
+        // assign results back
+        bg[dir] = bgAx;
+        ed[dir] = edAx;
+        nTotal[dir] = nTotalAx;
+        dL[dir] = dLAx;
+    }
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc parser::parseOneAxis */
+PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
+                            PetscReal &bg, PetscReal &ed, PetscInt &nTotal,
+                            types::RealVec1D &dL)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    // a map to transform a string to int
+
+    // get the direction
+    dir = PetscInt(axis["direction"].as<types::Dir>());
+
+    // get the far left boundary
+    bg = axis["start"].as<PetscReal>();
+
+    // parse sub-domains
+    ierr = parseSubDomains(axis["subDomains"], bg, nTotal, ed, dL); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc parser::parseSubDomains */
+PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
+                               PetscInt &nTotal, PetscReal &ed,
+                               types::RealVec1D &dL)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode  ierr;
+
+    // initialize nTotal
+    nTotal = 0;
+
+    // initialize max
+    ed = bg;
+
+    // initialize dL
+    dL = types::RealVec1D();
+
+    // loop through all subdomains
+    for(auto sub: subs)
+    {
+        types::RealVec1D   dLSub;  // cell sizes of the subdomains
+        PetscInt           nSub;  // number of the cells of the subdomains
+
+        // the 1st ed is passed by value, while the 2nd one is by reference
+        ierr = parseOneSubDomain(sub, ed, nSub, ed, dLSub); CHKERRQ(ierr);
+
+        // add number of the subdomain to total number of cells
+        nTotal += nSub;
+
+        // append the subdomain dL to global dL
+        dL.insert(dL.end(), dLSub.begin(), dLSub.end());
+    }
+
+    PetscFunctionReturn(0);
+}
+
+
+/** \copydoc parser::parseOneSubDomain */
+PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
+                                 PetscInt &n, PetscReal &ed,
+                                 types::RealVec1D &dL)
+{
+    PetscFunctionBeginUser;
+
+    // get the number of the cells in this subdomain
+    n = sub["cells"].as<PetscInt>();
+
+    // get the end of the subdomain
+    ed = sub["end"].as<PetscReal>();
+    
+    // get the stretching ratio
+    PetscReal r = sub["stretchRatio"].as<PetscReal>();
+
+    // obtain the cell sizes
+    if (std::abs(r - 1.0) <= 1e-12)
+        dL = types::RealVec1D(n, (ed - bg) / n);  // uniform grid
+    else
+        misc::stretchGrid(bg, ed, n, r, dL);  // stretch grid
+
+    PetscFunctionReturn(0);
+}
+
+} // end of namespace parser
+} // end of namespace utilities
+} // end of namespace petibm

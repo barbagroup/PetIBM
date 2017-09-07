@@ -14,6 +14,10 @@
 #include <petscsys.h>
 
 
+namespace petibm
+{
+namespace utilities
+{
 /** \brief namespace for all kinds of descritized delta functions. */
 namespace delta
 {
@@ -60,4 +64,7 @@ namespace delta
             const PetscReal &rx, const PetscReal &drx,
             const PetscReal &ry, const PetscReal &dry,
             const PetscReal &rz, const PetscReal &drz);
-}
+
+} // end of namespace delta
+} // end of namespace utilities
+} // end of namespace petibm

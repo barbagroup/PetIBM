@@ -15,17 +15,22 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "CartesianMesh.h"
-# include "Boundary.h"
-# include "types.h"
-# include "misc.h"
+# include "utilities/CartesianMesh.h"
+# include "utilities/Boundary.h"
+# include "utilities/types.h"
+# include "utilities/misc.h"
 
+
+namespace petibm
+{
+namespace operators
+{
 
 /** \brief a private struct for matrix-free constraint mat. */
 struct LagrangianCtx
 {
-    std::shared_ptr<const Boundary>     bc;
-    types::MatrixModifier               modifier;
+    std::shared_ptr<const utilities::Boundary>     bc;
+    utilities::types::MatrixModifier               modifier;
 };
 
 
@@ -61,17 +66,19 @@ typedef std::function<StencilVec(const PetscInt &,
  * \return PetscErrorCode.
  */
 inline PetscErrorCode setRowValues(
-        const CartesianMesh &mesh, const Boundary &bc, 
-        const GetStencilsFunc &getStencils, 
-        const PetscInt &f, const PetscInt &i, 
-        const PetscInt &j, const PetscInt &k, Mat &L,
-        std::map<MatStencil, types::RowModifier> &rowModifiers);
+		const utilities::CartesianMesh &mesh,
+		const utilities::Boundary &bc,
+		const GetStencilsFunc &getStencils,
+		const PetscInt &f, const PetscInt &i,
+		const PetscInt &j, const PetscInt &k,
+		Mat &L,
+		std::map<MatStencil, utilities::types::RowModifier> &rowModifiers);
 
 
 /** \copydoc createLaplacian. */
-PetscErrorCode createLaplacian(
-        const CartesianMesh &mesh, const Boundary &bc, 
-        Mat &L, Mat &LCorrection)
+PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
+                               const utilities::Boundary &bc, 
+                               Mat &L, Mat &LCorrection)
 {
     using namespace std::placeholders;
 
@@ -86,8 +93,9 @@ PetscErrorCode createLaplacian(
 
     // initialize modifier, regardless what's inside it now
     ctx = new LagrangianCtx;
-    ctx->modifier = types::MatrixModifier(mesh.dim);
-    ctx->bc = std::shared_ptr<const Boundary>(&bc, [](const Boundary*){});
+    ctx->modifier = utilities::types::MatrixModifier(mesh.dim);
+    ctx->bc = std::shared_ptr<const utilities::Boundary>(
+    		&bc, [](const utilities::Boundary*){});
 
 
     // set up getStencils
@@ -123,7 +131,7 @@ PetscErrorCode createLaplacian(
         // set row values
         // the std::bind originally only binds values, in order to use
         // reference instead of value-copying, we have to use std::ref
-        ierr = misc::tripleLoops(
+        ierr = utilities::misc::tripleLoops(
                 {mesh.bg[field][2], mesh.ed[field][2]},
                 {mesh.bg[field][1], mesh.ed[field][1]},
                 {mesh.bg[field][0], mesh.ed[field][0]},
@@ -182,11 +190,12 @@ PetscErrorCode createLaplacian(
 
 /** \copydoc setRowValues. */
 inline PetscErrorCode setRowValues(
-        const CartesianMesh &mesh, const Boundary &bc, 
-        const GetStencilsFunc &getStencils, 
-        const PetscInt &f, const PetscInt &i, 
-        const PetscInt &j, const PetscInt &k, Mat &L,
-        std::map<MatStencil, types::RowModifier> &rowModifiers)
+		const utilities::CartesianMesh &mesh,
+		const utilities::Boundary &bc, 
+		const GetStencilsFunc &getStencils, 
+		const PetscInt &f, const PetscInt &i, 
+		const PetscInt &j, const PetscInt &k, Mat &L,
+		std::map<MatStencil, utilities::types::RowModifier> &rowModifiers)
 {
     PetscFunctionBeginUser;
 
@@ -194,14 +203,14 @@ inline PetscErrorCode setRowValues(
 
     StencilVec          stencils = getStencils(i, j, k);
 
-    types::IntVec1D     lclIds(1+2*mesh.dim, -1),
-                        cols(1+2*mesh.dim, -1);
+    utilities::types::IntVec1D     lclIds(1+2*mesh.dim, -1),
+                                   cols(1+2*mesh.dim, -1);
 
-    types::RealVec1D    values(1+2*mesh.dim, 0.0);
+    utilities::types::RealVec1D    values(1+2*mesh.dim, 0.0);
 
 
     // get the local index for points in stencils
-    for(PetscInt id=0; id<stencils.size(); ++id)
+    for(unsigned int id=0; id<stencils.size(); ++id)
     {
         ierr = DMDAConvertToCell(
                 mesh.da[f], stencils[id], &lclIds[id]); CHKERRQ(ierr);
@@ -238,7 +247,7 @@ inline PetscErrorCode setRowValues(
             values.data(), INSERT_VALUES); CHKERRQ(ierr);
 
     // save the values for boundary ghost points
-    for(PetscInt id=0; id<stencils.size(); ++id)
+    for(unsigned int id=0; id<stencils.size(); ++id)
         if (cols[id] == -1) rowModifiers[stencils[id]] = {cols[0], values[id]};
 
     PetscFunctionReturn(0);
@@ -297,3 +306,6 @@ PetscErrorCode LCorrectionDestroy(Mat mat)
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

@@ -17,21 +17,170 @@
 # include <yaml-cpp/yaml.h>
 
 // here goes our owen headers
-# include <types.h>
+# include "types.h"
 
 
+/** \brief YAML node converters used by yamp-cpp */
+namespace YAML
+{
+
+using namespace petibm::utilities::types;
+
+    /** \brief converter for `types::Dir` */
+    template <>
+    struct convert<Dir>
+    {
+        static Node encode(const Dir &dir);
+        static bool decode(const Node &node, Dir &dir);
+    };
+
+    /** \brief converter for `tpyes::Field` */
+    template <>
+    struct convert<Field>
+    {
+        static Node encode(const Field &vc);
+        static bool decode(const Node &node, Field &vc);
+    };
+
+    /** \brief converter for `types::BCType` */
+    template <>
+    struct convert<BCType>
+    {
+        static Node encode(const BCType &bc);
+        static bool decode(const Node &node, BCType &bc);
+    };
+
+    /** \brief converter for `types::BCLoc` */
+    template <>
+    struct convert<BCLoc>
+    {
+        static Node encode(const BCLoc &loc);
+        static bool decode(const Node &node, BCLoc &loc);
+    };
+
+    /** \brief converter for `types::TimeScheme` */
+    template <>
+    struct convert<TimeScheme>
+    {
+        static Node encode(const TimeScheme &ts);
+        static bool decode(const Node &node, TimeScheme &ts);
+    };
+
+    /** \brief converter for `types::IBMethod` */
+    template <>
+    struct convert<IBMethod>
+    {
+        static Node encode(const IBMethod &ibm);
+        static bool decode(const Node &node, IBMethod &ibm);
+    };
+
+    /** \brief converter for `types::StaggeredMode` */
+    template <>
+    struct convert<StaggeredMode>
+    {
+        static Node encode(const StaggeredMode &sm);
+        static bool decode(const Node &node, StaggeredMode &sm);
+    };
+
+    /** \brief converter for types::ExecuteType` */
+    template <>
+    struct convert<ExecuteType>
+    {
+        static Node encode(const ExecuteType &et);
+        static bool decode(const Node &node, ExecuteType &et);
+    };
+
+    /** \brief converter for `types::BCTypeValuePair` */
+    template<>
+    struct convert<BCTypeValuePair>
+    {
+        static Node encode(const BCTypeValuePair &bcInfo);
+        static bool decode(const Node &node, BCTypeValuePair &bcInfo);
+    };
+
+    /** \brief converter for `types::BCInfoHolder` */
+    template<>
+    struct convert<BCInfoHolder>
+    {
+        static Node encode(const BCInfoHolder &bcInfo);
+        static bool decode(const Node &node, BCInfoHolder &bcInfo);
+    };
+
+    /** \brief converter for `types::Perturbation` */
+    template<>
+    struct convert<Perturbation>
+    {
+        static Node encode(const Perturbation &pertb);
+        static bool decode(const Node &node, Perturbation &pertb);
+    };
+
+    /** \brief converter for `types::OutputType` */
+    template<>
+    struct convert<OutputType>
+    {
+        static Node encode(const OutputType &out);
+        static bool decode(const Node &node, OutputType &out);
+    };
+
+    /** \brief converter for `PetscBool` */
+    template<>
+    struct convert<PetscBool>
+    {
+        static Node encode(const PetscBool &b);
+        static bool decode(const Node &node, PetscBool &b);
+    };
+
+    /** \brief converter for `types::OutputInfo` */
+    template<>
+    struct convert<OutputInfo>
+    {
+        static Node encode(const OutputInfo &output);
+        static bool decode(const Node &node, OutputInfo &output);
+    };
+
+    /** \brief converter for `types::LinSolverInfo` */
+    template<>
+    struct convert<LinSolverInfo>
+    {
+        static Node encode(const LinSolverInfo &solver);
+        static bool decode(const Node &node, LinSolverInfo &solver);
+    };
+
+    /** \brief converter for `types::SchemeInfo` */
+    template<>
+    struct convert<SchemeInfo>
+    {
+        static Node encode(const SchemeInfo &scheme);
+        static bool decode(const Node &node, SchemeInfo &scheme);
+    };
+
+    /** \brief converter for `types::SteppingInfo` */
+    template<>
+    struct convert<SteppingInfo>
+    {
+        static Node encode(const SteppingInfo &stepping);
+        static bool decode(const Node &node, SteppingInfo &stepping);
+    };
+
+} // end of namespace YAML
+
+
+namespace petibm
+{
+namespace utilities
+{
 /** \brief YAML node parsers for PetIBM components. */
 namespace parser
 {
     /** \brief parse the config.yaml in a given case directory
      *
-     * \param dir the directory of the targeting case
+     * \param filepath path of the configuration file
      * \param node returned YAML node
      *
      * \return PetscErrorCode
      */
     PetscErrorCode parseYAMLConfigFile(
-            const std::string &dir, YAML::Node &node);
+            const std::string &filepath, YAML::Node &node);
 
     /**
      * \brief parse YAML node to get information of SimulationParameters
@@ -125,145 +274,7 @@ namespace parser
     PetscErrorCode parseOneSubDomain(
             const YAML::Node &sub, const PetscReal bg,
             PetscInt &n, PetscReal &ed, types::RealVec1D &dL);
-}
 
-
-/** \brief YAML node converters used by yamp-cpp */
-namespace YAML
-{
-    /** \brief converter for `types::Dir` */
-    template <>
-    struct convert<types::Dir>
-    {
-        static Node encode(const types::Dir &dir);
-        static bool decode(const Node &node, types::Dir &dir);
-    };
-
-    /** \brief converter for `tpyes::Field` */
-    template <>
-    struct convert<types::Field>
-    {
-        static Node encode(const types::Field &vc);
-        static bool decode(const Node &node, types::Field &vc);
-    };
-
-    /** \brief converter for `types::BCType` */
-    template <>
-    struct convert<types::BCType>
-    {
-        static Node encode(const types::BCType &bc);
-        static bool decode(const Node &node, types::BCType &bc);
-    };
-
-    /** \brief converter for `types::BCLoc` */
-    template <>
-    struct convert<types::BCLoc>
-    {
-        static Node encode(const types::BCLoc &loc);
-        static bool decode(const Node &node, types::BCLoc &loc);
-    };
-
-    /** \brief converter for `types::TimeScheme` */
-    template <>
-    struct convert<types::TimeScheme>
-    {
-        static Node encode(const types::TimeScheme &ts);
-        static bool decode(const Node &node, types::TimeScheme &ts);
-    };
-
-    /** \brief converter for `types::IBMethod` */
-    template <>
-    struct convert<types::IBMethod>
-    {
-        static Node encode(const types::IBMethod &ibm);
-        static bool decode(const Node &node, types::IBMethod &ibm);
-    };
-
-    /** \brief converter for `types::StaggeredMode` */
-    template <>
-    struct convert<types::StaggeredMode>
-    {
-        static Node encode(const types::StaggeredMode &sm);
-        static bool decode(const Node &node, types::StaggeredMode &sm);
-    };
-
-    /** \brief converter for types::ExecuteType` */
-    template <>
-    struct convert<types::ExecuteType>
-    {
-        static Node encode(const types::ExecuteType &et);
-        static bool decode(const Node &node, types::ExecuteType &et);
-    };
-
-    /** \brief converter for `types::BCTypeValuePair` */
-    template<>
-    struct convert<types::BCTypeValuePair>
-    {
-        static Node encode(const types::BCTypeValuePair &bcInfo);
-        static bool decode(const Node &node, types::BCTypeValuePair &bcInfo);
-    };
-
-    /** \brief converter for `types::BCInfoHolder` */
-    template<>
-    struct convert<types::BCInfoHolder>
-    {
-        static Node encode(const types::BCInfoHolder &bcInfo);
-        static bool decode(const Node &node, types::BCInfoHolder &bcInfo);
-    };
-
-    /** \brief converter for `types::Perturbation` */
-    template<>
-    struct convert<types::Perturbation>
-    {
-        static Node encode(const types::Perturbation &pertb);
-        static bool decode(const Node &node, types::Perturbation &pertb);
-    };
-
-    /** \brief converter for `types::OutputType` */
-    template<>
-    struct convert<types::OutputType>
-    {
-        static Node encode(const types::OutputType &out);
-        static bool decode(const Node &node, types::OutputType &out);
-    };
-
-    /** \brief converter for `PetscBool` */
-    template<>
-    struct convert<PetscBool>
-    {
-        static Node encode(const PetscBool &b);
-        static bool decode(const Node &node, PetscBool &b);
-    };
-
-    /** \brief converter for `types::OutputInfo` */
-    template<>
-    struct convert<types::OutputInfo>
-    {
-        static Node encode(const types::OutputInfo &output);
-        static bool decode(const Node &node, types::OutputInfo &output);
-    };
-
-    /** \brief converter for `types::LinSolverInfo` */
-    template<>
-    struct convert<types::LinSolverInfo>
-    {
-        static Node encode(const types::LinSolverInfo &solver);
-        static bool decode(const Node &node, types::LinSolverInfo &solver);
-    };
-
-    /** \brief converter for `types::SchemeInfo` */
-    template<>
-    struct convert<types::SchemeInfo>
-    {
-        static Node encode(const types::SchemeInfo &scheme);
-        static bool decode(const Node &node, types::SchemeInfo &scheme);
-    };
-
-    /** \brief converter for `types::SteppingInfo` */
-    template<>
-    struct convert<types::SteppingInfo>
-    {
-        static Node encode(const types::SteppingInfo &stepping);
-        static bool decode(const Node &node, types::SteppingInfo &stepping);
-    };
-}
+} // end of namespace parser
+} // end of namespace utilities
+} // end of namespace petibm

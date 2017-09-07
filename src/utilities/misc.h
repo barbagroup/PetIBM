@@ -20,6 +20,10 @@
 # include "types.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
 /** \brief a namespace holding miscellaneous functions. */
 namespace misc
 {
@@ -40,8 +44,6 @@ namespace misc
         PetscFunctionBeginUser;
 
         dL.resize(n);
-
-        PetscReal       h;
 
         // calculate the size of the first cell
         dL[0] = (ed - bg) * (r - 1.0) / (std::pow(r, n) - 1.0);
@@ -115,4 +117,7 @@ namespace misc
 
         PetscFunctionReturn(0);
     }
-}
+
+} // end of namespace misc
+} // end of namespace utilities
+} // end of namespace petibm

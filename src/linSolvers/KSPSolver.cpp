@@ -7,6 +7,11 @@
 #include "KSPSolver.h"
 
 
+namespace petibm
+{
+namespace linsolvers
+{
+
 /** \copydoc KSPSolver::KSPSolver. */
 KSPSolver::KSPSolver(const std::string &_name, const std::string &_options):
     LinSolver(_name, _options) { init(); }
@@ -98,3 +103,6 @@ PetscErrorCode KSPSolver::printInfo(PetscViewer viewer)
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace linsolvers
+} // end of namespace petibm

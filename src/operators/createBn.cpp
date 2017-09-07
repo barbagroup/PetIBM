@@ -14,6 +14,11 @@
 # include <petscmat.h>
 
 
+namespace petibm
+{
+namespace operators
+{
+
 /** \copydoc createBnHead. */
 PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &BnHead)
@@ -72,8 +77,8 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
         // the coefficient of this term
         PetscReal   a = std::pow(dt, term) * std::pow(coeff, term-1);
 
-        // BnHead = BnHead + coeff * rightMat
-        ierr = MatAXPY(BnHead, coeff, rightMat, DIFFERENT_NONZERO_PATTERN); 
+        // BnHead = BnHead + a * rightMat
+        ierr = MatAXPY(BnHead, a, rightMat, DIFFERENT_NONZERO_PATTERN); 
         CHKERRQ(ierr);
 
         // assemble matrix
@@ -195,8 +200,8 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
         // the coefficient of this term
         PetscReal   a = std::pow(dt, term) * std::pow(coeff, term-1);
 
-        // Bn = Bn + coeff * rightMat
-        ierr = MatAXPY(Bn, coeff, rightMat, DIFFERENT_NONZERO_PATTERN); 
+        // Bn = Bn + a * rightMat
+        ierr = MatAXPY(Bn, a, rightMat, DIFFERENT_NONZERO_PATTERN); 
         CHKERRQ(ierr);
 
         // assemble matrix
@@ -212,3 +217,6 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace operators
+} // end of namespace petibm

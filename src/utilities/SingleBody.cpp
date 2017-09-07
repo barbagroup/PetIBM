@@ -16,6 +16,11 @@
 # include "SingleBody.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 /** \copydoc SingleBody::SingleBody(). */
 SingleBody::SingleBody() = default;
 
@@ -89,8 +94,6 @@ PetscErrorCode SingleBody::preInit(
         const CartesianMesh &_mesh, const std::string &_name)
 {
     PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
 
     // set up the name
     name = _name;
@@ -212,8 +215,6 @@ PetscErrorCode SingleBody::findCellIdx()
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
     // initialize meshIdx, which only contains background mesh indices of local
     // Lagrangian points. The indices are defined by pressure cell.
     meshIdx = types::IntVec2D(nLclPts, types::IntVec1D(3, 0));
@@ -223,13 +224,12 @@ PetscErrorCode SingleBody::findCellIdx()
     {
         for(PetscInt d=0; d<dim; ++d)
         {
-            if (*(mesh->coord[4][d] + mesh->n[4][d] -1) <= coords[i][d])
-                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_MAX_VALUE, 
-                        "body coordinate %e is outside domain !", coords[i][d]);
-
-            if (*(mesh->coord[4][d]) >= coords[i][d])
-                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_MIN_VALUE, 
-                        "body coordinate %e is outside domain !", coords[i][d]);
+        	  if (mesh->min[d] >= coords[i][d] || mesh->max[d] <= coords[i][d])
+        	  {
+                SETERRQ3(PETSC_COMM_WORLD, PETSC_ERR_MAX_VALUE, 
+                        "body coordinate %g is outside domain [%g, %g] !",
+                        coords[i][d], mesh->min[d], mesh->max[d]);
+        	  }
 
             meshIdx[c][d] = std::upper_bound(
                     mesh->coord[4][d], mesh->coord[4][d]+mesh->n[4][d],
@@ -415,3 +415,6 @@ PetscErrorCode SingleBody::calculateAvgForces(
 
     PetscFunctionReturn(0);
 }
+
+} // end of namespace utilities
+} // end of namespace petibm

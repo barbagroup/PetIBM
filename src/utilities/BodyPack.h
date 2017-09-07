@@ -27,6 +27,11 @@
 # include "SingleBody.h"
 
 
+namespace petibm
+{
+namespace utilities
+{
+
 // TODO: should we really need ISLocalToGlobalMapping?
 /** \brief class for a pack of multiple bodies. */
 class BodyPack
@@ -239,3 +244,6 @@ protected:
      */
     PetscErrorCode createInfoString();
 };
+
+} // end of namespace utilities
+} // end of namespace petibm

@@ -52,7 +52,7 @@ TEST(operatorsCreateBnHeadTest, testBNHatDiagonalOp)
 			MatCreateVecs(Op, &v, nullptr);
 			MatGetRowSum(BNHat, v);
 			VecSum(v, &sum);
-			ASSERT_TRUE(abs(sum - ans) <= 1.0E-16);
+			ASSERT_TRUE(std::abs(sum - ans) <= 1.0E-11);
 			VecDestroy(&v);
 		}
 		MatDestroy(&BNHat);

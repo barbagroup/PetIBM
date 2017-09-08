@@ -21,7 +21,7 @@ namespace delta
 /** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &). */
 PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx)
 {
-    PetscReal r = fabs(rx) / drx;
+    PetscReal r = std::abs(rx) / drx;
 
     if (r > 1.5)
         return 0.0;

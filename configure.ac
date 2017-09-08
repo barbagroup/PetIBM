@@ -57,10 +57,11 @@ PACKAGE_SETUP_ENVIRONMENT
 
 # list of Makefiles to generate
 AC_CONFIG_FILES([Makefile
+                 include/Makefile
                  src/Makefile
                  src/utilities/Makefile
                  src/operators/Makefile
-                 src/linSolvers/Makefile
+                 src/linsolvers/Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.8.0/Makefile

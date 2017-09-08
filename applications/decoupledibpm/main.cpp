@@ -10,11 +10,11 @@
 #include <yaml-cpp/yaml.h>
 
 #include "decoupledibpm.h"
-#include "utilities/CartesianMesh.h"
-#include "utilities/FlowDescription.h"
-#include "utilities/SimulationParameters.h"
-#include "utilities/BodyPack.h"
-#include "utilities/parser.h"
+#include "petibm/cartesianmesh.h"
+#include "petibm/flowdescription.h"
+#include "petibm/simulationparameters.h"
+#include "petibm/bodypack.h"
+#include "petibm/parser.h"
 
 
 int main(int argc, char **argv)

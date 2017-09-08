@@ -109,13 +109,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 liboperators_la_LIBADD =
-am_liboperators_la_OBJECTS = liboperators_la-createBn.lo \
-	liboperators_la-createConvection.lo \
-	liboperators_la-createDelta.lo \
-	liboperators_la-createDiagMatrix.lo \
-	liboperators_la-createDivergence.lo \
-	liboperators_la-createGradient.lo \
-	liboperators_la-createLaplacian.lo
+am_liboperators_la_OBJECTS = liboperators_la-createbn.lo \
+	liboperators_la-createconvection.lo \
+	liboperators_la-createdelta.lo \
+	liboperators_la-creatediagmatrix.lo \
+	liboperators_la-createdivergence.lo \
+	liboperators_la-creategradient.lo \
+	liboperators_la-createlaplacian.lo
 liboperators_la_OBJECTS = $(am_liboperators_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -231,7 +231,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -317,15 +316,15 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = liboperators.la
-liboperators_la_SOURCES = createBn.cpp \
-                          createConvection.cpp \
-                          createDelta.cpp \
-                          createDiagMatrix.cpp \
-                          createDivergence.cpp \
-                          createGradient.cpp \
-                          createLaplacian.cpp
+liboperators_la_SOURCES = createbn.cpp \
+                          createconvection.cpp \
+                          createdelta.cpp \
+                          creatediagmatrix.cpp \
+                          createdivergence.cpp \
+                          creategradient.cpp \
+                          createlaplacian.cpp
 
-liboperators_la_CPPFLAGS = -I$(top_srcdir)/src \
+liboperators_la_CPPFLAGS = -I$(top_srcdir)/include \
                            -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
                            -I$(top_srcdir)/external/boost-1.57.0
 
@@ -383,13 +382,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createBn.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createConvection.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createDelta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createDiagMatrix.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createDivergence.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createGradient.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createLaplacian.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createbn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createconvection.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createdelta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-creatediagmatrix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createdivergence.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-creategradient.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liboperators_la-createlaplacian.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -415,54 +414,54 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-liboperators_la-createBn.lo: createBn.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createBn.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createBn.Tpo -c -o liboperators_la-createBn.lo `test -f 'createBn.cpp' || echo '$(srcdir)/'`createBn.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createBn.Tpo $(DEPDIR)/liboperators_la-createBn.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createBn.cpp' object='liboperators_la-createBn.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-createbn.lo: createbn.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createbn.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createbn.Tpo -c -o liboperators_la-createbn.lo `test -f 'createbn.cpp' || echo '$(srcdir)/'`createbn.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createbn.Tpo $(DEPDIR)/liboperators_la-createbn.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createbn.cpp' object='liboperators_la-createbn.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createBn.lo `test -f 'createBn.cpp' || echo '$(srcdir)/'`createBn.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createbn.lo `test -f 'createbn.cpp' || echo '$(srcdir)/'`createbn.cpp
 
-liboperators_la-createConvection.lo: createConvection.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createConvection.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createConvection.Tpo -c -o liboperators_la-createConvection.lo `test -f 'createConvection.cpp' || echo '$(srcdir)/'`createConvection.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createConvection.Tpo $(DEPDIR)/liboperators_la-createConvection.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createConvection.cpp' object='liboperators_la-createConvection.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-createconvection.lo: createconvection.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createconvection.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createconvection.Tpo -c -o liboperators_la-createconvection.lo `test -f 'createconvection.cpp' || echo '$(srcdir)/'`createconvection.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createconvection.Tpo $(DEPDIR)/liboperators_la-createconvection.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createconvection.cpp' object='liboperators_la-createconvection.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createConvection.lo `test -f 'createConvection.cpp' || echo '$(srcdir)/'`createConvection.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createconvection.lo `test -f 'createconvection.cpp' || echo '$(srcdir)/'`createconvection.cpp
 
-liboperators_la-createDelta.lo: createDelta.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createDelta.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createDelta.Tpo -c -o liboperators_la-createDelta.lo `test -f 'createDelta.cpp' || echo '$(srcdir)/'`createDelta.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createDelta.Tpo $(DEPDIR)/liboperators_la-createDelta.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createDelta.cpp' object='liboperators_la-createDelta.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-createdelta.lo: createdelta.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createdelta.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createdelta.Tpo -c -o liboperators_la-createdelta.lo `test -f 'createdelta.cpp' || echo '$(srcdir)/'`createdelta.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createdelta.Tpo $(DEPDIR)/liboperators_la-createdelta.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createdelta.cpp' object='liboperators_la-createdelta.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createDelta.lo `test -f 'createDelta.cpp' || echo '$(srcdir)/'`createDelta.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createdelta.lo `test -f 'createdelta.cpp' || echo '$(srcdir)/'`createdelta.cpp
 
-liboperators_la-createDiagMatrix.lo: createDiagMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createDiagMatrix.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createDiagMatrix.Tpo -c -o liboperators_la-createDiagMatrix.lo `test -f 'createDiagMatrix.cpp' || echo '$(srcdir)/'`createDiagMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createDiagMatrix.Tpo $(DEPDIR)/liboperators_la-createDiagMatrix.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createDiagMatrix.cpp' object='liboperators_la-createDiagMatrix.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-creatediagmatrix.lo: creatediagmatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-creatediagmatrix.lo -MD -MP -MF $(DEPDIR)/liboperators_la-creatediagmatrix.Tpo -c -o liboperators_la-creatediagmatrix.lo `test -f 'creatediagmatrix.cpp' || echo '$(srcdir)/'`creatediagmatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-creatediagmatrix.Tpo $(DEPDIR)/liboperators_la-creatediagmatrix.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='creatediagmatrix.cpp' object='liboperators_la-creatediagmatrix.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createDiagMatrix.lo `test -f 'createDiagMatrix.cpp' || echo '$(srcdir)/'`createDiagMatrix.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-creatediagmatrix.lo `test -f 'creatediagmatrix.cpp' || echo '$(srcdir)/'`creatediagmatrix.cpp
 
-liboperators_la-createDivergence.lo: createDivergence.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createDivergence.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createDivergence.Tpo -c -o liboperators_la-createDivergence.lo `test -f 'createDivergence.cpp' || echo '$(srcdir)/'`createDivergence.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createDivergence.Tpo $(DEPDIR)/liboperators_la-createDivergence.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createDivergence.cpp' object='liboperators_la-createDivergence.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-createdivergence.lo: createdivergence.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createdivergence.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createdivergence.Tpo -c -o liboperators_la-createdivergence.lo `test -f 'createdivergence.cpp' || echo '$(srcdir)/'`createdivergence.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createdivergence.Tpo $(DEPDIR)/liboperators_la-createdivergence.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createdivergence.cpp' object='liboperators_la-createdivergence.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createDivergence.lo `test -f 'createDivergence.cpp' || echo '$(srcdir)/'`createDivergence.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createdivergence.lo `test -f 'createdivergence.cpp' || echo '$(srcdir)/'`createdivergence.cpp
 
-liboperators_la-createGradient.lo: createGradient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createGradient.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createGradient.Tpo -c -o liboperators_la-createGradient.lo `test -f 'createGradient.cpp' || echo '$(srcdir)/'`createGradient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createGradient.Tpo $(DEPDIR)/liboperators_la-createGradient.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createGradient.cpp' object='liboperators_la-createGradient.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-creategradient.lo: creategradient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-creategradient.lo -MD -MP -MF $(DEPDIR)/liboperators_la-creategradient.Tpo -c -o liboperators_la-creategradient.lo `test -f 'creategradient.cpp' || echo '$(srcdir)/'`creategradient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-creategradient.Tpo $(DEPDIR)/liboperators_la-creategradient.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='creategradient.cpp' object='liboperators_la-creategradient.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createGradient.lo `test -f 'createGradient.cpp' || echo '$(srcdir)/'`createGradient.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-creategradient.lo `test -f 'creategradient.cpp' || echo '$(srcdir)/'`creategradient.cpp
 
-liboperators_la-createLaplacian.lo: createLaplacian.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createLaplacian.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createLaplacian.Tpo -c -o liboperators_la-createLaplacian.lo `test -f 'createLaplacian.cpp' || echo '$(srcdir)/'`createLaplacian.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createLaplacian.Tpo $(DEPDIR)/liboperators_la-createLaplacian.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createLaplacian.cpp' object='liboperators_la-createLaplacian.lo' libtool=yes @AMDEPBACKSLASH@
+liboperators_la-createlaplacian.lo: createlaplacian.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT liboperators_la-createlaplacian.lo -MD -MP -MF $(DEPDIR)/liboperators_la-createlaplacian.Tpo -c -o liboperators_la-createlaplacian.lo `test -f 'createlaplacian.cpp' || echo '$(srcdir)/'`createlaplacian.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liboperators_la-createlaplacian.Tpo $(DEPDIR)/liboperators_la-createlaplacian.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createlaplacian.cpp' object='liboperators_la-createlaplacian.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createLaplacian.lo `test -f 'createLaplacian.cpp' || echo '$(srcdir)/'`createLaplacian.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liboperators_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o liboperators_la-createlaplacian.lo `test -f 'createlaplacian.cpp' || echo '$(srcdir)/'`createlaplacian.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

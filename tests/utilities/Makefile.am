@@ -3,7 +3,7 @@ check_PROGRAMS = delta-test \
                  cartesianmesh-test \
                  singleboundary-test
 
-AM_CPPFLAGS = -I$(top_srcdir)/src \
+AM_CPPFLAGS = -I$(top_srcdir)/include \
               -I$(top_srcdir)/external/gtest-1.8.0/include \
               -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
               -I$(top_srcdir)/external/boost-1.57.0

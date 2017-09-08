@@ -8,7 +8,7 @@
 
 
 // PetIBM
-#include "delta.h"
+#include "petibm/delta.h"
 
 
 namespace petibm

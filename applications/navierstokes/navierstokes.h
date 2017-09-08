@@ -5,14 +5,14 @@
 
 #pragma once
 
-#include "utilities/CartesianMesh.h"
-#include "utilities/FlowDescription.h"
-#include "utilities/SimulationParameters.h"
-#include "utilities/Solutions.h"
-#include "utilities/Boundary.h"
-#include "utilities/TimeIntegration.h"
-#include "linSolvers/LinSolver.h"
-#include "operators/operators.h"
+#include "petibm/cartesianmesh.h"
+#include "petibm/flowdescription.h"
+#include "petibm/simulationparameters.h"
+#include "petibm/solutions.h"
+#include "petibm/boundary.h"
+#include "petibm/timeintegration.h"
+#include "petibm/linsolver.h"
+#include "petibm/operators.h"
 
 using namespace petibm;
 

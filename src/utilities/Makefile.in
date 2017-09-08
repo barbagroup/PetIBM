@@ -114,14 +114,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libutilities_la_LIBADD =
-am_libutilities_la_OBJECTS = libutilities_la-BodyPack.lo \
-	libutilities_la-Boundary.lo libutilities_la-CartesianMesh.lo \
-	libutilities_la-delta.lo libutilities_la-FlowDescription.lo \
+am_libutilities_la_OBJECTS = libutilities_la-bodypack.lo \
+	libutilities_la-boundary.lo libutilities_la-cartesianmesh.lo \
+	libutilities_la-delta.lo libutilities_la-flowdescription.lo \
 	libutilities_la-parser.lo \
-	libutilities_la-SimulationParameters.lo \
-	libutilities_la-SingleBody.lo \
-	libutilities_la-SingleBoundary.lo libutilities_la-Solutions.lo \
-	libutilities_la-TimeIntegration.lo libutilities_la-types.lo
+	libutilities_la-simulationparameters.lo \
+	libutilities_la-singlebody.lo \
+	libutilities_la-singleboundary.lo libutilities_la-solutions.lo \
+	libutilities_la-timeintegration.lo libutilities_la-types.lo
 libutilities_la_OBJECTS = $(am_libutilities_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -237,7 +237,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -323,20 +322,20 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libutilities.la
-libutilities_la_SOURCES = BodyPack.cpp \
-                          Boundary.cpp \
-                          CartesianMesh.cpp \
+libutilities_la_SOURCES = bodypack.cpp \
+                          boundary.cpp \
+                          cartesianmesh.cpp \
                           delta.cpp \
-                          FlowDescription.cpp \
+                          flowdescription.cpp \
                           parser.cpp \
-                          SimulationParameters.cpp \
-                          SingleBody.cpp \
-                          SingleBoundary.cpp \
-                          Solutions.cpp \
-                          TimeIntegration.cpp \
+                          simulationparameters.cpp \
+                          singlebody.cpp \
+                          singleboundary.cpp \
+                          solutions.cpp \
+                          timeintegration.cpp \
                           types.cpp
 
-libutilities_la_CPPFLAGS =  \
+libutilities_la_CPPFLAGS = -I$(top_srcdir)/include \
 	-I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
 	-I$(top_srcdir)/external/boost-1.57.0 $(am__append_1)
 all: all-am
@@ -393,17 +392,17 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-BodyPack.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-Boundary.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-CartesianMesh.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-FlowDescription.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-SimulationParameters.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-SingleBody.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-SingleBoundary.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-Solutions.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-TimeIntegration.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-bodypack.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-boundary.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-cartesianmesh.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-delta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-flowdescription.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-simulationparameters.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-singlebody.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-singleboundary.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-solutions.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-timeintegration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutilities_la-types.Plo@am__quote@
 
 .cpp.o:
@@ -430,26 +429,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-libutilities_la-BodyPack.lo: BodyPack.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-BodyPack.lo -MD -MP -MF $(DEPDIR)/libutilities_la-BodyPack.Tpo -c -o libutilities_la-BodyPack.lo `test -f 'BodyPack.cpp' || echo '$(srcdir)/'`BodyPack.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-BodyPack.Tpo $(DEPDIR)/libutilities_la-BodyPack.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='BodyPack.cpp' object='libutilities_la-BodyPack.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-bodypack.lo: bodypack.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-bodypack.lo -MD -MP -MF $(DEPDIR)/libutilities_la-bodypack.Tpo -c -o libutilities_la-bodypack.lo `test -f 'bodypack.cpp' || echo '$(srcdir)/'`bodypack.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-bodypack.Tpo $(DEPDIR)/libutilities_la-bodypack.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='bodypack.cpp' object='libutilities_la-bodypack.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-BodyPack.lo `test -f 'BodyPack.cpp' || echo '$(srcdir)/'`BodyPack.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-bodypack.lo `test -f 'bodypack.cpp' || echo '$(srcdir)/'`bodypack.cpp
 
-libutilities_la-Boundary.lo: Boundary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-Boundary.lo -MD -MP -MF $(DEPDIR)/libutilities_la-Boundary.Tpo -c -o libutilities_la-Boundary.lo `test -f 'Boundary.cpp' || echo '$(srcdir)/'`Boundary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-Boundary.Tpo $(DEPDIR)/libutilities_la-Boundary.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Boundary.cpp' object='libutilities_la-Boundary.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-boundary.lo: boundary.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-boundary.lo -MD -MP -MF $(DEPDIR)/libutilities_la-boundary.Tpo -c -o libutilities_la-boundary.lo `test -f 'boundary.cpp' || echo '$(srcdir)/'`boundary.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-boundary.Tpo $(DEPDIR)/libutilities_la-boundary.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='boundary.cpp' object='libutilities_la-boundary.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-Boundary.lo `test -f 'Boundary.cpp' || echo '$(srcdir)/'`Boundary.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-boundary.lo `test -f 'boundary.cpp' || echo '$(srcdir)/'`boundary.cpp
 
-libutilities_la-CartesianMesh.lo: CartesianMesh.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-CartesianMesh.lo -MD -MP -MF $(DEPDIR)/libutilities_la-CartesianMesh.Tpo -c -o libutilities_la-CartesianMesh.lo `test -f 'CartesianMesh.cpp' || echo '$(srcdir)/'`CartesianMesh.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-CartesianMesh.Tpo $(DEPDIR)/libutilities_la-CartesianMesh.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='CartesianMesh.cpp' object='libutilities_la-CartesianMesh.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-cartesianmesh.lo: cartesianmesh.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-cartesianmesh.lo -MD -MP -MF $(DEPDIR)/libutilities_la-cartesianmesh.Tpo -c -o libutilities_la-cartesianmesh.lo `test -f 'cartesianmesh.cpp' || echo '$(srcdir)/'`cartesianmesh.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-cartesianmesh.Tpo $(DEPDIR)/libutilities_la-cartesianmesh.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='cartesianmesh.cpp' object='libutilities_la-cartesianmesh.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-CartesianMesh.lo `test -f 'CartesianMesh.cpp' || echo '$(srcdir)/'`CartesianMesh.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-cartesianmesh.lo `test -f 'cartesianmesh.cpp' || echo '$(srcdir)/'`cartesianmesh.cpp
 
 libutilities_la-delta.lo: delta.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-delta.lo -MD -MP -MF $(DEPDIR)/libutilities_la-delta.Tpo -c -o libutilities_la-delta.lo `test -f 'delta.cpp' || echo '$(srcdir)/'`delta.cpp
@@ -458,12 +457,12 @@ libutilities_la-delta.lo: delta.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-delta.lo `test -f 'delta.cpp' || echo '$(srcdir)/'`delta.cpp
 
-libutilities_la-FlowDescription.lo: FlowDescription.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-FlowDescription.lo -MD -MP -MF $(DEPDIR)/libutilities_la-FlowDescription.Tpo -c -o libutilities_la-FlowDescription.lo `test -f 'FlowDescription.cpp' || echo '$(srcdir)/'`FlowDescription.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-FlowDescription.Tpo $(DEPDIR)/libutilities_la-FlowDescription.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FlowDescription.cpp' object='libutilities_la-FlowDescription.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-flowdescription.lo: flowdescription.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-flowdescription.lo -MD -MP -MF $(DEPDIR)/libutilities_la-flowdescription.Tpo -c -o libutilities_la-flowdescription.lo `test -f 'flowdescription.cpp' || echo '$(srcdir)/'`flowdescription.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-flowdescription.Tpo $(DEPDIR)/libutilities_la-flowdescription.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='flowdescription.cpp' object='libutilities_la-flowdescription.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-FlowDescription.lo `test -f 'FlowDescription.cpp' || echo '$(srcdir)/'`FlowDescription.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-flowdescription.lo `test -f 'flowdescription.cpp' || echo '$(srcdir)/'`flowdescription.cpp
 
 libutilities_la-parser.lo: parser.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-parser.lo -MD -MP -MF $(DEPDIR)/libutilities_la-parser.Tpo -c -o libutilities_la-parser.lo `test -f 'parser.cpp' || echo '$(srcdir)/'`parser.cpp
@@ -472,40 +471,40 @@ libutilities_la-parser.lo: parser.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-parser.lo `test -f 'parser.cpp' || echo '$(srcdir)/'`parser.cpp
 
-libutilities_la-SimulationParameters.lo: SimulationParameters.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-SimulationParameters.lo -MD -MP -MF $(DEPDIR)/libutilities_la-SimulationParameters.Tpo -c -o libutilities_la-SimulationParameters.lo `test -f 'SimulationParameters.cpp' || echo '$(srcdir)/'`SimulationParameters.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-SimulationParameters.Tpo $(DEPDIR)/libutilities_la-SimulationParameters.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SimulationParameters.cpp' object='libutilities_la-SimulationParameters.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-simulationparameters.lo: simulationparameters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-simulationparameters.lo -MD -MP -MF $(DEPDIR)/libutilities_la-simulationparameters.Tpo -c -o libutilities_la-simulationparameters.lo `test -f 'simulationparameters.cpp' || echo '$(srcdir)/'`simulationparameters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-simulationparameters.Tpo $(DEPDIR)/libutilities_la-simulationparameters.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='simulationparameters.cpp' object='libutilities_la-simulationparameters.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-SimulationParameters.lo `test -f 'SimulationParameters.cpp' || echo '$(srcdir)/'`SimulationParameters.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-simulationparameters.lo `test -f 'simulationparameters.cpp' || echo '$(srcdir)/'`simulationparameters.cpp
 
-libutilities_la-SingleBody.lo: SingleBody.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-SingleBody.lo -MD -MP -MF $(DEPDIR)/libutilities_la-SingleBody.Tpo -c -o libutilities_la-SingleBody.lo `test -f 'SingleBody.cpp' || echo '$(srcdir)/'`SingleBody.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-SingleBody.Tpo $(DEPDIR)/libutilities_la-SingleBody.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SingleBody.cpp' object='libutilities_la-SingleBody.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-singlebody.lo: singlebody.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-singlebody.lo -MD -MP -MF $(DEPDIR)/libutilities_la-singlebody.Tpo -c -o libutilities_la-singlebody.lo `test -f 'singlebody.cpp' || echo '$(srcdir)/'`singlebody.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-singlebody.Tpo $(DEPDIR)/libutilities_la-singlebody.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='singlebody.cpp' object='libutilities_la-singlebody.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-SingleBody.lo `test -f 'SingleBody.cpp' || echo '$(srcdir)/'`SingleBody.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-singlebody.lo `test -f 'singlebody.cpp' || echo '$(srcdir)/'`singlebody.cpp
 
-libutilities_la-SingleBoundary.lo: SingleBoundary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-SingleBoundary.lo -MD -MP -MF $(DEPDIR)/libutilities_la-SingleBoundary.Tpo -c -o libutilities_la-SingleBoundary.lo `test -f 'SingleBoundary.cpp' || echo '$(srcdir)/'`SingleBoundary.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-SingleBoundary.Tpo $(DEPDIR)/libutilities_la-SingleBoundary.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SingleBoundary.cpp' object='libutilities_la-SingleBoundary.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-singleboundary.lo: singleboundary.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-singleboundary.lo -MD -MP -MF $(DEPDIR)/libutilities_la-singleboundary.Tpo -c -o libutilities_la-singleboundary.lo `test -f 'singleboundary.cpp' || echo '$(srcdir)/'`singleboundary.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-singleboundary.Tpo $(DEPDIR)/libutilities_la-singleboundary.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='singleboundary.cpp' object='libutilities_la-singleboundary.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-SingleBoundary.lo `test -f 'SingleBoundary.cpp' || echo '$(srcdir)/'`SingleBoundary.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-singleboundary.lo `test -f 'singleboundary.cpp' || echo '$(srcdir)/'`singleboundary.cpp
 
-libutilities_la-Solutions.lo: Solutions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-Solutions.lo -MD -MP -MF $(DEPDIR)/libutilities_la-Solutions.Tpo -c -o libutilities_la-Solutions.lo `test -f 'Solutions.cpp' || echo '$(srcdir)/'`Solutions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-Solutions.Tpo $(DEPDIR)/libutilities_la-Solutions.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Solutions.cpp' object='libutilities_la-Solutions.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-solutions.lo: solutions.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-solutions.lo -MD -MP -MF $(DEPDIR)/libutilities_la-solutions.Tpo -c -o libutilities_la-solutions.lo `test -f 'solutions.cpp' || echo '$(srcdir)/'`solutions.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-solutions.Tpo $(DEPDIR)/libutilities_la-solutions.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='solutions.cpp' object='libutilities_la-solutions.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-Solutions.lo `test -f 'Solutions.cpp' || echo '$(srcdir)/'`Solutions.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-solutions.lo `test -f 'solutions.cpp' || echo '$(srcdir)/'`solutions.cpp
 
-libutilities_la-TimeIntegration.lo: TimeIntegration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-TimeIntegration.lo -MD -MP -MF $(DEPDIR)/libutilities_la-TimeIntegration.Tpo -c -o libutilities_la-TimeIntegration.lo `test -f 'TimeIntegration.cpp' || echo '$(srcdir)/'`TimeIntegration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-TimeIntegration.Tpo $(DEPDIR)/libutilities_la-TimeIntegration.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='TimeIntegration.cpp' object='libutilities_la-TimeIntegration.lo' libtool=yes @AMDEPBACKSLASH@
+libutilities_la-timeintegration.lo: timeintegration.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-timeintegration.lo -MD -MP -MF $(DEPDIR)/libutilities_la-timeintegration.Tpo -c -o libutilities_la-timeintegration.lo `test -f 'timeintegration.cpp' || echo '$(srcdir)/'`timeintegration.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutilities_la-timeintegration.Tpo $(DEPDIR)/libutilities_la-timeintegration.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='timeintegration.cpp' object='libutilities_la-timeintegration.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-TimeIntegration.lo `test -f 'TimeIntegration.cpp' || echo '$(srcdir)/'`TimeIntegration.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libutilities_la-timeintegration.lo `test -f 'timeintegration.cpp' || echo '$(srcdir)/'`timeintegration.cpp
 
 libutilities_la-types.lo: types.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libutilities_la-types.lo -MD -MP -MF $(DEPDIR)/libutilities_la-types.Tpo -c -o libutilities_la-types.lo `test -f 'types.cpp' || echo '$(srcdir)/'`types.cpp

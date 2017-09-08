@@ -6,8 +6,8 @@
  */
 
 // here goes our own headers
-# include "parser.h"
-# include "misc.h"
+# include "petibm/parser.h"
+# include "petibm/misc.h"
 
 
 /**

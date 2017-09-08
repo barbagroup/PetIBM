@@ -7,7 +7,7 @@
  */
 
 // here goes our headers
-#include "types.h"
+#include "petibm/types.h"
 
 
 /** \copydoc operator<(const MatStencil &, const MatStencil &). */

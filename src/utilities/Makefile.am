@@ -1,19 +1,20 @@
 noinst_LTLIBRARIES = libutilities.la
 
-libutilities_la_SOURCES = BodyPack.cpp \
-                          Boundary.cpp \
-                          CartesianMesh.cpp \
+libutilities_la_SOURCES = bodypack.cpp \
+                          boundary.cpp \
+                          cartesianmesh.cpp \
                           delta.cpp \
-                          FlowDescription.cpp \
+                          flowdescription.cpp \
                           parser.cpp \
-                          SimulationParameters.cpp \
-                          SingleBody.cpp \
-                          SingleBoundary.cpp \
-                          Solutions.cpp \
-                          TimeIntegration.cpp \
+                          simulationparameters.cpp \
+                          singlebody.cpp \
+                          singleboundary.cpp \
+                          solutions.cpp \
+                          timeintegration.cpp \
                           types.cpp
 
-libutilities_la_CPPFLAGS = -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
+libutilities_la_CPPFLAGS = -I$(top_srcdir)/include \
+                           -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
                            -I$(top_srcdir)/external/boost-1.57.0
 
 if WITH_AMGXWRAPPER

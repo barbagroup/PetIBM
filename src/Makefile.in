@@ -138,7 +138,7 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libpetibm_la_DEPENDENCIES =  \
-	$(top_builddir)/src/linSolvers/liblinsolvers.la \
+	$(top_builddir)/src/linsolvers/liblinsolvers.la \
 	$(top_builddir)/src/operators/liboperators.la \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la \
@@ -298,7 +298,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -385,11 +384,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = utilities \
           operators \
-          linSolvers
+          linsolvers
 
 lib_LTLIBRARIES = libpetibm.la
 libpetibm_la_SOURCES = 
-libpetibm_la_LIBADD = $(top_builddir)/src/linSolvers/liblinsolvers.la \
+libpetibm_la_LIBADD = $(top_builddir)/src/linsolvers/liblinsolvers.la \
 	$(top_builddir)/src/operators/liboperators.la \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la \

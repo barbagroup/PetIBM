@@ -11,7 +11,7 @@
 
 #include "gtest/gtest.h"
 
-#include "utilities/delta.h"
+#include "petibm/delta.h"
 
 using namespace petibm::utilities::delta;
 

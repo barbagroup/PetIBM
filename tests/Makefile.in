@@ -440,7 +440,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -532,7 +531,7 @@ TESTS = utilities/delta-test \
         utilities/singlebody-test \
         utilities/cartesianmesh-test \
         utilities/singleboundary-test \
-        operators/createBnHead-test
+        operators/createbnhead-test
 
 AM_COLOR_TESTS = always
 all: all-recursive
@@ -843,9 +842,9 @@ utilities/singleboundary-test.log: utilities/singleboundary-test
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-operators/createBnHead-test.log: operators/createBnHead-test
-	@p='operators/createBnHead-test'; \
-	b='operators/createBnHead-test'; \
+operators/createbnhead-test.log: operators/createbnhead-test
+	@p='operators/createbnhead-test'; \
+	b='operators/createbnhead-test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

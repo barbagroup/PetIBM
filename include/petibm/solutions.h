@@ -1,0 +1,96 @@
+/***************************************************************************//**
+ * \file solutions.h
+ * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \brief Definition of the class `Solutions`.
+ */
+
+
+# pragma once
+
+// C++ STL
+# include <string>
+# include <vector>
+# include <memory>
+# include <functional>
+
+// PETSc
+# include <petscsys.h>
+
+// PetIBM
+# include "flowdescription.h"
+# include "cartesianmesh.h"
+
+
+namespace petibm
+{
+namespace utilities
+{
+
+class Solutions
+{
+public:
+
+    PetscInt                dim;
+
+    Vec                     UGlobal;
+
+    Vec                     pGlobal;
+
+    std::string             info;
+    
+    
+    Solutions();
+
+    Solutions(const CartesianMesh &mesh, 
+            const types::OutputType &type=types::HDF5);
+
+    ~Solutions();
+
+
+    PetscErrorCode init(const CartesianMesh &mesh, 
+            const types::OutputType &type=types::HDF5);
+
+    PetscErrorCode setOutputFormat(const types::OutputType &type);
+
+    PetscErrorCode setOutputFluxFlag(const PetscBool &flag=PETSC_TRUE);
+
+    PetscErrorCode printInfo() const;
+
+    PetscErrorCode applyIC(const FlowDescription &flow);
+
+    PetscErrorCode write(const std::string &dir, const std::string &name) const;
+
+    PetscErrorCode read(const std::string &dir, const std::string &name) const;
+
+    PetscErrorCode convert2Velocity(const Mat &Rinv);
+
+    PetscErrorCode convert2Flux(const Mat &R);
+
+
+protected:
+
+    std::shared_ptr<const MPI_Comm>         comm;
+
+    PetscMPIInt                             mpiSize,
+                                            mpiRank;
+
+    std::shared_ptr<const CartesianMesh>    mesh;
+
+    PetscBool                               fluxFlag;
+
+    std::string                             fileExt;
+    PetscViewerType                         viewerType;
+
+    PetscErrorCode createInfoString();
+
+private:
+
+};
+
+
+std::ostream &operator<< (std::ostream &os, const Solutions &soln);
+
+} // end of namespace utilities
+} // end of namespace petibm

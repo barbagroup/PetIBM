@@ -87,7 +87,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS = createBnHead-test$(EXEEXT)
+check_PROGRAMS = createbnhead-test$(EXEEXT)
 subdir = tests/operators
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
@@ -107,12 +107,12 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_createBnHead_test_OBJECTS =  \
-	createBnHead_test-createBnHead_test.$(OBJEXT)
-createBnHead_test_OBJECTS = $(am_createBnHead_test_OBJECTS)
+am_createbnhead_test_OBJECTS =  \
+	createbnhead_test-createbnhead_test.$(OBJEXT)
+createbnhead_test_OBJECTS = $(am_createbnhead_test_OBJECTS)
 am__DEPENDENCIES_1 = $(top_builddir)/src/libpetibm.la \
 	$(top_builddir)/external/gtest-1.8.0/libgtest.a
-createBnHead_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+createbnhead_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -151,8 +151,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(createBnHead_test_SOURCES)
-DIST_SOURCES = $(createBnHead_test_SOURCES)
+SOURCES = $(createbnhead_test_SOURCES)
+DIST_SOURCES = $(createbnhead_test_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -227,7 +227,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -312,7 +311,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I$(top_srcdir)/src \
+AM_CPPFLAGS = -I$(top_srcdir)/include \
               -I$(top_srcdir)/external/gtest-1.8.0/include \
               -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
               -I$(top_srcdir)/external/boost-1.57.0
@@ -321,9 +320,9 @@ LDADD = $(top_builddir)/src/libpetibm.la \
         $(top_builddir)/external/gtest-1.8.0/libgtest.a \
         -lstdc++fs
 
-createBnHead_test_SOURCES = createBnHead_test.cpp
-createBnHead_test_CPPFLAGS = $(AM_CPPFLAGS)
-createBnHead_test_LDADD = $(LDADD)
+createbnhead_test_SOURCES = createbnhead_test.cpp
+createbnhead_test_CPPFLAGS = $(AM_CPPFLAGS)
+createbnhead_test_LDADD = $(LDADD)
 all: all-am
 
 .SUFFIXES:
@@ -367,9 +366,9 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-createBnHead-test$(EXEEXT): $(createBnHead_test_OBJECTS) $(createBnHead_test_DEPENDENCIES) $(EXTRA_createBnHead_test_DEPENDENCIES) 
-	@rm -f createBnHead-test$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(createBnHead_test_OBJECTS) $(createBnHead_test_LDADD) $(LIBS)
+createbnhead-test$(EXEEXT): $(createbnhead_test_OBJECTS) $(createbnhead_test_DEPENDENCIES) $(EXTRA_createbnhead_test_DEPENDENCIES) 
+	@rm -f createbnhead-test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(createbnhead_test_OBJECTS) $(createbnhead_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -377,7 +376,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/createBnHead_test-createBnHead_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/createbnhead_test-createbnhead_test.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -403,19 +402,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-createBnHead_test-createBnHead_test.o: createBnHead_test.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createBnHead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT createBnHead_test-createBnHead_test.o -MD -MP -MF $(DEPDIR)/createBnHead_test-createBnHead_test.Tpo -c -o createBnHead_test-createBnHead_test.o `test -f 'createBnHead_test.cpp' || echo '$(srcdir)/'`createBnHead_test.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/createBnHead_test-createBnHead_test.Tpo $(DEPDIR)/createBnHead_test-createBnHead_test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createBnHead_test.cpp' object='createBnHead_test-createBnHead_test.o' libtool=no @AMDEPBACKSLASH@
+createbnhead_test-createbnhead_test.o: createbnhead_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createbnhead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT createbnhead_test-createbnhead_test.o -MD -MP -MF $(DEPDIR)/createbnhead_test-createbnhead_test.Tpo -c -o createbnhead_test-createbnhead_test.o `test -f 'createbnhead_test.cpp' || echo '$(srcdir)/'`createbnhead_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/createbnhead_test-createbnhead_test.Tpo $(DEPDIR)/createbnhead_test-createbnhead_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createbnhead_test.cpp' object='createbnhead_test-createbnhead_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createBnHead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o createBnHead_test-createBnHead_test.o `test -f 'createBnHead_test.cpp' || echo '$(srcdir)/'`createBnHead_test.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createbnhead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o createbnhead_test-createbnhead_test.o `test -f 'createbnhead_test.cpp' || echo '$(srcdir)/'`createbnhead_test.cpp
 
-createBnHead_test-createBnHead_test.obj: createBnHead_test.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createBnHead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT createBnHead_test-createBnHead_test.obj -MD -MP -MF $(DEPDIR)/createBnHead_test-createBnHead_test.Tpo -c -o createBnHead_test-createBnHead_test.obj `if test -f 'createBnHead_test.cpp'; then $(CYGPATH_W) 'createBnHead_test.cpp'; else $(CYGPATH_W) '$(srcdir)/createBnHead_test.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/createBnHead_test-createBnHead_test.Tpo $(DEPDIR)/createBnHead_test-createBnHead_test.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createBnHead_test.cpp' object='createBnHead_test-createBnHead_test.obj' libtool=no @AMDEPBACKSLASH@
+createbnhead_test-createbnhead_test.obj: createbnhead_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createbnhead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT createbnhead_test-createbnhead_test.obj -MD -MP -MF $(DEPDIR)/createbnhead_test-createbnhead_test.Tpo -c -o createbnhead_test-createbnhead_test.obj `if test -f 'createbnhead_test.cpp'; then $(CYGPATH_W) 'createbnhead_test.cpp'; else $(CYGPATH_W) '$(srcdir)/createbnhead_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/createbnhead_test-createbnhead_test.Tpo $(DEPDIR)/createbnhead_test-createbnhead_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='createbnhead_test.cpp' object='createbnhead_test-createbnhead_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createBnHead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o createBnHead_test-createBnHead_test.obj `if test -f 'createBnHead_test.cpp'; then $(CYGPATH_W) 'createBnHead_test.cpp'; else $(CYGPATH_W) '$(srcdir)/createBnHead_test.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(createbnhead_test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o createbnhead_test-createbnhead_test.obj `if test -f 'createbnhead_test.cpp'; then $(CYGPATH_W) 'createbnhead_test.cpp'; else $(CYGPATH_W) '$(srcdir)/createbnhead_test.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -228,7 +228,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -316,7 +315,7 @@ top_srcdir = @top_srcdir@
 petibm_navierstokes_SOURCES = main.cpp \
                               navierstokes.cpp
 
-petibm_navierstokes_CPPFLAGS = -I$(top_srcdir)/src \
+petibm_navierstokes_CPPFLAGS = -I$(top_srcdir)/include \
                                -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
                                -I$(top_srcdir)/external/boost-1.57.0
 

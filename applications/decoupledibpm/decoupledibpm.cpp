@@ -7,7 +7,7 @@
 #include <string>
 
 #include "decoupledibpm.h"
-#include "utilities/types.h"
+#include "petibm/types.h"
 
 using namespace petibm;
 

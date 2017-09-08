@@ -8,9 +8,9 @@
 #include "gtest/gtest.h"
 #include "yaml-cpp/yaml.h"
 
-#include "utilities/CartesianMesh.h"
-#include "utilities/parser.h"
-#include "utilities/FlowDescription.h"
+#include "petibm/cartesianmesh.h"
+#include "petibm/parser.h"
+#include "petibm/flowdescription.h"
 
 using namespace petibm::utilities;
 

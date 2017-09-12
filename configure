@@ -646,6 +646,8 @@ PACKAGE_CPPFLAGS
 PETSCVARIABLES
 PETSC_ARCH
 PETSC_DIR
+YAMLCPP_DIR
+BOOST_DIR
 LIBOBJS
 DOXYGEN_DIR
 HAVE_DOXYGEN
@@ -787,6 +789,8 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 with_doxygen
+with_boost_dir
+with_yamlcpp_dir
 with_petsc_dir
 with_petsc_arch
 with_amgx
@@ -804,7 +808,9 @@ CXX
 CXXFLAGS
 CCC
 CPP
-CXXCPP'
+CXXCPP
+BOOST_DIR
+YAMLCPP_DIR'
 
 
 # Initialize some variables set by options.
@@ -1459,6 +1465,8 @@ Optional Packages:
                         (or the compiler's sysroot if not specified).
   --with-doxygen=PATH     manually set directory where the doxygen executable
                           resides to PATH
+  --with-boost-dir=PATH   set Boost directory
+  --with-yamlcpp-dir=PATH set yaml-cpp directory
   --with-petsc-dir=PATH   set PETSc directory
   --with-petsc-arch=PATH  set PETSc arch folder
 
@@ -1477,6 +1485,8 @@ Some influential environment variables:
   CXXFLAGS    C++ compiler flags
   CPP         C preprocessor
   CXXCPP      C++ preprocessor
+  BOOST_DIR   Boost directory
+  YAMLCPP_DIR yaml-cpp directory
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -18110,6 +18120,194 @@ PACKAGE_CONTRIB_LIBS=""
 
 
 
+
+
+echo
+echo "========================="
+echo "Configuring Boost library"
+echo "========================="
+
+
+PACKAGE_save_CFLAGS=$CFLAGS
+PACKAGE_save_CPPFLAGS=$CPPFLAGS
+PACKAGE_save_CXXFLAGS=$CXXFLAGS
+PACKAGE_save_FCFLAGS=$FCFLAGS
+PACKAGE_save_LDFLAGS=$LDFLAGS
+PACKAGE_save_FCLIBS=$FCLIBS
+PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
+CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
+CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
+CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
+FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
+LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
+LIBS="$PACKAGE_LIBS $LIBS"
+FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
+CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
+
+
+
+
+
+# Check whether --with-boost-dir was given.
+if test "${with_boost_dir+set}" = set; then :
+  withval=$with_boost_dir; BOOST_DIR=$withval
+fi
+
+
+if test ! "x$BOOST_DIR" = "x"; then
+  if test ! -d "$BOOST_DIR"; then
+    as_fn_error $? "
+$BOOST_DIR is not a valid directory;
+please use '--with-boost-dir' to provide the directory" "$LINENO" 5
+  else
+    CPPFLAGS="-I$BOOST_DIR $CPPFLAGS"
+
+  fi
+fi
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/shared_ptr.hpp" "ac_cv_header_boost_shared_ptr_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_shared_ptr_hpp" = xyes; then :
+  DOWNLOAD_BOOST=no
+else
+  DOWNLOAD_BOOST=yes
+fi
+
+
+
+if test "x$DOWNLOAD_BOOST" = "xyes"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: downloading Boost-1.65.1" >&5
+$as_echo "$as_me: WARNING: downloading Boost-1.65.1" >&2;}
+  VERSION=1.65.1
+  TARBALL=boost_1_65_1.tar.gz
+  URL=https://dl.bintray.com/boostorg/release/1.65.1/source/$TARBALL
+  wget $URL -P /tmp
+  BOOST_DIR=externalpackages/boost-$VERSION
+  mkdir -p $BOOST_DIR
+  tar -xzf /tmp/$TARBALL -C $BOOST_DIR --strip-components=1
+  rm -f /tmp/$TARBALL
+  mkdir -p $prefix/include
+  cp -r $BOOST_DIR/boost $prefix/include/.
+  CPPFLAGS="-I$prefix/include $CPPFLAGS"
+
+fi
+
+{ ac_cv_header_boost_shared_ptr_hpp=; unset ac_cv_header_boost_shared_ptr_hpp;}
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/shared_ptr.hpp" "ac_cv_header_boost_shared_ptr_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_shared_ptr_hpp" = xyes; then :
+
+else
+  as_fn_error $? "Couldn't find boost/shared_ptr.hpp..." "$LINENO" 5
+fi
+
+
+
+BOOST_DIR=$BOOST_DIR
+
+
+echo
+
+
+
+echo
+echo "====================================="
+echo "Configuring required package yaml-cpp"
+echo "====================================="
+
+
+PACKAGE_save_CFLAGS=$CFLAGS
+PACKAGE_save_CPPFLAGS=$CPPFLAGS
+PACKAGE_save_CXXFLAGS=$CXXFLAGS
+PACKAGE_save_FCFLAGS=$FCFLAGS
+PACKAGE_save_LDFLAGS=$LDFLAGS
+PACKAGE_save_FCLIBS=$FCLIBS
+PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
+CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
+CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
+CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
+FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
+LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
+LIBS="$PACKAGE_LIBS $LIBS"
+FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
+CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
+
+
+
+
+
+# Check whether --with-yamlcpp-dir was given.
+if test "${with_yamlcpp_dir+set}" = set; then :
+  withval=$with_yamlcpp_dir; YAMLCPP_DIR=$withval
+fi
+
+
+if test ! "x$YAMLCPP_DIR" = "x"; then
+  if test ! -d "$YAMLCPP_DIR"; then
+    as_fn_error $? "
+$YAMLCPP_DIR is not a valid directory;
+please use '--with-yamlcpp-dir' to provide the directory" "$LINENO" 5
+  else
+    CPPFLAGS="-I$YAMLCPP_DIR/include $CPPFLAGS"
+
+  fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for yaml-cpp/yaml.h" >&5
+$as_echo_n "checking for yaml-cpp/yaml.h... " >&6; }
+if ${ac_cv_file_yaml_cpp_yaml_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "yaml-cpp/yaml.h"; then
+  ac_cv_file_yaml_cpp_yaml_h=yes
+else
+  ac_cv_file_yaml_cpp_yaml_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_yaml_cpp_yaml_h" >&5
+$as_echo "$ac_cv_file_yaml_cpp_yaml_h" >&6; }
+if test "x$ac_cv_file_yaml_cpp_yaml_h" = xyes; then :
+  DOWNLOAD_YAMLCPP=no
+else
+  DOWNLOAD_YAMLCPP=yes
+fi
+
+
+if test "x$DOWNLOAD_YAMLCPP" = "xyes"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: downloading and installing yaml-cpp-0.5.1" >&5
+$as_echo "$as_me: WARNING: downloading and installing yaml-cpp-0.5.1" >&2;}
+  VERSION=0.5.1
+  TARBALL=release-${VERSION}.tar.gz
+  URL=https://github.com/jbeder/yaml-cpp/archive/${TARBALL}
+  wget ${URL} -P /tmp
+  YAMLCPP_DIR=externalpackages/yaml-cpp-${VERSION}
+  mkdir -p ${YAMLCPP_DIR}/build
+  tar -xzf /tmp/${TARBALL} -C ${YAMLCPP_DIR} --strip-components=1
+  rm -f /tmp/${TARBALL}
+  cd ${YAMLCPP_DIR}/build
+  cmake .. -DCMAKE_INSTALL_PREFIX=$prefix
+  make all -j"$(nproc)"
+  make install
+  cd ../../..
+  CPPFLAGS="-I$prefix/include $CPPFLAGS"
+
+fi
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "yaml-cpp/yaml.h" "ac_cv_header_yaml_cpp_yaml_h" "$ac_includes_default"
+if test "x$ac_cv_header_yaml_cpp_yaml_h" = xyes; then :
+
+else
+  as_fn_error $? "Couldn't find yaml-cpp/yaml.h..." "$LINENO" 5
+fi
+
+
+
+YAMLCPP_DIR=$YAMLCPP_DIR
+
+
+echo
+
+
+
+
 echo
 echo "=================================="
 echo "Configuring required package PETSc"
@@ -21503,6 +21701,8 @@ CXX: ${CXX}
 CXXFLAGS: ${CXXFLAGS}
 LDFLAGS: ${LDFLAGS}
 
+CPPFLAGS: ${CPPFLAGS}
+
 LIBS: ${LIBS}
 
 PETSC_DIR: ${PETSC_DIR}
@@ -21520,6 +21720,8 @@ Prefix: '${prefix}'
 CXX: ${CXX}
 CXXFLAGS: ${CXXFLAGS}
 LDFLAGS: ${LDFLAGS}
+
+CPPFLAGS: ${CPPFLAGS}
 
 LIBS: ${LIBS}
 

@@ -33,3 +33,9 @@ libyamlcpp_la_SOURCES = src/binary.cpp \
 libyamlcpp_la_CPPFLAGS = -I$(srcdir)/include \
                          -I$(srcdir)/src \
                          -I$(top_srcdir)/external/boost-1.57.0
+
+install:
+	mkdir -p $(includedir)/yaml-cpp
+	cp -r $(top_srcdir)/external/yaml-cpp-0.5.1/include/yaml-cpp/* $(includedir)/yaml-cpp ;
+	mkdir -p $(includedir)/boost
+	cp -r $(top_srcdir)/external/boost-1.57.0/boost/* $(includedir)/boost ;

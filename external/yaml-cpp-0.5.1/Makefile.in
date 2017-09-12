@@ -92,9 +92,11 @@ subdir = external/yaml-cpp-0.5.1
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
 	$(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
+	$(top_srcdir)/m4/configure_yamlcpp.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 \
@@ -204,6 +206,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_DIR = @BOOST_DIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -273,6 +276,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+YAMLCPP_DIR = @YAMLCPP_DIR@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -843,7 +847,6 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -966,6 +969,12 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+install:
+	mkdir -p $(includedir)/yaml-cpp
+	cp -r $(top_srcdir)/external/yaml-cpp-0.5.1/include/yaml-cpp/* $(includedir)/yaml-cpp ;
+	mkdir -p $(includedir)/boost
+	cp -r $(top_srcdir)/external/boost-1.57.0/boost/* $(includedir)/boost ;
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

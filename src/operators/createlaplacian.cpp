@@ -17,7 +17,7 @@
 // here goes headers from our PetIBM
 # include "petibm/cartesianmesh.h"
 # include "petibm/boundary.h"
-# include "petibm/types.h"
+# include "petibm/type.h"
 # include "petibm/misc.h"
 
 

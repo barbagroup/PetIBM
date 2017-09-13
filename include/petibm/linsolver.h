@@ -16,7 +16,7 @@
 # include <petscviewer.h>
 
 // PetIBM
-# include "types.h"
+# include "type.h"
 
 
 namespace petibm

@@ -17,7 +17,7 @@
 # include <yaml-cpp/yaml.h>
 
 // here goes our owen headers
-# include <petibm/types.h>
+# include <petibm/type.h>
 
 
 /** \brief YAML node converters used by yamp-cpp */

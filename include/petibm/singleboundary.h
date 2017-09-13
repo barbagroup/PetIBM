@@ -21,7 +21,7 @@
 // here goes headers from our PetIBM
 # include "cartesianmesh.h"
 # include "solutions.h"
-# include "types.h"
+# include "type.h"
 
 
 namespace petibm

@@ -1,5 +1,5 @@
 /***************************************************************************//**
- * \file types.h
+ * \file type.h
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)

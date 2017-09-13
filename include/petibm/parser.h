@@ -17,7 +17,7 @@
 # include <yaml-cpp/yaml.h>
 
 // here goes our owen headers
-# include "types.h"
+# include "type.h"
 
 
 namespace petibm

@@ -12,7 +12,7 @@
 
 // here goes headers from our PetIBM
 # include "petibm/cartesianmesh.h"
-# include "petibm/types.h"
+# include "petibm/type.h"
 
 
 namespace petibm

@@ -172,15 +172,32 @@ namespace utilities
 /** \brief YAML node parsers for PetIBM components. */
 namespace parser
 {
-    /** \brief parse the config.yaml in a given case directory
-     *
-     * \param filepath path of the configuration file
-     * \param node returned YAML node
-     *
-     * \return PetscErrorCode
-     */
-    PetscErrorCode parseYAMLConfigFile(
-            const std::string &filepath, YAML::Node &node);
+	/**
+	 * \brief get settings from command line arguments and read YAML files.
+	 *
+	 * The function will look for the following command-line arguments 
+	 *
+	 *     1. -directory: the working directory. Default is the current 
+	 *        directory if not found.
+	 *     2. -config: location of config.yaml. If not provided, the default is
+	 *     	  [working directory]/config.yaml.
+	 *     3. -mesh: location of mesh.yaml. This provides a way to overwrite the
+	 *        mesh section indide config.yaml.
+	 *     4. -flow: location of flow.yaml. This provides a way to overwrite the
+	 *        flow section indide config.yaml.
+	 *     5. -parameters: location of parameters.yaml. This provides a way to 
+	 *        overwrite the parameters section indide config.yaml.
+	 *     6. -bodies: location of bodies.yaml. This provides a way to overwrite
+	 *        the bodies section indide config.yaml.
+	 *
+	 * \param node [out] a YAML node containing all settings.
+	 *
+	 * If users provide non-empty YAML node as input, the data inside the node
+	 * will be discarded.
+	 *
+	 * \return PetscErrorCode.
+	 */
+	PetscErrorCode getSettings(YAML::Node &node);
 
     /**
      * \brief parse YAML node to get information of SimulationParameters

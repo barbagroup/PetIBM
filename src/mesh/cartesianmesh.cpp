@@ -29,7 +29,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace mesh
 {
 
 using namespace types;
@@ -1053,5 +1053,5 @@ std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh)
     return os;
 }
 
-} // end of namespace utilities
+} // end of namespace mesh
 } // end of namespace petibm

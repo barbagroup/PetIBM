@@ -13,7 +13,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace timeintegration
 {
 
 using namespace types;
@@ -71,5 +71,5 @@ PetscErrorCode TimeIntegration::init(const TimeScheme &method)
     PetscFunctionReturn(0);
 }
 
-} // end of namespace utilities
+} // end of namespace timeintegration
 } // end of namespace petibm

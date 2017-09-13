@@ -22,8 +22,6 @@
 
 namespace petibm
 {
-namespace utilities
-{
 /** \brief YAML node parsers for PetIBM components. */
 namespace parser
 {
@@ -131,5 +129,4 @@ namespace parser
             PetscInt &n, PetscReal &ed, types::RealVec1D &dL);
 
 } // end of namespace parser
-} // end of namespace utilities
 } // end of namespace petibm

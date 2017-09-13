@@ -13,7 +13,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace body
 {
 
 /** \copydoc BodyPack::BodyPack(). */
@@ -355,5 +355,5 @@ PetscErrorCode BodyPack::writeAvgForce(const PetscReal &dt,
     PetscFunctionReturn(0);
 }
 
-} // end of namespace utilities
+} // end of namespace body
 } // end of namespace petibm

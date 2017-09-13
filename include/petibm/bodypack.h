@@ -29,7 +29,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace body
 {
 
 // TODO: should we really need ISLocalToGlobalMapping?
@@ -245,5 +245,5 @@ protected:
     PetscErrorCode createInfoString();
 };
 
-} // end of namespace utilities
+} // end of namespace body
 } // end of namespace petibm

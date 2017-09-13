@@ -13,8 +13,6 @@
 
 namespace petibm
 {
-namespace utilities
-{
 namespace delta
 {
 
@@ -57,5 +55,4 @@ PetscReal Roma_et_al(
 } // Roma_et_al
 
 } // end of namespace delta
-} // end of namespace utilities
 } // end of namespace petibm

@@ -26,7 +26,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace boundary
 {
 
 class SingleBoundary
@@ -108,5 +108,5 @@ private:
 
 };
 
-} // end of namespace utilities
+} // end of namespace boundary
 } // end of namespace petibm

@@ -18,7 +18,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace body
 {
 
 /** \copydoc SingleBody::SingleBody(). */
@@ -416,5 +416,5 @@ PetscErrorCode SingleBody::calculateAvgForces(
     PetscFunctionReturn(0);
 }
 
-} // end of namespace utilities
+} // end of namespace body
 } // end of namespace petibm

@@ -21,8 +21,6 @@ PetscErrorCode readSingleYAML(YAML::Node &node, const std::string &s);
 
 namespace petibm
 {
-namespace utilities
-{
 namespace parser
 {
 
@@ -267,7 +265,6 @@ PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
 }
 
 } // end of namespace parser
-} // end of namespace utilities
 } // end of namespace petibm
 
 

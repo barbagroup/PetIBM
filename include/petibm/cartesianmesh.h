@@ -31,7 +31,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace mesh
 {
 
 // TODO: if we can get the column index of ANY velocity point, should we still
@@ -482,5 +482,5 @@ protected:
  */
 std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh);
 
-} // end of namespace utilities
+} // end of namespace mesh
 } // end of namespace petibm

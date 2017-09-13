@@ -12,15 +12,10 @@
 # include <string>
 # include <vector>
 # include <map>
-# include <experimental/filesystem>
 
 // here goes PETSc
 # include <petscsys.h>
 # include <petscmat.h>
-
-
-/** \brief shortcut of namespace std::experimental::filesystem */
-namespace stdfs = std::experimental::filesystem;
 
 
 /** \brief operator < for MatStencil for using it as a key to map. 
@@ -33,11 +28,8 @@ bool operator<(const MatStencil &, const MatStencil &);
 
 namespace petibm
 {
-namespace utilities
-{
-
 /** \brief frequently used types are defined here */
-namespace types
+namespace type
 {
     /** \brief legal physical directions. */
     enum Dir { x = 0, y = 1, z = 2 };
@@ -251,8 +243,7 @@ namespace types
      */
     typedef std::vector<std::map<MatStencil, RowModifier>> MatrixModifier;
 
-} // end of namespace types
-} // end of namespace utilities
+} // end of namespace type
 } // end of namespace petibm
 
 /**

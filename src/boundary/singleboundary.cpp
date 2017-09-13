@@ -14,7 +14,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace boundary
 {
 
 /** \copydoc SingleBoundary::SingleBoundary() */
@@ -528,5 +528,5 @@ PetscErrorCode SingleBoundary::copyValues2LocalVecsTrue(std::vector<Vec> &lclVec
     PetscFunctionReturn(0);
 }
 
-} // end of namespace utilities
+} // end of namespace boundary
 } // end of namespace petibm

@@ -16,7 +16,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace solution
 {
 
 using namespace types;
@@ -335,5 +335,5 @@ std::ostream &operator<< (std::ostream &os, const Solutions &soln)
     return os;
 }
 
-} // end of namespace utilities
+} // end of namespace solution
 } // end of namespace petibm

@@ -21,7 +21,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace timeintegration
 {
 
 /**
@@ -60,5 +60,5 @@ public:
 
 }; // TimeIntegration
 
-} // end of namespace utilities
+} // end of namespace timeintegration
 } // end of namespace petibm

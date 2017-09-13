@@ -25,7 +25,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace solution
 {
 
 class Solutions
@@ -92,5 +92,5 @@ private:
 
 std::ostream &operator<< (std::ostream &os, const Solutions &soln);
 
-} // end of namespace utilities
+} // end of namespace solution
 } // end of namespace petibm

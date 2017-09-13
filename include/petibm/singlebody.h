@@ -23,7 +23,7 @@
 
 namespace petibm
 {
-namespace utilities
+namespace body
 {
 
 // TODO: the way we store coords and meshIdx is different from CartesianMesh. 
@@ -265,5 +265,5 @@ protected:
     PetscErrorCode createInfoString();
 };
 
-} // end of namespace utilities
+} // end of namespace body
 } // end of namespace petibm

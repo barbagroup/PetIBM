@@ -17,7 +17,7 @@
 # include <petscsys.h>
 
 // here goes our own headers
-# include "type.h"
+# include <petibm/type.h>
 
 
 namespace petibm

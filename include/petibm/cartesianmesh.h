@@ -26,7 +26,7 @@
 # include <yaml-cpp/yaml.h>
 
 // here goes headers from our PetIBM
-# include "type.h"
+# include <petibm/type.h>
 
 
 namespace petibm

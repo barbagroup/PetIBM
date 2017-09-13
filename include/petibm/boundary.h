@@ -16,7 +16,7 @@
 # include "cartesianmesh.h"
 # include "singleboundary.h"
 # include "solutions.h"
-# include "type.h"
+# include <petibm/type.h>
 
 
 namespace petibm

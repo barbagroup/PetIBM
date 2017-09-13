@@ -14,7 +14,7 @@
 # include "petibm/cartesianmesh.h"
 # include "petibm/bodypack.h"
 # include "petibm/singlebody.h"
-# include "petibm/type.h"
+# include <petibm/type.h>
 # include "petibm/delta.h"
 
 

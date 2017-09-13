@@ -17,7 +17,7 @@
 # include <petscdm.h>
 
 // PetIBM
-# include "type.h"
+# include <petibm/type.h>
 # include "cartesianmesh.h"
 
 

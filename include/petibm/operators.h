@@ -14,7 +14,7 @@
 # include "cartesianmesh.h"
 # include "boundary.h"
 # include "bodypack.h"
-# include "type.h"
+# include <petibm/type.h>
 
 
 namespace petibm

@@ -1,5 +1,5 @@
 /***************************************************************************//**
- * \file types.cpp
+ * \file type.cpp
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
@@ -7,7 +7,7 @@
  */
 
 // here goes our headers
-#include "petibm/type.h"
+#include <petibm/type.h>
 
 
 /** \copydoc operator<(const MatStencil &, const MatStencil &). */

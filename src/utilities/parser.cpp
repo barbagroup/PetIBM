@@ -97,27 +97,6 @@ PetscErrorCode getSettings(YAML::Node &node)
 }
 
 
-/** \copydoc parser::parseSimulationParameters */
-PetscErrorCode parseSimulationParameters(const YAML::Node &param,
-                                         types::OutputInfo  &output,
-                                         types::LinSolverInfo &velocity,
-                                         types::LinSolverInfo &poisson,
-                                         types::SchemeInfo &methods,
-                                         types::SteppingInfo &stepping)
-{
-    PetscFunctionBeginUser;
-
-    output = param.as<types::OutputInfo>();
-    velocity = param["velocitySolver"].as<types::LinSolverInfo>();
-    poisson = param["poissonSolver"].as<types::LinSolverInfo>();
-    methods = param.as<types::SchemeInfo>();
-    stepping = param.as<types::SteppingInfo>();
-
-    PetscFunctionReturn(0);
-}
-
-
-
 /** \copydoc parser::parseFlowDescription */
 PetscErrorCode parseFlowDescription(const YAML::Node &flowNode,
                                     PetscInt &dim, PetscReal &nu,

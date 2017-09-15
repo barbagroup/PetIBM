@@ -91,11 +91,12 @@ check_PROGRAMS = delta-test$(EXEEXT) singlebody-test$(EXEEXT) \
 	cartesianmesh-test$(EXEEXT) singleboundary-test$(EXEEXT)
 subdir = tests/utilities
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
-	$(top_srcdir)/m4/configure_amgx.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
 	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_doxygen.m4 \
+	$(top_srcdir)/m4/configure_gtest.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/configure_yamlcpp.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -113,8 +114,10 @@ CONFIG_CLEAN_VPATH_FILES =
 am_cartesianmesh_test_OBJECTS =  \
 	cartesianmesh_test-cartesianmesh_test.$(OBJEXT)
 cartesianmesh_test_OBJECTS = $(am_cartesianmesh_test_OBJECTS)
-am__DEPENDENCIES_1 = $(top_builddir)/src/libpetibm.la \
-	$(top_builddir)/external/gtest-1.8.0/libgtest.a
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = $(top_builddir)/src/utilities/libutilities.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -192,6 +195,10 @@ CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMGXWRAPPER_CPPFLAGS = @AMGXWRAPPER_CPPFLAGS@
+AMGXWRAPPER_DIR = @AMGXWRAPPER_DIR@
+AMGXWRAPPER_LDFLAGS = @AMGXWRAPPER_LDFLAGS@
+AMGXWRAPPER_LIBS = @AMGXWRAPPER_LIBS@
 AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -200,7 +207,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
 BOOST_DIR = @BOOST_DIR@
+BUILDDIR = @BUILDDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -226,6 +235,10 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
+GTEST_CPPFLAGS = @GTEST_CPPFLAGS@
+GTEST_DIR = @GTEST_DIR@
+GTEST_LDFLAGS = @GTEST_LDFLAGS@
+GTEST_LIBS = @GTEST_LIBS@
 HAVE_DOXYGEN = @HAVE_DOXYGEN@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -252,16 +265,12 @@ OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
-PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
-PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
-PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
@@ -270,7 +279,10 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+YAMLCPP_CPPFLAGS = @YAMLCPP_CPPFLAGS@
 YAMLCPP_DIR = @YAMLCPP_DIR@
+YAMLCPP_LDFLAGS = @YAMLCPP_LDFLAGS@
+YAMLCPP_LIBS = @YAMLCPP_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -326,30 +338,29 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/include \
-              -I$(top_srcdir)/external/gtest-1.8.0/include \
-              -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-              -I$(top_srcdir)/external/boost-1.57.0
+              $(YAMLCPP_CPPFLAGS) \
+              $(GTEST_CPPFLAGS)
 
-LDADD = $(top_builddir)/src/libpetibm.la \
-        $(top_builddir)/external/gtest-1.8.0/libgtest.a \
-        -lstdc++fs
+LADD = $(top_builddir)/src/utilities/libutilities.la \
+       $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
+       $(GTEST_LDFLAGS) $(GTEST_LIBS)
 
 delta_test_DEPENDENCIES = input_data
 delta_test_SOURCES = delta_test.cpp
 delta_test_CPPFLAGS = $(AM_CPPFLAGS)
-delta_test_LDADD = $(LDADD)
+delta_test_LDADD = $(LADD)
 singlebody_test_DEPENDENCIES = input_data
 singlebody_test_SOURCES = singlebody_test.cpp
 singlebody_test_CPPFLAGS = $(AM_CPPFLAGS)
-singlebody_test_LDADD = $(LDADD)
+singlebody_test_LDADD = $(LADD)
 cartesianmesh_test_DEPENDENCIES = input_data
 cartesianmesh_test_SOURCES = cartesianmesh_test.cpp
 cartesianmesh_test_CPPFLAGS = $(AM_CPPFLAGS)
-cartesianmesh_test_LDADD = $(LDADD)
+cartesianmesh_test_LDADD = $(LADD)
 singleboundary_test_DEPENDENCIES = input_data
 singleboundary_test_SOURCES = singleboundary_test.cpp
 singleboundary_test_CPPFLAGS = $(AM_CPPFLAGS)
-singleboundary_test_LDADD = $(LDADD)
+singleboundary_test_LDADD = $(LADD)
 all: all-am
 
 .SUFFIXES:

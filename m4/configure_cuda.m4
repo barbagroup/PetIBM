@@ -1,4 +1,4 @@
-# CONFIGURE_CUDA65
+# CONFIGURE_CUDA
 # ---------------
 # brief: Configures optional package CUDA required with AmgX.
 
@@ -9,39 +9,43 @@ echo "================================="
 echo "Configuring optional package CUDA"
 echo "================================="
 
+PACKAGE_INITIALIZE_ENVIRONMENT
 PACKAGE_SETUP_ENVIRONMENT
 
-# check for presence of `--with-cuda=PATH`
-AC_ARG_WITH([cuda],
-            AS_HELP_STRING([--with-cuda=PATH],
-                           [set CUDA directory]),
-            [if test ! -d "$withval" ; then
-               AC_MSG_ERROR([it is necessary to specify an existing directory 
-                             when using --with-cuda=PATH])
-             fi
-             CUDA_DIR=$withval])
+AC_ARG_VAR([CUDA_DIR], [CUDA directory])
 
+AC_ARG_WITH([cuda-dir],
+            AS_HELP_STRING([--with-cuda-dir=PATH],
+                           [set CUDA directory]),
+            [CUDA_DIR=$withval],
+            [CUDA_DIR=/usr/local/cuda])
+
+if test ! -d $CUDA_DIR ; then
+  AC_MSG_ERROR([$CUDA_DIR is not a valid directory;
+please use `--with-cuda-dir` to provide CUDA directory
+or set the environment variable CUDA_DIR])
+fi
+
+AC_SUBST(CUDA_DIR, $CUDA_DIR)
 AC_MSG_NOTICE([using CUDA: $CUDA_DIR])
 
-CUDA_INC_PATH=-I$CUDA_DIR/include
-CUDA_LIB_PATH=-L$CUDA_DIR/lib64
-CUDA_LIB_RPATH=-Wl,-rpath,$CUDA_DIR/lib64
-CUDA_LIBRARY=-lcudart\ -lcublas\ -lcusparse
+CUDA_CPPFLAGS="-I$CUDA_DIR/include"
+CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
+CUDA_LIBS="-lcudart -lcublas -lcusparse"
+CPPFLAGS_PREPEND($CUDA_CPPFLAGS)
+LDFLAGS_PREPEND($CUDA_LDFLAGS)
 
-CPPFLAGS_PREPEND($CUDA_INC_PATH)
-LDFLAGS_PREPEND($CUDA_LIB_PATH $CUDA_LIB_RPATH)
-LIBS_PREPEND($CUDA_LIBRARY_PATH)
-
-AC_CHECK_HEADER([cuda_runtime.h], ,
-                AC_MSG_ERROR([could not find header file cuda_runtime.h]))
+AC_CHECK_HEADER([cuda_runtime.h],
+                [],
+                [AC_MSG_ERROR([could not find header file cuda_runtime.h])])
 
 AC_MSG_CHECKING([for CUDA version])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [[
 #include <cuda_runtime.h>
-#define CUDART_VERSION_EQ65 (CUDART_VERSION==6050)
+#define CUDART_VERSION_GE65 (CUDART_VERSION>=6050)
 ]], [[
-#if (CUDART_VERSION_EQ65)
+#if (CUDART_VERSION_GE65)
 #else
 asdf
 #endif
@@ -51,7 +55,7 @@ asdf
                   [CUDART_VERSION_VALID=no])
 AC_MSG_RESULT([${CUDART_VERSION_VALID}])
 if test "$CUDART_VERSION_VALID" = no; then
-  AC_MSG_ERROR([invalid CUDA version detected; please use CUDA 6.5])
+  AC_MSG_ERROR([invalid CUDA version detected; please use CUDA 6.5 or above])
 fi
 
 AC_CHECK_LIB([cudart], [cudaRuntimeGetVersion], ,
@@ -61,13 +65,7 @@ AC_CHECK_LIB([cublas], [cublasGetVersion], ,
 AC_CHECK_LIB([cusparse], [cusparseGetVersion], ,
              AC_MSG_ERROR([could not find library cusparse]))
 
-PACKAGE_CPPFLAGS_PREPEND($CUDA_INC_PATH)
-PACKAGE_LDFLAGS_PREPEND($CUDA_LIB_PATH $CUDA_LIB_RPATH)
-PACKAGE_LIBS_PREPEND($CUDA_LIBRARY)
-
 PACKAGE_RESTORE_ENVIRONMENT
-
-AC_SUBST(CUDA_DIR, $CUDA_DIR)
 
 echo
 

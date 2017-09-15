@@ -61,7 +61,7 @@ PetscErrorCode AMGXSolver::getIters(PetscInt &iters)
 {
     PetscErrorCode ierr;
 
-    iters = amgx.getIters();
+    ierr = amgx.getIters(iters); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // getIters

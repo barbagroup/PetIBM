@@ -90,11 +90,12 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = src/operators
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
-	$(top_srcdir)/m4/configure_amgx.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
 	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_doxygen.m4 \
+	$(top_srcdir)/m4/configure_gtest.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/configure_yamlcpp.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -110,7 +111,9 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-liboperators_la_LIBADD =
+am__DEPENDENCIES_1 =
+liboperators_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_liboperators_la_OBJECTS = liboperators_la-createbn.lo \
 	liboperators_la-createconvection.lo \
 	liboperators_la-createdelta.lo \
@@ -186,6 +189,10 @@ CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMGXWRAPPER_CPPFLAGS = @AMGXWRAPPER_CPPFLAGS@
+AMGXWRAPPER_DIR = @AMGXWRAPPER_DIR@
+AMGXWRAPPER_LDFLAGS = @AMGXWRAPPER_LDFLAGS@
+AMGXWRAPPER_LIBS = @AMGXWRAPPER_LIBS@
 AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -194,7 +201,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
 BOOST_DIR = @BOOST_DIR@
+BUILDDIR = @BUILDDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -220,6 +229,10 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
+GTEST_CPPFLAGS = @GTEST_CPPFLAGS@
+GTEST_DIR = @GTEST_DIR@
+GTEST_LDFLAGS = @GTEST_LDFLAGS@
+GTEST_LIBS = @GTEST_LIBS@
 HAVE_DOXYGEN = @HAVE_DOXYGEN@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -246,16 +259,12 @@ OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
-PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
-PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
-PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PETSCVARIABLES = @PETSCVARIABLES@
 PETSC_ARCH = @PETSC_ARCH@
 PETSC_DIR = @PETSC_DIR@
 RANLIB = @RANLIB@
@@ -264,7 +273,10 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+YAMLCPP_CPPFLAGS = @YAMLCPP_CPPFLAGS@
 YAMLCPP_DIR = @YAMLCPP_DIR@
+YAMLCPP_LDFLAGS = @YAMLCPP_LDFLAGS@
+YAMLCPP_LIBS = @YAMLCPP_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -329,8 +341,10 @@ liboperators_la_SOURCES = createbn.cpp \
                           createlaplacian.cpp
 
 liboperators_la_CPPFLAGS = -I$(top_srcdir)/include \
-                           -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-                           -I$(top_srcdir)/external/boost-1.57.0
+                           $(YAMLCPP_CPPFLAGS)
+
+liboperators_la_LIBADD = -lstdc++fs \
+                         $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
 
 all: all-am
 

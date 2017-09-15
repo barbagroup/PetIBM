@@ -9,8 +9,6 @@ echo "=================================="
 echo "Configuring required package PETSc"
 echo "=================================="
 
-PACKAGE_SETUP_ENVIRONMENT
-
 # check for presence of `--with-petsc-dir=PATH` and `--with-petsc-arch=PATH`
 AC_ARG_WITH([petsc-dir],
             AS_HELP_STRING([--with-petsc-dir=PATH],
@@ -33,8 +31,10 @@ please use `--with-petsc-arch` to provide a PETSc arch])
   fi
 fi
 
-AC_MSG_NOTICE([using PETSc: ${PETSC_DIR}])
-AC_MSG_NOTICE([with arch: ${PETSC_ARCH}])
+AC_SUBST(PETSC_DIR, $PETSC_DIR)
+AC_SUBST(PETSC_ARCH, $PETSC_ARCH)
+AC_MSG_NOTICE([using PETSc: $PETSC_DIR])
+AC_MSG_NOTICE([with arch: $PETSC_ARCH])
 
 # check for presence of file petscvariables
 PETSCVARIABLES="$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables"
@@ -45,10 +45,6 @@ if test "$HAVE_PETSCVARIABLES" = no; then
   AC_MSG_ERROR([could not find file petscvariables;
 please use PETSc-3.7])
 fi
-
-AC_SUBST(PETSC_DIR, $PETSC_DIR)
-AC_SUBST(PETSC_ARCH, $PETSC_ARCH)
-AC_SUBST(PETSCVARIABLES, $PETSCVARIABLES)
 
 PETSC_CC_INCLUDES=`grep "PETSC_CC_INCLUDES =" $PETSCVARIABLES | sed -e 's/.*=//' -e 's/^[ \t]*//'`
 PETSC_EXTERNAL_LIB_BASIC=`grep "PETSC_EXTERNAL_LIB_BASIC =" $PETSCVARIABLES | sed -e 's/.*=//' -e 's/^[ \t]*//'`
@@ -83,14 +79,6 @@ AC_MSG_RESULT([${PETSC_VERSION_VALID}])
 if test "$PETSC_VERSION_VALID" = no; then
   AC_MSG_ERROR([invalid PETSc version detected; please use PETSc 3.7])
 fi
-
-AC_SUBST(PETSC_DIR, $PETSC_DIR)
-AC_SUBST(PETSC_ARCH, $PETSC_ARCH)
-
-PACKAGE_CPPFLAGS_PREPEND($PETSC_CC_INCLUDES)
-PACKAGE_LIBS_PREPEND($PETSC_WITH_EXTERNAL_LIB)
-
-PACKAGE_RESTORE_ENVIRONMENT
 
 echo
 

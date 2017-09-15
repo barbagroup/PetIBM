@@ -46,15 +46,23 @@ AC_FUNC_STRERROR_R
 AC_FUNC_ERROR_AT_LINE
 AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday localtime_r memset mkdir munmap pow regcomp rmdir socket sqrt strcasecmp strchr strdup strerror strrchr strstr strtol strtoull])
 
+AC_SUBST([BUILDDIR], [`pwd`])
+CPPFLAGS_="-I$prefix/include"
+LDFLAGS_="-L$prefix/lib -Wl,-rpath,$prefix/lib"
+CPPFLAGS_PREPEND($CPPFLAGS_)
+LDFLAGS_PREPEND($LDFLAGS_)
+
 # check for optional and required third-party libraries
-PACKAGE_INITIALIZE_ENVIRONMENT
 CONFIGURE_YAMLCPP
+CONFIGURE_GTEST
 CONFIGURE_PETSC
-AC_ARG_WITH([amgx],, [CHECK_VERSION_OPENMPI
-                      CONFIGURE_CUDA
-                      CONFIGURE_AMGX])
-AM_CONDITIONAL([WITH_AMGXWRAPPER], [test "x$WITH_AMGX" = xyes])
-PACKAGE_SETUP_ENVIRONMENT
+AC_ARG_WITH([amgx-dir], [], [ENABLE_AMGX=yes], [])
+AC_ARG_ENABLE([amgx], [AS_HELP_STRING([--enable-amgx], [build with AmgX])],
+              [ENABLE_AMGX=yes], [])
+if test "x$ENABLE_AMGX" = xyes; then
+  CONFIGURE_AMGX
+fi
+AM_CONDITIONAL([WITH_AMGX], [test "x$ENABLE_AMGX" = xyes])
 
 # list of Makefiles to generate
 AC_CONFIG_FILES([Makefile
@@ -63,10 +71,6 @@ AC_CONFIG_FILES([Makefile
                  src/utilities/Makefile
                  src/operators/Makefile
                  src/linsolvers/Makefile
-                 external/Makefile
-                 external/yaml-cpp-0.5.1/Makefile
-                 external/gtest-1.8.0/Makefile
-                 external/AmgXWrapper-1.0-beta2/Makefile
                  tests/Makefile
                  tests/utilities/Makefile
                  tests/operators/Makefile
@@ -86,9 +90,10 @@ Prefix: '${prefix}'
 
 CXX: ${CXX}
 CXXFLAGS: ${CXXFLAGS}
-LDFLAGS: ${LDFLAGS}
 
 CPPFLAGS: ${CPPFLAGS}
+
+LDFLAGS: ${LDFLAGS}
 
 LIBS: ${LIBS}
 

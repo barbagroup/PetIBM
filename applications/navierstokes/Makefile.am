@@ -13,4 +13,3 @@ if WITH_AMGX
 petibm_navierstokes_CPPFLAGS += $(AMGXWRAPPER_CPPFLAGS)
 petibm_navierstokes_LDADD += $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 endif
-

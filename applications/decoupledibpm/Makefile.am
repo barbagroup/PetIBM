@@ -13,4 +13,3 @@ if WITH_AMGX
 petibm_decoupledibpm_CPPFLAGS += $(AMGXWRAPPER_CPPFLAGS)
 petibm_decoupledibpm_LDADD += $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 endif
-

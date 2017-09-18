@@ -71,7 +71,7 @@ else
         -DPETSC_ARCH=$PETSC_ARCH \
         -DAMGX_DIR=$AMGX_DIR \
         -DCUDA_DIR=$CUDA_DIR \
-        -DBUILD_SHARED_LIBS=$VAL > /dev/null 2>&1
+        -DBUILD_SHARED_LIBS=$VAL
       make all
       make install
     done

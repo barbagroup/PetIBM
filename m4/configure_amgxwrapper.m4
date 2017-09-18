@@ -22,7 +22,7 @@ AC_ARG_WITH([amgxwrapper-dir],
 
 AC_ARG_ENABLE([amgxwrapper],
               AS_HELP_STRING([--enable-amgxwrapper],
-                             [download and install AmgXWrapper-1.1 (AmgX-2.0)]),
+                             [download and install AmgXWrapper-1.2]),
               [DOWNLOAD_AMGXWRAPPER=yes],
               [DOWNLOAD_AMGXWRAPPER=no])
 
@@ -47,21 +47,22 @@ else
 
  ****************************************
  *      Downloading and installing      *
- *      AmgXWrapper-1.1 (AmgX-2.0)      *
+ *           AmgXWrapper-1.2            *
  ****************************************
 ])
     PACKAGE_INITIALIZE_ENVIRONMENT
     PACKAGE_SETUP_ENVIRONMENT
-    echo "downloading AmgXWrapper-1.1 (AmgX-2.0)... "
-    ZIP_FILE=amgx-2.0.zip
-    URL=https://github.com/mesnardo/AmgXWrapper/archive/$ZIP_FILE
+    echo "downloading AmgXWrapper-1.2... "
+    VERSION=1.2
+    TARBALL=v$VERSION.tar.gz
+    URL=https://github.com/barbagroup/AmgXWrapper/archive/$TARBALL
     wget $URL -P /tmp
-    unzip /tmp/$ZIP_FILE -d $BUILDDIR/externalpackages
-    rm -f /tmp/$ZIP_FILE
-    echo "building AmgXWrapper-1.1 (AmgX-2.0)... "
-    AMGXWRAPPER_DIR=$BUILDDIR/externalpackages/AmgXWrapper-amgx-2.0
+    AMGXWRAPPER_DIR=$BUILDDIR/externalpackages/AmgXWrapper-$VERSION
     AC_SUBST(AMGXWRAPPER_DIR, $AMGXWRAPPER_DIR)
     mkdir -p $AMGXWRAPPER_DIR/build
+    tar -xzf /tmp/$TARBALL -C $AMGXWRAPPER_DIR --strip-components=1
+    rm -f /tmp/$TARBALL
+    echo "building AmgXWrapper-1.2... "
     cd $AMGXWRAPPER_DIR/build
     for VAL in "ON" "OFF"
     do

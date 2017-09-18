@@ -59,11 +59,11 @@ if test "$CUDART_VERSION_VALID" = no; then
 fi
 
 AC_CHECK_LIB([cudart], [cudaRuntimeGetVersion], ,
-             AC_MSG_ERROR([could not find library cudart]))
+             AC_MSG_ERROR([could not find library cudart; check config.log]))
 AC_CHECK_LIB([cublas], [cublasGetVersion], ,
-             AC_MSG_ERROR([could not find library cublas]))
+             AC_MSG_ERROR([could not find library cublas; check config.log]))
 AC_CHECK_LIB([cusparse], [cusparseGetVersion], ,
-             AC_MSG_ERROR([could not find library cusparse]))
+             AC_MSG_ERROR([could not find library cusparse; check config.log]))
 
 PACKAGE_RESTORE_ENVIRONMENT
 

@@ -1478,7 +1478,7 @@ Optional Features:
   --enable-yamlcpp        download and install yaml-cpp-0.5.1
   --enable-gtest          download and install gtest-1.7.0
   --enable-amgx           build with AmgX
-  --enable-amgxwrapper    download and install AmgXWrapper-1.1 (AmgX-2.0)
+  --enable-amgxwrapper    download and install AmgXWrapper-1.2
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -19001,7 +19001,7 @@ _ACEOF
   LIBS="-lcudart $LIBS"
 
 else
-  as_fn_error $? "could not find library cudart" "$LINENO" 5
+  as_fn_error $? "could not find library cudart; check config.log" "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cublasGetVersion in -lcublas" >&5
@@ -19048,7 +19048,7 @@ _ACEOF
   LIBS="-lcublas $LIBS"
 
 else
-  as_fn_error $? "could not find library cublas" "$LINENO" 5
+  as_fn_error $? "could not find library cublas; check config.log" "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cusparseGetVersion in -lcusparse" >&5
@@ -19095,7 +19095,7 @@ _ACEOF
   LIBS="-lcusparse $LIBS"
 
 else
-  as_fn_error $? "could not find library cusparse" "$LINENO" 5
+  as_fn_error $? "could not find library cusparse; check config.log" "$LINENO" 5
 fi
 
 
@@ -19232,7 +19232,7 @@ _ACEOF
   LIBS="-lamgxsh $LIBS"
 
 else
-  as_fn_error $? "could not find library amgxsh" "$LINENO" 5
+  as_fn_error $? "could not use library amgxsh; check config.log" "$LINENO" 5
 fi
 
 
@@ -19330,14 +19330,14 @@ else
 
  ****************************************
  *      Downloading and installing      *
- *      AmgXWrapper-1.1 (AmgX-2.0)      *
+ *           AmgXWrapper-1.2            *
  ****************************************
 " >&5
 $as_echo "$as_me:
 
  ****************************************
  *      Downloading and installing      *
- *      AmgXWrapper-1.1 (AmgX-2.0)      *
+ *           AmgXWrapper-1.2            *
  ****************************************
 " >&6;}
 
@@ -19369,17 +19369,18 @@ LIBS="$PACKAGE_LIBS $LIBS"
 FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
 CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
-    echo "downloading AmgXWrapper-1.1 (AmgX-2.0)... "
-    ZIP_FILE=amgx-2.0.zip
-    URL=https://github.com/mesnardo/AmgXWrapper/archive/$ZIP_FILE
+    echo "downloading AmgXWrapper-1.2... "
+    VERSION=1.2
+    TARBALL=v$VERSION.tar.gz
+    URL=https://github.com/barbagroup/AmgXWrapper/archive/$TARBALL
     wget $URL -P /tmp
-    unzip /tmp/$ZIP_FILE -d $BUILDDIR/externalpackages
-    rm -f /tmp/$ZIP_FILE
-    echo "building AmgXWrapper-1.1 (AmgX-2.0)... "
-    AMGXWRAPPER_DIR=$BUILDDIR/externalpackages/AmgXWrapper-amgx-2.0
+    AMGXWRAPPER_DIR=$BUILDDIR/externalpackages/AmgXWrapper-$VERSION
     AMGXWRAPPER_DIR=$AMGXWRAPPER_DIR
 
     mkdir -p $AMGXWRAPPER_DIR/build
+    tar -xzf /tmp/$TARBALL -C $AMGXWRAPPER_DIR --strip-components=1
+    rm -f /tmp/$TARBALL
+    echo "building AmgXWrapper-1.2... "
     cd $AMGXWRAPPER_DIR/build
     for VAL in "ON" "OFF"
     do

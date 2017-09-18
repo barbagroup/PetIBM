@@ -17,3 +17,7 @@ libutilities_la_CPPFLAGS = -I$(top_srcdir)/include \
                            $(YAMLCPP_CPPFLAGS)
 libutilities_la_LIBADD = -lstdc++fs \
                          $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
+
+if WITH_AMGX
+libutilities_la_CPPFLAGS += -DHAVE_AMGX
+endif

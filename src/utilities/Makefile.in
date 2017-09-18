@@ -88,6 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@WITH_AMGX_TRUE@am__append_1 = -DHAVE_AMGX
 subdir = src/utilities
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
@@ -346,9 +347,8 @@ libutilities_la_SOURCES = bodypack.cpp \
                           timeintegration.cpp \
                           types.cpp
 
-libutilities_la_CPPFLAGS = -I$(top_srcdir)/include \
-                           $(YAMLCPP_CPPFLAGS)
-
+libutilities_la_CPPFLAGS = -I$(top_srcdir)/include $(YAMLCPP_CPPFLAGS) \
+	$(am__append_1)
 libutilities_la_LIBADD = -lstdc++fs \
                          $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
 

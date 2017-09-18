@@ -44,7 +44,7 @@ AC_CHECK_HEADER([amgx_c.h], ,
 # check for presence of library amgxh
 AC_CHECK_LIB([amgxsh],
              [AMGX_initialize], ,
-             AC_MSG_ERROR([could not find library amgxsh]))
+             AC_MSG_ERROR([could not use library amgxsh; check config.log]))
 
 PACKAGE_RESTORE_ENVIRONMENT
 

@@ -25,50 +25,32 @@ namespace petibm
 /** \brief YAML node parsers for PetIBM components. */
 namespace parser
 {
-	/**
-	 * \brief get settings from command line arguments and read YAML files.
-	 *
-	 * The function will look for the following command-line arguments 
-	 *
-	 *     1. -directory: the working directory. Default is the current 
-	 *        directory if not found.
-	 *     2. -config: location of config.yaml. If not provided, the default is
-	 *     	  [working directory]/config.yaml.
-	 *     3. -mesh: location of mesh.yaml. This provides a way to overwrite the
-	 *        mesh section indide config.yaml.
-	 *     4. -flow: location of flow.yaml. This provides a way to overwrite the
-	 *        flow section indide config.yaml.
-	 *     5. -parameters: location of parameters.yaml. This provides a way to 
-	 *        overwrite the parameters section indide config.yaml.
-	 *     6. -bodies: location of bodies.yaml. This provides a way to overwrite
-	 *        the bodies section indide config.yaml.
-	 *
-	 * \param node [out] a YAML node containing all settings.
-	 *
-	 * If users provide non-empty YAML node as input, the data inside the node
-	 * will be discarded.
-	 *
-	 * \return PetscErrorCode.
-	 */
-	PetscErrorCode getSettings(YAML::Node &node);
-
-    /** \brief parse a YAML node and obtained info for class `FlowDescription`.
+    /**
+     * \brief get settings from command line arguments and read YAML files.
      *
-     * \param flowNode a YAML node.
-     * \param dim dimension will be returned here.
-     * \param nu kinematic viscosity will be returned here.
-     * \param customIC a flog indicating if using customized IC.
-     * \param IC a vector holding constant IC value for each component will be returned here.
-     * \param pertb perturbation info will be returned here.
-     * \param nBC number of total boundaries will be returned here
-     * \param BCInfo a `BCInfoHolder` will be returned here 
+     * The function will look for the following command-line arguments 
      *
-     * \return PetscErrorCode
+     *     1. -directory: the working directory. Default is the current 
+     *        directory if not found.
+     *     2. -config: location of config.yaml. If not provided, the default is
+     *        [working directory]/config.yaml.
+     *     3. -mesh: location of mesh.yaml. This provides a way to overwrite the
+     *        mesh section indide config.yaml.
+     *     4. -flow: location of flow.yaml. This provides a way to overwrite the
+     *        flow section indide config.yaml.
+     *     5. -parameters: location of parameters.yaml. This provides a way to 
+     *        overwrite the parameters section indide config.yaml.
+     *     6. -bodies: location of bodies.yaml. This provides a way to overwrite
+     *        the bodies section indide config.yaml.
+     *
+     * \param node [out] a YAML node containing all settings.
+     *
+     * If users provide non-empty YAML node as input, the data inside the node
+     * will be discarded.
+     *
+     * \return PetscErrorCode.
      */
-    PetscErrorCode parseFlowDescription(
-            const YAML::Node &flowNode, PetscInt &dim, PetscReal &nu, 
-            PetscBool &customIC, types::RealVec1D &IC, types::Perturbation &pertb, 
-            PetscInt &nBC, types::BCInfoHolder &BCInfo);
+    PetscErrorCode getSettings(YAML::Node &node);
 
     /** \brief parse a YAML node of cartesianMesh.
      *
@@ -82,8 +64,8 @@ namespace parser
      * \return PetscErrorCode
      */
     PetscErrorCode parseMesh(
-            const YAML::Node &meshNode, PetscInt &dim, types::RealVec1D &bg, 
-            types::RealVec1D &ed, types::IntVec1D &nTotal, types::RealVec2D &dL);
+            const YAML::Node &meshNode, PetscInt &dim, type::RealVec1D &bg, 
+            type::RealVec1D &ed, type::IntVec1D &nTotal, type::RealVec2D &dL);
 
     /** \brief parse the info of only one direction from YAML node.
      *
@@ -98,7 +80,7 @@ namespace parser
      */
     PetscErrorCode parseOneAxis(
             const YAML::Node &axis, PetscInt &dir, PetscReal &bg, 
-            PetscReal &ed, PetscInt &nTotal, types::RealVec1D &dL);
+            PetscReal &ed, PetscInt &nTotal, type::RealVec1D &dL);
 
     /** \brief parse all subdomains in a direction.
      *
@@ -112,7 +94,7 @@ namespace parser
      */
     PetscErrorCode parseSubDomains(
             const YAML::Node &subs, const PetscReal bg,
-            PetscInt &nTotal, PetscReal &ed, types::RealVec1D &dL);
+            PetscInt &nTotal, PetscReal &ed, type::RealVec1D &dL);
 
     /** \brief parse only one subdomain
      *
@@ -126,7 +108,20 @@ namespace parser
      */
     PetscErrorCode parseOneSubDomain(
             const YAML::Node &sub, const PetscReal bg,
-            PetscInt &n, PetscReal &ed, types::RealVec1D &dL);
+            PetscInt &n, PetscReal &ed, type::RealVec1D &dL);
+    
+    
+    /**
+     * \brief 
+     *
+     * \param node
+     * \param bcTypes
+     * \param bcValues
+     *
+     * \return 
+     */
+    PetscErrorCode parseBCs(const YAML::Node &node, 
+            type::IntVec2D &bcTypes, type::RealVec2D &bcValues);
 
 } // end of namespace parser
 } // end of namespace petibm

@@ -27,114 +27,69 @@ namespace parser
 // get all settings into a sinfle YAML node
 PetscErrorCode getSettings(YAML::Node &node)
 {
-	PetscFunctionBeginUser;
+    PetscFunctionBeginUser;
 
     PetscErrorCode  ierr;
 
-	// use whole new YAML node
-	node = YAML::Node();
+    // use whole new YAML node
+    node = YAML::Node();
 
-	char 		s[PETSC_MAX_PATH_LEN];
-	PetscBool 	flg;
+    char        s[PETSC_MAX_PATH_LEN];
+    PetscBool   flg;
 
     // directory: the working directory. Default is the current directory
     node["directory"] = "./";
 
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-directory", 
-			s, sizeof(s), &flg); CHKERRQ(ierr);
+    ierr = PetscOptionsGetString(nullptr, nullptr, "-directory", 
+            s, sizeof(s), &flg); CHKERRQ(ierr);
 
-	if (flg) node["directory"] = s;
+    if (flg) node["directory"] = s;
 
     // config: location of config.yaml. Default is under worling directory.
     // TODO: what if users provide a relative path? Where should it relative to?
-	node["config.yaml"] = node["directory"].as<std::string>() + "/config.yaml";
+    node["config.yaml"] = node["directory"].as<std::string>() + "/config.yaml";
 
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-config",
-			s, sizeof(s), &flg); CHKERRQ(ierr);
-	
-	if (flg) node["config.ymal"] = s;
+    ierr = PetscOptionsGetString(nullptr, nullptr, "-config",
+            s, sizeof(s), &flg); CHKERRQ(ierr);
+    
+    if (flg) node["config.ymal"] = s;
 
-	// the following four arguments will overwrite corresponding sections in
-	// config.yaml, if users pass these argument through command line
+    // the following four arguments will overwrite corresponding sections in
+    // config.yaml, if users pass these argument through command line
 
     // mesh: mesh.yaml. No default value.
     // TODO: what if users provide a relative path? Where should it relative to?
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-mesh",
-			s, sizeof(s), &flg); CHKERRQ(ierr);
+    ierr = PetscOptionsGetString(nullptr, nullptr, "-mesh",
+            s, sizeof(s), &flg); CHKERRQ(ierr);
 
-	if (flg) node["mesh.yaml"] = s;
+    if (flg) node["mesh.yaml"] = s;
 
     // flow: flow.yaml. No default value.
     // TODO: what if users provide a relative path? Where should it relative to?
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-flow",
-			s, sizeof(s), &flg); CHKERRQ(ierr);
+    ierr = PetscOptionsGetString(nullptr, nullptr, "-flow",
+            s, sizeof(s), &flg); CHKERRQ(ierr);
 
-	if (flg) node["flow.ymal"] = s;
+    if (flg) node["flow.ymal"] = s;
 
     // parameters: parameters.yaml. No default value.
     // TODO: what if users provide a relative path? Where should it relative to?
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-parameters",
-			s, sizeof(s), &flg); CHKERRQ(ierr);
+    ierr = PetscOptionsGetString(nullptr, nullptr, "-parameters",
+            s, sizeof(s), &flg); CHKERRQ(ierr);
 
-	if (flg) node["parameters.ymal"] = s;
+    if (flg) node["parameters.ymal"] = s;
 
     // bodies: bodies.yaml. No default value.
     // TODO: what if users provide a relative path? Where should it relative to?
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-bodies",
-			s, sizeof(s), &flg); CHKERRQ(ierr);
+    ierr = PetscOptionsGetString(nullptr, nullptr, "-bodies",
+            s, sizeof(s), &flg); CHKERRQ(ierr);
 
-	if (flg) node["bodies.ymal"] = s;
+    if (flg) node["bodies.ymal"] = s;
 
     // solution: path to solution folder. Always under working directory.
-   	node["solution"] = node["directory"].as<std::string>() + "/solution"; 
+    node["solution"] = node["directory"].as<std::string>() + "/solution"; 
 
-	// read setting from YAML files
-	ierr = readYAMLs(node); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc parser::parseFlowDescription */
-PetscErrorCode parseFlowDescription(const YAML::Node &flowNode,
-                                    PetscInt &dim, PetscReal &nu,
-                                    PetscBool &customIC, types::RealVec1D &IC,
-                                    types::Perturbation &pertb, PetscInt &nBC,
-                                    types::BCInfoHolder &BCInfo)
-{
-    PetscFunctionBeginUser;
-
-    // viscosity
-    nu = flowNode["nu"].as<PetscReal>();
-
-    // the flag for customized initial velocity
-    customIC = flowNode["initialCustomField"].as<PetscBool>(PETSC_FALSE);
-
-    // get dimension
-    dim = flowNode["initialVelocity"].size();
-
-    // reset the size of IC to dim
-    IC.resize(dim);
-
-    // asign values to IC
-    for(int i=0; i<dim; ++i)
-        IC[i] = flowNode["initialVelocity"][i].as<PetscReal>();
-
-    // perturbation
-    pertb = flowNode["perturbation"].as<types::Perturbation>(
-    		types::Perturbation());
-
-    // boundary conditions
-    BCInfo = flowNode["boundaryConditions"].as<types::BCInfoHolder>();
-
-    // number of bcs
-    nBC = BCInfo.size();
-
-    // check the number of BCs
-    if (nBC != (2*dim))
-        SETERRQ2(PETSC_COMM_WORLD, 60, "The number of BCs does not match ! "
-                "There should be %d BCs, while we only get %d from YAML file.",
-                2 * dim, nBC);
+    // read setting from YAML files
+    ierr = readYAMLs(node); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -142,10 +97,10 @@ PetscErrorCode parseFlowDescription(const YAML::Node &flowNode,
 
 /** \copydoc parser::parseMesh */
 PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
-                         types::RealVec1D &bg, types::RealVec1D &ed,
-                         types::IntVec1D &nTotal, types::RealVec2D &dL)
+                         type::RealVec1D &bg, type::RealVec1D &ed,
+                         type::IntVec1D &nTotal, type::RealVec2D &dL)
 {
-    using namespace types;
+    using namespace type;
 
     PetscFunctionBeginUser;
 
@@ -161,7 +116,7 @@ PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
         // so we have to use some temporary variables
         PetscInt    dir, nTotalAx;
         PetscReal   bgAx, edAx;
-        types::RealVec1D    dLAx;
+        type::RealVec1D    dLAx;
 
         // parse current dimension
         ierr = parseOneAxis(ax, dir, bgAx, edAx, nTotalAx, dLAx); CHKERRQ(ierr);
@@ -180,7 +135,7 @@ PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
 /** \copydoc parser::parseOneAxis */
 PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
                             PetscReal &bg, PetscReal &ed, PetscInt &nTotal,
-                            types::RealVec1D &dL)
+                            type::RealVec1D &dL)
 {
     PetscFunctionBeginUser;
 
@@ -189,7 +144,7 @@ PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
     // a map to transform a string to int
 
     // get the direction
-    dir = PetscInt(axis["direction"].as<types::Dir>());
+    dir = PetscInt(axis["direction"].as<type::Dir>());
 
     // get the far left boundary
     bg = axis["start"].as<PetscReal>();
@@ -204,7 +159,7 @@ PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
 /** \copydoc parser::parseSubDomains */
 PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
                                PetscInt &nTotal, PetscReal &ed,
-                               types::RealVec1D &dL)
+                               type::RealVec1D &dL)
 {
     PetscFunctionBeginUser;
 
@@ -217,12 +172,12 @@ PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
     ed = bg;
 
     // initialize dL
-    dL = types::RealVec1D();
+    dL = type::RealVec1D();
 
     // loop through all subdomains
     for(auto sub: subs)
     {
-        types::RealVec1D   dLSub;  // cell sizes of the subdomains
+        type::RealVec1D   dLSub;  // cell sizes of the subdomains
         PetscInt           nSub;  // number of the cells of the subdomains
 
         // the 1st ed is passed by value, while the 2nd one is by reference
@@ -242,7 +197,7 @@ PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
 /** \copydoc parser::parseOneSubDomain */
 PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
                                  PetscInt &n, PetscReal &ed,
-                                 types::RealVec1D &dL)
+                                 type::RealVec1D &dL)
 {
     PetscFunctionBeginUser;
 
@@ -257,10 +212,48 @@ PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
 
     // obtain the cell sizes
     if (std::abs(r - 1.0) <= 1e-12)
-        dL = types::RealVec1D(n, (ed - bg) / n);  // uniform grid
+        dL = type::RealVec1D(n, (ed - bg) / n);  // uniform grid
     else
         misc::stretchGrid(bg, ed, n, r, dL);  // stretch grid
 
+    PetscFunctionReturn(0);
+}
+
+
+// get information about if we have periodic BCs from YAML node
+PetscErrorCode parseBCs(const YAML::Node &node, 
+        type::IntVec2D &bcTypes, type::RealVec2D &bcValues)
+{
+    PetscFunctionBeginUser;
+    
+    if (! node["flow"].IsDefined())
+        SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "Could not find the key \"flow\" in the YAML "
+                "node passed to parseBCs.\n");
+    
+    if (! node["flow"]["boundaryConditions"].IsDefined())
+        SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "Could not find the key \"boundaryConditions\" under the key "
+                "\"flow\" in the YAML node passed to parseBCs.\n");
+    
+    bcTypes = type::IntVec2D(3, type::IntVec1D(6, int(type::BCType::NONE)));
+    bcValues = type::RealVec2D(3, type::RealVec1D(6, 0.0));
+    
+    for(auto sub: node["flow"]["boundaryConditions"])
+    {
+        int loc = int(sub["location"].as<type::BCLoc>()); 
+        
+        for(auto ssub: sub)
+        {
+            if (ssub.first.as<std::string>() != "location")
+            {
+                int f = int(ssub.first.as<type::Field>());
+                bcTypes[f][loc] = int(ssub.second[0].as<type::BCType>());
+                bcValues[f][loc] = ssub.second[1].as<PetscReal>();
+            }
+        }
+    }
+    
     PetscFunctionReturn(0);
 }
 
@@ -271,40 +264,40 @@ PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
 // private function. Read config.yaml and other files for overwriting
 PetscErrorCode readYAMLs(YAML::Node &node)
 {
-	PetscFunctionBeginUser;
+    PetscFunctionBeginUser;
 
-	PetscErrorCode 	ierr;
-	YAML::Node 	temp;
+    PetscErrorCode ierr;
+    YAML::Node temp;
 
-	// open config.yaml. If failed, return error through PETSc and terminate.
-	try
-	{
-		temp = YAML::LoadFile(node["config.yaml"].as<std::string>());
-	}
-	catch(YAML::BadFile &err)
-	{
-		SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
-				"Unable to open %s"
-				"when reading settings from config.yaml\n",
-				node["config.yaml"].as<std::string>().c_str());
-	}
+    // open config.yaml. If failed, return error through PETSc and terminate.
+    try
+    {
+        temp = YAML::LoadFile(node["config.yaml"].as<std::string>());
+    }
+    catch(YAML::BadFile &err)
+    {
+        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
+            "Unable to open %s"
+            "when reading settings from config.yaml\n",
+            node["config.yaml"].as<std::string>().c_str());
+    }
 
-	// copy what we read from config.yaml to the `node`
-	for(auto it: temp) node[it.first] = it.second;
+    // copy what we read from config.yaml to the `node`
+    for(auto it: temp) node[it.first] = it.second;
 
-	// overwrite mesh section if mesh.yaml is provided
-	ierr = readSingleYAML(node, "mesh"); CHKERRQ(ierr);
+    // overwrite mesh section if mesh.yaml is provided
+    ierr = readSingleYAML(node, "mesh"); CHKERRQ(ierr);
 
-	// overwrite flow section if flow.yaml is provided
-	ierr = readSingleYAML(node, "flow"); CHKERRQ(ierr);
+    // overwrite flow section if flow.yaml is provided
+    ierr = readSingleYAML(node, "flow"); CHKERRQ(ierr);
 
-	// overwrite parameters section if parameters.yaml is provided
-	ierr = readSingleYAML(node, "parameters"); CHKERRQ(ierr);
+    // overwrite parameters section if parameters.yaml is provided
+    ierr = readSingleYAML(node, "parameters"); CHKERRQ(ierr);
 
-	// overwrite bodies section if bodies.yaml is provided
-	ierr = readSingleYAML(node, "bodies"); CHKERRQ(ierr);
+    // overwrite bodies section if bodies.yaml is provided
+    ierr = readSingleYAML(node, "bodies"); CHKERRQ(ierr);
 
-	PetscFunctionReturn(0);
+    PetscFunctionReturn(0);
 }
 
 
@@ -312,27 +305,27 @@ PetscErrorCode readYAMLs(YAML::Node &node)
 // of config.yaml
 PetscErrorCode readSingleYAML(YAML::Node &node, const std::string &s)
 {
-	PetscFunctionBeginUser;
+    PetscFunctionBeginUser;
 
-	YAML::Node 	temp;
+    YAML::Node  temp;
 
-	if (node[s+".yaml"].IsDefined())
-	{
-		try
-		{
-			temp = YAML::LoadFile(node[s+".yaml"].as<std::string>());
-		}
-		catch(YAML::BadFile &err)
-		{
-			SETERRQ2(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
-					"Unable to open %s"
-					"when reading settings from %s.yaml\n",
-					node[s+".yaml"].as<std::string>().c_str(), s.c_str());
-		}
+    if (node[s+".yaml"].IsDefined())
+    {
+        try
+        {
+            temp = YAML::LoadFile(node[s+".yaml"].as<std::string>());
+        }
+        catch(YAML::BadFile &err)
+        {
+            SETERRQ2(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
+                "Unable to open %s"
+                "when reading settings from %s.yaml\n",
+                node[s+".yaml"].as<std::string>().c_str(), s.c_str());
+        }
 
-		if (! node[s].IsDefined()) node[s] = YAML::Node();
-		for(auto it: temp) node[s][it.first] = it.second;
-	}
+        if (! node[s].IsDefined()) node[s] = YAML::Node();
+        for(auto it: temp) node[s][it.first] = it.second;
+    }
 
-	PetscFunctionReturn(0);
+    PetscFunctionReturn(0);
 }

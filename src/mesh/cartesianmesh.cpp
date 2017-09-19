@@ -9,22 +9,17 @@
 
 // here goes C++ STL
 # include <iostream>
-# include <fstream>
 # include <sstream>
-# include <iomanip>
 # include <algorithm>
 # include <numeric>
 
 // here goes PETSc headers
 # include <petscvec.h>
-# include <petscviewerhdf5.h>
-
-// here goes HDF5
-# include "hdf5.h"
 
 // here goes headers from our PetIBM
-# include "petibm/cartesianmesh.h"
-# include "petibm/parser.h"
+# include <petibm/cartesianmesh.h>
+# include <petibm/misc.h>
+# include <petibm/parser.h>
 
 
 namespace petibm
@@ -32,37 +27,25 @@ namespace petibm
 namespace mesh
 {
 
-using namespace types;
+using namespace type;
 
-//  TODO: move CMD parsing to other part in PetIBM
-
-/** \copydoc CartesianMesh::CartesianMesh(). */
+// default constructor
 CartesianMesh::CartesianMesh() = default;
 
 
-/** \copydoc CartesianMesh::CartesianMesh(
- *           const MPI_Comm &, const YAML::Node &, 
- *           BCInfoHolder &, const OutputType &).
- */
-CartesianMesh::CartesianMesh(
-        const MPI_Comm &world, const YAML::Node &node, 
-        BCInfoHolder &bc, const OutputType &type)
+// constructor
+CartesianMesh::CartesianMesh(const MPI_Comm &world, const YAML::Node &node)
 {
-    init(world, node, bc, type);
+    init(world, node);
 }
 
 
-/** \copydoc CartesianMesh::~CartesianMesh(). */
+// default destructor
 CartesianMesh::~CartesianMesh() = default;
 
 
-/** \copydoc CartesianMesh::init(
- *           const MPI_Comm &, const YAML::Node &, 
- *           BCInfoHolder &, const OutputType &).
- */
-PetscErrorCode CartesianMesh::init(
-        const MPI_Comm &world, const YAML::Node &meshNode, 
-        BCInfoHolder &bc, const OutputType &type)
+// initialization
+PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node)
 {
     PetscFunctionBeginUser;
 
@@ -70,11 +53,11 @@ PetscErrorCode CartesianMesh::init(
 
     // store the address of the communicator
     // note: this is a bad practice; shared_ptr is not for stack variables!!
-    comm = std::shared_ptr<const MPI_Comm>(&world, [](const MPI_Comm*){});
+    comm = world;
 
     // set rank and size
-    ierr = MPI_Comm_size(*comm, &mpiSize); CHKERRQ(ierr);
-    ierr = MPI_Comm_rank(*comm, &mpiRank); CHKERRQ(ierr);
+    ierr = MPI_Comm_size(comm, &mpiSize); CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(comm, &mpiRank); CHKERRQ(ierr);
 
 
     // set the default sizes and values for members
@@ -82,82 +65,59 @@ PetscErrorCode CartesianMesh::init(
     // of template and also `if` conditions that determine the dimension. So
     // with carefully choosed default values, we can take care of 2D case with 
     // 3D code in many places.
-    min = types::RealVec1D(3, 0.0);
-    max = types::RealVec1D(3, 1.0);
-    n = types::IntVec2D(5, types::IntVec1D(3, 1));
-    coordTrue = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 0.0)));
-    coord = types::GhostedVec3D(5, types::GhostedVec2D(3, nullptr));
-    dLTrue = types::RealVec3D(5, types::RealVec2D(3, types::RealVec1D(1, 1.0)));
-    dL = types::GhostedVec3D(5, types::GhostedVec2D(3, nullptr));
+    min = RealVec1D(3, 0.0);
+    max = RealVec1D(3, 1.0);
+    n = IntVec2D(5, IntVec1D(3, 1));
+    coordTrue = RealVec3D(5, RealVec2D(3, RealVec1D(1, 0.0)));
+    coord = GhostedVec3D(5, GhostedVec2D(3, nullptr));
+    dLTrue = RealVec3D(5, RealVec2D(3, RealVec1D(1, 1.0)));
+    dL = GhostedVec3D(5, GhostedVec2D(3, nullptr));
     da = std::vector<DM>(5, PETSC_NULL);
-    nProc = types::IntVec1D(3, PETSC_DECIDE);
-    bg = types::IntVec2D(5, types::IntVec1D(3, 0));
-    ed = types::IntVec2D(5, types::IntVec1D(3, 1));
-    m = types::IntVec2D(5, types::IntVec1D(3, 0));
+    nProc = IntVec1D(3, PETSC_DECIDE);
+    bg = IntVec2D(5, IntVec1D(3, 0));
+    ed = IntVec2D(5, IntVec1D(3, 1));
+    m = IntVec2D(5, IntVec1D(3, 0));
     ao = std::vector<AO>(3);
-    UNLocalAllProcs = types::IntVec2D(3, types::IntVec1D(mpiSize, 0));
-    UPackNLocalAllProcs = types::IntVec1D(mpiSize, 0);
-    offsetsAllProcs = types::IntVec2D(3, types::IntVec1D(mpiSize, 0));
-    offsetsPackAllProcs = types::IntVec1D(mpiSize, 0);
-
-
-    // store the address of bcInfo
-    // note: this is a bad practice; shared_ptr is not for stack variables!!
-    bcInfo = std::shared_ptr<BCInfoHolder>(&bc, [](BCInfoHolder*){});
+    UNLocalAllProcs = IntVec2D(3, IntVec1D(mpiSize, 0));
+    UPackNLocalAllProcs = IntVec1D(mpiSize, 0);
+    offsetsAllProcs = IntVec2D(3, IntVec1D(mpiSize, 0));
+    offsetsPackAllProcs = IntVec1D(mpiSize, 0);
 
 
     // index 3 represent pressure mesh; min & max always represent pressure mesh
-    ierr = parser::parseMesh(meshNode, dim, min, max, n[3], dLTrue[3]); CHKERRQ(ierr);
+    ierr = parser::parseMesh(node, dim, min, max, n[3], dLTrue[3]); CHKERRQ(ierr);
 
-
+    // check periodic BC
+    IntVec2D          bcTypes;
+    RealVec2D         bcValues;
+    BoolVec2D         periodic;
+    ierr = parser::parseBCs(node, bcTypes, bcValues); CHKERRQ(ierr);
+    ierr = misc::checkPeriodicBC(bcTypes, periodic); CHKERRQ(ierr);
+    
     // create raw grid information
     ierr = createPressureMesh(); CHKERRQ(ierr);
     ierr = createVertexMesh(); CHKERRQ(ierr);
-    ierr = createVelocityMesh(); CHKERRQ(ierr);
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+    ierr = createVelocityMesh(periodic); CHKERRQ(ierr);
+    ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     // create PETSc DMs
-    ierr = initDMDA(); CHKERRQ(ierr);
+    ierr = initDMDA(periodic); CHKERRQ(ierr);
 
     // setup the format of the file that the `write` function will use
-    ierr = setOutputFormat(type); CHKERRQ(ierr);
+    //ierr = setOutputFormat(type); CHKERRQ(ierr);
 
     // create a std::string that can be used in `printInfo` and output stream
     ierr = createInfoString(); CHKERRQ(ierr);
 
     // all processes should be syncrinized
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+    ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
 
     PetscFunctionReturn(0);
 }
 
 
-/** \copydoc CartesianMesh::setOutputFormat(const OutputType &). */
-PetscErrorCode CartesianMesh::setOutputFormat(const OutputType &type)
-{
-    PetscFunctionBeginUser;
-
-    using namespace std::placeholders;
-
-    switch (type)
-    {
-        case OutputType::Binary:
-            write = std::bind(&CartesianMesh::writeBinary, this, _1, _2);
-            break;
-        case OutputType::VTK:
-            write = std::bind(&CartesianMesh::writeVTK, this, _1, _2);
-            break;
-        case OutputType::HDF5:
-            write = std::bind(&CartesianMesh::writeHDF5, this, _1, _2);
-            break;
-    }
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc CartesianMesh::createPressureMesh(). */
+// create pressure mesh
 PetscErrorCode CartesianMesh::createPressureMesh()
 {
     PetscFunctionBeginUser;
@@ -198,7 +158,7 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 }
 
 
-/** \copydoc CartesianMesh::createVertexMesh(). */
+// create vertices information
 PetscErrorCode CartesianMesh::createVertexMesh()
 {
     PetscFunctionBeginUser;
@@ -230,8 +190,8 @@ PetscErrorCode CartesianMesh::createVertexMesh()
 }
 
 
-/** \copydoc CartesianMesh::createVelocityMesh(). */
-PetscErrorCode CartesianMesh::createVelocityMesh()
+// create velocity mesh
+PetscErrorCode CartesianMesh::createVelocityMesh(const BoolVec2D &periodic)
 {
     PetscFunctionBeginUser;
 
@@ -271,7 +231,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 
                 // if BC in this direction is periodic, we append one more 
                 // velocity point at the end
-                if ((*bcInfo)[BCLoc(dir*2)][Field(comp)].type == BCType::PERIODIC)
+                if (periodic[comp][dir])
                 {
                     // add 1 to the number of valid grid point
                     n[comp][dir] += 1;
@@ -320,7 +280,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 
                 // get the dL for the two ghost points
                 // for periodic BCs, it's the same as the 1st cell on the other side
-                if ((*bcInfo)[BCLoc(dir*2)][Field(comp)].type == BCType::PERIODIC)
+                if (periodic[comp][dir])
                 {
                     // set the coordinate of the two ghost points
                     coordTrue[comp][dir].front() = 
@@ -374,7 +334,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 }
 
 
-/** \copydoc CartesianMesh::createInfoString(). */
+// create string containing information of this mesh
 PetscErrorCode CartesianMesh::createInfoString()
 {
     PetscFunctionBeginUser;
@@ -428,7 +388,7 @@ PetscErrorCode CartesianMesh::createInfoString()
 }
 
 
-/** \copydoc CartesianMesh::addLocalInfoString(std::stringstream &). */
+// create local information of mesh on this process
 PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 {
     PetscFunctionBeginUser;
@@ -443,15 +403,15 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
     for(int i=0; i<dim; ++i)
     {
         ierr = MPI_Allgather(bg[i].data(), 3, MPIU_INT, 
-                start[i].data(), 3, MPIU_INT, *comm); CHKERRQ(ierr);
+                start[i].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
         ierr = MPI_Allgather(ed[i].data(), 3, MPIU_INT, 
-                end[i].data(), 3, MPIU_INT, *comm); CHKERRQ(ierr);
+                end[i].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
     }
 
     ierr = MPI_Allgather(bg[3].data(), 3, MPIU_INT, 
-            start[3].data(), 3, MPIU_INT, *comm); CHKERRQ(ierr);
+            start[3].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
     ierr = MPI_Allgather(ed[3].data(), 3, MPIU_INT, 
-            end[3].data(), 3, MPIU_INT, *comm); CHKERRQ(ierr);
+            end[3].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
 
 
     for(PetscMPIInt i=0; i<mpiSize; ++i)
@@ -473,248 +433,21 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
         }
     }
 
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+    ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
-/** \copydoc CartesianMesh::printInfo() const. */
-PetscErrorCode CartesianMesh::printInfo() const
-{
-    PetscFunctionBeginUser;
-    
-    PetscErrorCode ierr;
-    ierr = PetscPrintf(*comm, info.c_str()); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // printInfo
-
-
-/** \copydoc CartesianMesh::writeBinary(const std::string &, const std::string &). */
-PetscErrorCode CartesianMesh::writeBinary(
-        const std::string &dir, const std::string &file)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode ierr;
-
-    if (mpiRank == 0)
-    {
-        std::ofstream   streamFile(dir + "/" + file + ".txt");
-
-        streamFile << n[3][0] << "\t" << n[3][1] << "\t"
-            << ((dim==3)? std::to_string(n[3][2]) : "") << std::endl;
-
-        for(PetscInt f=0; f<dim; ++f)
-            for(auto it=coord[4][f]; it<coord[4][f]+n[4][f]; ++it)
-                streamFile << std::setprecision(16) << *it << std::endl;
-
-        streamFile.close();
-    }
-
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // write
-
-
-/** \copydoc CartesianMesh::writeVTK(const std::string &, const std::string &). */
-PetscErrorCode CartesianMesh::writeVTK(
-        const std::string &dir, const std::string &file)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-
-    // only the master process will write file
-    if (mpiRank == 0)
-    {
-        std::ofstream   fs(dir + "/" + file + ".vtk");
-
-        // vtk version
-        fs << "# vtk DataFile Version 3.0" << std::endl;
-
-        // one-line comment about this grid file
-        fs << "Cartesian Grid" << std::endl;
-
-        // so far, we use ASCII for this vtk file
-        fs << "ASCII" << std::endl;
-
-        // use RECTILINEAR_GRID to save the file size
-        fs << "DATASET RECTILINEAR_GRID" << std::endl;
-
-        // dimension of the vertexes (not the pressure cells!)
-        fs << "DIMENSIONS ";
-        for(auto it: n[4]) fs << it << " ";
-        fs << std::endl;
-
-        // x coordinates of the vertexes
-        fs << "X_COORDINATES " << n[4][0] << " double" << std::endl;
-        for(auto it=coord[4][0]; it<coord[4][0]+n[4][0]; ++it)
-            fs << std::setprecision(16) << it << " ";
-        fs << std::endl;
-
-        // y coordinates of the vertexes
-        fs << "Y_COORDINATES " << n[4][1] << " double" << std::endl;
-        for(auto it=coord[4][1]; it<coord[4][1]+n[4][1]; ++it)
-            fs << std::setprecision(16) << it << " ";
-        fs << std::endl;
-
-        // z coordinates of the vertexes
-        fs << "Z_COORDINATES " << n[4][2] << " double" << std::endl;
-        for(auto it=coord[4][2]; it<coord[4][2]+n[4][2]; ++it)
-            fs << std::setprecision(16) << it << " ";
-        fs << std::endl;
-
-        // close the file
-        fs.close();
-    }
-
-    // all processes must to wait the master process
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc CartesianMesh::writeHDF5(const std::string &, const std::string &). */
-PetscErrorCode CartesianMesh::writeHDF5(
-        const std::string &dir, const std::string &file)
-{
-    PetscFunctionBeginUser;
-
-# ifndef PETSC_HAVE_HDF5
-    SETERRQ(*comm, 56, "Seems the PETSc was not compiled with HDF5.");
-# else
-
-    PetscErrorCode  ierr;
-
-    if (mpiRank == 0)
-    {
-        std::string     extFile = dir + "/" + file + ".h5";
-
-        // handle for file, dataset, and dataspace
-        hid_t   fileID, groupID, dsetID, dspID;
-        herr_t  h5err; // handle for returned error
-        std::vector<hsize_t>     size(1); // for setting data space
-
-        // create a HDF5 file based on the input file name
-        fileID = H5Fcreate(extFile.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-
-        // loop through all fields
-        for(unsigned int comp=0; comp<5; ++comp)
-        {
-            // skip this iteration if no w-velocity
-            if ((comp == 2) && (dim == 2)) continue; 
-
-            // the group name of this field
-            std::string     gName("/" + fd2str[Field(comp)]);
-
-            // create a group for pressure grid
-            groupID = H5Gcreate(
-                    fileID, gName.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-            // loop through all direction; even in 2D, some post-processing file
-            // formats still require z-coordinates, so we aleays output z-coord
-            for(unsigned int dir=0; dir<3; ++dir)
-            {
-                // pre-create a space for the data
-                size[0] = n[comp][dir];
-                dspID = H5Screate_simple(1, size.data(), nullptr);
-
-                // create a hdf5 data set
-                std::string     dsetName(gName + "/" + dir2str[Dir(dir)]);
-                dsetID = H5Dcreate2(groupID, dsetName.c_str(), H5T_NATIVE_DOUBLE,
-                        dspID, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-                // write the dataset to the h5 file
-                h5err = H5Dwrite(dsetID, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, 
-                        H5P_DEFAULT, coord[comp][dir]);
-
-                // close the data space handle
-                h5err = H5Sclose(dspID);
-                // close the data set handle
-                h5err = H5Dclose(dsetID);
-            }
-
-            // close the group for pressure grid
-            h5err = H5Gclose(groupID);
-        }
-
-        // close the file
-        h5err = H5Fclose(fileID); 
-    }
-
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-# endif
-}
-
-
-/** \copydoc CartesianMesh::generateXDMF(const std::string &, const std::string &) const. */
-PetscErrorCode CartesianMesh::generateXDMF(
-        const std::string &xml, const std::string &file) const
+// initialize PETSc DMDA objects
+PetscErrorCode CartesianMesh::initDMDA(const BoolVec2D &periodic)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode  ierr;
 
-    if (mpiRank == 0)
-    {
-        std::cout << "creating " << xml+".xmf" 
-            << " for grid file " << file << " ... ";
-
-        std::ofstream       fs(xml+".xmf");
-        fs << "<?xml version=\"1.0\" ?>" << std::endl;
-        fs << "<Xdmf Version=\"2.0\">" << std::endl;
-        fs << "\t<Domain>" << std::endl;
-        fs << "\t\t<Grid Name=\"Vertex Grid\" GridType=\"Uniform\">" << std::endl;
-
-        fs << "\t\t\t<Topology TopologyType=\"3DRectMesh\" NumberOfElements=\"";
-        fs << n[4][2] << " " << n[4][1] << " " << n[4][0] << "\"/>" << std::endl;
-
-        fs << "\t\t\t<Geometry GeometryType=\"VxVyVz\">" << std::endl;
-
-        fs << "\t\t\t\t<DataItem Dimensions=\"" << n[4][0] << "\" ";
-        fs << "NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << std::endl;
-        fs << "\t\t\t\t\t" << file << ":/vertex/x" << std::endl;
-        fs << "\t\t\t\t</DataItem>" << std::endl;
-
-        fs << "\t\t\t\t<DataItem Dimensions=\"" << n[4][1] << "\" ";
-        fs << "NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << std::endl;
-        fs << "\t\t\t\t\t" << file << ":/vertex/y" << std::endl;
-        fs << "\t\t\t\t</DataItem>" << std::endl;
-
-        fs << "\t\t\t\t<DataItem Dimensions=\"" << n[4][2] << "\" ";
-        fs << "NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << std::endl;
-        fs << "\t\t\t\t\t" << file << ":/vertex/z" << std::endl;
-        fs << "\t\t\t\t</DataItem>" << std::endl;
-
-        fs << "\t\t\t</Geometry>" << std::endl;
-        fs << "\t\t</Grid>" << std::endl;
-        fs << "\t</Domain>" << std::endl;
-        fs << "</Xdmf>" << std::endl;
-
-        std::cout << "done." << std::endl;
-    }
-
-    ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}
-
-
-/** \copydoc CartesianMesh::initDMDA(). */
-PetscErrorCode CartesianMesh::initDMDA()
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode  ierr;
-
-    ierr = createPressureDMDA(); CHKERRQ(ierr);
-    ierr = createVelocityPack(); CHKERRQ(ierr);
+    ierr = createPressureDMDA(periodic); CHKERRQ(ierr);
+    ierr = createVelocityPack(periodic); CHKERRQ(ierr);
 
     // gather numbers of local velocity component
     for(PetscInt f=0; f<dim; ++f)
@@ -723,9 +456,9 @@ PetscErrorCode CartesianMesh::initDMDA()
         UNLocal = m[f][0] * m[f][1] * m[f][2];
 
         // get number of local velocity component from all processes
-        ierr = MPI_Barrier(*comm); CHKERRQ(ierr);
+        ierr = MPI_Barrier(comm); CHKERRQ(ierr);
         ierr = MPI_Allgather(&UNLocal, 1, MPIU_INT,
-                UNLocalAllProcs[f].data(), 1, MPIU_INT, *comm); CHKERRQ(ierr);
+                UNLocalAllProcs[f].data(), 1, MPIU_INT, comm); CHKERRQ(ierr);
     }
 
     // total number of local velocity points
@@ -763,8 +496,9 @@ PetscErrorCode CartesianMesh::initDMDA()
 }
 
 
-/** \copydoc CartesianMesh::createSingleDMDA(const PetscInt &). */
-PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
+// create a single PETSc DMDA object
+PetscErrorCode CartesianMesh::createSingleDMDA(
+        const PetscInt &i, const BoolVec2D &periodic)
 {
     using namespace std;
 
@@ -772,27 +506,24 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 
     PetscErrorCode  ierr;
 
-    map<BCType, DMBoundaryType>  petscBC {{PERIODIC, DM_BOUNDARY_PERIODIC},
-        {NEUMANN, DM_BOUNDARY_GHOSTED}, {DIRICHLET, DM_BOUNDARY_GHOSTED},
-        {CONVECTIVE, DM_BOUNDARY_GHOSTED}};
-
     DMDALocalInfo   lclInfo;
+    
 
     switch (dim)
     {
         case 2:
-            ierr = DMDACreate2d(*comm,
-                    petscBC[(*bcInfo)[XMINUS][u].type],
-                    petscBC[(*bcInfo)[YMINUS][v].type], 
+            ierr = DMDACreate2d(comm,
+                    (periodic[0][0])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
+                    (periodic[1][1])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
                     DMDA_STENCIL_STAR, 
                     n[i][0], n[i][1], nProc[0], nProc[1],
                     1, 1, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
             break;
         case 3:
-            ierr = DMDACreate3d(*comm, 
-                    petscBC[(*bcInfo)[XMINUS][u].type],
-                    petscBC[(*bcInfo)[YMINUS][v].type], 
-                    petscBC[(*bcInfo)[ZMINUS][w].type], 
+            ierr = DMDACreate3d(comm, 
+                    (periodic[0][0])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
+                    (periodic[1][1])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
+                    (periodic[2][2])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
                     DMDA_STENCIL_STAR, n[i][0], n[i][1], n[i][2], 
                     nProc[0], nProc[1], nProc[2], 
                     1, 1, nullptr, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
@@ -812,8 +543,8 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 }
 
 
-/** \copydoc CartesianMesh::createPressureDMDA(). */
-PetscErrorCode CartesianMesh::createPressureDMDA()
+// create a PETSc DMDA for pressure field
+PetscErrorCode CartesianMesh::createPressureDMDA(const BoolVec2D &periodic)
 {
     using namespace std;
 
@@ -821,7 +552,7 @@ PetscErrorCode CartesianMesh::createPressureDMDA()
 
     PetscErrorCode  ierr;
 
-    ierr = createSingleDMDA(3); CHKERRQ(ierr);
+    ierr = createSingleDMDA(3, periodic); CHKERRQ(ierr);
 
     ierr = DMDAGetInfo(da[3], nullptr, nullptr, nullptr, nullptr,
            &nProc[0], &nProc[1], &nProc[2], 
@@ -831,8 +562,8 @@ PetscErrorCode CartesianMesh::createPressureDMDA()
 }
 
 
-/** \copydoc CartesianMesh::createVelocityPack(). */
-PetscErrorCode CartesianMesh::createVelocityPack()
+// create a PETSc DMComposite object for velocity fields
+PetscErrorCode CartesianMesh::createVelocityPack(const BoolVec2D &periodic)
 {
     using namespace std;
 
@@ -840,11 +571,11 @@ PetscErrorCode CartesianMesh::createVelocityPack()
 
     PetscErrorCode  ierr;
 
-    ierr = DMCompositeCreate(*comm, &UPack); CHKERRQ(ierr);
+    ierr = DMCompositeCreate(comm, &UPack); CHKERRQ(ierr);
 
     for(int i=0; i<dim; ++i)
     {
-        ierr = createSingleDMDA(i); CHKERRQ(ierr);
+        ierr = createSingleDMDA(i, periodic); CHKERRQ(ierr);
         ierr = DMDAGetAO(da[i], &ao[i]); CHKERRQ(ierr);
         ierr = DMCompositeAddDM(UPack, da[i]); CHKERRQ(ierr);
     }
@@ -853,7 +584,7 @@ PetscErrorCode CartesianMesh::createVelocityPack()
 }
 
 
-/** \copydoc CartesianMesh::createMapping(). */
+// create mappings
 PetscErrorCode CartesianMesh::createMapping()
 {
     PetscFunctionBeginUser;
@@ -903,8 +634,7 @@ PetscErrorCode CartesianMesh::createMapping()
 }
 
 
-/** \copydoc CartesianMesh::getNaturalIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &) const. */
+// get natural index through MatStencil
 PetscErrorCode CartesianMesh::getNaturalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -918,8 +648,7 @@ PetscErrorCode CartesianMesh::getNaturalIndex(
 }
 
 
-/** \copydoc CartesianMesh::getNaturalIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
+// get natural index through i, j, k indices
 PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -934,8 +663,7 @@ PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f,
 }
 
 
-/** \copydoc CartesianMesh::getLocalIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &) const. */
+// get local index through MatStencil
 PetscErrorCode CartesianMesh::getLocalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -949,8 +677,7 @@ PetscErrorCode CartesianMesh::getLocalIndex(
 }
 
 
-/** \copydoc CartesianMesh::getLocalIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
+// get local index through i, j, k indices
 PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -965,8 +692,7 @@ PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f,
 }
 
 
-/** \copydoc CartesianMesh::getGlobalIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &) const. */
+// get global index through MatStencil
 PetscErrorCode CartesianMesh::getGlobalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -981,8 +707,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(
 }
 
 
-/** \copydoc CartesianMesh::getGlobalIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
+// get global index through i, j, k indices
 PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -997,8 +722,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f,
 }
 
 
-/** \copydoc CartesianMesh::getGlobalPackedIndex(
- *           const PetscInt &, const MatStencil &, PetscInt &) const. */
+// get index in DMComposite through MatStencil
 PetscErrorCode CartesianMesh::getPackedGlobalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -1030,8 +754,7 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
 }
 
 
-/** \copydoc CartesianMesh::getGlobalPackedIndex(const PetscInt &, const PetscInt &, 
- *           const PetscInt &, const PetscInt &, PetscInt &) const.  */
+// get indec in DMComposite through i, j, k indices
 PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -1043,14 +766,6 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f,
     ierr = getPackedGlobalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
-
-
-/** \copydoc std::ostream &operator<< (std::ostream &, const CartesianMesh &). */
-std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh)
-{
-    os << mesh.info;
-    return os;
 }
 
 } // end of namespace mesh

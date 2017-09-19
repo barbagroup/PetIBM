@@ -12,9 +12,6 @@
 // here goes C++ STL
 # include <string>
 # include <vector>
-# include <map>
-# include <memory>
-# include <functional>
 
 // here goes PETSc headers
 # include <petscsys.h>
@@ -45,19 +42,19 @@ public:
     PetscInt                dim = -1;
 
     /** \brief minimum coordinates of boundaries in all directions. */
-    types::RealVec1D        min;
+    type::RealVec1D         min;
 
     /** \brief maximum coordinates of boundaries in all directions. */
-    types::RealVec1D        max;
+    type::RealVec1D         max;
 
     /** \brief total number of points of all fields and in all directions. */
-    types::IntVec2D         n;
+    type::IntVec2D          n;
 
     /** \brief coordinates of mesh points of all fields and in all directions. */
-    types::GhostedVec3D     coord;
+    type::GhostedVec3D      coord;
 
     /** \brief point spacing of mesh points of all fields and in all directions. */
-    types::GhostedVec3D     dL;
+    type::GhostedVec3D      dL;
 
     /** \brief total number of velocity points. */
     PetscInt                UN;
@@ -75,16 +72,16 @@ public:
     std::vector<DM>         da;
 
     /** \brief number of processes in all directions. */
-    types::IntVec1D         nProc;
+    type::IntVec1D          nProc;
 
     /** \brief the beginging index of all fields in all directions of this process. */
-    types::IntVec2D         bg;
+    type::IntVec2D          bg;
 
     /** \brief the ending index of all fields in all directions of this process. */
-    types::IntVec2D         ed;
+    type::IntVec2D          ed;
 
     /** \brief the number of points of all fields in all directions of this process. */
-    types::IntVec2D         m;
+    type::IntVec2D          m;
 
     /** \brief total number of velocity points local to this process. */
     PetscInt                UNLocal;
@@ -104,17 +101,14 @@ public:
 
 
     // MPI stuffs
-    /** \brief reference to communicator. */
-    std::shared_ptr<const MPI_Comm>         comm;
+    /** \brief communicator. */
+    MPI_Comm                                comm;
 
     /** \brief total number of processes. */
     PetscMPIInt                             mpiSize;
 
     /** \brief rank of this process. */
     PetscMPIInt                             mpiRank;
-
-    /** \brief reference to BC information. */
-    std::shared_ptr<types::BCInfoHolder>    bcInfo;
 
 
 
@@ -127,12 +121,8 @@ public:
      *
      * \param world MPI communicator.
      * \param node a YAML node containing setting of Cartesian mesh.
-     * \param bcInfo a BCInfoHolder instance provided by FlowDescription instance.
-     * \param type output type.
      */
-    CartesianMesh(const MPI_Comm &world, 
-            const YAML::Node &node, types::BCInfoHolder &bcInfo, 
-            const types::OutputType &type=types::HDF5);
+    CartesianMesh(const MPI_Comm &world, const YAML::Node &node);
 
 
     /** \brief default destructor. */
@@ -145,22 +135,10 @@ public:
      *
      * \param world MPI communicator.
      * \param node a YAML node containing setting of Cartesian mesh.
-     * \param bcInfo a BCInfoHolder instance provided by FlowDescription instance.
-     * \param type output type.
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode init(const MPI_Comm &world,
-            const YAML::Node &meshNode, types::BCInfoHolder &bcInfo, 
-            const types::OutputType &type=types::HDF5);
-
-
-    /**
-     * \brief print information.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode printInfo() const;
+    PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
 
 
     /**
@@ -293,65 +271,30 @@ public:
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
             PetscInt &idx) const;
 
-
-    /**
-     * \brief set output format.
-     *
-     * Through this function, programs can change the type of output after 
-     * initialization.
-     *
-     * \param type output type.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode setOutputFormat(const types::OutputType &type);
-
-
-    /**
-     * \brief create XDMF file for grid only.
-     *
-     * \param xml the file name of XDMF file, path included.
-     * \param file the file name of HDF5 file, path included.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode generateXDMF(
-            const std::string &xml, const std::string &file) const;
-
-
-    /** \brief a function for writing output data.
-     *
-     * This is linked to a real writing function based on the type of output. 
-     * The first parameter is the path of folder for the output file. The second
-     * parameter is the file name without extension. The extension will be 
-     * determined by the type of output.
-     */
-    std::function<PetscErrorCode(const std::string &, const std::string &)> write;
-
 protected:
 
     /** \brief the underlying data for mesh point spacing. */
-    types::RealVec3D        dLTrue;
+    type::RealVec3D         dLTrue;
 
     /** \brief the underlying data for mesh point coordinates. */
-    types::RealVec3D        coordTrue;
+    type::RealVec3D         coordTrue;
 
     /** \brief references to underlying AO objects of velocity DMs. */
     std::vector<AO>         ao;
 
     /** \brief number of local velocity points (without ghosts) for all 
      *         processes and all velocity fields. */
-    types::IntVec2D         UNLocalAllProcs;
+    type::IntVec2D          UNLocalAllProcs;
 
     /** \brief number of local packed velocity points (without ghost) for 
      *         all processes. */
-    types::IntVec1D         UPackNLocalAllProcs;
+    type::IntVec1D          UPackNLocalAllProcs;
 
     /** \brief offsets of velocity points in un-packed DMs for each field. */
-    types::IntVec2D         offsetsAllProcs;
+    type::IntVec2D          offsetsAllProcs;
 
     /** \brief offsets of packed velocity points in packed DM. */
-    types::IntVec1D         offsetsPackAllProcs;
+    type::IntVec1D          offsetsPackAllProcs;
 
     /**
      * \brief create vertex information.
@@ -371,10 +314,12 @@ protected:
 
     /**
      * \brief create velocity mesh information.
+     * 
+     * \param periodic [in] bools indicating periodicity of boundaries.
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createVelocityMesh();
+    PetscErrorCode createVelocityMesh(const type::BoolVec2D &periodic);
 
 
     /**
@@ -394,45 +339,13 @@ protected:
 
 
     /**
-     * \brief underlying function to write binary mesh data.
-     *
-     * \param dir the path of the folder for output file.
-     * \param file the file name without extension.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode writeBinary(const std::string &dir, const std::string &file);
-
-
-    /**
-     * \brief underlying function to write VTK mesh file.
-     *
-     * \param dir the path of the folder for output file.
-     * \param file the file name without extension.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode writeVTK(const std::string &dir, const std::string &file);
-
-
-    /**
-     * \brief underlying function to write HDF5 mesh data.
-     *
-     * \param dir the path of the folder for output file.
-     * \param file the file name without extension.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode writeHDF5(const std::string &dir, const std::string &file);
-
-
-
-    /**
      * \brief initialize DMDAs.
      *
+     * \param periodic [in] bools indicating periodicity of boundaries.
+     *
      * \return PetscErrorCode.
      */
-    PetscErrorCode initDMDA();
+    PetscErrorCode initDMDA(const type::BoolVec2D &periodic);
 
 
     /**
@@ -440,26 +353,32 @@ protected:
      *
      * \param i the index of the targeting field (0 ~ 4 represents u, v, w, 
      *          pressure, and vertex respectively.
+     * \param periodic [in] bools indicating periodicity of boundaries.
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createSingleDMDA(const PetscInt &i);
+    PetscErrorCode createSingleDMDA(
+            const PetscInt &i, const type::BoolVec2D &periodic);
 
 
     /**
      * \brief create DMDA for pressure.
      *
+     * \param periodic [in] bools indicating periodicity of boundaries.
+     * 
      * \return PetscErrorCode.
      */
-    PetscErrorCode createPressureDMDA();
+    PetscErrorCode createPressureDMDA(const type::BoolVec2D &periodic);
 
 
     /**
      * \brief create DMDAs for velovity fields and make a DMComposite.
      *
+     * \param periodic [in] bools indicating periodicity of boundaries.
+     *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createVelocityPack();
+    PetscErrorCode createVelocityPack(const type::BoolVec2D &periodic);
 
 
     /**
@@ -470,17 +389,6 @@ protected:
     PetscErrorCode createMapping();
 
 }; // CartesianMesh
-
-
-/**
- * \brief an I/O function for using standard output stream.
- *
- * \param os output stream.
- * \param mesh an instance of CartesainMesh.
- *
- * \return output stream.
- */
-std::ostream &operator<< (std::ostream &os, const CartesianMesh &mesh);
 
 } // end of namespace mesh
 } // end of namespace petibm

@@ -22,11 +22,21 @@
 
 namespace petibm
 {
-namespace utilities
-{
 /** \brief a namespace holding miscellaneous functions. */
 namespace misc
 {
+    /**
+     * \brief 
+     *
+     * \param bcTypes
+     * \param periodic
+     *
+     * \return 
+     */
+    PetscErrorCode checkPeriodicBC(
+            const type::IntVec2D &bcTypes, type::BoolVec2D &periodic);
+    
+        
     /** \brief  calculate and returned cell sizes of stretched grid in one direction.
      *
      * \param bg an input; start of the stretched region.
@@ -39,7 +49,7 @@ namespace misc
      */
     inline PetscErrorCode stretchGrid(
             const PetscReal &bg, const PetscReal &ed, 
-            const PetscInt &n, const PetscReal &r, types::RealVec1D &dL)
+            const PetscInt &n, const PetscReal &r, type::RealVec1D &dL)
     {
         PetscFunctionBeginUser;
 
@@ -119,5 +129,4 @@ namespace misc
     }
 
 } // end of namespace misc
-} // end of namespace utilities
 } // end of namespace petibm

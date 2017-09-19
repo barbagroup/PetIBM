@@ -146,52 +146,6 @@ using namespace petibm::utilities::types;
         return true;
     }
 
-    // for BCTypeValuePair
-    Node convert<BCTypeValuePair>::encode(const BCTypeValuePair &bcInfo)
-    {
-        Emitter     out;
-        out << Flow;
-        out << BeginSeq << bt2str[bcInfo.type] << bcInfo.value << EndSeq;
-        return Load(out.c_str());
-    }
-
-    bool convert<BCTypeValuePair>::decode(const Node &node,
-                                          BCTypeValuePair &bcInfo)
-    {
-        if((! node[0].IsDefined()) || (! node[1].IsDefined())) return false;
-
-        bcInfo.type = node[0].as<BCType>();
-        bcInfo.value = node[1].as<PetscReal>();
-        return true;
-    }
-
-    // for BCInfoHolder
-    Node convert<BCInfoHolder>::encode(const BCInfoHolder &bc)
-    {
-        Node    node(NodeType::Sequence);
-        for(auto loc: bc)
-        {
-            Node childNode(NodeType::Map);
-            childNode["location"] = loc.first;
-            for(auto comp: loc.second)
-                childNode[fd2str[comp.first]] = comp.second;
-            node.push_back(childNode);
-        }
-        return node;
-    }
-
-    bool convert<BCInfoHolder>::decode(const Node &node, BCInfoHolder &bc)
-    {
-        if (! node.IsDefined()) return false;
-
-        for(auto loc: node)
-            for(auto comp: loc)
-                if (comp.first.as<std::string>() != "location")
-                    bc[loc["location"].as<BCLoc>()][comp.first.as<Field>()]
-                    		= comp.second.as<BCTypeValuePair>();
-        return true;
-    }
-
     // for Perturbation
     Node convert<Perturbation>::encode(const Perturbation &pertb)
     {

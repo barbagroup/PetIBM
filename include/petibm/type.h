@@ -32,7 +32,7 @@ namespace petibm
 namespace type
 {
     /** \brief legal physical directions. */
-    enum Dir { x = 0, y = 1, z = 2 };
+    enum Dir { x=0, y, z };
     /** \brief mapping between `std::string` and `Dir` type */
     extern std::map<std::string, Dir> str2dir;
     /** \brief mapping between `Dir` type and `std::string` */
@@ -40,7 +40,7 @@ namespace type
 
 
     /** \brief legal fields. */
-    enum Field { u = 0, v = 1, w = 2 , p = 3, vertex = 4};
+    enum Field { u=0, v, w , p, vertex};
     /** \brief mapping between `std::string` and `Field` type */
     extern std::map<std::string, Field> str2fd;
     /** \brief mapping between `Field` type and `std::string` */
@@ -48,7 +48,7 @@ namespace type
 
 
     /** \brief type of boundary condition. */
-    enum BCType { DIRICHLET = 0, NEUMANN = 1, CONVECTIVE = 2, PERIODIC = 3 };
+    enum BCType { NONE=0, PERIODIC, DIRICHLET, NEUMANN, CONVECTIVE };
     /** \brief mapping between `std::string` and `BCType` type */
     extern std::map<std::string, BCType> str2bt;
     /** \brief mapping between `BCType` type and `std::string` */
@@ -56,8 +56,7 @@ namespace type
 
 
     /** \brief location of the boundary. */
-    enum BCLoc {
-        XMINUS = 0, XPLUS = 1, YMINUS = 2, YPLUS = 3, ZMINUS = 4, ZPLUS = 5 };
+    enum BCLoc { XMINUS=0, XPLUS, YMINUS, YPLUS, ZMINUS, ZPLUS };
     /** \brief mapping between `std::string` and `BCLoc` type */
     extern std::map<std::string, BCLoc> str2bl;
     /** \brief mapping between `BCLoc` type and `std::string` */
@@ -150,21 +149,18 @@ namespace type
     typedef std::vector<RealVec2D>  RealVec3D;
 
 
+    /** \brief 1D std::vector holding PetscBool. */
+    typedef std::vector<PetscBool>  BoolVec1D;
+    /** \brief 2D std::vector holding PetscBool. */
+    typedef std::vector<BoolVec1D>  BoolVec2D;
+    /** \brief 3D std::vector holding PetscBool. */
+    typedef std::vector<BoolVec2D>  BoolVec3D;
+
+
     /** \brief a vector of pointer to mimic a collection of ghosted 1D vectors. */
     typedef std::vector<PetscReal*>             GhostedVec2D;
     /** \brief a vector of vector pointer to mimic a collection of ghosted 2D vectors. */
     typedef std::vector<GhostedVec2D>           GhostedVec3D;
-
-
-    /** \brief a structure holding information of a single boundary condition. */
-    struct BCTypeValuePair
-    {
-        BCType  type;  ///< the type of BC
-        PetscReal   value; ///< the value of BC
-    };
-
-    /** \brief a nested map holding information for user-input BCs. */
-    typedef std::map<BCLoc, std::map<Field, BCTypeValuePair>>     BCInfoHolder;
 
 
     /** \brief a structure holding information of perturbation. */

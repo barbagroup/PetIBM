@@ -90,22 +90,6 @@ using namespace petibm::utilities::types;
         static bool decode(const Node &node, ExecuteType &et);
     };
 
-    /** \brief converter for `types::BCTypeValuePair` */
-    template<>
-    struct convert<BCTypeValuePair>
-    {
-        static Node encode(const BCTypeValuePair &bcInfo);
-        static bool decode(const Node &node, BCTypeValuePair &bcInfo);
-    };
-
-    /** \brief converter for `types::BCInfoHolder` */
-    template<>
-    struct convert<BCInfoHolder>
-    {
-        static Node encode(const BCInfoHolder &bcInfo);
-        static bool decode(const Node &node, BCInfoHolder &bcInfo);
-    };
-
     /** \brief converter for `types::Perturbation` */
     template<>
     struct convert<Perturbation>

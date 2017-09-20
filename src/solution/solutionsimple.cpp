@@ -8,7 +8,7 @@
 
 
 // PetIBM
-# include <petibm/solutions.h>
+# include <petibm/solutionsimple.h>
 # include <petibm/parser.h>
 
 
@@ -19,22 +19,19 @@ namespace solution
 
 using namespace type;
 
-/** \copydoc Solutions::Solutions() */
-Solutions::Solutions() = default;
+// default deconstructor
+SolutionSimple::~SolutionSimple() = default;
 
 
-/** \copydoc Solutions::~Solutions() */
-Solutions::~Solutions() = default;
-
-
-/** \copydoc Solutions::Solutions(const CartesianMesh &, const OutputType &) */
-Solutions::Solutions(const Mesh &inMesh)
+// constructor
+SolutionSimple::SolutionSimple(const Mesh &inMesh)
 {
     init(inMesh);
 }
 
 
-PetscErrorCode Solutions::init(const Mesh &inMesh)
+// underlying initialization function
+PetscErrorCode SolutionSimple::init(const Mesh &inMesh)
 {
     PetscFunctionBeginUser;
 
@@ -64,7 +61,8 @@ PetscErrorCode Solutions::init(const Mesh &inMesh)
 }
 
 
-PetscErrorCode Solutions::createInfoString()
+// create a std::string for information
+PetscErrorCode SolutionSimple::createInfoString()
 {
     PetscFunctionBeginUser;
 
@@ -96,7 +94,8 @@ PetscErrorCode Solutions::createInfoString()
 }
 
 
-PetscErrorCode Solutions::convert2Velocity(const Mat &RInv)
+// convert flux to velocity
+PetscErrorCode SolutionSimple::convert2Velocity(const Mat &RInv)
 {
     PetscFunctionBeginUser;
 
@@ -116,7 +115,8 @@ PetscErrorCode Solutions::convert2Velocity(const Mat &RInv)
 }
 
 
-PetscErrorCode Solutions::convert2Flux(const Mat &R)
+// convert velocity to flux
+PetscErrorCode SolutionSimple::convert2Flux(const Mat &R)
 {
     PetscFunctionBeginUser;
 
@@ -136,7 +136,8 @@ PetscErrorCode Solutions::convert2Flux(const Mat &R)
 }
 
 
-PetscErrorCode Solutions::applyIC(const YAML::Node &node)
+// apply initial conditions
+PetscErrorCode SolutionSimple::applyIC(const YAML::Node &node)
 {
     PetscFunctionBeginUser;
 

@@ -29,9 +29,6 @@ namespace mesh
 
 using namespace type;
 
-// default constructor
-CartesianMesh::CartesianMesh() = default;
-
 
 // constructor
 CartesianMesh::CartesianMesh(const MPI_Comm &world, const YAML::Node &node)
@@ -85,7 +82,7 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
 
 
     // index 3 represent pressure mesh; min & max always represent pressure mesh
-    ierr = parser::parseMesh(node, dim, min, max, n[3], dLTrue[3]); CHKERRQ(ierr);
+    ierr = parser::parseMesh(node["mesh"], dim, min, max, n[3], dLTrue[3]); CHKERRQ(ierr);
 
     // check periodic BC
     IntVec2D          bcTypes;

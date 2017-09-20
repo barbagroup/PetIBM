@@ -30,7 +30,6 @@ namespace petibm
 {
 namespace mesh
 {
-
 /** \brief base class of meshes. */
 class MeshBase
 {
@@ -278,25 +277,22 @@ protected:
 
 namespace type
 {
-    
     /** \brief Mesh type definition. */
     typedef std::shared_ptr<mesh::MeshBase> Mesh;
-    
 } // end of type
 
 
 namespace mesh
 {
-    
-/**
- * \brief factory function for creating a Mesh object.
- *
- * \param node [in] YAML node.
- *
- * \return Mesh object (a shared_ptr to MeshBase).
- */
-PetscErrorCode createMesh(
-        const MPI_Comm &comm, const YAML::Node &node, type::Mesh &mesh);
-
+    /**
+     * \brief factory function for creating a Mesh object.
+     *
+     * \param node [in] YAML node.
+     *
+     * \return Mesh object (a shared_ptr to MeshBase).
+     */
+    PetscErrorCode createMesh(
+            const MPI_Comm &comm, const YAML::Node &node, type::Mesh &mesh);
 } // end of namespace mesh
+
 } // end of namespace petibm

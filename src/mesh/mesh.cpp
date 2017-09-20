@@ -20,7 +20,7 @@ namespace mesh
     {
         PetscFunctionBeginUser;
         
-        mesh = type::Mesh(new CartesianMesh(comm, node));
+        mesh = std::make_shared<CartesianMesh>(comm, node);
         
         PetscFunctionReturn(0);
     }

@@ -19,8 +19,7 @@
 # include <petscsys.h>
 
 // PetIBM
-# include "flowdescription.h"
-# include "cartesianmesh.h"
+# include <petibm/mesh.h>
 
 
 namespace petibm
@@ -43,26 +42,14 @@ public:
     
     Solutions();
 
-    Solutions(const CartesianMesh &mesh, 
-            const types::OutputType &type=types::HDF5);
+    Solutions(const type::Mesh &mesh);
 
     ~Solutions();
 
 
-    PetscErrorCode init(const CartesianMesh &mesh, 
-            const types::OutputType &type=types::HDF5);
+    PetscErrorCode init(const type::Mesh &mesh);
 
-    PetscErrorCode setOutputFormat(const types::OutputType &type);
-
-    PetscErrorCode setOutputFluxFlag(const PetscBool &flag=PETSC_TRUE);
-
-    PetscErrorCode printInfo() const;
-
-    PetscErrorCode applyIC(const FlowDescription &flow);
-
-    PetscErrorCode write(const std::string &dir, const std::string &name) const;
-
-    PetscErrorCode read(const std::string &dir, const std::string &name) const;
+    PetscErrorCode applyIC(const YAML::Node &node);
 
     PetscErrorCode convert2Velocity(const Mat &Rinv);
 
@@ -71,17 +58,12 @@ public:
 
 protected:
 
-    std::shared_ptr<const MPI_Comm>         comm;
+    MPI_Comm                                comm;
 
     PetscMPIInt                             mpiSize,
                                             mpiRank;
 
-    std::shared_ptr<const CartesianMesh>    mesh;
-
-    PetscBool                               fluxFlag;
-
-    std::string                             fileExt;
-    PetscViewerType                         viewerType;
+    type::Mesh                              mesh;
 
     PetscErrorCode createInfoString();
 
@@ -89,8 +71,6 @@ private:
 
 };
 
-
-std::ostream &operator<< (std::ostream &os, const Solutions &soln);
 
 } // end of namespace solution
 } // end of namespace petibm

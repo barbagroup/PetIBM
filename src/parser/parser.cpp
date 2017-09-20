@@ -258,6 +258,31 @@ PetscErrorCode parseBCs(const YAML::Node &node,
     PetscFunctionReturn(0);
 }
 
+
+// get initial conditions
+PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues)
+{
+    PetscFunctionBeginUser;
+    
+    if (! node["flow"].IsDefined())
+        SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "Could not find the key \"flow\" in the YAML "
+                "node passed to parseICs.\n");
+    
+    if (! node["flow"]["initialVelocity"].IsDefined())
+        SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "Could not find the key \"initialVelocity\" under the key "
+                "\"flow\" in the YAML node passed to parseICs.\n");
+    
+    const YAML::Node &temp = node["flow"]["initialVelocity"];
+    
+    icValues = type::RealVec1D(3, 0.0);
+    
+    for(int i=0; i<temp.size(); i++) icValues[i] = temp[i].as<PetscReal>();
+    
+    PetscFunctionReturn(0);
+}
+
 } // end of namespace parser
 } // end of namespace petibm
 

@@ -112,16 +112,27 @@ namespace parser
     
     
     /**
-     * \brief 
+     * \brief parse boundary conditions from a YAML node.
      *
-     * \param node
-     * \param bcTypes
-     * \param bcValues
+     * \param node [in] a YAML node.
+     * \param bcTypes [out] BC types of different fields on different boundaries.
+     * \param bcValues [out] BC values of different fields on different boundaries.
      *
-     * \return 
+     * \return PetscErrorCode.
      */
     PetscErrorCode parseBCs(const YAML::Node &node, 
             type::IntVec2D &bcTypes, type::RealVec2D &bcValues);
+    
+    
+    /**
+     * \brief parse initial conditions from a YAML node.
+     *
+     * \param node [in] a YAML node.
+     * \param icValues [out] IC values of different fileds.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues);
 
 } // end of namespace parser
 } // end of namespace petibm

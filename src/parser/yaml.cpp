@@ -18,7 +18,7 @@
 namespace YAML
 {
 
-using namespace petibm::utilities::types;
+using namespace petibm::type;
 
     // for Dir
     Node convert<Dir>::encode(const Dir &dir)
@@ -221,7 +221,7 @@ using namespace petibm::utilities::types;
     {
         YAML::Node  node(NodeType::Map);
         node["type"] = solver.type;
-        node["config"] = solver.config.string();
+        node["config"] = solver.config;
         return node;
     }
 

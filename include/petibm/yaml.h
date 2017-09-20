@@ -24,7 +24,7 @@
 namespace YAML
 {
 
-using namespace petibm::utilities::types;
+using namespace petibm::type;
 
     /** \brief converter for `types::Dir` */
     template <>

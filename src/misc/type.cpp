@@ -48,11 +48,11 @@ namespace type
 
 
     /** \copydoc types::str2bt */
-    std::map<std::string, BCType> str2bt {{"NONE", NONE},
+    std::map<std::string, BCType> str2bt {{"NOBC", NOBC},
         {"DIRICHLET", DIRICHLET}, {"NEUMANN", NEUMANN}, 
         {"CONVECTIVE", CONVECTIVE}, {"PERIODIC", PERIODIC}};
     /** \copydoc types::bt2str */
-    std::map<BCType, std::string> bt2str {{NONE, "NONE"},
+    std::map<BCType, std::string> bt2str {{NOBC, "NOBC"},
         {DIRICHLET, "DIRICHLET"}, {NEUMANN, "NEUMANN"}, 
         {CONVECTIVE, "CONVECTIVE"}, {PERIODIC, "PERIODIC"}};
 

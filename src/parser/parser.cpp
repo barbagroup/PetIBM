@@ -9,8 +9,9 @@
 # include <string>
 
 // here goes our own headers
-# include "petibm/parser.h"
-# include "petibm/misc.h"
+# include <petibm/parser.h>
+# include <petibm/yaml.h>
+# include <petibm/misc.h>
 
 // private function. Read config.yaml and other files for overwriting
 PetscErrorCode readYAMLs(YAML::Node &node);
@@ -236,7 +237,7 @@ PetscErrorCode parseBCs(const YAML::Node &node,
                 "Could not find the key \"boundaryConditions\" under the key "
                 "\"flow\" in the YAML node passed to parseBCs.\n");
     
-    bcTypes = type::IntVec2D(3, type::IntVec1D(6, int(type::BCType::NONE)));
+    bcTypes = type::IntVec2D(3, type::IntVec1D(6, int(type::BCType::NOBC)));
     bcValues = type::RealVec2D(3, type::RealVec1D(6, 0.0));
     
     for(auto sub: node["flow"]["boundaryConditions"])

@@ -48,7 +48,7 @@ namespace type
 
 
     /** \brief type of boundary condition. */
-    enum BCType { NONE=0, PERIODIC, DIRICHLET, NEUMANN, CONVECTIVE };
+    enum BCType { NOBC=0, PERIODIC, DIRICHLET, NEUMANN, CONVECTIVE };
     /** \brief mapping between `std::string` and `BCType` type */
     extern std::map<std::string, BCType> str2bt;
     /** \brief mapping between `BCType` type and `std::string` */
@@ -184,7 +184,7 @@ namespace type
     struct LinSolverInfo
     {
         ExecuteType         type = ExecuteType::CPU;
-        stdfs::path         config = "./solversPetscOptions.info";
+        std::string         config = "./solversPetscOptions.info";
     };
 
 

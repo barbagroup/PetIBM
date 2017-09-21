@@ -13,7 +13,6 @@
 # include <petscsys.h>
 # include <petscvec.h>
 # include <petscmat.h>
-# include <petscviewer.h>
 
 // PetIBM
 # include <petibm/type.h>
@@ -21,19 +20,18 @@
 
 namespace petibm
 {
-namespace linsolvers
+namespace linsolver
 {
-
 /**
- * \class LinSolver.
+ * \class LinSolverBase.
  * \brief Super class for an iterative solver.
  */
-class LinSolver
+class LinSolverBase
 {
 public:
 
     /** \brief default constructor. */
-    LinSolver() = default;
+    LinSolverBase() = default;
 
     /**
      * \brief constructor.
@@ -41,11 +39,11 @@ public:
      * \param solverName the name of the solver.
      * \param file the full path to configuration file of the solver.
      */
-    LinSolver(const std::string &solverName, const std::string &file):
-        name(solverName), options(file) {};
+    LinSolverBase(const std::string &solverName, const std::string &file):
+        name(solverName), config(file) {};
 
     /** \brief virtual destruction function. */
-    virtual ~LinSolver() = default;
+    virtual ~LinSolverBase() = default;
 
     /**
      * \brief the function to set the coefficient matrix A in Ax=b.
@@ -75,14 +73,6 @@ public:
      */
     virtual PetscErrorCode getIters(PetscInt &iters) = 0;
 
-    /**
-     * \brief print info.
-     *
-     * \return PetscErrorCode.
-     */
-    virtual PetscErrorCode printInfo(
-            PetscViewer viewer=PETSC_VIEWER_STDOUT_WORLD) = 0;
-
 protected:
 
     /** \brief the name of this solver.
@@ -94,7 +84,7 @@ protected:
     std::string     name;
 
     /** \brief the full path to the configuration file for this solver. */
-    std::string     options;
+    std::string     config;
 
     /**
      * \brief the private initialization function.
@@ -109,22 +99,31 @@ protected:
     virtual PetscErrorCode init() = 0;
 
 }; // LinSolver
+}
 
 
-/**
- * \brief a factory function for creating a ponter to linear solver instance.
- *
- * \param solverName the name for the solver.
- * \param configFile the full path to the configuration file for the sovler.
- * \param type execution type.
- * \param solver a pointer to the solver instance.
- *
- * \return PetscErrorCode.
- */
-PetscErrorCode createLinSolver(const std::string &solverName, 
-        const std::string &configFile,
-        const petibm::utilities::types::ExecuteType &type,
-        std::shared_ptr<LinSolver> &solver);
+namespace type
+{
+    /** \brief type definition of LinSolver. */
+    typedef std::shared_ptr<linsolver::LinSolverBase> LinSolver;
+}
 
-} // end of namespace linsolvers
+
+namespace linsolver
+{
+    /**
+     * \brief a factory function for creating LinSolver.
+     *
+     * \param name [in] the name for the solver.
+     * \param config [in] the full path to the configuration file of the sovler.
+     * \param type [in] execution type.
+     * \param solver [out] a LinSolver.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode createLinSolver(
+            const std::string &solverName, const std::string &configFile,
+            const type::ExecuteType &type, type::LinSolver &solver);
+}
+
 } // end of namespace petibm

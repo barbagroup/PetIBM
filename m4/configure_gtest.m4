@@ -30,10 +30,16 @@ if test "x$GTEST_DIR" != "x"; then
   if test -d "$GTEST_DIR"; then
     AC_SUBST(GTEST_DIR, $GTEST_DIR)
     AC_MSG_NOTICE([using gtest: $GTEST_DIR])
-    GTEST_CPPFLAGS="-I$GTEST_DIR/include"
+    if test -d "$GTEST_DIR/include"; then
+      GTEST_CPPFLAGS="-I$GTEST_DIR/include"
+    fi
     AC_SUBST(GTEST_CPPFLAGS, $GTEST_CPPFLAGS)
     CPPFLAGS_APPEND($GTEST_CPPFLAGS)
-    GTEST_LDFLAGS="-L$GTEST_DIR/lib -Wl,-rpath,$GTEST_DIR/lib"
+    if test -d "$GTEST_DIR/lib"; then
+      GTEST_LDFLAGS="-L$GTEST_DIR/lib -Wl,-rpath,$GTEST_DIR/lib"
+    elif test -d "$GTEST_DIR/lib64"; then
+      GTEST_LDFLAGS="-L$GTEST_DIR/lib64 -Wl,-rpath,$GTEST_DIR/lib64"
+    fi
     AC_SUBST(GTEST_LDFLAGS, $GTEST_LDFLAGS)
     LDFLAGS_APPEND($GTEST_LDFLAGS)
   else

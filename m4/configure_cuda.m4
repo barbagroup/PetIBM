@@ -30,7 +30,11 @@ AC_SUBST(CUDA_DIR, $CUDA_DIR)
 AC_MSG_NOTICE([using CUDA: $CUDA_DIR])
 
 CUDA_CPPFLAGS="-I$CUDA_DIR/include"
-CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
+if test -d "$CUDA_DIR/lib"; then
+  CUDA_LDFLAGS="-L$CUDA_DIR/lib -Wl,-rpath,$CUDA_DIR/lib"
+elif test -d "$CUDA_DIR/lib64"; then
+  CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
+fi
 CUDA_LIBS="-lcudart -lcublas -lcusparse"
 CPPFLAGS_PREPEND($CUDA_CPPFLAGS)
 LDFLAGS_PREPEND($CUDA_LDFLAGS)

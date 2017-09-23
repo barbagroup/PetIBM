@@ -32,8 +32,18 @@ fi
 AC_SUBST(AMGX_DIR, $AMGX_DIR)
 AC_MSG_NOTICE([using AmgX: $AMGX_DIR])
 
-AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/base/include $CUDA_CPPFLAGS"
-AMGX_LDFLAGS="-L$AMGX_DIR/lib -Wl,-rpath,$AMGX_DIR/lib $CUDA_LDFLAGS"
+if test -f "$AMGX_DIR/base/include/amgx_c.h"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/base/include $CUDA_CPPFLAGS"
+elif test -f "$AMGX_DIR/include/amgx_c.h"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/include $CUDA_CPPFLAGS"
+elif test -f "$AMGX_DIR/examples/amgx_c.h"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/examples $CUDA_CPPFLAGS"
+fi
+if test -d "$AMGX_DIR/lib"; then
+  AMGX_LDFLAGS="-L$AMGX_DIR/lib -Wl,-rpath,$AMGX_DIR/lib $CUDA_LDFLAGS"
+elif test -d "$AMGX_DIR/lib64"; then
+  AMGX_LDFLAGS="-L$AMGX_DIR/lib64 -Wl,-rpath,$AMGX_DIR/lib64 $CUDA_LDFLAGS"
+fi
 AMGX_LIBS="-lamgxsh $CUDA_LIBS"
 CPPFLAGS_PREPEND($AMGX_CPPFLAGS)
 LDFLAGS_PREPEND($AMGX_LDFLAGS)

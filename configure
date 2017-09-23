@@ -18383,7 +18383,11 @@ $as_echo "$as_me: using yaml-cpp: $YAMLCPP_DIR" >&6;}
 
     CPPFLAGS="$CPPFLAGS $YAMLCPP_CPPFLAGS"
 
-    YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib -Wl,-rpath,$YAMLCPP_DIR/lib"
+    if test -d "$YAMLCPP_DIR/lib"; then
+      YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib -Wl,-rpath,$YAMLCPP_DIR/lib"
+    elif test -d "$YAMLCPP_DIR/lib64"; then
+      YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib64 -Wl,-rpath,$YAMLCPP_DIR/lib64"
+    fi
     YAMLCPP_LDFLAGS=$YAMLCPP_LDFLAGS
 
     LDFLAGS="$LDFLAGS $YAMLCPP_LDFLAGS"
@@ -18572,12 +18576,18 @@ if test "x$GTEST_DIR" != "x"; then
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: using gtest: $GTEST_DIR" >&5
 $as_echo "$as_me: using gtest: $GTEST_DIR" >&6;}
-    GTEST_CPPFLAGS="-I$GTEST_DIR/include"
+    if test -d "$GTEST_DIR/include"; then
+      GTEST_CPPFLAGS="-I$GTEST_DIR/include"
+    fi
     GTEST_CPPFLAGS=$GTEST_CPPFLAGS
 
     CPPFLAGS="$CPPFLAGS $GTEST_CPPFLAGS"
 
-    GTEST_LDFLAGS="-L$GTEST_DIR/lib -Wl,-rpath,$GTEST_DIR/lib"
+    if test -d "$GTEST_DIR/lib"; then
+      GTEST_LDFLAGS="-L$GTEST_DIR/lib -Wl,-rpath,$GTEST_DIR/lib"
+    elif test -d "$GTEST_DIR/lib64"; then
+      GTEST_LDFLAGS="-L$GTEST_DIR/lib64 -Wl,-rpath,$GTEST_DIR/lib64"
+    fi
     GTEST_LDFLAGS=$GTEST_LDFLAGS
 
     LDFLAGS="$LDFLAGS $GTEST_LDFLAGS"
@@ -18948,7 +18958,11 @@ CUDA_DIR=$CUDA_DIR
 $as_echo "$as_me: using CUDA: $CUDA_DIR" >&6;}
 
 CUDA_CPPFLAGS="-I$CUDA_DIR/include"
-CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
+if test -d "$CUDA_DIR/lib"; then
+  CUDA_LDFLAGS="-L$CUDA_DIR/lib -Wl,-rpath,$CUDA_DIR/lib"
+elif test -d "$CUDA_DIR/lib64"; then
+  CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
+fi
 CUDA_LIBS="-lcudart -lcublas -lcusparse"
 CPPFLAGS="$CUDA_CPPFLAGS $CPPFLAGS"
 
@@ -19211,8 +19225,18 @@ AMGX_DIR=$AMGX_DIR
 { $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX: $AMGX_DIR" >&5
 $as_echo "$as_me: using AmgX: $AMGX_DIR" >&6;}
 
-AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/base/include $CUDA_CPPFLAGS"
-AMGX_LDFLAGS="-L$AMGX_DIR/lib -Wl,-rpath,$AMGX_DIR/lib $CUDA_LDFLAGS"
+if test -f "$AMGX_DIR/base/include/amgx_c.h"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/base/include $CUDA_CPPFLAGS"
+elif test -f "$AMGX_DIR/include/amgx_c.h"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/include $CUDA_CPPFLAGS"
+elif test -f "$AMGX_DIR/examples/amgx_c.h"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/examples $CUDA_CPPFLAGS"
+fi
+if test -d "$AMGX_DIR/lib"; then
+  AMGX_LDFLAGS="-L$AMGX_DIR/lib -Wl,-rpath,$AMGX_DIR/lib $CUDA_LDFLAGS"
+elif test -d "$AMGX_DIR/lib64"; then
+  AMGX_LDFLAGS="-L$AMGX_DIR/lib64 -Wl,-rpath,$AMGX_DIR/lib64 $CUDA_LDFLAGS"
+fi
 AMGX_LIBS="-lamgxsh $CUDA_LIBS"
 CPPFLAGS="$AMGX_CPPFLAGS $CPPFLAGS"
 
@@ -19353,7 +19377,11 @@ $as_echo "$as_me: using AmgXWrapper: $AMGXWRAPPER_DIR" >&6;}
     AMGXWRAPPER_CPPFLAGS="-I$AMGXWRAPPER_DIR/include $AMGX_CPPFLAGS"
     AMGXWRAPPER_CPPFLAGS=$AMGXWRAPPER_CPPFLAGS
 
-    AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_DIR/lib -Wl,-rpath,$AMGXWRAPPER_DIR/lib $AMGX_LDFLAGS"
+    if test -d "$AMGXWRAPPER_DIR/lib"; then
+      AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_DIR/lib -Wl,-rpath,$AMGXWRAPPER_DIR/lib $AMGX_LDFLAGS"
+    elif test -d "$AMGXWRAPPER_DIR/lib64"; then
+      AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_DIR/lib64 -Wl,-rpath,$AMGXWRAPPER_DIR/lib64 $AMGX_LDFLAGS"
+    fi
     AMGXWRAPPER_LDFLAGS=$AMGXWRAPPER_LDFLAGS
 
     CPPFLAGS="$AMGXWRAPPER_CPPFLAGS $CPPFLAGS"
@@ -19426,12 +19454,13 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
     for VAL in "ON" "OFF"
     do
       cmake $AMGXWRAPPER_DIR \
-        -DCMAKE_INSTALL_PREFIX=$prefix \
-        -DPETSC_DIR=$PETSC_DIR \
-        -DPETSC_ARCH=$PETSC_ARCH \
         -DAMGX_DIR=$AMGX_DIR \
         -DCUDA_DIR=$CUDA_DIR \
-        -DBUILD_SHARED_LIBS=$VAL
+        -DPETSC_DIR=$PETSC_DIR \
+        -DPETSC_ARCH=$PETSC_ARCH \
+        -DBUILD_SHARED_LIBS=$VAL \
+        -DCMAKE_INSTALL_PREFIX=$prefix \
+        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
       make all
       make install
     done

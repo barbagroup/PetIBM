@@ -89,8 +89,6 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = petibm-decoupledibpm$(EXEEXT)
-@WITH_AMGX_TRUE@am__append_1 = $(AMGXWRAPPER_CPPFLAGS)
-@WITH_AMGX_TRUE@am__append_2 = $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 subdir = applications/decoupledibpm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
@@ -119,11 +117,9 @@ am_petibm_decoupledibpm_OBJECTS = petibm_decoupledibpm-main.$(OBJEXT) \
 	petibm_decoupledibpm-decoupledibpm.$(OBJEXT)
 petibm_decoupledibpm_OBJECTS = $(am_petibm_decoupledibpm_OBJECTS)
 am__DEPENDENCIES_1 =
-@WITH_AMGX_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
-@WITH_AMGX_TRUE@	$(am__DEPENDENCIES_1)
 petibm_decoupledibpm_DEPENDENCIES = $(top_builddir)/src/libpetibm.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -267,8 +263,8 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PETSC_ARCH = @PETSC_ARCH@
-PETSC_DIR = @PETSC_DIR@
+PETSC_CPPFLAGS = @PETSC_CPPFLAGS@
+PETSC_LDFLAGS = @PETSC_LDFLAGS@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -337,9 +333,13 @@ petibm_decoupledibpm_SOURCES = main.cpp \
                                decoupledibpm.cpp
 
 petibm_decoupledibpm_CPPFLAGS = -I$(top_srcdir)/include \
-	$(YAMLCPP_CPPFLAGS) $(am__append_1)
+                                $(PETSC_CPPFLAGS) \
+                                $(YAMLCPP_CPPFLAGS)
+
 petibm_decoupledibpm_LDADD = $(top_builddir)/src/libpetibm.la \
-	$(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) $(am__append_2)
+                             $(PETSC_LDFLAGS) $(PETSC_LIBS) \
+                             $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
+
 all: all-am
 
 .SUFFIXES:

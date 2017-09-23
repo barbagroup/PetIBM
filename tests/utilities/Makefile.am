@@ -4,10 +4,12 @@ check_PROGRAMS = delta-test \
                  singleboundary-test
 
 AM_CPPFLAGS = -I$(top_srcdir)/include \
+              $(PETSC_CPPFLAGS) \
               $(YAMLCPP_CPPFLAGS) \
               $(GTEST_CPPFLAGS)
 
 LADD = $(top_builddir)/src/utilities/libutilities.la \
+       $(PETSC_LDFLAGS) $(PETSC_LIBS) \
        $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
        $(GTEST_LDFLAGS) $(GTEST_LIBS)
 

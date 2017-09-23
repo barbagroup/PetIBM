@@ -148,7 +148,7 @@ libpetibm_la_DEPENDENCIES =  \
 	$(top_builddir)/src/operators/liboperators.la \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 am_libpetibm_la_OBJECTS =
 libpetibm_la_OBJECTS = $(am_libpetibm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -333,8 +333,8 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PETSC_ARCH = @PETSC_ARCH@
-PETSC_DIR = @PETSC_DIR@
+PETSC_CPPFLAGS = @PETSC_CPPFLAGS@
+PETSC_LDFLAGS = @PETSC_LDFLAGS@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -407,8 +407,9 @@ lib_LTLIBRARIES = libpetibm.la
 libpetibm_la_SOURCES = 
 libpetibm_la_LIBADD = $(top_builddir)/src/linsolvers/liblinsolvers.la \
 	$(top_builddir)/src/operators/liboperators.la \
-	$(top_builddir)/src/utilities/libutilities.la \
-	$(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) $(am__append_1)
+	$(top_builddir)/src/utilities/libutilities.la $(PETSC_LDFLAGS) \
+	$(PETSC_LIBS) $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
+	$(am__append_1)
 all: all-recursive
 
 .SUFFIXES:

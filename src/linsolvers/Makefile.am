@@ -4,12 +4,12 @@ liblinsolvers_la_SOURCES = kspsolver.cpp \
                            linsolver.cpp
 
 liblinsolvers_la_CPPFLAGS = -I$(top_srcdir)/include \
-                            $(YAMLCPP_CPPFLAGS)
+                            $(PETSC_CPPFLAGS)
 
-liblinsolvers_la_LIBADD = $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
+liblinsolvers_la_LIBADD = $(PETSC_LDFLAGS) $(PETSC_LIBS)
 
 if WITH_AMGX
 liblinsolvers_la_SOURCES += amgxsolver.cpp
-liblinsolvers_la_CPPFLAGS += $(AMGXWRAPPER_CPPFLAGS)
+liblinsolvers_la_CPPFLAGS += -DHAVE_AMGX $(AMGXWRAPPER_CPPFLAGS)
 liblinsolvers_la_LIBADD += $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 endif

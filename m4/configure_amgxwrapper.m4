@@ -85,6 +85,7 @@ else
 fi
 
 CPPFLAGS_APPEND($AMGX_CPPFLAGS)
+CPPFLAGS_APPEND($PETSC_CPPFLAGS)
 
 AC_CHECK_HEADER([AmgXSolver.hpp],
                 [],
@@ -93,7 +94,7 @@ Please use '--with-amgxwrapper-dir=PATH' to provide the directory of the package
 or '--enable-amgxwrapper' to download and install AmgXWrapper-1.1 (AmgX-2.0).
 ])])
 
-AMGXWRAPPER_LIBS="-lAmgXWrapper -lamgxsh -lcudart -lcublas -lcusparse"
+AMGXWRAPPER_LIBS="-lAmgXWrapper"
 AC_SUBST(AMGXWRAPPER_LIBS, $AMGXWRAPPER_LIBS)
 
 PACKAGE_RESTORE_ENVIRONMENT

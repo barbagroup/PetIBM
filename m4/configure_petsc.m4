@@ -9,6 +9,9 @@ echo "=================================="
 echo "Configuring required package PETSc"
 echo "=================================="
 
+PACKAGE_INITIALIZE_ENVIRONMENT
+PACKAGE_SETUP_ENVIRONMENT
+
 # check for presence of `--with-petsc-dir=PATH` and `--with-petsc-arch=PATH`
 AC_ARG_WITH([petsc-dir],
             AS_HELP_STRING([--with-petsc-dir=PATH],
@@ -31,8 +34,6 @@ please use `--with-petsc-arch` to provide a PETSc arch])
   fi
 fi
 
-AC_SUBST(PETSC_DIR, $PETSC_DIR)
-AC_SUBST(PETSC_ARCH, $PETSC_ARCH)
 AC_MSG_NOTICE([using PETSc: $PETSC_DIR])
 AC_MSG_NOTICE([with arch: $PETSC_ARCH])
 
@@ -51,7 +52,9 @@ PETSC_EXTERNAL_LIB_BASIC=`grep "PETSC_EXTERNAL_LIB_BASIC =" $PETSCVARIABLES | se
 PETSC_WITH_EXTERNAL_LIB=`grep "PETSC_WITH_EXTERNAL_LIB =" $PETSCVARIABLES | sed -e 's/.*=//' -e 's/^[ \t]*//'`
 
 CPPFLAGS_PREPEND($PETSC_CC_INCLUDES)
+AC_SUBST(PETSC_CPPFLAGS, $PETSC_CC_INCLUDES)
 LIBS_PREPEND($PETSC_WITH_EXTERNAL_LIB)
+AC_SUBST(PETSC_LDFLAGS, $PETSC_WITH_EXTERNAL_LIB)
 
 # check for presence of header file petsc.h
 AC_CHECK_HEADER([petsc.h], , 
@@ -79,6 +82,8 @@ AC_MSG_RESULT([${PETSC_VERSION_VALID}])
 if test "$PETSC_VERSION_VALID" = no; then
   AC_MSG_ERROR([invalid PETSc version detected; please use PETSc 3.7])
 fi
+
+PACKAGE_RESTORE_ENVIRONMENT
 
 echo
 

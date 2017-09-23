@@ -14,9 +14,11 @@ libutilities_la_SOURCES = bodypack.cpp \
                           types.cpp
 
 libutilities_la_CPPFLAGS = -I$(top_srcdir)/include \
+                           $(PETSC_CPPFLAGS) \
                            $(YAMLCPP_CPPFLAGS)
-libutilities_la_LIBADD = -lstdc++fs \
-                         $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
+libutilities_la_LIBADD = $(PETSC_LDFLAGS) $(PETSC_LIBS) \
+                         $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
+                         -lstdc++fs
 
 if WITH_AMGX
 libutilities_la_CPPFLAGS += -DHAVE_AMGX

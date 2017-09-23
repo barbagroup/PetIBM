@@ -644,8 +644,8 @@ AMGXWRAPPER_CPPFLAGS
 AMGXWRAPPER_DIR
 AMGX_DIR
 CUDA_DIR
-PETSC_ARCH
-PETSC_DIR
+PETSC_LDFLAGS
+PETSC_CPPFLAGS
 GTEST_LIBS
 GTEST_LDFLAGS
 GTEST_CPPFLAGS
@@ -18710,6 +18710,36 @@ echo "=================================="
 echo "Configuring required package PETSc"
 echo "=================================="
 
+
+ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
+PACKAGE_CFLAGS=""
+PACKAGE_CPPFLAGS=""
+PACKAGE_CXXFLAGS=""
+PACKAGE_FCFLAGS=""
+PACKAGE_LDFLAGS=""
+PACKAGE_LIBS=""
+PACKAGE_FCLIBS=""
+PACKAGE_CONTRIB_LIBS=""
+
+
+PACKAGE_save_CFLAGS=$CFLAGS
+PACKAGE_save_CPPFLAGS=$CPPFLAGS
+PACKAGE_save_CXXFLAGS=$CXXFLAGS
+PACKAGE_save_FCFLAGS=$FCFLAGS
+PACKAGE_save_LDFLAGS=$LDFLAGS
+PACKAGE_save_LIBS=$LIBS
+PACKAGE_save_FCLIBS=$FCLIBS
+PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
+CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
+CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
+CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
+FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
+LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
+LIBS="$PACKAGE_LIBS $LIBS"
+FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
+CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
+
+
 # check for presence of `--with-petsc-dir=PATH` and `--with-petsc-arch=PATH`
 
 # Check whether --with-petsc-dir was given.
@@ -18733,10 +18763,6 @@ else
 please use \`--with-petsc-arch\` to provide a PETSc arch" "$LINENO" 5
   fi
 fi
-
-PETSC_DIR=$PETSC_DIR
-
-PETSC_ARCH=$PETSC_ARCH
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: using PETSc: $PETSC_DIR" >&5
 $as_echo "$as_me: using PETSc: $PETSC_DIR" >&6;}
@@ -18779,7 +18805,11 @@ PETSC_WITH_EXTERNAL_LIB=`grep "PETSC_WITH_EXTERNAL_LIB =" $PETSCVARIABLES | sed 
 
 CPPFLAGS="$PETSC_CC_INCLUDES $CPPFLAGS"
 
+PETSC_CPPFLAGS=$PETSC_CC_INCLUDES
+
 LIBS="$PETSC_WITH_EXTERNAL_LIB $LIBS"
+
+PETSC_LDFLAGS=$PETSC_WITH_EXTERNAL_LIB
 
 
 # check for presence of header file petsc.h
@@ -18829,6 +18859,17 @@ $as_echo "${PETSC_VERSION_VALID}" >&6; }
 if test "$PETSC_VERSION_VALID" = no; then
   as_fn_error $? "invalid PETSc version detected; please use PETSc 3.7" "$LINENO" 5
 fi
+
+
+CFLAGS=$PACKAGE_save_CFLAGS
+CPPFLAGS=$PACKAGE_save_CPPFLAGS
+CXXFLAGS=$PACKAGE_save_CXXFLAGS
+FCFLAGS=$PACKAGE_save_FCFLAGS
+LDFLAGS=$PACKAGE_save_LDFLAGS
+LIBS=$PACKAGE_save_LIBS
+FCLIBS=$PACKAGE_save_FCLIBS
+CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
+
 
 echo
 
@@ -19415,6 +19456,8 @@ fi
 
 CPPFLAGS="$CPPFLAGS $AMGX_CPPFLAGS"
 
+CPPFLAGS="$CPPFLAGS $PETSC_CPPFLAGS"
+
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "AmgXSolver.hpp" "ac_cv_header_AmgXSolver_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_AmgXSolver_hpp" = xyes; then :
@@ -19428,7 +19471,7 @@ fi
 
 
 
-AMGXWRAPPER_LIBS="-lAmgXWrapper -lamgxsh -lcudart -lcublas -lcusparse"
+AMGXWRAPPER_LIBS="-lAmgXWrapper"
 AMGXWRAPPER_LIBS=$AMGXWRAPPER_LIBS
 
 
@@ -22132,12 +22175,6 @@ Prefix: '${prefix}'
 CXX: ${CXX}
 CXXFLAGS: ${CXXFLAGS}
 
-CPPFLAGS: ${CPPFLAGS}
-
-LDFLAGS: ${LDFLAGS}
-
-LIBS: ${LIBS}
-
 PETSC_DIR: ${PETSC_DIR}
 PETSC_ARCH: ${PETSC_ARCH}
 
@@ -22152,12 +22189,6 @@ Prefix: '${prefix}'
 
 CXX: ${CXX}
 CXXFLAGS: ${CXXFLAGS}
-
-CPPFLAGS: ${CPPFLAGS}
-
-LDFLAGS: ${LDFLAGS}
-
-LIBS: ${LIBS}
 
 PETSC_DIR: ${PETSC_DIR}
 PETSC_ARCH: ${PETSC_ARCH}

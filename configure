@@ -18142,7 +18142,7 @@ done
 BUILDDIR=`pwd`
 
 CPPFLAGS_="-I$prefix/include"
-LDFLAGS_="-L$prefix/lib -Wl,-rpath,$prefix/lib"
+LDFLAGS_="-L$prefix/lib -Wl,-rpath,$prefix/lib -L$prefix/lib64 -Wl,-rpath,$prefix/lib64"
 CPPFLAGS="$CPPFLAGS_ $CPPFLAGS"
 
 LDFLAGS="$LDFLAGS_ $LDFLAGS"

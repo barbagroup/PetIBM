@@ -48,7 +48,7 @@ AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday localtime_r memset m
 
 AC_SUBST([BUILDDIR], [`pwd`])
 CPPFLAGS_="-I$prefix/include"
-LDFLAGS_="-L$prefix/lib -Wl,-rpath,$prefix/lib"
+LDFLAGS_="-L$prefix/lib -Wl,-rpath,$prefix/lib -L$prefix/lib64 -Wl,-rpath,$prefix/lib64"
 CPPFLAGS_PREPEND($CPPFLAGS_)
 LDFLAGS_PREPEND($LDFLAGS_)
 

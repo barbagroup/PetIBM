@@ -9,19 +9,16 @@
 
 # pragma once
 
-// STL
-# include <string>
+// C++ STL
 # include <memory>
-# include <functional>
 
 // here goes PETSc headers
 # include <petscsys.h>
 # include <petscvec.h>
 
 // here goes headers from our PetIBM
-# include "cartesianmesh.h"
-# include "solutions.h"
 # include <petibm/type.h>
+# include <petibm/mesh.h>
 
 
 namespace petibm
@@ -29,84 +26,79 @@ namespace petibm
 namespace boundary
 {
 
-class SingleBoundary
+class SingleBoundaryBase
 {
 public:
 
     PetscInt            dim;
 
-    types::BCLoc        loc;
+    type::BCLoc         loc;
+    
+    type::Field         field;
 
-    PetscBool           onThisProc;
-
-    std::vector<types::BCType>  type;
-
-    types::RealVec1D    value;
+    PetscReal           value;
 
     PetscReal           normal;
 
-    std::vector<types::GhostPointsList>   points;
+    type::GhostPointsList   points;
+
+    PetscBool           onThisProc;
 
 
 
-    SingleBoundary();
+    SingleBoundaryBase() = default;
 
-    SingleBoundary(const CartesianMesh &mesh, const types::BCLoc &loc); 
+    SingleBoundaryBase(const type::Mesh &mesh, const type::BCLoc &loc, 
+            const type::Field &field, const PetscReal &value); 
 
-    ~SingleBoundary();
+    virtual ~SingleBoundaryBase() = default;
 
 
-    PetscErrorCode init(const CartesianMesh &mesh, const types::BCLoc &loc); 
+    PetscErrorCode setGhostICs(const Vec &vec);
 
-    PetscErrorCode setGhostICs(const Solutions &soln);
+    PetscErrorCode updateEqs(const Vec &vec, const PetscReal &dt);
 
-    std::function<PetscErrorCode(const Solutions &, const PetscReal &)> updateEqs;
+    PetscErrorCode updateGhostValues(const Vec &vec);
 
-    std::function<PetscErrorCode(const Solutions &)> updateGhostValues;
-
-    std::function<PetscErrorCode(std::vector<Vec> &)> copyValues2LocalVecs;
+    PetscErrorCode copyValues2LocalVec(Vec &lclVec);
 
 protected:
 
-    std::shared_ptr<const MPI_Comm>     comm;
+    PetscErrorCode init(const type::Mesh &mesh, const type::BCLoc &loc, 
+            const type::Field &field, const PetscReal &bcValue); 
 
-    PetscMPIInt                         mpiSize,
-                                        mpiRank;
+    virtual PetscErrorCode setGhostICsKernel(
+            const PetscReal &targetValue, type::GhostPointInfo &p) = 0;
 
-
-    std::shared_ptr<const CartesianMesh> mesh;
-
-
-    std::vector<std::function<
-        void(types::GhostPointInfo &p, const PetscReal &bdValue, 
-                const PetscReal &bc, const PetscReal &dt)>>  updateEqsKernel;
+    virtual PetscErrorCode updateEqsKernel(const PetscReal &targetValue,
+            const PetscReal &dt, type::GhostPointInfo &p) = 0;
 
 
-    PetscErrorCode setProc();
+    MPI_Comm        comm;
 
-    PetscErrorCode setPoints(const PetscInt &field);
+    PetscMPIInt     mpiSize;
+    
+    PetscMPIInt     mpiRank;
 
-    PetscErrorCode setPointsX(
-            const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
 
-    PetscErrorCode setPointsY(
-            const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
-
-    PetscErrorCode setPointsZ(
-            const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
-
-    PetscErrorCode setKernels(
-            const PetscInt &field, const PetscInt &dir);
-
-    PetscErrorCode updateEqsTrue(const Solutions &soln, const PetscReal &dt);
-
-    PetscErrorCode updateGhostValuesTrue(const Solutions &soln);
-
-    PetscErrorCode copyValues2LocalVecsTrue(std::vector<Vec> &lclVecs);
-
-private:
+    type::Mesh      mesh;
 
 };
 
 } // end of namespace boundary
+
+
+namespace type
+{
+    typedef std::shared_ptr<boundary::SingleBoundaryBase> SingleBoundary;
+}
+
+namespace boundary
+{
+    PetscErrorCode createSingleBoundary(
+            const type::Mesh &mesh, const type::BCLoc &loc, 
+            const type::Field &field, const PetscReal &value,
+            type::SingleBoundary &singleBd);
+}
+
 } // end of namespace petibm

@@ -15,9 +15,11 @@
 
 // here goes PETSc
 # include <petscsys.h>
+# include <petscdmda.h>
 
 // here goes our own headers
 # include <petibm/type.h>
+# include <petibm/mesh.h>
 
 
 namespace petibm
@@ -35,6 +37,33 @@ namespace misc
      */
     PetscErrorCode checkPeriodicBC(
             const type::IntVec2D &bcTypes, type::BoolVec2D &periodic);
+    
+
+    /**
+     * \brief check if a boundary is on this process.
+     *
+     * \param da [in] the DMDA object at which this boundary is.
+     * \param n [in] the numbers of cells of the DMDA.
+     * \param loc [in] the location of this boundary.
+     * \param onThisProc [out] a PetscBool indicating if is on this process.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode checkBoundaryProc(const DM &da, const type::IntVec1D &n,
+            const type::BCLoc &loc, PetscBool &onThisProc);
+
+
+    PetscErrorCode getGhostPointList(const type::Mesh &mesh,
+            const type::Field &field, const type::BCLoc &loc,
+            type::GhostPointsList &points);
+    
+    
+    PetscErrorCode getPerpendAxes(const PetscInt &self, type::IntVec1D &pAxes);
+    
+    
+    PetscErrorCode getGhostTargetStencil(const type::IntVec1D &n,
+            const type::BCLoc &loc, const type::IntVec1D &pIdx,
+            MatStencil &ghost, MatStencil &target);
     
         
     /** \brief  calculate and returned cell sizes of stretched grid in one direction.

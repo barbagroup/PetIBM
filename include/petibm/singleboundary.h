@@ -197,6 +197,7 @@ namespace boundary
     PetscErrorCode createSingleBoundary(
             const type::Mesh &mesh, const type::BCLoc &loc, 
             const type::Field &field, const PetscReal &value,
+            const type::BCType &bcType,
             type::SingleBoundary &singleBd);
 }
 

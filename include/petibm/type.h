@@ -63,30 +63,6 @@ namespace type
     extern std::map<BCLoc, std::string> bl2str;
 
 
-    /** \brief Numerical scheme used to discretize the time derivative.
-     *
-     * A time-dependent differential equation of the form
-     * \f[ \frac{du}{dt} = f(u) \f]
-     * can be solved numerically using any of the schemes listed below. In the
-     * following, the size of the time step is represented by \f$ \Delta t \f$, the
-     * value of \f$ u \f$ at the current time step is represented by \f$ u^n \f$, 
-     * and the value at the next time step (which we want to determine) is
-     * \f$ u^{n+1} \f$. \f$ u^{n-1} \f$ is the value at the previous time step.
-     */
-    enum TimeScheme
-    {
-        NONE = 0,              ///< numerical coefficients set to zero
-        EULER_EXPLICIT = 1,    ///< explicit Euler method
-        EULER_IMPLICIT = 2,    ///< implicit Euler method
-        ADAMS_BASHFORTH_2 = 3, ///< second-order Adams-Bashforth scheme
-        CRANK_NICOLSON = 4     ///< second-order Crank-Nicolson scheme
-    };
-    /** \brief mapping between `std::string` and `TimeScheme` type */
-    extern std::map<std::string, TimeScheme> str2ts;
-    /** \brief mapping between `TimeScheme` type and `std::string` */
-    extern std::map<TimeScheme, std::string> ts2str;
-
-
     /** \brief Immersed boundary method used to solve the flow. */
     enum IBMethod
     {
@@ -185,15 +161,6 @@ namespace type
     {
         ExecuteType         type = ExecuteType::CPU;
         std::string         config = "./solversPetscOptions.info";
-    };
-
-
-    /** \brief a struct holding information of numerical schemes */
-    struct SchemeInfo
-    {
-        IBMethod        ibm = IBMethod::NAVIER_STOKES;
-        TimeScheme      convection = TimeScheme::ADAMS_BASHFORTH_2;
-        TimeScheme      diffusion = TimeScheme::CRANK_NICOLSON;
     };
 
 

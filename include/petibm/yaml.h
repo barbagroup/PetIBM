@@ -58,14 +58,6 @@ using namespace petibm::type;
         static bool decode(const Node &node, BCLoc &loc);
     };
 
-    /** \brief converter for `types::TimeScheme` */
-    template <>
-    struct convert<TimeScheme>
-    {
-        static Node encode(const TimeScheme &ts);
-        static bool decode(const Node &node, TimeScheme &ts);
-    };
-
     /** \brief converter for `types::IBMethod` */
     template <>
     struct convert<IBMethod>
@@ -128,14 +120,6 @@ using namespace petibm::type;
     {
         static Node encode(const LinSolverInfo &solver);
         static bool decode(const Node &node, LinSolverInfo &solver);
-    };
-
-    /** \brief converter for `types::SchemeInfo` */
-    template<>
-    struct convert<SchemeInfo>
-    {
-        static Node encode(const SchemeInfo &scheme);
-        static bool decode(const Node &node, SchemeInfo &scheme);
     };
 
     /** \brief converter for `types::SteppingInfo` */

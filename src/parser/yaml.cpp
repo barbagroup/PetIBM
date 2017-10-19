@@ -83,21 +83,6 @@ using namespace petibm::type;
         return true;
     }
 
-    // for TimeScheme
-    Node convert<TimeScheme>::encode(const TimeScheme &ts)
-    {
-        Node node;
-        node = ts2str[ts];
-        return node;
-    }
-
-    bool convert<TimeScheme>::decode(const Node &node, TimeScheme &ts)
-    {
-        if (! node.IsDefined()) return false;
-        ts = str2ts[node.as<std::string>()];
-        return true;
-    }
-
     // for IBMethod
     Node convert<IBMethod>::encode(const IBMethod &ibm)
     {
@@ -229,24 +214,6 @@ using namespace petibm::type;
     {
         solver.type = node["type"].as<ExecuteType>(ExecuteType::CPU);
         solver.config = node["config"].as<std::string>("");
-        return true;
-    }
-
-    // for SchemeInfo
-    Node convert<SchemeInfo>::encode(const SchemeInfo &scheme)
-    {
-        YAML::Node  node(NodeType::Map);
-        node["ibm"] = scheme.ibm;
-        node["convection"] = scheme.convection;
-        node["diffusion"] = scheme.diffusion;
-        return node;
-    }
-
-    bool convert<SchemeInfo>::decode(const Node &node, SchemeInfo &scheme)
-    {
-        scheme.ibm = node["ibm"].as<IBMethod>(IBMethod::NAVIER_STOKES);
-        scheme.convection = node["convection"].as<TimeScheme>(TimeScheme::ADAMS_BASHFORTH_2);
-        scheme.diffusion = node["diffusion"].as<TimeScheme>(TimeScheme::CRANK_NICOLSON);
         return true;
     }
 

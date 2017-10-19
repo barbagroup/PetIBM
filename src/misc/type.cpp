@@ -70,16 +70,6 @@ namespace type
         {YPLUS, "yPlus"}, {ZMINUS, "zMinus"}, {ZPLUS, "zPlus"}};
 
 
-    /** \copydoc types::str2ts */
-    std::map<std::string, TimeScheme> str2ts { {"NONE", NONE}, 
-        {"EULER_EXPLICIT", EULER_EXPLICIT}, {"EULER_IMPLICIT", EULER_IMPLICIT}, 
-        {"ADAMS_BASHFORTH_2", ADAMS_BASHFORTH_2}, {"CRANK_NICOLSON", CRANK_NICOLSON}};
-    /** \copydoc types::ts2str */
-    std::map<TimeScheme, std::string> ts2str { {NONE, "NONE"}, 
-        {EULER_EXPLICIT, "EULER_EXPLICIT"}, {EULER_IMPLICIT, "EULER_IMPLICIT"}, 
-        {ADAMS_BASHFORTH_2, "ADAMS_BASHFORTH_2"}, {CRANK_NICOLSON, "CRANK_NICOLSON"}};
-
-
     /** \copydoc types::str2ibm */
     std::map<std::string, IBMethod> str2ibm {
         {"NAVIER_STOKES", NAVIER_STOKES}, {"TAIRA_COLONIUS", TAIRA_COLONIUS}};

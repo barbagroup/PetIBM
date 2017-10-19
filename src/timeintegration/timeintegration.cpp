@@ -3,12 +3,12 @@
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of members of the class `TimeIntegration`.
+ * \brief Definition TimeIntegration related code.
  */
 
 
 // here goes headers from our PetIBM
-#include "petibm/timeintegration.h"
+# include <petibm/timeintegration.h>
 
 
 namespace petibm
@@ -16,57 +16,46 @@ namespace petibm
 namespace timeintegration
 {
 
-using namespace types;
-
-/** \copydoc TimeIntegration::TimeIntegration(). */
-TimeIntegration::TimeIntegration() = default;
-
-
-/** \copydoc TimeIntegration::~TimeIntegration(). */
-TimeIntegration::~TimeIntegration() = default;
-
-
-/** \copydoc TimeIntegration::TimeIntegration(const types::TimeScheme &). */
-TimeIntegration::TimeIntegration(const TimeScheme &method) { init(method); }
-
-
-/** \copydoc TimeIntegration::init(const types::TimeScheme &). */
-PetscErrorCode TimeIntegration::init(const TimeScheme &method)
+PetscErrorCode createTimeIntegration(const std::string &name,
+        const YAML::Node &node, type::TimeIntegration &integration)
 {
     PetscFunctionBeginUser;
 
-    // hard copy the scheme
-    scheme = method;
-
+    std::string     scheme;
+    
+    if (! node["parameters"].IsDefined())
+    {
+        SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "Could not find the key \"parameters\" in the YAML node "
+                "passed to the function \"createTimeIntegration\"!");
+    }
+    
+    if (! node["parameters"][name].IsDefined())
+    {
+        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "Could not find the key \"%s\" under sub-node \"parameters\" "
+                "in the YAML node passed to the function "
+                "\"createTimeIntegration\"!", name.c_str());
+    }
+    
+    scheme = node["parameters"][name].as<std::string>();
 
     // set up coefficients.
-    switch (scheme)
+    if (scheme == "EULER_EXPLICIT")
+        integration = std::make_shared<Euler_Explicit>(name);
+    else if (scheme == "EULER_IMPLICIT")
+        integration = std::make_shared<Euler_Implicit>(name);
+    else if (scheme == "ADAMS_BASHFORTH_2")
+        integration = std::make_shared<Adams_Bashforth_2>(name);
+    else if (scheme == "CRANK_NICOLSON")
+        integration = std::make_shared<Crank_Nicolson>(name);
+    else
     {
-        case NONE:
-            implicitCoeff = 0.0;
-            nExplicit = 0;
-            break;
-        case EULER_EXPLICIT:
-            implicitCoeff = 0.0; // n+1 coefficient
-            nExplicit = 1;
-            explicitCoeffs.push_back(1.0); // n coefficient
-            break;
-        case EULER_IMPLICIT:
-            implicitCoeff = 1.0; // n+1 coefficient
-            nExplicit = 0;
-            break;
-        case ADAMS_BASHFORTH_2:
-            implicitCoeff = 0.0;  // n+1 coefficient
-            nExplicit = 2;
-            explicitCoeffs.push_back(1.5);  // n coefficient
-            explicitCoeffs.push_back(-0.5); // n-1 coefficient
-            break;
-        case CRANK_NICOLSON:
-            implicitCoeff = 0.5; // n+1 coefficient
-            nExplicit = 1;
-            explicitCoeffs.push_back(0.5); // n coefficient
-            break;
+        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
+                "The time integration scheme \"%s\" does not exist.\n",
+                scheme.c_str());
     }
+
 
     PetscFunctionReturn(0);
 }

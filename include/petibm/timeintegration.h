@@ -83,40 +83,44 @@ public:
 /** \brief 1st order explicit Euler. */
 class Euler_Explicit : public TimeIntegrationBase
 {
+public:
     Euler_Explicit(const std::string &name):
         TimeIntegrationBase(name, "1st order explicit Euler", 0.0, 1, {1.0}) {};
     
-    ~Euler_Explicit() = default;
+    virtual ~Euler_Explicit() = default;
 };
 
 
 /** \brief 1st order implicit Euler. */
 class Euler_Implicit : public TimeIntegrationBase
 {
+public:
     Euler_Implicit(const std::string &name):
         TimeIntegrationBase(name, "1st order implicit Euler", 1.0, 0, {}) {};
     
-    ~Euler_Implicit() = default;
+    virtual ~Euler_Implicit() = default;
 };
 
 
 /** \brief 2nd order Adams-Bashforth. */
 class Adams_Bashforth_2 : public TimeIntegrationBase
 {
+public:
     Adams_Bashforth_2(const std::string &name):
         TimeIntegrationBase(name, "2nd order Adams-Bashforth", 0.0, 2, {1.5, -0.5}) {};
     
-    ~Adams_Bashforth_2() = default;
+    virtual ~Adams_Bashforth_2() = default;
 };
 
 
 /** \brief 2nd order Crank-Nicolson. */
 class Crank_Nicolson : public TimeIntegrationBase
 {
+public:
     Crank_Nicolson(const std::string &name):
         TimeIntegrationBase(name, "2nd order Crank-Nicolson", 0.5, 1, {0.5}) {};
     
-    ~Crank_Nicolson() = default;
+    virtual ~Crank_Nicolson() = default;
 };
 
 } // end of namespace timeintegration

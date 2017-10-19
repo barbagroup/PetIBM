@@ -30,8 +30,8 @@ PetscErrorCode createSingleBoundary(
     switch (bcType)
     {
         case type::BCType::NOBC:
-            singleBd = 
-                std::make_shared<SingleBoundaryBase>(mesh, loc, field, value);
+            SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG, 
+                    "NOBC does not make sense here!");
             break;
         case type::BCType::PERIODIC:
             singleBd = 

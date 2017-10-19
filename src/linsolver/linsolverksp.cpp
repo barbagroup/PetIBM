@@ -18,7 +18,7 @@ LinSolverKSP::LinSolverKSP(const std::string &_name, const std::string &_config)
 
 
 // destructor
-LinSolverKSP::~LinSolverKSP() { KSPDestroy(&ksp); }
+LinSolverKSP::~LinSolverKSP() = default;
 
 
 // underlying initialization function
@@ -36,6 +36,8 @@ PetscErrorCode LinSolverKSP::init()
     ierr = KSPSetType(ksp, KSPCG); CHKERRQ(ierr);
     ierr = KSPSetReusePreconditioner(ksp, PETSC_TRUE); CHKERRQ(ierr);
     ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
+    
+    ierr = PetscObjectRegisterDestroy((PetscObject) ksp); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

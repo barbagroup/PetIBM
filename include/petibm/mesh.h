@@ -124,7 +124,14 @@ public:
 
     /** \brief default destructor. */
     virtual ~MeshBase() = default;
+    
 
+    /**
+     * \brief print iformation to standard output.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode printInfo() const;
 
 
     /**

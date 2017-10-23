@@ -76,6 +76,14 @@ public:
 
     /** \brief destructor. */
     virtual ~TimeIntegrationBase() = default;
+    
+    
+    /**
+     * \brief print information to standard output.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode printInfo() const;
 
 }; // TimeIntegrationBase
 

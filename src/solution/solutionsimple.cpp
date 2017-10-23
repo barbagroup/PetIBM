@@ -73,20 +73,23 @@ PetscErrorCode SolutionSimple::createInfoString()
 
     std::stringstream   ss;
 
-    ss << std::string(80, '=') << std::endl;
-    ss << "Solution Vecters:" << std::endl;
-    ss << std::string(80, '=') << std::endl;
+    if (mpiRank == 0)
+    {
+        ss << std::string(80, '=') << std::endl;
+        ss << "Solution Vecters:" << std::endl;
+        ss << std::string(80, '=') << std::endl;
 
-    ss << "\tDimension: " << dim << std::endl;
-    ss << std::endl;
+        ss << "\tDimension: " << dim << std::endl;
+        ss << std::endl;
 
-    ierr = VecGetSize(UGlobal, &size); CHKERRQ(ierr);
-    ss << "\tLength of Global Packed Velocity Vector: " << size << std::endl;
-    ss << std::endl;
+        ierr = VecGetSize(UGlobal, &size); CHKERRQ(ierr);
+        ss << "\tLength of Global Packed Velocity Vector: " << size << std::endl;
+        ss << std::endl;
 
-    ierr = VecGetSize(pGlobal, &size); CHKERRQ(ierr);
-    ss << "\tLength of Global Pressure Vector: " << size << std::endl;
-    ss << std::endl;
+        ierr = VecGetSize(pGlobal, &size); CHKERRQ(ierr);
+        ss << "\tLength of Global Pressure Vector: " << size << std::endl;
+        ss << std::endl;
+    }
 
     info = ss.str();
 

@@ -341,40 +341,43 @@ PetscErrorCode CartesianMesh::createInfoString()
     std::stringstream       ss;
 
 
-    ss << std::string(80, '=') << std::endl;
-    ss << "Cartesian Staggered Grid:" << std::endl;
-    ss << std::string(80, '=') << std::endl;
-
-
-    ss << "\tDimension: " << dim << std::endl;
-    ss << std::endl;
-
-    ss << "\tDomain Range: " 
-        << "[" << min[0] << ", " << max[0] << "]; "
-        << "[" << min[1] << ", " << max[1] << "]";
-    if (dim == 3) ss << "; [" << min[2] << ", " << max[2] << "]";
-    ss << std::endl;
-    ss << std::endl;
-
-    ss << "\tNumber of Cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "):\n";
-    ss << "\t\tPressure Grid: ";
-    ss << n[3][0];
-    for(int dir=1; dir<dim; ++dir) ss << " x " << n[3][dir];
-    ss << std::endl;
-
-    for(int comp=0; comp<dim; ++comp)
+    if (mpiRank == 0)
     {
-        ss << "\t\t" << fd2str[Field(comp)] 
-            << "-Velocity Grid: ";
-        ss << n[comp][0];
-        for(int dir=1; dir<dim; ++dir) ss << " x " << n[comp][dir];
-        ss << std::endl;
-    }
-    ss << std::endl;
+        ss << std::string(80, '=') << std::endl;
+        ss << "Cartesian Staggered Grid:" << std::endl;
+        ss << std::string(80, '=') << std::endl;
 
-    ss << "\tGrid Decomposition:" << std::endl;
-    ss << "\t\tMPI Processes: " 
-        << nProc[0] << " x " << nProc[1] << " x " << nProc[2] << std::endl;
+
+        ss << "\tDimension: " << dim << std::endl;
+        ss << std::endl;
+
+        ss << "\tDomain Range: " 
+            << "[" << min[0] << ", " << max[0] << "]; "
+            << "[" << min[1] << ", " << max[1] << "]";
+        if (dim == 3) ss << "; [" << min[2] << ", " << max[2] << "]";
+        ss << std::endl;
+        ss << std::endl;
+
+        ss << "\tNumber of Cells (Nx x Ny" << ((dim==2)? "" : " x Nz") << "):\n";
+        ss << "\t\tPressure Grid: ";
+        ss << n[3][0];
+        for(int dir=1; dir<dim; ++dir) ss << " x " << n[3][dir];
+        ss << std::endl;
+
+        for(int comp=0; comp<dim; ++comp)
+        {
+            ss << "\t\t" << fd2str[Field(comp)] 
+                << "-Velocity Grid: ";
+            ss << n[comp][0];
+            for(int dir=1; dir<dim; ++dir) ss << " x " << n[comp][dir];
+            ss << std::endl;
+        }
+        ss << std::endl;
+
+        ss << "\tGrid Decomposition:" << std::endl;
+        ss << "\t\tMPI Processes: " 
+            << nProc[0] << " x " << nProc[1] << " x " << nProc[2] << std::endl;
+    }
 
     ierr = addLocalInfoString(ss); CHKERRQ(ierr);
     ss << std::endl;
@@ -394,43 +397,21 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 
     std::string     pre("\t\t");
 
-    IntVec2D        start = IntVec2D(5, IntVec1D(mpiSize * 3)),
-                    end = IntVec2D(5, IntVec1D(mpiSize * 3));
+    ss << pre << "Rank " << mpiRank << ": " << std::endl;
+    ss << pre << "\tPressure Grid: ";
+    ss << "[" << bg[3][0] << ", " << ed[3][0] << "), ";
+    ss << "[" << bg[3][1] << ", " << ed[3][1] << "), ";
+    ss << "[" << bg[3][2] << ", " << ed[3][2] << ") ";
+    ss << std::endl;
 
-    for(int i=0; i<dim; ++i)
+    for(int comp=0; comp<dim; ++comp)
     {
-        ierr = MPI_Allgather(bg[i].data(), 3, MPIU_INT, 
-                start[i].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
-        ierr = MPI_Allgather(ed[i].data(), 3, MPIU_INT, 
-                end[i].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
-    }
-
-    ierr = MPI_Allgather(bg[3].data(), 3, MPIU_INT, 
-            start[3].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
-    ierr = MPI_Allgather(ed[3].data(), 3, MPIU_INT, 
-            end[3].data(), 3, MPIU_INT, comm); CHKERRQ(ierr);
-
-
-    for(PetscMPIInt i=0; i<mpiSize; ++i)
-    {
-        ss << pre << "Rank " << i << ": " << std::endl;
-        ss << pre << "\tPressure Grid: ";
-        ss << "[" << start[3][i*3] << ", " << end[3][i*3] << "), ";
-        ss << "[" << start[3][i*3+1] << ", " << end[3][i*3+1] << "), ";
-        ss << "[" << start[3][i*3+2] << ", " << end[3][i*3+2] << ") ";
+        ss << pre << "\t" << fd2str[Field(comp)] << "-Velocity Grid: ";
+        ss << "[" << bg[comp][0] << ", " << ed[comp][0] << "), ";
+        ss << "[" << bg[comp][1] << ", " << ed[comp][1] << "), ";
+        ss << "[" << bg[comp][2] << ", " << ed[comp][2] << ") ";
         ss << std::endl;
-
-        for(int comp=0; comp<dim; ++comp)
-        {
-            ss << pre << "\t" << fd2str[Field(comp)] << "-Velocity Grid: ";
-            ss << "[" << start[comp][i*3] << ", " << end[comp][i*3] << "), ";
-            ss << "[" << start[comp][i*3+1] << ", " << end[comp][i*3+1] << "), ";
-            ss << "[" << start[comp][i*3+2] << ", " << end[comp][i*3+2] << ") ";
-            ss << std::endl;
-        }
     }
-
-    ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

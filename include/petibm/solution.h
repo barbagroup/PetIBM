@@ -54,6 +54,13 @@ public:
 
     /** \brief default destructor. */
     virtual ~SolutionBase() = default;
+    
+    /**
+     * \brief print information to standard output.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode printInfo() const;
 
     /**
      * \brief apply ICs through the settings in a YAML node.

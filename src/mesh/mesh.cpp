@@ -5,14 +5,25 @@
  * Distributed under terms of the MIT license.
  */
 
-#include <petibm/mesh.h>
-#include <petibm/cartesianmesh.h>
+# include <petibm/mesh.h>
+# include <petibm/cartesianmesh.h>
+# include <petibm/io.h>
 
 
 namespace petibm
 {
 namespace mesh
 {
+    PetscErrorCode MeshBase::printInfo() const
+    {
+        PetscFunctionBeginUser;
+        
+        PetscErrorCode ierr;
+        ierr = io::print(info); CHKERRQ(ierr);
+        
+        PetscFunctionReturn(0);
+    }
+    
     
     // factory function to create Mesh.
     PetscErrorCode createMesh(

@@ -15,6 +15,29 @@ namespace petibm
 {
 namespace timeintegration
 {
+PetscErrorCode TimeIntegrationBase::printInfo() const
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode ierr;
+    
+    std::string info;
+    
+    info += (std::string(80, '=') + "\n");
+    info += ("Time Integration [" + name + "]\n");
+    info += (std::string(80, '=') + "\n");
+    
+    info += ("\tScheme: " + scheme + "\n\n");
+    info += ("\tCoefficient of implicit term: " + 
+            std::to_string(implicitCoeff) + "\n\n");
+    info += "\tCoefficients of Explicit terms: [";
+    for(auto it: explicitCoeffs) info += (std::to_string(it) + ", ");
+    info += "]\n\n";
+    
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s", info.c_str()); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
 
 PetscErrorCode createTimeIntegration(const std::string &name,
         const YAML::Node &node, type::TimeIntegration &integration)

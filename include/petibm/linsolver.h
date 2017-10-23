@@ -14,6 +14,9 @@
 # include <petscvec.h>
 # include <petscmat.h>
 
+// YAML CPP
+# include <yaml-cpp/yaml.h>
+
 // PetIBM
 # include <petibm/type.h>
 
@@ -44,6 +47,13 @@ public:
 
     /** \brief virtual destruction function. */
     virtual ~LinSolverBase() = default;
+    
+    /**
+     * \brief print information to standard output.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode printInfo() const;
 
     /**
      * \brief the function to set the coefficient matrix A in Ax=b.
@@ -85,6 +95,9 @@ protected:
 
     /** \brief the full path to the configuration file for this solver. */
     std::string     config;
+    
+    /** \brief type of this linear solver. */
+    std::string     type;
 
     /**
      * \brief the private initialization function.
@@ -121,9 +134,8 @@ namespace linsolver
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createLinSolver(
-            const std::string &solverName, const std::string &configFile,
-            const type::ExecuteType &type, type::LinSolver &solver);
+    PetscErrorCode createLinSolver(const std::string &solverName,
+            const YAML::Node &node, type::LinSolver &solver);
 }
 
 } // end of namespace petibm

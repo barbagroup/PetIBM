@@ -27,6 +27,8 @@ PetscErrorCode LinSolverKSP::init()
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
+    
+    type = "PETSc KSP";
 
     ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, nullptr, 
             config.c_str(), PETSC_FALSE); CHKERRQ(ierr);

@@ -27,6 +27,8 @@ PetscErrorCode LinSolverAmgX::init()
     PetscFunctionBeginUser;
 
     PetscErrorCode      ierr;
+    
+    type = "NVIDIA AmgX";
 
     ierr = amgx.initialize(PETSC_COMM_WORLD, "dDDI", config); CHKERRQ(ierr);
 

@@ -89,18 +89,6 @@ namespace type
     extern std::map<StaggeredMode, std::string> sm2str;
 
 
-    /** \brief Data type describing the executing space of linear solvers. */
-    enum ExecuteType
-    {
-        CPU = 0, ///< GPU-based solver. Currently only AmgX solvers exist.
-        GPU = 1  ///< CPU-based solver, i.e. PETSc solvers
-    };
-    /** \brief mapping between `std::string` and `ExecuteType` type */
-    extern std::map<std::string, ExecuteType> str2et;
-    /** \brief mapping between `ExecuteType` type and `std::string` */
-    extern std::map<ExecuteType, std::string> et2str;
-
-
     /** \brief output format */
     enum OutputType {Binary = 0, VTK = 1, HDF5 = 2};
     /** \brief mapping between `std::string` and `OutputType` type */
@@ -153,14 +141,6 @@ namespace type
         OutputType      format = OutputType::Binary;
         PetscBool       outputFlux = PETSC_TRUE;
         PetscBool       outputVelocity = PETSC_FALSE;
-    };
-
-
-    /** \brief a struct holding information of linear solvers */
-    struct LinSolverInfo
-    {
-        ExecuteType         type = ExecuteType::CPU;
-        std::string         config = "./solversPetscOptions.info";
     };
 
 

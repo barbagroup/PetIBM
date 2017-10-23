@@ -115,22 +115,6 @@ using namespace petibm::type;
         return true;
     }
 
-    // for ExecutiveType
-    Node convert<ExecuteType>::encode(const ExecuteType &et)
-    {
-        Node node;
-        node = et2str[et];
-        return node;
-    }
-
-    bool convert<ExecuteType>::decode(const Node &node, ExecuteType &et)
-    {
-        if (! node.IsDefined()) return false;
-        
-        et = str2et[node.as<std::string>()];
-        return true;
-    }
-
     // for Perturbation
     Node convert<Perturbation>::encode(const Perturbation &pertb)
     {
@@ -198,22 +182,6 @@ using namespace petibm::type;
         		node["outputFormat"].as<OutputType>(OutputType::Binary);
         output.outputFlux = node["outputFlux"].as<PetscBool>(PETSC_TRUE);
         output.outputVelocity = node["outputVelocity"].as<PetscBool>(PETSC_FALSE);
-        return true;
-    }
-
-    // for LinSolverInfo
-    Node convert<LinSolverInfo>::encode(const LinSolverInfo &solver)
-    {
-        YAML::Node  node(NodeType::Map);
-        node["type"] = solver.type;
-        node["config"] = solver.config;
-        return node;
-    }
-
-    bool convert<LinSolverInfo>::decode(const Node &node, LinSolverInfo &solver)
-    {
-        solver.type = node["type"].as<ExecuteType>(ExecuteType::CPU);
-        solver.config = node["config"].as<std::string>("");
         return true;
     }
 

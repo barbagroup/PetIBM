@@ -74,14 +74,6 @@ using namespace petibm::type;
         static bool decode(const Node &node, StaggeredMode &sm);
     };
 
-    /** \brief converter for types::ExecuteType` */
-    template <>
-    struct convert<ExecuteType>
-    {
-        static Node encode(const ExecuteType &et);
-        static bool decode(const Node &node, ExecuteType &et);
-    };
-
     /** \brief converter for `types::Perturbation` */
     template<>
     struct convert<Perturbation>
@@ -112,14 +104,6 @@ using namespace petibm::type;
     {
         static Node encode(const OutputInfo &output);
         static bool decode(const Node &node, OutputInfo &output);
-    };
-
-    /** \brief converter for `types::LinSolverInfo` */
-    template<>
-    struct convert<LinSolverInfo>
-    {
-        static Node encode(const LinSolverInfo &solver);
-        static bool decode(const Node &node, LinSolverInfo &solver);
     };
 
     /** \brief converter for `types::SteppingInfo` */

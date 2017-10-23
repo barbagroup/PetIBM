@@ -88,12 +88,6 @@ namespace type
         {STAGGERED_MODE_Y, "STAGGERED_MODE_Y"}, {STAGGERED_MODE_Z, "STAGGERED_MODE_Z"}};
 
 
-    /** \copydoc types::str2et */
-    std::map<std::string, ExecuteType> str2et {{"CPU", CPU}, {"GPU", GPU}};
-    /** \copydoc types::et2str */
-    std::map<ExecuteType, std::string> et2str {{CPU, "CPU"}, {GPU, "GPU"}};
-
-
     /** \copydoc types::str2out */
     std::map<std::string, OutputType> str2out {
         {"binary", Binary}, {"vtk", VTK}, {"hdf5", HDF5},

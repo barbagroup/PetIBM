@@ -18,13 +18,12 @@
 // PETSc
 # include <petscsys.h>
 # include <petscdm.h>
-# include <petscis.h>
 
 // YAML
 # include <yaml-cpp/yaml.h>
 
 // PetIBM
-# include "singlebody.h"
+# include <petibm/singlebody.h>
 
 
 namespace petibm
@@ -32,9 +31,8 @@ namespace petibm
 namespace body
 {
 
-// TODO: should we really need ISLocalToGlobalMapping?
 /** \brief class for a pack of multiple bodies. */
-class BodyPack
+class BodyPackBase
 {
 public:
 
@@ -51,42 +49,30 @@ public:
     PetscInt                    nLclPts;
 
     /** \brief a vector of SingleBody instances. */
-    std::vector<SingleBody>     bodies;
+    std::vector<type::SingleBody>     bodies;
 
     /** \brief a DMComposite of DMs of all `SingleBody`s. */
     DM                          dmPack;
-
-    /** \brief local to global (in DMComposite) mappings for bodies. */
-    std::vector<ISLocalToGlobalMapping>     mapping;
 
     /** \brief a string for printing information. */
     std::string                 info;
 
 
     /** \brief default constructor. */
-    BodyPack();
+    BodyPackBase() = default;
 
 
     /**
-     * \brief constructor of using CartesianMesh and a YAML node.
+     * \brief constructor of using a type::Mesh and a YAML node.
      *
-     * \param mesh an instance of CartesianMesh for background mesh.
-     * \param node a YAML node specifying information of all bodies.
+     * \param mesh [in] an instance of type::Mesh for background mesh.
+     * \param node [in] a YAML node specifying information of all bodies.
      */
-    BodyPack(const CartesianMesh &mesh, const YAML::Node &node);
+    BodyPackBase(const type::Mesh &mesh, const YAML::Node &node);
 
 
     /** \brief default destructor. */
-    ~BodyPack();
-
-
-    /**
-     * \brief initialization using CartesianMesh and a YAML node.
-     *
-     * \param mesh an instance of CartesianMesh for background mesh.
-     * \param node a YAML node specifying information of all bodies.
-     */
-    PetscErrorCode init(const CartesianMesh &mesh, const YAML::Node &node);
+    ~BodyPackBase() = default;
 
 
     /**
@@ -100,9 +86,9 @@ public:
     /**
      * \brief find which process owns the target Lagrangian point of target body.
      *
-     * \param bIdx index of target body.
-     * \param ptIdx index of target point.
-     * \param proc returned process index.
+     * \param bIdx [in] index of target body.
+     * \param ptIdx [in] index of target point.
+     * \param proc [in] returned process index.
      *
      * \return PetscErrorCode.
      */
@@ -113,10 +99,10 @@ public:
     /**
      * \brief find un-packed global index of a DoF of Lagrangian point of a body.
      *
-     * \param bIdx index of target body.
-     * \param ptIdx index of target point.
-     * \param dof index of target DoF.
-     * \param idx returned un-packed global index.
+     * \param bIdx [in] index of target body.
+     * \param ptIdx [in] index of target point.
+     * \param dof [in] index of target DoF.
+     * \param idx [in] returned un-packed global index.
      *
      * \return PetscErrorCode.
      */
@@ -127,9 +113,9 @@ public:
     /**
      * \brief find un-packed global index of a DoF of Lagrangian point of a body.
      *
-     * \param bIdx index of target body.
-     * \param s MatStencil of target point.
-     * \param idx returned un-packed global index.
+     * \param bIdx [in] index of target body.
+     * \param s [in] MatStencil of target point.
+     * \param idx [in] returned un-packed global index.
      *
      * \return PetscErrorCode.
      */
@@ -141,10 +127,10 @@ public:
     /**
      * \brief find packed global index of a DoF of Lagrangian point of a body.
      *
-     * \param bIdx index of target body.
-     * \param ptIdx index of target point.
-     * \param dof index of target DoF.
-     * \param idx returned packed global index.
+     * \param bIdx [in] index of target body.
+     * \param ptIdx [in] index of target point.
+     * \param dof [in] index of target DoF.
+     * \param idx [in] returned packed global index.
      *
      * \return PetscErrorCode.
      */
@@ -156,9 +142,9 @@ public:
     /**
      * \brief find packed global index of a DoF of Lagrangian point of a body.
      *
-     * \param bIdx index of target body.
-     * \param s MatStencil of target point.
-     * \param idx returned packed global index.
+     * \param bIdx [in] index of target body.
+     * \param s [in] MatStencil of target point.
+     * \param idx [in] returned packed global index.
      *
      * \return PetscErrorCode.
      */
@@ -169,56 +155,59 @@ public:
     /**
      * \brief calculate the averaged force of each body.
      *
-     * \param f packed force Vec of Lagrangian points.
-     * \param fAvg return averaged force for each body.
+     * \param f [in] packed force Vec of Lagrangian points.
+     * \param fAvg [in] return averaged force for each body.
      *
-     * Note: fAvg doesn't have to have correct size. This function will resizing
+     * Note: fAvg doesn't have to have correct size. This function will resize
      * the fAvg.
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode calculateAvgForces(const Vec &f, types::RealVec2D &fAvg);
-
-
+    PetscErrorCode calculateAvgForces(const Vec &f, type::RealVec2D &fAvg);
+    
+    
     /**
-     * \brief calculate averaged forces for each body and directly write to a file.
+     * \brief update the indices of backgrounf Pressure cells for all body.
      *
-     * \param t current simulation time.
-     * \param f packed Lagrangian force Vec.
-     * \param dir directory in which the file will be.
-     * \param file the file name without extension.
-     *
-     * Note: the forces will be appended to the file if the file already exists.
-     *
-     * \return PetscErrorCode. 
+     * \return PetscErrorCode.
      */
-    PetscErrorCode writeAvgForce(const PetscReal &dt, const Vec &f, 
-            const std::string &dir, const std::string &file);
+    PetscErrorCode updateMeshIdx();
+    
 
 protected:
 
-    /** \brief reference to backgrounf CartesianMesh. */
-    std::shared_ptr<const CartesianMesh>    mesh;
+
+    /**
+     * \brief constructor of using a type::Mesh and a YAML node.
+     *
+     * \param mesh [in] an instance of type::Mesh for background mesh.
+     * \param node [in] a YAML node specifying information of all bodies.
+     */
+    PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
+    
+
+    /** \brief reference to backgrounf mesh. */
+    type::Mesh          mesh;
 
 
     /** \brief reference to the MPI communicator. */
-    std::shared_ptr<const MPI_Comm>         comm;
+    MPI_Comm            comm;
 
 
     /** \brief the total number of processes. */
-    PetscMPIInt                             mpiSize;
+    PetscMPIInt         mpiSize;
 
 
     /** \brief the rank of this process. */
-    PetscMPIInt                             mpiRank;
+    PetscMPIInt         mpiRank;
 
 
     /** \brief number of local packed variables of all processes. */
-    types::IntVec1D                         nLclAllProcs;
+    type::IntVec1D      nLclAllProcs;
 
 
     /** \brief offsets of packed variables of all processes. */
-    types::IntVec1D                         offsetsAllProcs;
+    type::IntVec1D      offsetsAllProcs;
 
 
     /**
@@ -230,14 +219,6 @@ protected:
 
 
     /**
-     * \brief create ISLocalToGlobals for bodies.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode createMappings();
-
-
-    /**
      * \brief create a string for printing information.
      *
      * \return PetscErrorCode.
@@ -245,5 +226,28 @@ protected:
     PetscErrorCode createInfoString();
 };
 
+} // end of namespace body
+
+
+namespace type
+{
+    /** \brief definition of type::BodyPack. */
+    typedef std::shared_ptr<body::BodyPackBase> BodyPack;
+} // end of namespace type
+
+
+namespace body
+{
+    /**
+     * \brief factory for creating type::BodyPack
+     *
+     * \param mesh [in] background mesh.
+     * \param node [in] YMAL::Node.
+     * \param bodies [in] output type::BodyPack instance.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode createBodyPack(const type::Mesh &mesh, 
+            const YAML::Node &node, type::BodyPack &bodies);
 } // end of namespace body
 } // end of namespace petibm

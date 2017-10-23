@@ -31,6 +31,8 @@ namespace body
 /** \brief the abstract class for a single body. */
 class SingleBodyBase
 {
+    friend class BodyPackBase;
+    
 public:
 
     /** \brief dimension. */

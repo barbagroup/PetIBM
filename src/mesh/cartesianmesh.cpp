@@ -583,6 +583,22 @@ PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f,
 {
     PetscFunctionBeginUser;
 
+# ifndef NDEBUG
+    if ((i < -1) || (i > n[f][0]) ||
+        (j < -1) || (j > n[f][1]) ||
+        (k < -1) || (k > n[f][2]))
+        SETERRQ4(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
+           "Stencil (%d, %d, %d) of field %d is out of domain.\n",
+           i, j, k, f);
+# endif
+    
+    if ((i == -1) || (i == n[f][0]) ||
+        (j == -1) || (j == n[f][1]) || (k == -1) || (k == n[f][2]))
+    {
+        idx = -1;
+        PetscFunctionReturn(0);
+    }
+
     // some overhead due to implicit if-condition, but this is also how PETSc
     // does in their source code for similar functions
     idx = i + j * n[f][0] + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
@@ -665,7 +681,9 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
     // get the global index of the target in sub-DM (un-packed DM)
     ierr = getGlobalIndex(f, s, unPackedIdx); CHKERRQ(ierr);
     
-    if (f == 3) // pressure isn't in packed DM, so packed-ID = global-ID.
+    // 1. pressure isn't in packed DM, so packed-ID = global-ID.
+    // 2. if unPackedIdx is -1, then packed ID is -1, too.
+    if ((f == 3) || (unPackedIdx == -1))
     {
         idx = unPackedIdx;
         PetscFunctionReturn(0);

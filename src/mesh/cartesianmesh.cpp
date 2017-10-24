@@ -74,7 +74,7 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
     bg = IntVec2D(5, IntVec1D(3, 0));
     ed = IntVec2D(5, IntVec1D(3, 1));
     m = IntVec2D(5, IntVec1D(3, 0));
-    ao = std::vector<AO>(3);
+    ao = std::vector<AO>(4);
     UNLocalAllProcs = IntVec2D(3, IntVec1D(mpiSize, 0));
     UPackNLocalAllProcs = IntVec1D(mpiSize, 0);
     offsetsAllProcs = IntVec2D(3, IntVec1D(mpiSize, 0));
@@ -468,8 +468,6 @@ PetscErrorCode CartesianMesh::initDMDA(const BoolVec2D &periodic)
     // total number of local pressure points
     pNLocal = m[3][0] * m[3][1] * m[3][2];
 
-    ierr = createMapping(); CHKERRQ(ierr);
-
     PetscFunctionReturn(0);
 }
 
@@ -531,6 +529,8 @@ PetscErrorCode CartesianMesh::createPressureDMDA(const BoolVec2D &periodic)
     PetscErrorCode  ierr;
 
     ierr = createSingleDMDA(3, periodic); CHKERRQ(ierr);
+    
+    ierr = DMDAGetAO(da[3], &ao[3]); CHKERRQ(ierr);
 
     ierr = DMDAGetInfo(da[3], nullptr, nullptr, nullptr, nullptr,
            &nProc[0], &nProc[1], &nProc[2], 
@@ -557,56 +557,6 @@ PetscErrorCode CartesianMesh::createVelocityPack(const BoolVec2D &periodic)
         ierr = DMDAGetAO(da[i], &ao[i]); CHKERRQ(ierr);
         ierr = DMCompositeAddDM(UPack, da[i]); CHKERRQ(ierr);
     }
-
-    PetscFunctionReturn(0);
-}
-
-
-// create mappings
-PetscErrorCode CartesianMesh::createMapping()
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-
-    ISLocalToGlobalMapping      *mapping;
-
-    ierr = DMCompositeGetISLocalToGlobalMappings(UPack, &mapping); CHKERRQ(ierr);
-
-    // not a hard copy, so do not free the memory space 
-    // before we destroy this CartesianMesh instance ...
-    UMapping.assign(mapping, mapping+dim);
-
-
-    // there is a bug (or they do that with a purpose I don't know) in the 
-    // mapping returned by DMCompositeLocalToGlobalMappings. That is, the 
-    // global indices of ghost points are not -1. Their values are the offset
-    // instead. So we have to change these values to -1 manually.
-    for(PetscInt c=1; c<dim; ++c)
-    {
-        const PetscInt      *cArry; // PETSc only return const array ...
-        PetscInt            *arry, n, smallest;
-
-        ierr = ISLocalToGlobalMappingGetSize(UMapping[c], &n); CHKERRQ(ierr);
-        ierr = ISLocalToGlobalMappingGetIndices(UMapping[c], &cArry); CHKERRQ(ierr);
-
-        // cast to normal ptr that can be modified
-        arry = const_cast<PetscInt*>(cArry);
-
-        // Currently, PETSc seems to use the same ghost index on all
-        // processes, so we don't have to communicate with other processes
-        // to find out the real minimum across them. But we should
-        // keep an eye on it to avoid PETSc changes that in the future.
-        smallest = *std::min_element(arry, arry+n);
-
-        // if an entry has the min value, it should be a ghost point
-        for(PetscInt i=0; i<n; ++i) if (arry[i] == smallest) arry[i] = -1;
-
-        ierr = ISLocalToGlobalMappingRestoreIndices(UMapping[c], &cArry); CHKERRQ(ierr);
-    }
-
-    // get mapping for pressure
-    ierr = DMGetLocalToGlobalMapping(da[3], &pMapping); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
@@ -714,6 +664,12 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
 
     // get the global index of the target in sub-DM (un-packed DM)
     ierr = getGlobalIndex(f, s, unPackedIdx); CHKERRQ(ierr);
+    
+    if (f == 3) // pressure isn't in packed DM, so packed-ID = global-ID.
+    {
+        idx = unPackedIdx;
+        PetscFunctionReturn(0);
+    }
 
     // find which process owns the target
     p = std::upper_bound(offsetsAllProcs[f].begin(), offsetsAllProcs[f].end(), 

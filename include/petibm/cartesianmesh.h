@@ -32,8 +32,6 @@ namespace petibm
 namespace mesh
 {
 
-// TODO: if we can get the column index of ANY velocity point, should we still
-//       use ISLocalToGlobalMapping for creating operators?
 /** \brief class of composite Cartesian meshes of different field. */
 class CartesianMesh : public MeshBase
 {
@@ -194,14 +192,6 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createVelocityPack(const type::BoolVec2D &periodic);
-
-
-    /**
-     * \brief create ISLocalToGlobalMapping for fileds.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode createMapping();
 
 }; // CartesianMesh
 

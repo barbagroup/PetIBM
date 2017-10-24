@@ -89,13 +89,6 @@ public:
     /** \brief DMComposte of velocity DMs. */
     DM                      UPack;
 
-    /** \brief mapping between local unpacked and global packed indices of veloicity.*/
-    std::vector<ISLocalToGlobalMapping>     UMapping;
-
-    /** \brief mapping between local and global indices of pressure.*/
-    ISLocalToGlobalMapping                  pMapping;
-
-
 
     // MPI stuffs
     /** \brief communicator. */
@@ -135,11 +128,11 @@ public:
 
 
     /**
-     * \brief get the local index of a velocity point by providing MatStencil.
+     * \brief get the local index of a point by providing MatStencil.
      *
      * Note that the stencil must belong to this process.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param s MatStencil of target velocity point.
      * \param idx returned local index.
      *
@@ -150,12 +143,12 @@ public:
 
 
     /**
-     * \brief get the local index of a velocity point by i, j, k.
+     * \brief get the local index of a point by i, j, k.
      *
      * Note that the stencil must belong to this process. For 2D mesh, the
      * value of k-index will be ignored.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param i i-index.
      * \param j j-index.
      * \param k k-index.
@@ -169,9 +162,9 @@ public:
 
 
     /**
-     * \brief get the natural index of a velocity point by providing MatStencil.
+     * \brief get the natural index of a point by providing MatStencil.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param s MatStencil of target velocity point.
      * \param idx returned natural index.
      *
@@ -182,11 +175,11 @@ public:
 
 
     /**
-     * \brief get the natural index of a velocity point by i, j, k.
+     * \brief get the natural index of a point by i, j, k.
      *
      * For 2D mesh, the value of k-index will be ignored.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param i i-index.
      * \param j j-index.
      * \param k k-index.
@@ -200,10 +193,10 @@ public:
 
 
     /**
-     * \brief get the global index of a velocity point in un-packed DM by 
+     * \brief get the global index of a point in un-packed DM by 
      *        providing MatStencil.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param s MatStencil of target velocity point.
      * \param idx returned global index in un-packed DM.
      *
@@ -214,12 +207,12 @@ public:
 
 
     /**
-     * \brief get the global index of a velocity point in un-packed DM by 
+     * \brief get the global index of a point in un-packed DM by 
      *        i, j, k.
      *
      * For 2D mesh, the value of k-index will be ignored.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param i i-index.
      * \param j j-index.
      * \param k k-index.
@@ -233,10 +226,11 @@ public:
 
 
     /**
-     * \brief get the global index of a velocity point in packed DM by 
-     *        providing MatStencil.
+     * \brief get the global index of a point in packed DM by providing MatStencil.
+     * 
+     * For pressure field (f=3), packed ID will be equal to unpacked ID.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param s MatStencil of target velocity point.
      * \param idx returned global index in packed DM.
      *
@@ -247,12 +241,13 @@ public:
 
 
     /**
-     * \brief get the global index of a velocity point in packed DM by 
+     * \brief get the global index of a point in packed DM by 
      *        i, j, k.
      *
-     * For 2D mesh, the value of k-index will be ignored.
+     * For 2D mesh, the value of k-index will be ignored. For pressure field 
+     * (f=3), packed ID will be equal to unpacked ID.
      *
-     * \param f target field (u=0, v=1, w=2).
+     * \param f target field (u=0, v=1, w=2, p=3).
      * \param i i-index.
      * \param j j-index.
      * \param k k-index.

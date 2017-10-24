@@ -70,23 +70,38 @@ else
     rm -f /tmp/$TARBALL
     echo "building yaml-cpp-0.5.1... "
     cd $YAMLCPP_DIR/build
-    for VAL in "ON" "OFF"
-    do
+    if test "x$enable_shared" = "xyes"; then
       if test ! "x$BOOST_DIR" = "x"; then
         cmake $YAMLCPP_DIR \
           -DCMAKE_INSTALL_PREFIX=$prefix \
           -DBoost_INCLUDE_DIR=$BOOST_DIR \
-          -DBUILD_SHARED_LIBS=$VAL \
+          -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_MACOSX_RPATH=1
       else
         cmake $YAMLCPP_DIR \
           -DCMAKE_INSTALL_PREFIX=$prefix \
-          -DBUILD_SHARED_LIBS=$VAL \
+          -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_MACOSX_RPATH=1
       fi
       make all -j4
       make install
-    done
+    fi
+    if test "x$enable_static" = "xyes"; then
+      if test ! "x$BOOST_DIR" = "x"; then
+        cmake $YAMLCPP_DIR \
+          -DCMAKE_INSTALL_PREFIX=$prefix \
+          -DBoost_INCLUDE_DIR=$BOOST_DIR \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_MACOSX_RPATH=1
+      else
+        cmake $YAMLCPP_DIR \
+          -DCMAKE_INSTALL_PREFIX=$prefix \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_MACOSX_RPATH=1
+      fi
+      make all -j4
+      make install
+    fi
     echo "done! "
     cd $BUILDDIR
     PACKAGE_RESTORE_ENVIRONMENT

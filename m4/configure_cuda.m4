@@ -35,7 +35,7 @@ if test -d "$CUDA_DIR/lib"; then
 elif test -d "$CUDA_DIR/lib64"; then
   CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
 fi
-CUDA_LIBS="-lcudart -lcublas -lcusparse"
+CUDA_LIBS="-lcudart -lcublas -lcusparse -lcusolver"
 CPPFLAGS_PREPEND($CUDA_CPPFLAGS)
 LDFLAGS_PREPEND($CUDA_LDFLAGS)
 

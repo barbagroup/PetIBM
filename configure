@@ -18455,23 +18455,38 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
     rm -f /tmp/$TARBALL
     echo "building yaml-cpp-0.5.1... "
     cd $YAMLCPP_DIR/build
-    for VAL in "ON" "OFF"
-    do
+    if test "x$enable_shared" = "xyes"; then
       if test ! "x$BOOST_DIR" = "x"; then
         cmake $YAMLCPP_DIR \
           -DCMAKE_INSTALL_PREFIX=$prefix \
           -DBoost_INCLUDE_DIR=$BOOST_DIR \
-          -DBUILD_SHARED_LIBS=$VAL \
+          -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_MACOSX_RPATH=1
       else
         cmake $YAMLCPP_DIR \
           -DCMAKE_INSTALL_PREFIX=$prefix \
-          -DBUILD_SHARED_LIBS=$VAL \
+          -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_MACOSX_RPATH=1
       fi
       make all -j4
       make install
-    done
+    fi
+    if test "x$enable_static" = "xyes"; then
+      if test ! "x$BOOST_DIR" = "x"; then
+        cmake $YAMLCPP_DIR \
+          -DCMAKE_INSTALL_PREFIX=$prefix \
+          -DBoost_INCLUDE_DIR=$BOOST_DIR \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_MACOSX_RPATH=1
+      else
+        cmake $YAMLCPP_DIR \
+          -DCMAKE_INSTALL_PREFIX=$prefix \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_MACOSX_RPATH=1
+      fi
+      make all -j4
+      make install
+    fi
     echo "done! "
     cd $BUILDDIR
 
@@ -18655,14 +18670,20 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
     rm -f /tmp/$TARBALL
     echo "building gtest-1.7.0... "
     cd $GTEST_DIR/build
-    for VAL in "ON" "OFF"
-    do
+    if test "x$enable_shared" = "xyes"; then
       cmake $GTEST_DIR \
         -DCMAKE_INSTALL_PREFIX=$prefix \
-        -DBUILD_SHARED_LIBS=$VAL \
+        -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_MACOSX_RPATH=1
       make all
-    done
+    fi
+    if test "x$enable_static" = "xyes"; then
+      cmake $GTEST_DIR \
+        -DCMAKE_INSTALL_PREFIX=$prefix \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DCMAKE_MACOSX_RPATH=1
+      make all
+    fi
     mkdir -p $prefix/include
     cp -r $GTEST_DIR/include/gtest $prefix/include/.
     mkdir -p $prefix/lib
@@ -18963,7 +18984,7 @@ if test -d "$CUDA_DIR/lib"; then
 elif test -d "$CUDA_DIR/lib64"; then
   CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
 fi
-CUDA_LIBS="-lcudart -lcublas -lcusparse"
+CUDA_LIBS="-lcudart -lcublas -lcusparse -lcusolver"
 CPPFLAGS="$CUDA_CPPFLAGS $CPPFLAGS"
 
 LDFLAGS="$CUDA_LDFLAGS $LDFLAGS"
@@ -19237,7 +19258,6 @@ if test -d "$AMGX_DIR/lib"; then
 elif test -d "$AMGX_DIR/lib64"; then
   AMGX_LDFLAGS="-L$AMGX_DIR/lib64 -Wl,-rpath,$AMGX_DIR/lib64 $CUDA_LDFLAGS"
 fi
-AMGX_LIBS="-lamgxsh $CUDA_LIBS"
 CPPFLAGS="$AMGX_CPPFLAGS $CPPFLAGS"
 
 LDFLAGS="$AMGX_LDFLAGS $LDFLAGS"
@@ -19252,8 +19272,11 @@ else
 fi
 
 
-# check for presence of library amgxh
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgxsh" >&5
+
+if test "x$enable_shared" = "xyes"; then
+  AMGX_LIBS="-lamgxsh $CUDA_LIBS"
+  # check for presence of library
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgxsh" >&5
 $as_echo_n "checking for AMGX_initialize in -lamgxsh... " >&6; }
 if ${ac_cv_lib_amgxsh_AMGX_initialize+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19300,6 +19323,57 @@ else
   as_fn_error $? "could not use library amgxsh; check config.log" "$LINENO" 5
 fi
 
+else
+  AMGX_LIBS="-lamgx $CUDA_LIBS"
+  # check for presence of library
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgx" >&5
+$as_echo_n "checking for AMGX_initialize in -lamgx... " >&6; }
+if ${ac_cv_lib_amgx_AMGX_initialize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lamgx $CUDA_LIBS -lcusolver -fopenmp $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char AMGX_initialize ();
+int
+main ()
+{
+return AMGX_initialize ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_amgx_AMGX_initialize=yes
+else
+  ac_cv_lib_amgx_AMGX_initialize=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_amgx_AMGX_initialize" >&5
+$as_echo "$ac_cv_lib_amgx_AMGX_initialize" >&6; }
+if test "x$ac_cv_lib_amgx_AMGX_initialize" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBAMGX 1
+_ACEOF
+
+  LIBS="-lamgx $LIBS"
+
+else
+  as_fn_error $? "could not use library amgx; check config.log" "$LINENO" 5
+fi
+
+fi
 
 
 CFLAGS=$PACKAGE_save_CFLAGS
@@ -19451,19 +19525,30 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
     rm -f /tmp/$TARBALL
     echo "building AmgXWrapper-1.2... "
     cd $AMGXWRAPPER_DIR/build
-    for VAL in "ON" "OFF"
-    do
+    if test "x$enable_shared" = "xyes"; then
       cmake $AMGXWRAPPER_DIR \
         -DAMGX_DIR=$AMGX_DIR \
         -DCUDA_DIR=$CUDA_DIR \
         -DPETSC_DIR=$PETSC_DIR \
         -DPETSC_ARCH=$PETSC_ARCH \
-        -DBUILD_SHARED_LIBS=$VAL \
+        -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_INSTALL_PREFIX=$prefix \
         -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
       make all
       make install
-    done
+    fi
+    if test "x$enable_static" = "xyes"; then
+      cmake $AMGXWRAPPER_DIR \
+        -DAMGX_DIR=$AMGX_DIR \
+        -DCUDA_DIR=$CUDA_DIR \
+        -DPETSC_DIR=$PETSC_DIR \
+        -DPETSC_ARCH=$PETSC_ARCH \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DCMAKE_INSTALL_PREFIX=$prefix \
+        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
+      make all
+      make install
+    fi
     echo "done! "
     cd $BUILDDIR
     AMGXWRAPPER_CPPFLAGS=$AMGX_CPPFLAGS
@@ -19500,7 +19585,7 @@ fi
 
 
 
-AMGXWRAPPER_LIBS="-lAmgXWrapper"
+AMGXWRAPPER_LIBS="-lAmgXWrapper $AMGX_LIBS"
 AMGXWRAPPER_LIBS=$AMGXWRAPPER_LIBS
 
 

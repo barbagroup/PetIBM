@@ -68,19 +68,30 @@ else
     rm -f /tmp/$TARBALL
     echo "building AmgXWrapper-1.2... "
     cd $AMGXWRAPPER_DIR/build
-    for VAL in "ON" "OFF"
-    do
+    if test "x$enable_shared" = "xyes"; then
       cmake $AMGXWRAPPER_DIR \
         -DAMGX_DIR=$AMGX_DIR \
         -DCUDA_DIR=$CUDA_DIR \
         -DPETSC_DIR=$PETSC_DIR \
         -DPETSC_ARCH=$PETSC_ARCH \
-        -DBUILD_SHARED_LIBS=$VAL \
+        -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_INSTALL_PREFIX=$prefix \
         -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
       make all
       make install
-    done
+    fi
+    if test "x$enable_static" = "xyes"; then
+      cmake $AMGXWRAPPER_DIR \
+        -DAMGX_DIR=$AMGX_DIR \
+        -DCUDA_DIR=$CUDA_DIR \
+        -DPETSC_DIR=$PETSC_DIR \
+        -DPETSC_ARCH=$PETSC_ARCH \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DCMAKE_INSTALL_PREFIX=$prefix \
+        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
+      make all
+      make install
+    fi
     echo "done! "
     cd $BUILDDIR
     AC_SUBST(AMGXWRAPPER_CPPFLAGS, $AMGX_CPPFLAGS)
@@ -99,7 +110,7 @@ Please use '--with-amgxwrapper-dir=PATH' to provide the directory of the package
 or '--enable-amgxwrapper' to download and install AmgXWrapper-1.1 (AmgX-2.0).
 ])])
 
-AMGXWRAPPER_LIBS="-lAmgXWrapper"
+AMGXWRAPPER_LIBS="-lAmgXWrapper $AMGX_LIBS"
 AC_SUBST(AMGXWRAPPER_LIBS, $AMGXWRAPPER_LIBS)
 
 PACKAGE_RESTORE_ENVIRONMENT

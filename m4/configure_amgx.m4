@@ -44,17 +44,27 @@ if test -d "$AMGX_DIR/lib"; then
 elif test -d "$AMGX_DIR/lib64"; then
   AMGX_LDFLAGS="-L$AMGX_DIR/lib64 -Wl,-rpath,$AMGX_DIR/lib64 $CUDA_LDFLAGS"
 fi
-AMGX_LIBS="-lamgxsh $CUDA_LIBS"
 CPPFLAGS_PREPEND($AMGX_CPPFLAGS)
 LDFLAGS_PREPEND($AMGX_LDFLAGS)
 
 # check for presence of header file amgx_c.h
 AC_CHECK_HEADER([amgx_c.h], ,
                 AC_MSG_ERROR([could not find header file amgx_c.h]))
-# check for presence of library amgxh
-AC_CHECK_LIB([amgxsh],
-             [AMGX_initialize], ,
-             AC_MSG_ERROR([could not use library amgxsh; check config.log]))
+
+if test "x$enable_shared" = "xyes"; then
+  AMGX_LIBS="-lamgxsh $CUDA_LIBS"
+  # check for presence of library
+  AC_CHECK_LIB([amgxsh],
+               [AMGX_initialize], ,
+               AC_MSG_ERROR([could not use library amgxsh; check config.log]))
+else
+  AMGX_LIBS="-lamgx $CUDA_LIBS"
+  # check for presence of library
+  AC_CHECK_LIB([amgx],
+               [AMGX_initialize], ,
+               AC_MSG_ERROR([could not use library amgx; check config.log]),
+               [$CUDA_LIBS -lcusolver -fopenmp])
+fi
 
 PACKAGE_RESTORE_ENVIRONMENT
 

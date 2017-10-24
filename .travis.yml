@@ -30,7 +30,7 @@ install:
   - cd petsc-3.7.4
   - export PETSC_DIR=$PWD
   - export PETSC_ARCH=arch-dbg
-  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-fblaslapack --download-openmpi
+  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-fblaslapack --download-hdf5 --download-openmpi
   - make all
 
 script:
@@ -38,10 +38,15 @@ script:
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PWD CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH
+  - $PETIBM_DIR/configure --prefix=$PWD CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH --enable-yamlcpp --enable-boost --enable-gtest
   - make all
   - make check
   - make install
 
 notifications:
   email: false
+
+branches:
+  only:
+    - master
+    - develop

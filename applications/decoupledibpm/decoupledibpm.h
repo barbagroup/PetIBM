@@ -84,7 +84,7 @@ public:
 	 * \param fileName Name of the file to save (without the extension)
 	 */
 	PetscErrorCode writeIntegratedForces(
-			int time, std::string directory, std::string fileName);
+			PetscReal time, std::string directory, std::string fileName);
 
 	/**
 	 * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.

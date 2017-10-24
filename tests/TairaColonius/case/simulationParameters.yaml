@@ -1,9 +1,0 @@
-# simulationParameters.yaml
-
-- type: simulation
-  dt: 0.02
-  nt: 100
-  nsave: 100
-  ibm: TAIRA_COLONIUS
-  convection: ADAMS_BASHFORTH_2
-  diffusion: CRANK_NICOLSON

@@ -14,12 +14,12 @@ libutilities_la_SOURCES = bodypack.cpp \
                           types.cpp
 
 libutilities_la_CPPFLAGS = -I$(top_srcdir)/include \
-                           -I$(top_srcdir)/external/yaml-cpp-0.5.1/include \
-                           -I$(top_srcdir)/external/boost-1.57.0
+                           $(PETSC_CPPFLAGS) \
+                           $(YAMLCPP_CPPFLAGS)
+libutilities_la_LIBADD = $(PETSC_LDFLAGS) $(PETSC_LIBS) \
+                         $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
+                         -lstdc++fs
 
-if WITH_AMGXWRAPPER
-libutilities_la_CPPFLAGS += -I$(top_srcdir)/external/AmgXWrapper-1.0-beta2/src \
-                            -I$(CUDA_DIR)/include \
-                            -I$(AMGX_DIR)/examples \
-                            -D HAVE_AMGX
+if WITH_AMGX
+libutilities_la_CPPFLAGS += -DHAVE_AMGX
 endif

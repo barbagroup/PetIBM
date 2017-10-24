@@ -9,8 +9,9 @@ libpetibm_la_SOURCES =
 libpetibm_la_LIBADD = $(top_builddir)/src/linsolvers/liblinsolvers.la \
                       $(top_builddir)/src/operators/liboperators.la \
                       $(top_builddir)/src/utilities/libutilities.la \
-                      $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.la
+                      $(PETSC_LDFLAGS) $(PETSC_LIBS) \
+                      $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
 
-if WITH_AMGXWRAPPER
-libpetibm_la_LIBADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.la
+if WITH_AMGX
+libpetibm_la_LIBADD += $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 endif

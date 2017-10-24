@@ -15,6 +15,7 @@
 // here goes headers from our PetIBM
 # include <petibm/mesh.h>
 # include <petibm/solution.h>
+# include <petibm/singleboundary.h>
 
 
 namespace petibm
@@ -28,6 +29,9 @@ public:
 
     /** \brief dimension. */
     PetscInt        dim;
+
+    /** \brief a 2D vector holding all single boundaries. */
+    std::vector<std::vector<type::SingleBoundary>>  bds;
     
 
     /** \brief default constructor. */

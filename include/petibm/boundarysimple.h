@@ -16,7 +16,6 @@
 # include <petscvec.h>
 
 // here goes headers from our PetIBM
-# include <petibm/singleboundary.h>
 # include <petibm/boundary.h>
 
 
@@ -52,9 +51,6 @@ protected:
 
     /** \copydoc petibm::boundary::BoundaryBase::init */
     virtual PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
-
-    /** \brief a 2D vector holding all single boundaries. */
-    std::vector<std::vector<type::SingleBoundary>>  bds;
 
 };
 } // end of namespace boundary

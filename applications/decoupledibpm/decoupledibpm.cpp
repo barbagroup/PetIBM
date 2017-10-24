@@ -409,7 +409,7 @@ PetscErrorCode DecoupledIBPMSolver::writeIterations(int timeIndex,
 
 
 PetscErrorCode DecoupledIBPMSolver::writeIntegratedForces(
-			int time, std::string directory, std::string fileName)
+			PetscReal time, std::string directory, std::string fileName)
 {
 	PetscErrorCode ierr;
 

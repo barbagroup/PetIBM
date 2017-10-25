@@ -39,6 +39,9 @@ public:
     /** \copydoc LinSolverBase::getIters. */
     virtual PetscErrorCode getIters(PetscInt &iters);
 
+    /** \copydoc LinSolverBase::getResidual. */
+    virtual PetscErrorCode getResidual(PetscReal &res);
+
 private:
 
     /** \brief the underlying KSP solver. */

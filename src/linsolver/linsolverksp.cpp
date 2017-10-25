@@ -95,5 +95,18 @@ PetscErrorCode LinSolverKSP::getIters(PetscInt &iters)
     PetscFunctionReturn(0);
 } // getIters
 
+
+// get the norm of final residual
+PetscErrorCode LinSolverKSP::getResidual(PetscReal &res)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode ierr;
+
+    ierr = KSPGetResidualNorm(ksp, &res); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+} // getResidual
+
 } // end of namespace linsolver
 } // end of namespace petibm

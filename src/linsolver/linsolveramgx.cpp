@@ -39,6 +39,8 @@ PetscErrorCode LinSolverAmgX::init()
 // set coefficient matrix
 PetscErrorCode LinSolverAmgX::setMatrix(const Mat &A)
 {
+    PetscFunctionBeginUser;
+
     PetscErrorCode ierr;
 
     ierr = amgx.setA(A); CHKERRQ(ierr);
@@ -50,6 +52,8 @@ PetscErrorCode LinSolverAmgX::setMatrix(const Mat &A)
 // solve linear system
 PetscErrorCode LinSolverAmgX::solve(Vec &x, Vec &b)
 {
+    PetscFunctionBeginUser;
+
     PetscErrorCode ierr;
 
     ierr = amgx.solve(x, b); CHKERRQ(ierr);
@@ -61,12 +65,30 @@ PetscErrorCode LinSolverAmgX::solve(Vec &x, Vec &b)
 // get number of iterations
 PetscErrorCode LinSolverAmgX::getIters(PetscInt &iters)
 {
+    PetscFunctionBeginUser;
+
     PetscErrorCode ierr;
 
-    iters = amgx.getIters();
+    ierr = amgx.getIters(iters); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // getIters
+
+
+// get the norm of final residual
+PetscErrorCode LinSolverAmgX::getResidual(PetscReal &res)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode ierr;
+    
+    PetscInt iter;
+    
+    ierr = amgx.getIters(iter); CHKERRQ(ierr);
+    ierr = amgx.getResidual(iter, res); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+} // getResidual
 
 } // end of namespace linsolver
 } // end of namespace petibm

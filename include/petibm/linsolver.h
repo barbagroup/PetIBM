@@ -77,11 +77,20 @@ public:
     /**
      * \brief the function to get the number of iterations.
      *
-     * \param iters the returned number of iterations.
+     * \param iters [out] the returned number of iterations.
      *
      * \return PetscErrorCode.
      */
     virtual PetscErrorCode getIters(PetscInt &iters) = 0;
+
+    /**
+     * \brief the function to get final residual.
+     *
+     * \param res[out] the returned residual (norm).
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode getResidual(PetscReal &res) = 0;
 
 protected:
 

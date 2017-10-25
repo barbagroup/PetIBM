@@ -15,10 +15,10 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "petibm/cartesianmesh.h"
-# include "petibm/boundary.h"
+# include <petibm/mesh.h>
+# include <petibm/boundary.h>
 # include <petibm/type.h>
-# include "petibm/misc.h"
+# include <petibm/misc.h>
 
 
 namespace petibm
@@ -29,8 +29,11 @@ namespace operators
 /** \brief a private struct for matrix-free constraint mat. */
 struct LagrangianCtx
 {
-    std::shared_ptr<const utilities::Boundary>     bc;
-    utilities::types::MatrixModifier               modifier;
+    const type::Boundary    bc;
+    type::MatrixModifier    modifier;
+    
+    LagrangianCtx(const type::Boundary &_bc):
+        bc(_bc), modifier(bc->dim) {};
 };
 
 
@@ -52,7 +55,7 @@ typedef std::function<StencilVec(const PetscInt &,
 
 
 /**
- * \brief a private function that set values of a row in Laplacian.
+ * \brief a private function that sets values of a row in Laplacian.
  *
  * \param mesh an instance of CartesianMesh class.
  * \param bc an instance of Boundary class.
@@ -66,18 +69,18 @@ typedef std::function<StencilVec(const PetscInt &,
  * \return PetscErrorCode.
  */
 inline PetscErrorCode setRowValues(
-		const utilities::CartesianMesh &mesh,
-		const utilities::Boundary &bc,
-		const GetStencilsFunc &getStencils,
-		const PetscInt &f, const PetscInt &i,
-		const PetscInt &j, const PetscInt &k,
-		Mat &L,
-		std::map<MatStencil, utilities::types::RowModifier> &rowModifiers);
+        const type::Mesh &mesh,
+        const type::Boundary &bc,
+        const GetStencilsFunc &getStencils,
+        const PetscInt &f, const PetscInt &i,
+        const PetscInt &j, const PetscInt &k,
+        Mat &L,
+        std::map<MatStencil, type::RowModifier> &rowModifiers);
 
 
 /** \copydoc createLaplacian. */
-PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
-                               const utilities::Boundary &bc, 
+PetscErrorCode createLaplacian(const type::Mesh &mesh,
+                               const type::Boundary &bc, 
                                Mat &L, Mat &LCorrection)
 {
     using namespace std::placeholders;
@@ -92,14 +95,10 @@ PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
 
 
     // initialize modifier, regardless what's inside it now
-    ctx = new LagrangianCtx;
-    ctx->modifier = utilities::types::MatrixModifier(mesh.dim);
-    ctx->bc = std::shared_ptr<const utilities::Boundary>(
-    		&bc, [](const utilities::Boundary*){});
-
+    ctx = new LagrangianCtx(bc);
 
     // set up getStencils
-    if (mesh.dim == 2)
+    if (mesh->dim == 2)
         getStencils = 
             [](const PetscInt &i, const PetscInt &j, const PetscInt &k)
             -> StencilVec {
@@ -119,22 +118,22 @@ PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
 
 
     // create matrix
-    ierr = DMCreateMatrix(mesh.UPack, &L); CHKERRQ(ierr);
+    ierr = DMCreateMatrix(mesh->UPack, &L); CHKERRQ(ierr);
     ierr = MatSetFromOptions(L); CHKERRQ(ierr);
     ierr = MatSetOption(L, MAT_KEEP_NONZERO_PATTERN, PETSC_FALSE); CHKERRQ(ierr);
     ierr = MatSetOption(L, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
 
     // set values, one field each time
-    for(PetscInt field=0; field<mesh.dim; ++field)
+    for(PetscInt field=0; field<mesh->dim; ++field)
     {
         // set row values
         // the std::bind originally only binds values, in order to use
         // reference instead of value-copying, we have to use std::ref
-        ierr = utilities::misc::tripleLoops(
-                {mesh.bg[field][2], mesh.ed[field][2]},
-                {mesh.bg[field][1], mesh.ed[field][1]},
-                {mesh.bg[field][0], mesh.ed[field][0]},
+        ierr = misc::tripleLoops(
+                {mesh->bg[field][2], mesh->ed[field][2]},
+                {mesh->bg[field][1], mesh->ed[field][1]},
+                {mesh->bg[field][0], mesh->ed[field][0]},
                 std::bind(setRowValues, 
                     std::ref(mesh), std::ref(bc), std::ref(getStencils), 
                     std::ref(field), _3, _2, _1, std::ref(L), 
@@ -149,10 +148,10 @@ PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
 
 
     // TODO: check if a0 coefficients are already up-to-date.
-    for(auto &bd: bc.bds)
-        if (bd.onThisProc)
-            for(PetscInt f=0; f<mesh.dim; ++f)
-                for(auto &pt: bd.points[f])
+    for(PetscInt f=0; f<mesh->dim; ++f)
+        for(auto &bd: bc->bds[f])
+            if (bd->onThisProc)
+                for(auto &pt: bd->points)
                 {
                     PetscInt    col = pt.second.targetPackedId;
                     PetscReal   value = 
@@ -169,7 +168,7 @@ PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
 
 
     // create a matrix-free constraint matrix for boundary correction
-    ierr = MatCreateShell(*mesh.comm, mesh.UNLocal, mesh.UNLocal,
+    ierr = MatCreateShell(mesh->comm, mesh->UNLocal, mesh->UNLocal,
             PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &LCorrection); 
     CHKERRQ(ierr);
 
@@ -179,23 +178,18 @@ PetscErrorCode createLaplacian(const utilities::CartesianMesh &mesh,
     ierr = MatShellSetOperation(LCorrection, MATOP_DESTROY,
             (void(*)(void)) LCorrectionDestroy); CHKERRQ(ierr);
 
-
-    // see if users want to view this matrix through cmd
-    ierr = PetscObjectViewFromOptions(
-            (PetscObject) L, nullptr, "-L_mat_view"); CHKERRQ(ierr);
-
     PetscFunctionReturn(0);
 }
 
 
 /** \copydoc setRowValues. */
 inline PetscErrorCode setRowValues(
-		const utilities::CartesianMesh &mesh,
-		const utilities::Boundary &bc, 
-		const GetStencilsFunc &getStencils, 
-		const PetscInt &f, const PetscInt &i, 
-		const PetscInt &j, const PetscInt &k, Mat &L,
-		std::map<MatStencil, utilities::types::RowModifier> &rowModifiers)
+        const type::Mesh &mesh,
+        const type::Boundary &bc, 
+        const GetStencilsFunc &getStencils, 
+        const PetscInt &f, const PetscInt &i, 
+        const PetscInt &j, const PetscInt &k, Mat &L,
+        std::map<MatStencil, type::RowModifier> &rowModifiers)
 {
     PetscFunctionBeginUser;
 
@@ -203,37 +197,31 @@ inline PetscErrorCode setRowValues(
 
     StencilVec          stencils = getStencils(i, j, k);
 
-    utilities::types::IntVec1D     lclIds(1+2*mesh.dim, -1),
-                                   cols(1+2*mesh.dim, -1);
+    type::IntVec1D      cols(1+2*mesh->dim, -1);
 
-    utilities::types::RealVec1D    values(1+2*mesh.dim, 0.0);
+    type::RealVec1D     values(1+2*mesh->dim, 0.0);
 
 
     // get the local index for points in stencils
     for(unsigned int id=0; id<stencils.size(); ++id)
     {
-        ierr = DMDAConvertToCell(
-                mesh.da[f], stencils[id], &lclIds[id]); CHKERRQ(ierr);
+        ierr = mesh->getPackedGlobalIndex(
+                f, stencils[id], cols[id]); CHKERRQ(ierr);
     }
-
-    // get the global index
-    ierr = ISLocalToGlobalMappingApply(
-            mesh.UMapping[f], stencils.size(), lclIds.data(), cols.data()); 
-    CHKERRQ(ierr);
 
 
     // get the values. One direction each time.
     // Luckly we have dL for ghost points, and the index of -1 is usable in dL,
     // so we don't have to use "if" to find out the boundary points
-    for(PetscInt dir=0; dir<mesh.dim; ++dir)
+    for(PetscInt dir=0; dir<mesh->dim; ++dir)
     {
         // determine the index based on the direction
         const PetscInt &self = (dir == 0)? i : (dir == 1)? j : k;
 
         // alias for cleaner code
-        const PetscReal &dLSelf = mesh.dL[f][dir][self];
-        const PetscReal &dLNeg = mesh.coord[f][dir][self] - mesh.coord[f][dir][self-1];
-        const PetscReal &dLPos = mesh.coord[f][dir][self+1] - mesh.coord[f][dir][self];
+        const PetscReal &dLSelf = mesh->dL[f][dir][self];
+        const PetscReal &dLNeg = mesh->coord[f][dir][self] - mesh->coord[f][dir][self-1];
+        const PetscReal &dLPos = mesh->coord[f][dir][self+1] - mesh->coord[f][dir][self];
 
         values[dir*2+1] = 1.0 / (dLNeg * dLSelf);
         values[dir*2+2] = 1.0 / (dLPos * dLSelf);
@@ -270,15 +258,14 @@ PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
     ierr = VecSet(y, 0.0); CHKERRQ(ierr);
 
     // set the correction values to corresponding rows
-    for(auto &bd: ctx->bc->bds)
-        if (bd.onThisProc)
-            for(PetscInt f=0; f<ctx->bc->dim; ++f)
-                for(auto &pt: bd.points[f])
+    for(PetscInt f=0; f<ctx->bc->dim; ++f)
+        for(auto &bd: ctx->bc->bds[f])
+            if (bd->onThisProc)
+                for(auto &pt: bd->points)
                 {
                     ierr = VecSetValue(y, ctx->modifier[f][pt.first].row,
                             ctx->modifier[f][pt.first].coeff * pt.second.a1, 
                             ADD_VALUES); CHKERRQ(ierr);
-
                 }
 
     // assembly (not sure if this is necessary and if this causes overhead)

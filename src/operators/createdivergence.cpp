@@ -11,9 +11,9 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "petibm/cartesianmesh.h"
-# include "petibm/boundary.h"
 # include <petibm/type.h>
+# include <petibm/mesh.h>
+# include <petibm/boundary.h>
 
 
 namespace petibm
@@ -24,8 +24,11 @@ namespace operators
 /** \brief a private struct for matrix-free constraint mat. */
 struct DivergenceCtx
 {
-    std::shared_ptr<const utilities::Boundary>     bc;
-    utilities::types::MatrixModifier               modifier;
+    const type::Boundary    bc;
+    type::MatrixModifier    modifier;
+    
+    DivergenceCtx(const type::Boundary &_bc): 
+        bc(_bc), modifier(bc->dim) {};
 };
 
 
@@ -48,8 +51,8 @@ typedef std::function<PetscReal(
 
 
 /** \copydoc createDivergence. */
-PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
-                                const utilities::Boundary &bc, 
+PetscErrorCode createDivergence(const type::Mesh &mesh,
+                                const type::Boundary &bc, 
                                 Mat &D,
                                 Mat &DCorrection,
                                 const PetscBool &normalize)
@@ -66,10 +69,7 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
 
 
     // initialize modifier, regardless what's inside it now
-    ctx = new DivergenceCtx;
-    ctx->modifier = utilities::types::MatrixModifier(mesh.dim);
-    ctx->bc = std::shared_ptr<const utilities::Boundary>(
-    		&bc, [](const utilities::Boundary*){});
+    ctx = new DivergenceCtx(bc);
 
 
     // set up getNeighbor
@@ -88,23 +88,23 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
     else
     {
         kernel[0] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-            -> PetscReal { return mesh.dL[0][1][j] * mesh.dL[0][2][k]; };
+            -> PetscReal { return mesh->dL[0][1][j] * mesh->dL[0][2][k]; };
         kernel[1] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-            -> PetscReal { return mesh.dL[1][0][i] * mesh.dL[1][2][k]; };
+            -> PetscReal { return mesh->dL[1][0][i] * mesh->dL[1][2][k]; };
         kernel[2] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-            -> PetscReal { return mesh.dL[2][0][i] * mesh.dL[2][1][j]; };
+            -> PetscReal { return mesh->dL[2][0][i] * mesh->dL[2][1][j]; };
     }
 
 
     // create matrix
-    ierr = MatCreate(*mesh.comm, &D); CHKERRQ(ierr);
-    ierr = MatSetSizes(D, mesh.pNLocal, mesh.UNLocal, 
+    ierr = MatCreate(mesh->comm, &D); CHKERRQ(ierr);
+    ierr = MatSetSizes(D, mesh->pNLocal, mesh->UNLocal, 
             PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(D); CHKERRQ(ierr);
-    ierr = MatSeqAIJSetPreallocation(D, mesh.dim*2, nullptr); CHKERRQ(ierr);
+    ierr = MatSeqAIJSetPreallocation(D, mesh->dim*2, nullptr); CHKERRQ(ierr);
 
     // TODO: a better guess for allocation in MPIAIJ
-    ierr = MatMPIAIJSetPreallocation(D, mesh.dim*2, nullptr, 3, nullptr); CHKERRQ(ierr);
+    ierr = MatMPIAIJSetPreallocation(D, mesh->dim*2, nullptr, 3, nullptr); CHKERRQ(ierr);
 
     ierr = MatSetUp(D); CHKERRQ(ierr);
     ierr = MatSetOption(D, MAT_KEEP_NONZERO_PATTERN, PETSC_FALSE); CHKERRQ(ierr);
@@ -112,22 +112,17 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
 
 
     // set values to matrix
-    for(PetscInt k=mesh.bg[3][2]; k<mesh.ed[3][2]; ++k)
-        for(PetscInt j=mesh.bg[3][1]; j<mesh.ed[3][1]; ++j)
-            for(PetscInt i=mesh.bg[3][0]; i<mesh.ed[3][0]; ++i)
+    for(PetscInt k=mesh->bg[3][2]; k<mesh->ed[3][2]; ++k)
+        for(PetscInt j=mesh->bg[3][1]; j<mesh->ed[3][1]; ++j)
+            for(PetscInt i=mesh->bg[3][0]; i<mesh->ed[3][0]; ++i)
             {
                 PetscInt    self;
                 
                 // row index is based on pressure grid
-                ierr = DMDAConvertToCell(mesh.da[3], {k, j, i, 0}, &self);
-                CHKERRQ(ierr);
-
-                ierr = ISLocalToGlobalMappingApply(
-                        mesh.pMapping, 1, &self, &self);
-                CHKERRQ(ierr);
+                ierr = mesh->getGlobalIndex(3, {k, j, i, 0}, self); CHKERRQ(ierr);
 
                 // calculate and set values of the two surfaces in each direction
-                for(PetscInt field=0; field<mesh.dim; ++field)
+                for(PetscInt field=0; field<mesh->dim; ++field)
                 {
                     // the stencil of target surface
                     MatStencil      target;
@@ -142,11 +137,7 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
                     // the surface toward positive direction
                     target = {k, j, i, 0};
 
-                    ierr = DMDAConvertToCell(mesh.da[field], 
-                            target, &targetIdx); CHKERRQ(ierr);
-
-                    ierr = ISLocalToGlobalMappingApply(mesh.UMapping[field], 
-                            1, &targetIdx, &targetIdx); CHKERRQ(ierr);
+                    ierr = mesh->getPackedGlobalIndex(field, target, targetIdx); CHKERRQ(ierr);
 
                     ierr = MatSetValue(D, self, targetIdx, 
                             value, INSERT_VALUES); CHKERRQ(ierr);
@@ -159,11 +150,7 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
                     // the surface toward negative direction
                     target = getNeighbor[field](i, j, k);
 
-                    ierr = DMDAConvertToCell(mesh.da[field], 
-                            target, &targetIdx); CHKERRQ(ierr);
-
-                    ierr = ISLocalToGlobalMappingApply(mesh.UMapping[field], 
-                            1, &targetIdx, &targetIdx); CHKERRQ(ierr);
+                    ierr = mesh->getPackedGlobalIndex(field, target, targetIdx); CHKERRQ(ierr);
 
                     // note the value for this face is just a negative version
                     ierr = MatSetValue(D, self, targetIdx, 
@@ -183,13 +170,13 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
 
     // modify the column of the neighbors of ghost points
     // Only ghost points on Neumann BC will modify Divergence operator
-    for(auto &bd: bc.bds)
-        if (bd.onThisProc)
-            for(PetscInt f=0; f<mesh.dim; ++f)
-                for(auto &pt: bd.points[f])
+    for(PetscInt f=0; f<mesh->dim; ++f)
+        for(auto &bd: bc->bds[f])
+            if (bd->onThisProc)
+                for(auto &pt: bd->points)
                 {
                     PetscInt    col = pt.second.targetPackedId;
-                    PetscReal   value = 
+                    PetscReal   value =
                         ctx->modifier[f][pt.first].coeff * pt.second.a0;
 
                     ierr = MatSetValue(D, ctx->modifier[f][pt.first].row,
@@ -203,7 +190,7 @@ PetscErrorCode createDivergence(const utilities::CartesianMesh &mesh,
 
 
     // create a matrix-free constraint matrix for boundary correction
-    ierr = MatCreateShell(*mesh.comm, mesh.pNLocal, mesh.UNLocal,
+    ierr = MatCreateShell(mesh->comm, mesh->pNLocal, mesh->UNLocal,
             PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &DCorrection); 
     CHKERRQ(ierr);
 
@@ -233,15 +220,14 @@ PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y)
     ierr = VecSet(y, 0.0); CHKERRQ(ierr);
 
     // set the correction values to corresponding rows
-    for(auto &bd: ctx->bc->bds)
-        if (bd.onThisProc)
-            for(PetscInt f=0; f<ctx->bc->dim; ++f)
-                for(auto &pt: bd.points[f])
+    for(PetscInt f=0; f<ctx->bc->dim; ++f)
+        for(auto &bd: ctx->bc->bds[f])
+            if (bd->onThisProc)
+                for(auto &pt: bd->points)
                 {
                     ierr = VecSetValue(y, ctx->modifier[f][pt.first].row,
                             ctx->modifier[f][pt.first].coeff * pt.second.a1, 
                             ADD_VALUES); CHKERRQ(ierr);
-
                 }
 
     // assembly (not sure if this is necessary and if this causes overhead)

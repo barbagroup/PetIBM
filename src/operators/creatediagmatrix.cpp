@@ -15,7 +15,7 @@
 # include <petscmat.h>
 
 // here goes headers from our PetIBM
-# include "petibm/cartesianmesh.h"
+# include <petibm/mesh.h>
 
 
 namespace petibm
@@ -44,7 +44,7 @@ typedef std::function<PetscReal(
  *
  * \return PetscErrorCode
  */
-PetscErrorCode createDiagMatrix(const utilities::CartesianMesh &mesh, 
+PetscErrorCode createDiagMatrix(const type::Mesh &mesh, 
                                 const std::vector<KernelType> &kernels,
                                 Mat &M)
 {
@@ -53,8 +53,8 @@ PetscErrorCode createDiagMatrix(const utilities::CartesianMesh &mesh,
     PetscErrorCode      ierr;
     
     // create matrix
-    ierr = MatCreate(*mesh.comm, &M); CHKERRQ(ierr);
-    ierr = MatSetSizes(M, mesh.UNLocal, mesh.UNLocal, 
+    ierr = MatCreate(mesh->comm, &M); CHKERRQ(ierr);
+    ierr = MatSetSizes(M, mesh->UNLocal, mesh->UNLocal, 
             PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(M); CHKERRQ(ierr);
     ierr = MatSeqAIJSetPreallocation(M, 1, nullptr); CHKERRQ(ierr);
@@ -66,21 +66,16 @@ PetscErrorCode createDiagMatrix(const utilities::CartesianMesh &mesh,
 
 
     // set values to matrix
-    for(PetscInt field=0; field<mesh.dim; ++field)
-        for(PetscInt k=mesh.bg[field][2]; k<mesh.ed[field][2]; ++k)
-            for(PetscInt j=mesh.bg[field][1]; j<mesh.ed[field][1]; ++j)
-                for(PetscInt i=mesh.bg[field][0]; i<mesh.ed[field][0]; ++i)
+    for(PetscInt field=0; field<mesh->dim; ++field)
+        for(PetscInt k=mesh->bg[field][2]; k<mesh->ed[field][2]; ++k)
+            for(PetscInt j=mesh->bg[field][1]; j<mesh->ed[field][1]; ++j)
+                for(PetscInt i=mesh->bg[field][0]; i<mesh->ed[field][0]; ++i)
                 {
                     PetscInt    idx;
                     MatStencil  self = {k, j, i, 1};
 
-                    // get index local to this process
-                    ierr = DMDAConvertToCell(
-                            mesh.da[field], self, &idx); CHKERRQ(ierr);
-
-                    // map to global index
-                    ierr = ISLocalToGlobalMappingApply(
-                            mesh.UMapping[field], 1, &idx, &idx); CHKERRQ(ierr);
+                    // get packed index of this velocity point
+                    ierr = mesh->getPackedGlobalIndex(field, self, idx); CHKERRQ(ierr);
 
                     // set value
                     ierr = MatSetValue(M, idx, idx, kernels[field](i, j, k), 
@@ -96,7 +91,7 @@ PetscErrorCode createDiagMatrix(const utilities::CartesianMesh &mesh,
 
 
 /** \copydoc createR(const CartesianMesh &, Mat &). */
-PetscErrorCode createR(const utilities::CartesianMesh &mesh, Mat &R)
+PetscErrorCode createR(const type::Mesh &mesh, Mat &R)
 {
     PetscFunctionBeginUser;
 
@@ -107,25 +102,21 @@ PetscErrorCode createR(const utilities::CartesianMesh &mesh, Mat &R)
 
     // set kernels
     kernel[0] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-        -> PetscReal { return mesh.dL[0][1][j] * mesh.dL[0][2][k]; };
+        -> PetscReal { return mesh->dL[0][1][j] * mesh->dL[0][2][k]; };
     kernel[1] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return mesh.dL[1][0][i] * mesh.dL[1][2][k]; };
+        -> PetscReal { return mesh->dL[1][0][i] * mesh->dL[1][2][k]; };
     kernel[2] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return mesh.dL[2][0][i] * mesh.dL[2][1][j]; };
+        -> PetscReal { return mesh->dL[2][0][i] * mesh->dL[2][1][j]; };
 
     // call the function to create matrix
     ierr = createDiagMatrix(mesh, kernel, R); CHKERRQ(ierr);
-
-    // see if users want to view this matrix through cmd
-    ierr = PetscObjectViewFromOptions(
-            (PetscObject) R, nullptr, "-R_mat_view"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
 /** \copydoc createRInv(const CartesianMesh &, Mat &). */
-PetscErrorCode createRInv(const utilities::CartesianMesh &mesh, Mat &RInv)
+PetscErrorCode createRInv(const type::Mesh &mesh, Mat &RInv)
 {
     PetscFunctionBeginUser;
 
@@ -136,25 +127,21 @@ PetscErrorCode createRInv(const utilities::CartesianMesh &mesh, Mat &RInv)
 
     // set kernels
     kernel[0] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-        -> PetscReal { return 1.0 / (mesh.dL[0][1][j] * mesh.dL[0][2][k]); };
+        -> PetscReal { return 1.0 / (mesh->dL[0][1][j] * mesh->dL[0][2][k]); };
     kernel[1] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return 1.0 / (mesh.dL[1][0][i] * mesh.dL[1][2][k]); };
+        -> PetscReal { return 1.0 / (mesh->dL[1][0][i] * mesh->dL[1][2][k]); };
     kernel[2] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return 1.0 / (mesh.dL[2][0][i] * mesh.dL[2][1][j]); };
+        -> PetscReal { return 1.0 / (mesh->dL[2][0][i] * mesh->dL[2][1][j]); };
 
     // call the function to create matrix
     ierr = createDiagMatrix(mesh, kernel, RInv); CHKERRQ(ierr);
-
-    // see if users want to view this matrix through cmd
-    ierr = PetscObjectViewFromOptions(
-            (PetscObject) RInv, nullptr, "-RInv_mat_view"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
 /** \copydoc createMHead(const CartesianMesh &, Mat &). */
-PetscErrorCode createMHead(const utilities::CartesianMesh &mesh, Mat &MHead)
+PetscErrorCode createMHead(const type::Mesh &mesh, Mat &MHead)
 {
     PetscFunctionBeginUser;
 
@@ -165,25 +152,21 @@ PetscErrorCode createMHead(const utilities::CartesianMesh &mesh, Mat &MHead)
 
     // set kernels
     kernel[0] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-        -> PetscReal { return mesh.dL[0][0][i]; };
+        -> PetscReal { return mesh->dL[0][0][i]; };
     kernel[1] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return mesh.dL[1][1][j]; };
+        -> PetscReal { return mesh->dL[1][1][j]; };
     kernel[2] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return mesh.dL[2][2][k]; };
+        -> PetscReal { return mesh->dL[2][2][k]; };
 
     // call the function to create matrix
     ierr = createDiagMatrix(mesh, kernel, MHead); CHKERRQ(ierr);
-
-    // see if users want to view this matrix through cmd
-    ierr = PetscObjectViewFromOptions(
-            (PetscObject) MHead, nullptr, "-MHead_mat_view"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
 /** \copydoc createM(const CartesianMesh &, Mat &). */
-PetscErrorCode createM(const utilities::CartesianMesh &mesh, Mat &M)
+PetscErrorCode createM(const type::Mesh &mesh, Mat &M)
 {
     PetscFunctionBeginUser;
 
@@ -194,25 +177,21 @@ PetscErrorCode createM(const utilities::CartesianMesh &mesh, Mat &M)
 
     // set kernels
     kernel[0] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k)
-        -> PetscReal { return mesh.dL[0][0][i] / (mesh.dL[0][1][j] * mesh.dL[0][2][k]); };
+        -> PetscReal { return mesh->dL[0][0][i] / (mesh->dL[0][1][j] * mesh->dL[0][2][k]); };
     kernel[1] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return mesh.dL[1][1][j] / (mesh.dL[1][0][i] * mesh.dL[1][2][k]); };
+        -> PetscReal { return mesh->dL[1][1][j] / (mesh->dL[1][0][i] * mesh->dL[1][2][k]); };
     kernel[2] = [&mesh](const PetscInt &i, const PetscInt &j, const PetscInt &k) 
-        -> PetscReal { return mesh.dL[2][2][k] / (mesh.dL[2][0][i] * mesh.dL[2][1][j]); };
+        -> PetscReal { return mesh->dL[2][2][k] / (mesh->dL[2][0][i] * mesh->dL[2][1][j]); };
 
     // call the function to create matrix
     ierr = createDiagMatrix(mesh, kernel, M); CHKERRQ(ierr);
-
-    // see if users want to view this matrix through cmd
-    ierr = PetscObjectViewFromOptions(
-            (PetscObject) M, nullptr, "-M_mat_view"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }
 
 
 /** \copydoc createIdentity(const CartesianMesh &, Mat &). */
-PetscErrorCode createIdentity(const utilities::CartesianMesh &mesh, Mat &I)
+PetscErrorCode createIdentity(const type::Mesh &mesh, Mat &I)
 {
     PetscFunctionBeginUser;
 
@@ -231,10 +210,6 @@ PetscErrorCode createIdentity(const utilities::CartesianMesh &mesh, Mat &I)
 
     // call the function to create matrix
     ierr = createDiagMatrix(mesh, kernel, I); CHKERRQ(ierr);
-
-    // see if users want to view this matrix through cmd
-    ierr = PetscObjectViewFromOptions(
-            (PetscObject) I, nullptr, "-I_mat_view"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

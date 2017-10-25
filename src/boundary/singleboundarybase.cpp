@@ -17,14 +17,16 @@ namespace boundary
 {
 
 SingleBoundaryBase::SingleBoundaryBase(const type::Mesh &inMesh,
-        const type::BCLoc &bcLoc, const type::Field &inField, const PetscReal &inValue)
+        const type::BCLoc &bcLoc, const type::Field &inField,
+        const type::BCType &inType, const PetscReal &inValue)
 {
-    init(inMesh, bcLoc, inField, inValue);
+    init(inMesh, bcLoc, inField, inType, inValue);
 }
 
 
 PetscErrorCode SingleBoundaryBase::init(const type::Mesh &inMesh,
-        const type::BCLoc &bcLoc, const type::Field &inField, const PetscReal &inValue)
+        const type::BCLoc &bcLoc, const type::Field &inField,
+        const type::BCType &inType, const PetscReal &inValue)
 {
     PetscFunctionBeginUser;
 
@@ -46,6 +48,9 @@ PetscErrorCode SingleBoundaryBase::init(const type::Mesh &inMesh,
     
     // set field
     field = inField;
+    
+    // set type
+    type = inType;
     
     // set value
     value = inValue;

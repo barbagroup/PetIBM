@@ -46,7 +46,7 @@ namespace boundary
 SingleBoundaryConvective::SingleBoundaryConvective(
         const type::Mesh &inMesh, const type::BCLoc &inLoc,
         const type::Field &inField, const PetscReal &inValue):
-    SingleBoundaryBase(inMesh, inLoc, inField, inValue)
+    SingleBoundaryBase(inMesh, inLoc, inField, type::CONVECTIVE, inValue)
 {
     PetscInt dir = int(loc) / 2;
     

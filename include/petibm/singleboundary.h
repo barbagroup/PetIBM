@@ -39,6 +39,9 @@ public:
     
     /** \brief the field of which the ghost points represent. */
     type::Field         field;
+    
+    /** \brief the type of boundary conditions. */
+    type::BCType        type;
 
     /** \brief a constant value representing BC value. */
     PetscReal           value;
@@ -63,10 +66,12 @@ public:
      * \param mesh [in] a Mesh instance.
      * \param loc [in] the location of the target boundary.
      * \param field [in] the target field.
+     * \param type [in] the type of BC.
      * \param value [in] BC value.
      */
-    SingleBoundaryBase(const type::Mesh &mesh, const type::BCLoc &loc, 
-            const type::Field &field, const PetscReal &value); 
+    SingleBoundaryBase(const type::Mesh &mesh,
+            const type::BCLoc &loc, const type::Field &field,
+            const type::BCType &type, const PetscReal &value); 
 
     /** \brief default destructor. */
     virtual ~SingleBoundaryBase() = default;
@@ -126,12 +131,14 @@ protected:
      * \param mesh [in] a Mesh instance.
      * \param loc [in] the location of the target boundary.
      * \param field [in] the target field.
+     * \param type [in] the type of BC.
      * \param value [in] BC value.
      *
      * \return  PetscErrorCode.
      */
-    PetscErrorCode init(const type::Mesh &mesh, const type::BCLoc &loc, 
-            const type::Field &field, const PetscReal &bcValue); 
+    PetscErrorCode init(const type::Mesh &mesh,
+            const type::BCLoc &loc, const type::Field &field,
+            const type::BCType &type, const PetscReal &bcValue); 
 
     /**
      * \brief the underlying kernel for setting initial values and equations.

@@ -17,7 +17,7 @@ namespace boundary
 SingleBoundaryDirichlet::SingleBoundaryDirichlet(
         const type::Mesh &inMesh, const type::BCLoc &inLoc,
         const type::Field &inField, const PetscReal &inValue):
-    SingleBoundaryBase(inMesh, inLoc, inField, inValue) {}
+    SingleBoundaryBase(inMesh, inLoc, inField, type::DIRICHLET, inValue) {}
 
 
 PetscErrorCode SingleBoundaryDirichlet::setGhostICsKernel(

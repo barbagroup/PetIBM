@@ -39,6 +39,9 @@ SingleBoundaryPeriodic::SingleBoundaryPeriodic(
     // set field
     field = inField;
     
+    // set type
+    type = type::PERIODIC;
+    
     // set value
     value = inValue;
     

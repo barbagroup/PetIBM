@@ -125,7 +125,7 @@ PetscErrorCode createDelta(const utilities::CartesianMesh &mesh,
 
                                 ierr = mesh.getPackedGlobalIndex(
                                         dof, targets[0][i], targets[1][j], 
-                                        targets[0][k], col); CHKERRQ(ierr);
+                                        targets[2][k], col); CHKERRQ(ierr);
 
                                 value = utilities::delta::Roma_et_al(
                                     targetdLs[0][i], hx,

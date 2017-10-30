@@ -17,8 +17,8 @@
 # include <petscmat.h>
 
 // PetIBM
-# include "petibm/cartesianmesh.h"
-# include "petibm/boundary.h"
+# include <petibm/mesh.h>
+# include <petibm/boundary.h>
 
 
 namespace petibm
@@ -29,9 +29,17 @@ namespace operators
 /** \brief a private struct used in MatShell. */
 struct NonLinearCtx
 {
-    std::shared_ptr<const utilities::CartesianMesh>    mesh;
-    std::shared_ptr<const utilities::Boundary>         bc;
-    std::vector<Vec>                                   qLocal;
+    const type::Mesh        mesh;
+    const type::Boundary    bc;
+    std::vector<Vec>        qLocal;
+    
+    NonLinearCtx(const type::Mesh &_mesh, const type::Boundary &_bc):
+        mesh(_mesh), bc(_bc), qLocal(_mesh->dim)
+    {
+        // create necessary local vectors
+        for(PetscInt f=0; f<mesh->dim; ++f)
+            DMCreateLocalVector(mesh->da[f], &qLocal[f]);
+    };
 };
 
 /**
@@ -83,8 +91,8 @@ inline PetscReal kernelW(
 
 
 /** \copydoc createConvection. */
-PetscErrorCode createConvection(const utilities::CartesianMesh &mesh,
-                                const utilities::Boundary &bd,
+PetscErrorCode createConvection(const type::Mesh &mesh,
+                                const type::Boundary &bd,
                                 Mat &H)
 {
     PetscFunctionBeginUser;
@@ -95,31 +103,19 @@ PetscErrorCode createConvection(const utilities::CartesianMesh &mesh,
 
     // global dimension
     PetscInt    N = 
-        mesh.n[0][0] * mesh.n[0][1] * mesh.n[0][2] + 
-        mesh.n[1][0] * mesh.n[1][1] * mesh.n[1][2] + 
-        ((mesh.dim==3)? mesh.n[2][0] * mesh.n[2][1] * mesh.n[2][2] : 0);
+        mesh->n[0][0] * mesh->n[0][1] * mesh->n[0][2] + 
+        mesh->n[1][0] * mesh->n[1][1] * mesh->n[1][2] + 
+        ((mesh->dim==3)? mesh->n[2][0] * mesh->n[2][1] * mesh->n[2][2] : 0);
 
     // allocate space for ctx
-    ctx = new NonLinearCtx;
-    ctx->mesh = std::shared_ptr<const utilities::CartesianMesh>(
-    		&mesh, [](const utilities::CartesianMesh*){});
-    ctx->bc = std::shared_ptr<const utilities::Boundary>(
-    		&bd, [](const utilities::Boundary*){});
-    ctx->qLocal.resize(ctx->mesh->dim);
-    
-    // create necessary local vectors
-    for(PetscInt f=0; f<ctx->mesh->dim; ++f)
-    {
-        ierr = DMCreateLocalVector(ctx->mesh->da[f], &ctx->qLocal[f]);
-        CHKERRQ(ierr);
-    }
+    ctx = new NonLinearCtx(mesh, bd);
 
     // create a matrix-free operator
-    ierr = MatCreateShell(*mesh.comm, mesh.UNLocal, mesh.UNLocal, 
+    ierr = MatCreateShell(mesh->comm, mesh->UNLocal, mesh->UNLocal, 
             N, N, (void *) ctx, &H); CHKERRQ(ierr);
 
     // bind MatMult
-    if (ctx->mesh->dim == 2)
+    if (mesh->dim == 2)
     {
         ierr = MatShellSetOperation(H, MATOP_MULT, 
                 (void(*)(void)) ConvectionMult2D); CHKERRQ(ierr);

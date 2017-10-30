@@ -64,7 +64,13 @@ PetscErrorCode SingleBoundaryConvective::setGhostICsKernel(
     
     PetscErrorCode  ierr;
     
-    p.a1 = p.value = targetValue;
+    // at beginning (t=0), due to lack of information of previous solution,
+    // we just assume the ghost point has the same value as target boundary 
+    // point does
+    p.value = targetValue; 
+    
+    // due to p.value=targetValue, it doesn't matter how big is time-step size
+    ierr = kernel(targetValue, 0.0, normal, value, p); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
 }

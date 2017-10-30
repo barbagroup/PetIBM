@@ -40,6 +40,12 @@ public:
 
     /** \copydoc petibm::solution::SolutionBase::convert2Flux */
     virtual PetscErrorCode convert2Flux(const Mat &R);
+    
+    /** \copydoc petibm::solution::SolutionBase::write */
+    virtual PetscErrorCode write(const std::string &file) const;
+    
+    /** \copydoc petibm::solution::SolutionBase::read */
+    virtual PetscErrorCode read(const std::string &file);
 
 
 protected:

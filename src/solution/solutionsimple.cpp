@@ -10,6 +10,7 @@
 // PetIBM
 # include <petibm/solutionsimple.h>
 # include <petibm/parser.h>
+# include <petibm/io.h>
 
 
 namespace petibm
@@ -163,6 +164,82 @@ PetscErrorCode SolutionSimple::applyIC(const YAML::Node &node)
 
     ierr = VecSet(pGlobal, 0.0); CHKERRQ(ierr);
 
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode SolutionSimple::write(const std::string &file) const
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    std::vector<Vec>           vecs(dim+1);
+    std::vector<std::string>    names(dim+1);
+    
+    
+    // set names for u, v, and/or w
+    for(int f=0; f<dim; ++f)
+        names[f] = type::fd2str[type::Field(f)];
+    
+    // set name for pressure
+    names.back() = "p";
+    
+    // get un-packed global Vecs from packed global Vec
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+            nullptr, vecs.data()); CHKERRQ(ierr);
+    
+    // get a reference to pressure Vec
+    vecs.back() = pGlobal;
+    
+    // write to a HDF5 file
+    ierr = io::writeHDF5Vecs(comm, file, names, vecs); CHKERRQ(ierr);
+    
+    // nullify the reference to pressure Vec
+    vecs.back() = PETSC_NULL;
+    
+    // return un-packed global Vecs to packed global Vec
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+            nullptr, vecs.data()); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode SolutionSimple::read(const std::string &file)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    std::vector<Vec>           vecs(dim+1);
+    std::vector<std::string>    names(dim+1);
+    
+    
+    // set names for u, v, and/or w
+    for(int f=0; f<dim; ++f)
+        names[f] = type::fd2str[type::Field(f)];
+    
+    // set name for pressure
+    names.back() = "p";
+    
+    // get un-packed global Vecs from packed global Vec
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+            nullptr, vecs.data()); CHKERRQ(ierr);
+    
+    // get a reference to pressure Vec
+    vecs.back() = pGlobal;
+    
+    // write to a HDF5 file
+    ierr = io::readHDF5Vecs(comm, file, names, vecs); CHKERRQ(ierr);
+    
+    // nullify the reference to pressure Vec
+    vecs.back() = PETSC_NULL;
+    
+    // return un-packed global Vecs to packed global Vec
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+            nullptr, vecs.data()); CHKERRQ(ierr);
+    
     PetscFunctionReturn(0);
 }
 

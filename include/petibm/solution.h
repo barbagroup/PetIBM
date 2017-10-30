@@ -90,6 +90,28 @@ public:
      * \return PetscErrorCode.
      */
     virtual PetscErrorCode convert2Flux(const Mat &R) = 0;
+    
+    /**
+     * \brief write solution vectors to a given file.
+     * 
+     * Now only support HDF5 format.
+     *
+     * \param file [in] the full path to the file, without extension.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode write(const std::string &file) const = 0;
+    
+    /**
+     * \brief read solution vectors from a given file.
+     * 
+     * Now only support HDF5 format.
+     *
+     * \param file [in] the full path to the file, without extension.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode read(const std::string &file) = 0;
 
 
 protected:

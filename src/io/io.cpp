@@ -9,6 +9,7 @@
 // STL
 # include <fstream>
 # include <sstream>
+# include <vector>
 
 // PetIBM
 # include <petibm/io.h>
@@ -122,6 +123,65 @@ PetscErrorCode print(const std::string &info)
     ierr = PetscSynchronizedFlush(PETSC_COMM_WORLD, PETSC_STDOUT); CHKERRQ(ierr);
     
     ierr = PetscPrintf(PETSC_COMM_WORLD, "\n"); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file, 
+        const std::vector<std::string> &names, const std::vector<Vec> &vecs, 
+        const PetscFileMode mode)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    PetscViewer     viewer;
+    
+    // create viewer
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, (file+".h5").c_str()); CHKERRQ(ierr);
+    
+    for(int i=0; i<vecs.size(); ++i)
+    {
+        ierr = PetscObjectSetName(
+                (PetscObject) vecs[i], names[i].c_str()); CHKERRQ(ierr);
+        
+        ierr = VecView(vecs[i], viewer); CHKERRQ(ierr);
+    }
+    
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
+        const std::vector<std::string> &names, std::vector<Vec> &vecs)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    PetscViewer     viewer;
+    
+    // create viewer
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, (file+".h5").c_str()); CHKERRQ(ierr);
+    
+    for(int i=0; i<vecs.size(); ++i)
+    {
+        ierr = PetscObjectSetName(
+                (PetscObject) vecs[i], names[i].c_str()); CHKERRQ(ierr);
+        
+        ierr = VecLoad(vecs[i], viewer); CHKERRQ(ierr);
+    }
+    
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
 }

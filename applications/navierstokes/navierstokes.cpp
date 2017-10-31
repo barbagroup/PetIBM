@@ -49,8 +49,8 @@ PetscErrorCode NavierStokesSolver::initialize(const petibm::type::Mesh &inMesh,
     ierr = solution::createSolution(mesh, solution); CHKERRQ(ierr);
 
     // create time schemes objects
-    ierr = timeintegration::createTimeIntegration("", settings, convCoeffs); CHKERRQ(ierr);
-    ierr = timeintegration::createTimeIntegration("", settings, diffCoeffs); CHKERRQ(ierr);
+    ierr = timeintegration::createTimeIntegration("convection", settings, convCoeffs); CHKERRQ(ierr);
+    ierr = timeintegration::createTimeIntegration("diffusion", settings, diffCoeffs); CHKERRQ(ierr);
     
     // create linear solve objects
     ierr = linsolver::createLinSolver("velocity", settings, vSolver); CHKERRQ(ierr);
@@ -175,7 +175,7 @@ PetscErrorCode NavierStokesSolver::createVectors()
         ierr = PetscObjectRegisterDestroy((PetscObject) conv[i]); CHKERRQ(ierr);
     }
     
-    for (unsigned int i=0; i<conv.size(); ++i) {
+    for (unsigned int i=0; i<diff.size(); ++i) {
         ierr = PetscObjectRegisterDestroy((PetscObject) diff[i]); CHKERRQ(ierr);
     }
 
@@ -404,22 +404,27 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const std::string &filePath)
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, (filePath+".h5").c_str()); CHKERRQ(ierr);
     
+    // go to the root node first. Not necessary. Just in case.
+    ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
+    
     // write extra data to the end of the file
     // save explicit convection terms first
-    ierr = PetscViewerHDF5PushGroup(viewer, "convection"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<convCoeffs->nExplicit; ++i)
+    ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
+    for(unsigned int i=0; i<conv.size(); ++i)
     {
+        ierr = PetscObjectSetName((PetscObject) conv[i],
+                std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecView(conv[i], viewer); CHKERRQ(ierr);
     }
-    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
     
     // then save explicit diffusion terms
-    ierr = PetscViewerHDF5PushGroup(viewer, "diffusion"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<diffCoeffs->nExplicit; ++i)
+    ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
+    for(unsigned int i=0; i<diff.size(); ++i)
     {
+        ierr = PetscObjectSetName((PetscObject) diff[i],
+                std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecView(diff[i], viewer); CHKERRQ(ierr);
     }
-    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
     
     // destroy viewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
@@ -441,7 +446,7 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
     PetscViewer     viewer;
 
     // test if file exist 
-    ierr = PetscTestFile((filePath+".h5").c_str(), 'w', &fileExist); CHKERRQ(ierr);
+    ierr = PetscTestFile((filePath+".h5").c_str(), 'r', &fileExist); CHKERRQ(ierr);
     
     if (! fileExist) // if not, return error
         SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_READ,
@@ -457,22 +462,26 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, (filePath+".h5").c_str()); CHKERRQ(ierr);
     
-    // write extra data to the end of the file
-    // save explicit convection terms first
-    ierr = PetscViewerHDF5PushGroup(viewer, "convection"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<convCoeffs->nExplicit; ++i)
+    // go to the root node first. Not necessary. Just in case.
+    ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
+    
+    // read explicit convection terms first
+    ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
+    for(unsigned int i=0; i<conv.size(); ++i)
     {
+        ierr = PetscObjectSetName((PetscObject) conv[i],
+                std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecLoad(conv[i], viewer); CHKERRQ(ierr);
     }
-    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
     
-    // then save explicit diffusion terms
-    ierr = PetscViewerHDF5PushGroup(viewer, "diffusion"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<diffCoeffs->nExplicit; ++i)
+    // then read explicit diffusion terms
+    ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
+    for(unsigned int i=0; i<diff.size(); ++i)
     {
+        ierr = PetscObjectSetName((PetscObject) diff[i],
+                std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecLoad(diff[i], viewer); CHKERRQ(ierr);
     }
-    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
     
     // destroy viewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

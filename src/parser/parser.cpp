@@ -7,6 +7,7 @@
 
 // STL
 # include <string>
+# include <sys/stat.h>
 
 // here goes our own headers
 # include <petibm/parser.h>
@@ -18,6 +19,9 @@ PetscErrorCode readYAMLs(YAML::Node &node);
 
 // private function. Read a single YAML file overwriting part of config.yaml
 PetscErrorCode readSingleYAML(YAML::Node &node, const std::string &s);
+
+// private function. Check if a directory exists. Create one if not.
+PetscErrorCode checkAndCreateFolder(const std::string &dir);
 
 
 namespace petibm
@@ -53,7 +57,7 @@ PetscErrorCode getSettings(YAML::Node &node)
     ierr = PetscOptionsGetString(nullptr, nullptr, "-config",
             s, sizeof(s), &flg); CHKERRQ(ierr);
     
-    if (flg) node["config.ymal"] = s;
+    if (flg) node["config.yaml"] = s;
 
     // the following four arguments will overwrite corresponding sections in
     // config.yaml, if users pass these argument through command line
@@ -70,24 +74,25 @@ PetscErrorCode getSettings(YAML::Node &node)
     ierr = PetscOptionsGetString(nullptr, nullptr, "-flow",
             s, sizeof(s), &flg); CHKERRQ(ierr);
 
-    if (flg) node["flow.ymal"] = s;
+    if (flg) node["flow.yaml"] = s;
 
     // parameters: parameters.yaml. No default value.
     // TODO: what if users provide a relative path? Where should it relative to?
     ierr = PetscOptionsGetString(nullptr, nullptr, "-parameters",
             s, sizeof(s), &flg); CHKERRQ(ierr);
 
-    if (flg) node["parameters.ymal"] = s;
+    if (flg) node["parameters.yaml"] = s;
 
     // bodies: bodies.yaml. No default value.
     // TODO: what if users provide a relative path? Where should it relative to?
     ierr = PetscOptionsGetString(nullptr, nullptr, "-bodies",
             s, sizeof(s), &flg); CHKERRQ(ierr);
 
-    if (flg) node["bodies.ymal"] = s;
+    if (flg) node["bodies.yaml"] = s;
 
     // solution: path to solution folder. Always under working directory.
     node["solution"] = node["directory"].as<std::string>() + "/solution"; 
+    ierr = checkAndCreateFolder(node["solution"].as<std::string>());
 
     // read setting from YAML files
     ierr = readYAMLs(node); CHKERRQ(ierr);
@@ -303,7 +308,7 @@ PetscErrorCode readYAMLs(YAML::Node &node)
     catch(YAML::BadFile &err)
     {
         SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
-            "Unable to open %s"
+            "Unable to open %s "
             "when reading settings from config.yaml\n",
             node["config.yaml"].as<std::string>().c_str());
     }
@@ -353,5 +358,37 @@ PetscErrorCode readSingleYAML(YAML::Node &node, const std::string &s)
         for(auto it: temp) node[s][it.first] = it.second;
     }
 
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode checkAndCreateFolder(const std::string &dir)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode      ierr;
+    PetscBool           flg;
+    
+    ierr = PetscTestDirectory(dir.c_str(), 'w', &flg); CHKERRQ(ierr);
+    
+    if (! flg)
+    {
+        PetscMPIInt     rank;
+        ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
+        
+        if (rank == 0)
+        {
+            int status;
+            status = mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            
+            if (status != 0)
+                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
+                        "Could not create the folder \"%s\".\n",
+                        dir.c_str());
+        }
+        
+        ierr = MPI_Barrier(PETSC_COMM_WORLD); CHKERRQ(ierr);
+    }
+    
     PetscFunctionReturn(0);
 }

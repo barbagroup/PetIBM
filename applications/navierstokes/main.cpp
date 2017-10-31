@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 
 // PETSc
-#include <petsc.h>
+#include <petscsys.h>
 
 // YAML-CPP
 #include <yaml-cpp/yaml.h>

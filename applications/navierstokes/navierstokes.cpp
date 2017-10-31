@@ -3,15 +3,11 @@
  * \brief Implementation of the class \c NavierStokesSolver.
  */
 
-// STL
-#include <fstream>
-#include <iomanip>
-#include <string>
-
 // PETSc
 # include <petscviewerhdf5.h>
 
-#include "navierstokes.h"
+// Navier-Stokes solver
+# include "navierstokes.h"
 
 using namespace petibm;
 
@@ -73,14 +69,14 @@ PetscErrorCode NavierStokesSolver::initialize(const petibm::type::Mesh &inMesh,
     ierr = pSolver->setMatrix(DBNG); CHKERRQ(ierr);
     
     // register events
-    PetscLogStageRegister("rhsVelocity", &stageRHSVelocity);
-    PetscLogStageRegister("solveVelocity", &stageSolveVelocity);
-    PetscLogStageRegister("rhsPoisson", &stageRHSPoisson);
-    PetscLogStageRegister("solvePoisson", &stageSolvePoisson);
-    PetscLogStageRegister("projectionStep", &stageProjectionStep);
-    PetscLogStageRegister("write", &stageWrite);
+    ierr = PetscLogStageRegister("rhsVelocity", &stageRHSVelocity); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister("solveVelocity", &stageSolveVelocity); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister("rhsPoisson", &stageRHSPoisson); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister("solvePoisson", &stageSolvePoisson); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister("projectionStep", &stageProjectionStep); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister("write", &stageWrite); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop();
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // initialize
@@ -435,6 +431,7 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const std::string &filePath)
 }
 
 
+// read data necessary for restarting
 PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
 {
     PetscFunctionBeginUser;
@@ -501,29 +498,33 @@ PetscErrorCode NavierStokesSolver::writeIterations(
     PetscErrorCode ierr;
     PetscInt nIters;
     PetscReal res;
-    std::ofstream outfile;
+    PetscViewer viewer;
+    static PetscFileMode mode = FILE_MODE_WRITE;
 
     PetscFunctionBeginUser;
-
-    if (mesh->mpiRank == 0)
-    {
-        if (timeIndex == 1)
-            outfile.open(filePath.c_str());
-        else
-            outfile.open(filePath.c_str(), std::ios::out | std::ios::app);
-        
-        outfile << timeIndex << '\t';
-        
-        ierr = vSolver->getIters(nIters); CHKERRQ(ierr);
-        ierr = vSolver->getResidual(res); CHKERRQ(ierr);
-        outfile << nIters << '\t' << res << '\t';
-        
-        ierr = pSolver->getIters(nIters); CHKERRQ(ierr);
-        ierr = pSolver->getResidual(res); CHKERRQ(ierr);
-        outfile << nIters << '\t' << res << std::endl;
-        
-        outfile.close();
-    }
+    
+    // create ASCII viewer
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+    
+    // write current time
+    ierr = PetscViewerASCIIPrintf(viewer, "%d", timeIndex); CHKERRQ(ierr);
+    
+    ierr = vSolver->getIters(nIters); CHKERRQ(ierr);
+    ierr = vSolver->getResidual(res); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t%d\t%e", nIters, res); CHKERRQ(ierr);
+    
+    ierr = pSolver->getIters(nIters); CHKERRQ(ierr);
+    ierr = pSolver->getResidual(res); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t%d\t%e\n", nIters, res); CHKERRQ(ierr);
+    
+    // destroy
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+    
+    // next time we'll append data
+    mode = FILE_MODE_APPEND;
 
     PetscFunctionReturn(0);
 } // writeIterations

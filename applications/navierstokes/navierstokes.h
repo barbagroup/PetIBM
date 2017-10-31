@@ -9,12 +9,12 @@
 # include <yaml-cpp/yaml.h>
 
 // PetIBM
-#include <petibm/mesh.h>
-#include <petibm/solution.h>
-#include <petibm/boundary.h>
-#include <petibm/timeintegration.h>
-#include <petibm/linsolver.h>
-#include <petibm/operators.h>
+# include <petibm/mesh.h>
+# include <petibm/solution.h>
+# include <petibm/boundary.h>
+# include <petibm/timeintegration.h>
+# include <petibm/linsolver.h>
+# include <petibm/operators.h>
 
 
 /**
@@ -30,8 +30,7 @@ public:
     NavierStokesSolver() = default;
 
     /**
-     * \brief Constructor; Set references to the mesh, flow conditions,
-     *        and simulation parameters.
+     * \brief Constructor; Set references to the mesh and boundary conditions.
      *
      * \param mesh [in] a type::Mesh object.
      * \param bc [in] a type::Boundary object.

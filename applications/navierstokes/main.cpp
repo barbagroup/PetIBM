@@ -84,7 +84,7 @@ int main(int argc, char **argv)
                 "[time-step %d] Read solution... ", start); CHKERRQ(ierr);
         
         std::stringstream ss;
-        ss << "/" << std::setfill('0') << std::setw(7) << 0;
+        ss << "/" << std::setfill('0') << std::setw(7) << start;
         ierr = solver.readRestartData(
                 (config["solution"].as<std::string>() + ss.str()));
         CHKERRQ(ierr);
@@ -111,9 +111,22 @@ int main(int argc, char **argv)
             
             ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
         }
+        
+        if (ite % nrestart == 0)
+        {
+            ierr = PetscPrintf(PETSC_COMM_WORLD, 
+                    "[time-step %d] Writing necessary data for restarting... ",
+                    ite); CHKERRQ(ierr);
+            
+            std::stringstream ss;
+            ss << "/" << std::setfill('0') << std::setw(7) << ite;
+            ierr = solver.writeRestartData(
+                    (config["solution"].as<std::string>() + ss.str()));
+            CHKERRQ(ierr);
+            
+            ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+        }
     }
-
-    ierr = solver.finalize(); CHKERRQ(ierr);
 
     ierr = PetscFinalize(); CHKERRQ(ierr);
     

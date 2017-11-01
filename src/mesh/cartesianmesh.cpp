@@ -20,6 +20,7 @@
 # include <petibm/cartesianmesh.h>
 # include <petibm/misc.h>
 # include <petibm/parser.h>
+# include <petibm/io.h>
 
 
 namespace petibm
@@ -717,6 +718,34 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f,
 
     ierr = getPackedGlobalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode CartesianMesh::write(const std::string &filePath) const
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode      ierr;
+    
+    if (mpiRank == 0)
+    {
+        PetscFileMode   mode = FILE_MODE_WRITE;
+        std::vector<std::string>    names{"x", "y", "z"};
+        
+        for(unsigned int f=0; f<5; ++f)
+        {
+            std::string group = type::fd2str[type::Field(f)];
+            
+            ierr = io::writeHDF5Arrays(PETSC_COMM_SELF, filePath, group,
+                    names, n[f], coord[f], mode); CHKERRQ(ierr);
+            
+            mode = FILE_MODE_APPEND;
+        }
+    }
+    
+    ierr = MPI_Barrier(comm); CHKERRQ(ierr);
+    
     PetscFunctionReturn(0);
 }
 

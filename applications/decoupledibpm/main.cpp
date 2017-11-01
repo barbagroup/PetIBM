@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     ierr = petibm::mesh::createMesh(PETSC_COMM_WORLD, config, mesh); CHKERRQ(ierr);
     
     // output the data of the mesh
-    // TODO: ierr = mesh.write(params.caseDir, "grid"); CHKERRQ(ierr);
+    ierr = mesh->write(config["directory"].as<std::string>() + "/grid"); CHKERRQ(ierr);
     
     // create bc
     ierr = petibm::boundary::createBoundary(mesh, config, bd); CHKERRQ(ierr);

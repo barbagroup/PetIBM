@@ -79,5 +79,11 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
 PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
         const std::vector<std::string> &names, std::vector<Vec> &vecs);
 
+
+PetscErrorCode writeHDF5Arrays(const MPI_Comm comm, const std::string &file,
+        const std::string &loc, const std::vector<std::string> &names, 
+        const std::vector<PetscInt> &n, const std::vector<PetscReal*> &arrys, 
+        const PetscFileMode mode);
+
 } // end of io
 } // end of petibm

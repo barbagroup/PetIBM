@@ -125,6 +125,16 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode printInfo() const;
+    
+    
+    /**
+     * \brief write grid/mesh data to a HDF5.
+     *
+     * \param filePath [in] path to the file (without extension).
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode write(const std::string &filePath) const = 0;
 
 
     /**

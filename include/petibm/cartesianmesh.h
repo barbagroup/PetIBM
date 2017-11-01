@@ -42,6 +42,9 @@ public:
 
     /** \brief default destructor. */
     virtual ~CartesianMesh();
+    
+    /** \copydoc petibm::mesh::MeshBase::write */
+    virtual PetscErrorCode write(const std::string &filePath) const;
 
     /** \copydoc petibm::mesh::MeshBase::getLocalIndex */
     virtual PetscErrorCode getLocalIndex(

@@ -6,9 +6,11 @@
  * \brief implementations of  descritized delta functions.
  */
 
+// STL
+# include <cmath>
 
 // PetIBM
-#include "petibm/delta.h"
+#include <petibm/delta.h>
 
 
 namespace petibm
@@ -26,9 +28,9 @@ PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx)
 
     if (r > 0.5 && r <= 1.5)
         return (5.0 - 3.0 * r - 
-                sqrt(-3.0 * (1.0 - r) * (1.0 - r) + 1.0)) / (6.0 * drx);
+                std::sqrt(-3.0 * (1.0 - r) * (1.0 - r) + 1.0)) / (6.0 * drx);
 
-    return (1.0 + sqrt(-3.0 * r * r + 1.0)) / (3.0 * drx);
+    return (1.0 + std::sqrt(-3.0 * r * r + 1.0)) / (3.0 * drx);
 } // Roma_et_al
 
 

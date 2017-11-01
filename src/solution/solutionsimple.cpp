@@ -174,7 +174,7 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
     
     PetscErrorCode  ierr;
     
-    std::vector<Vec>           vecs(dim+1);
+    std::vector<Vec>            vecs(dim+1);
     std::vector<std::string>    names(dim+1);
     
     
@@ -193,7 +193,7 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
     vecs.back() = pGlobal;
     
     // write to a HDF5 file
-    ierr = io::writeHDF5Vecs(comm, file, names, vecs); CHKERRQ(ierr);
+    ierr = io::writeHDF5Vecs(comm, file, "/", names, vecs); CHKERRQ(ierr);
     
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;
@@ -231,7 +231,7 @@ PetscErrorCode SolutionSimple::read(const std::string &file)
     vecs.back() = pGlobal;
     
     // write to a HDF5 file
-    ierr = io::readHDF5Vecs(comm, file, names, vecs); CHKERRQ(ierr);
+    ierr = io::readHDF5Vecs(comm, file, "/", names, vecs); CHKERRQ(ierr);
     
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;

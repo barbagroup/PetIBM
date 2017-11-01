@@ -132,8 +132,8 @@ PetscErrorCode print(const std::string &info)
 
 
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file, 
-        const std::vector<std::string> &names, const std::vector<Vec> &vecs, 
-        const PetscFileMode mode)
+        const std::string &loc, const std::vector<std::string> &names, 
+        const std::vector<Vec> &vecs, const PetscFileMode mode)
 {
     PetscFunctionBeginUser;
     
@@ -147,7 +147,7 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
     ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, (file+".h5").c_str()); CHKERRQ(ierr);
     
-    ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
+    ierr = PetscViewerHDF5PushGroup(viewer, loc.c_str()); CHKERRQ(ierr);
     
     for(int i=0; i<vecs.size(); ++i)
     {
@@ -157,50 +157,15 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
         ierr = VecView(vecs[i], viewer); CHKERRQ(ierr);
     }
     
-    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
-    
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
 }
 
 
-PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
-        const std::vector<std::string> &names, std::vector<Vec> &vecs)
-{
-    PetscFunctionBeginUser;
-    
-    PetscErrorCode  ierr;
-    
-    PetscViewer     viewer;
-    
-    // create viewer
-    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
-    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, (file+".h5").c_str()); CHKERRQ(ierr);
-    
-    ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
-    
-    for(int i=0; i<vecs.size(); ++i)
-    {
-        ierr = PetscObjectSetName(
-                (PetscObject) vecs[i], names[i].c_str()); CHKERRQ(ierr);
-        
-        ierr = VecLoad(vecs[i], viewer); CHKERRQ(ierr);
-    }
-    
-    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
-    
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-    
-    PetscFunctionReturn(0);
-}
-
-
-PetscErrorCode writeHDF5Arrays(const MPI_Comm comm, const std::string &file,
+PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
         const std::string &loc, const std::vector<std::string> &names, 
-        const std::vector<PetscInt> &n, const std::vector<PetscReal*> &arrys, 
+        const std::vector<PetscInt> &n, const std::vector<PetscReal*> &vecs, 
         const PetscFileMode mode)
 {
     PetscFunctionBeginUser;
@@ -215,17 +180,84 @@ PetscErrorCode writeHDF5Arrays(const MPI_Comm comm, const std::string &file,
     
     ierr = PetscViewerHDF5PushGroup(viewer, loc.c_str()); CHKERRQ(ierr);
     
-    for(unsigned int i=0; i<arrys.size(); i++)
+    for(unsigned int i=0; i<vecs.size(); i++)
     {
         Vec     temp;
         ierr = VecCreateMPIWithArray(
                 comm, 1, n[i], PETSC_DECIDE, nullptr, &temp); CHKERRQ(ierr);
         ierr = PetscObjectSetName(
                 (PetscObject) temp, names[i].c_str()); CHKERRQ(ierr);
-        ierr = VecPlaceArray(temp, arrys[i]); CHKERRQ(ierr);
+        ierr = VecPlaceArray(temp, vecs[i]); CHKERRQ(ierr);
         ierr = VecView(temp, viewer); CHKERRQ(ierr); 
         ierr = VecResetArray(temp); CHKERRQ(ierr);
         ierr = VecDestroy(&temp); CHKERRQ(ierr);
+    }
+    
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
+        const std::string &loc, const std::vector<std::string> &names, 
+        const type::RealVec2D &vecs, const PetscFileMode mode)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode      ierr;
+    PetscViewer         viewer;
+    
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, (file+".h5").c_str()); CHKERRQ(ierr);
+    
+    ierr = PetscViewerHDF5PushGroup(viewer, loc.c_str()); CHKERRQ(ierr);
+    
+    for(unsigned int i=0; i<vecs.size(); i++)
+    {
+        Vec     temp;
+        ierr = VecCreateMPIWithArray(comm, 1, 
+                vecs[i].size(), PETSC_DECIDE, nullptr, &temp); CHKERRQ(ierr);
+        ierr = PetscObjectSetName(
+                (PetscObject) temp, names[i].c_str()); CHKERRQ(ierr);
+        ierr = VecPlaceArray(temp, vecs[i].data()); CHKERRQ(ierr);
+        ierr = VecView(temp, viewer); CHKERRQ(ierr); 
+        ierr = VecResetArray(temp); CHKERRQ(ierr);
+        ierr = VecDestroy(&temp); CHKERRQ(ierr);
+    }
+    
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
+        const std::string &loc, const std::vector<std::string> &names, 
+        std::vector<Vec> &vecs)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    PetscViewer     viewer;
+    
+    // create viewer
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, (file+".h5").c_str()); CHKERRQ(ierr);
+    
+    ierr = PetscViewerHDF5PushGroup(viewer, loc.c_str()); CHKERRQ(ierr);
+    
+    for(int i=0; i<vecs.size(); ++i)
+    {
+        ierr = PetscObjectSetName(
+                (PetscObject) vecs[i], names[i].c_str()); CHKERRQ(ierr);
+        
+        ierr = VecLoad(vecs[i], viewer); CHKERRQ(ierr);
     }
     
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

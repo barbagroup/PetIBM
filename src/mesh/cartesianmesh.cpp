@@ -737,7 +737,7 @@ PetscErrorCode CartesianMesh::write(const std::string &filePath) const
         {
             std::string group = type::fd2str[type::Field(f)];
             
-            ierr = io::writeHDF5Arrays(PETSC_COMM_SELF, filePath, group,
+            ierr = io::writeHDF5Vecs(PETSC_COMM_SELF, filePath, group,
                     names, n[f], coord[f], mode); CHKERRQ(ierr);
             
             mode = FILE_MODE_APPEND;

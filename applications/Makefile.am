@@ -1,3 +1,4 @@
 SUBDIRS = \
 	navierstokes \
-	decoupledibpm
+	decoupledibpm \
+	vorticity

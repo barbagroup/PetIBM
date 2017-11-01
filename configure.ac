@@ -82,6 +82,7 @@ AC_CONFIG_FILES([Makefile
                  tests/utilities/Makefile
                  tests/operators/Makefile
                  applications/Makefile
+                 applications/vorticity/Makefile
                  applications/navierstokes/Makefile
                  applications/decoupledibpm/Makefile])
 

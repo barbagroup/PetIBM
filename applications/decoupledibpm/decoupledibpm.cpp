@@ -85,14 +85,22 @@ PetscErrorCode DecoupledIBPMSolver::createOperators()
     ierr = MatCreateVecs(MHat, nullptr, &MHatDiag); CHKERRQ(ierr);
     ierr = MatGetDiagonal(MHat, MHatDiag); CHKERRQ(ierr);
 
-    // create operator E
+    // create a Delta operator and its transpose
     ierr = petibm::operators::createDelta(mesh, bc, bodies, E); CHKERRQ(ierr);
+    ierr = MatTranspose(E, MAT_INITIAL_MATRIX, &H); CHKERRQ(ierr);
+    
+    // create operator E
     ierr = MatDiagonalScale(E, nullptr, RDiag); CHKERRQ(ierr);
     ierr = MatDiagonalScale(E, nullptr, MHatDiag); CHKERRQ(ierr);
     
     // create operator H
-    ierr = MatTranspose(E, MAT_INITIAL_MATRIX, &H); CHKERRQ(ierr);
-    ierr = MatDiagonalScale(H, RDiag, nullptr); CHKERRQ(ierr);
+    // Note: we do nothing here. Because if f is force (unit [m/s^2]), we need to 
+    // convert it to pressure when using it in Eulerian momentum equations.
+    // That is, (H*R^{-1}*f). While H = R*Delta, This means the real scattering
+    // operator used in momentum equation is just a Delta operator. So we just
+    // let H be the Delta operator. One thing to remember is that this is based
+    // on the assumption that the size of Lagragian element is equal to the size
+    // of the Eulerian grid near by.
 
     // create operator BN
     ierr = petibm::operators::createBnHead(

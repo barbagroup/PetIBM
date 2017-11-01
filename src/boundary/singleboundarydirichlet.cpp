@@ -39,8 +39,8 @@ PetscErrorCode SingleBoundaryDirichlet::setGhostICsKernel(
     }
     else
     {
-        p.a0 = 1.0;
-        p.a1 = normal * p.dL * value;
+        p.a0 = - 1.0;
+        p.a1 = 2.0 * value;
     }
     
     p.value = p.a0 * targetValue + p.a1;

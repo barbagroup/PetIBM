@@ -492,7 +492,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(
             ierr = DMDACreate2d(comm,
                     (periodic[0][0])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
                     (periodic[1][1])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
-                    DMDA_STENCIL_STAR, 
+                    DMDA_STENCIL_BOX, 
                     n[i][0], n[i][1], nProc[0], nProc[1],
                     1, 1, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
             break;
@@ -501,7 +501,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(
                     (periodic[0][0])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
                     (periodic[1][1])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
                     (periodic[2][2])? DM_BOUNDARY_PERIODIC : DM_BOUNDARY_GHOSTED,
-                    DMDA_STENCIL_STAR, n[i][0], n[i][1], n[i][2], 
+                    DMDA_STENCIL_BOX, n[i][0], n[i][1], n[i][2], 
                     nProc[0], nProc[1], nProc[2], 
                     1, 1, nullptr, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
             break;

@@ -416,7 +416,7 @@ PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh,
 
         // create DMs
         ierr = DMDACreate2d(mesh->comm,
-                DM_BOUNDARY_NONE, DM_BOUNDARY_NONE, DMDA_STENCIL_STAR,
+                DM_BOUNDARY_NONE, DM_BOUNDARY_NONE, DMDA_STENCIL_BOX,
                 n[0][0], n[0][1], mesh->nProc[0], mesh->nProc[1],
                 1, 1, nullptr, nullptr, &wDMs[0]); CHKERRQ(ierr);
 
@@ -478,7 +478,7 @@ PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh,
             // create DMs
             ierr = DMDACreate3d(mesh->comm,
                     DM_BOUNDARY_NONE, DM_BOUNDARY_NONE, DM_BOUNDARY_NONE,
-                    DMDA_STENCIL_STAR,
+                    DMDA_STENCIL_BOX,
                     n[f][0], n[f][1], n[f][2], 
                     mesh->nProc[0], mesh->nProc[1], mesh->nProc[2],
                     1, 1, nullptr, nullptr, nullptr, &wDMs[f]); CHKERRQ(ierr);

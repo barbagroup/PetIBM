@@ -7,6 +7,9 @@
  */
 
 
+//
+# include <functional>
+
 // here goes PETSc headers
 # include <petscmat.h>
 

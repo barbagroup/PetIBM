@@ -537,13 +537,16 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = utilities \
+SUBDIRS = body \
+          boundary \
+          mesh \
+          misc \
           operators
 
-TESTS = utilities/delta-test \
-        utilities/singlebody-test \
-        utilities/cartesianmesh-test \
-        utilities/singleboundary-test \
+TESTS = misc/delta-test \
+        body/singlebody-test \
+        mesh/cartesianmesh-test \
+        boundary/singleboundary-test \
         operators/createbnhead-test
 
 AM_COLOR_TESTS = always
@@ -827,30 +830,30 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-utilities/delta-test.log: utilities/delta-test
-	@p='utilities/delta-test'; \
-	b='utilities/delta-test'; \
+misc/delta-test.log: misc/delta-test
+	@p='misc/delta-test'; \
+	b='misc/delta-test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-utilities/singlebody-test.log: utilities/singlebody-test
-	@p='utilities/singlebody-test'; \
-	b='utilities/singlebody-test'; \
+body/singlebody-test.log: body/singlebody-test
+	@p='body/singlebody-test'; \
+	b='body/singlebody-test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-utilities/cartesianmesh-test.log: utilities/cartesianmesh-test
-	@p='utilities/cartesianmesh-test'; \
-	b='utilities/cartesianmesh-test'; \
+mesh/cartesianmesh-test.log: mesh/cartesianmesh-test
+	@p='mesh/cartesianmesh-test'; \
+	b='mesh/cartesianmesh-test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-utilities/singleboundary-test.log: utilities/singleboundary-test
-	@p='utilities/singleboundary-test'; \
-	b='utilities/singleboundary-test'; \
+boundary/singleboundary-test.log: boundary/singleboundary-test
+	@p='boundary/singleboundary-test'; \
+	b='boundary/singleboundary-test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

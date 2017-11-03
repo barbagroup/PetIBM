@@ -1,10 +1,13 @@
-SUBDIRS = utilities \
+SUBDIRS = body \
+          boundary \
+          mesh \
+          misc \
           operators
 
-TESTS = utilities/delta-test \
-        utilities/singlebody-test \
-        utilities/cartesianmesh-test \
-        utilities/singleboundary-test \
+TESTS = misc/delta-test \
+        body/singlebody-test \
+        mesh/cartesianmesh-test \
+        boundary/singleboundary-test \
         operators/createbnhead-test
 
 AM_COLOR_TESTS = always

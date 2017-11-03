@@ -19604,7 +19604,7 @@ fi
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/utilities/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/decoupledibpm/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/decoupledibpm/Makefile"
 
 
 # output message
@@ -20745,7 +20745,10 @@ do
     "src/solution/Makefile") CONFIG_FILES="$CONFIG_FILES src/solution/Makefile" ;;
     "src/timeintegration/Makefile") CONFIG_FILES="$CONFIG_FILES src/timeintegration/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
-    "tests/utilities/Makefile") CONFIG_FILES="$CONFIG_FILES tests/utilities/Makefile" ;;
+    "tests/body/Makefile") CONFIG_FILES="$CONFIG_FILES tests/body/Makefile" ;;
+    "tests/boundary/Makefile") CONFIG_FILES="$CONFIG_FILES tests/boundary/Makefile" ;;
+    "tests/mesh/Makefile") CONFIG_FILES="$CONFIG_FILES tests/mesh/Makefile" ;;
+    "tests/misc/Makefile") CONFIG_FILES="$CONFIG_FILES tests/misc/Makefile" ;;
     "tests/operators/Makefile") CONFIG_FILES="$CONFIG_FILES tests/operators/Makefile" ;;
     "applications/Makefile") CONFIG_FILES="$CONFIG_FILES applications/Makefile" ;;
     "applications/createxdmf/Makefile") CONFIG_FILES="$CONFIG_FILES applications/createxdmf/Makefile" ;;

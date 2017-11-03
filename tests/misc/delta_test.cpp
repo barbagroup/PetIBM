@@ -13,11 +13,11 @@
 
 #include "petibm/delta.h"
 
-using namespace petibm::utilities::delta;
+using namespace petibm::delta;
 
 
 // check value is zero outside region of influence
-TEST(utilitiesDeltaRomaEtAlTest, zeroOutside)
+TEST(deltaRomaEtAlTest, zeroOutside)
 {
 	const PetscReal h = 1.0;
 	EXPECT_EQ(0.0, Roma_et_al(1.5, h));
@@ -25,14 +25,14 @@ TEST(utilitiesDeltaRomaEtAlTest, zeroOutside)
 }
 
 // check maximum value at 0
-TEST(utilitiesDeltaRomaEtAlTest, maximumValue)
+TEST(deltaRomaEtAlTest, maximumValue)
 {
 	const PetscReal h = 1.0;
 	EXPECT_EQ(2.0/3.0, Roma_et_al(0.0, h));
 }
 
 // check delta function is monotonically decreasing
-TEST(utilitiesDeltaRomaEtAlTest, decreasingInfluence)
+TEST(deltaRomaEtAlTest, decreasingInfluence)
 {
 	const PetscReal h = 1.0;
 	// create a sorted vector of random reals between 0.0 and 1.5

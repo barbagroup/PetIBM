@@ -79,7 +79,10 @@ AC_CONFIG_FILES([Makefile
                  src/solution/Makefile
                  src/timeintegration/Makefile
                  tests/Makefile
-                 tests/utilities/Makefile
+                 tests/body/Makefile
+                 tests/boundary/Makefile
+                 tests/mesh/Makefile
+                 tests/misc/Makefile
                  tests/operators/Makefile
                  applications/Makefile
                  applications/createxdmf/Makefile

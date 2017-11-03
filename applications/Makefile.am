@@ -1,4 +1,5 @@
 SUBDIRS = \
 	navierstokes \
 	decoupledibpm \
-	vorticity
+	vorticity \
+	createxdmf

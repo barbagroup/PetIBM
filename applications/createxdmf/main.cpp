@@ -125,7 +125,7 @@ PetscErrorCode writeSingleXDMF(
     ierr = PetscViewerASCIIPrintf(viewer, 
             "<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" [\n"); CHKERRQ(ierr);
     ierr = PetscViewerASCIIPrintf(viewer, 
-            "    <!ENTITY CaseDir \"%s\">\n", directory.c_str()); CHKERRQ(ierr);
+            "    <!ENTITY CaseDir \"%s\">\n", "./"); CHKERRQ(ierr);
     for(unsigned int i=0; i<dim; ++i)
     {
         ierr = PetscViewerASCIIPrintf(viewer, "    <!ENTITY N%s \"%d\">\n", 
@@ -176,7 +176,7 @@ PetscErrorCode writeSingleXDMF(
             "<Grid GridType=\"Collection\" CollectionType=\"Temporal\">\n\n"); CHKERRQ(ierr);
     
     // write each step
-    for(PetscInt t=bg; t<ed; t+=step)
+    for(PetscInt t=bg; t<=ed; t+=step)
     {
         ierr = PetscViewerASCIIPrintf(viewer, "    " "    " 
                 "<Grid GridType=\"Uniform\" Name=\"%s Grid\">\n", name.c_str()); CHKERRQ(ierr);

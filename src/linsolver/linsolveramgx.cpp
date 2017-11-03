@@ -85,7 +85,7 @@ PetscErrorCode LinSolverAmgX::getResidual(PetscReal &res)
     PetscInt iter;
     
     ierr = amgx.getIters(iter); CHKERRQ(ierr);
-    ierr = amgx.getResidual(iter, res); CHKERRQ(ierr);
+    ierr = amgx.getResidual(iter-1, res); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // getResidual

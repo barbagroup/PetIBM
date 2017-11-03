@@ -114,13 +114,7 @@ PetscErrorCode NavierStokesSolver::createOperators()
             D, BNG, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &DBNG); CHKERRQ(ierr);
     
     // set null space to DBNG
-    {
-        MatNullSpace nsp;
-        ierr = MatNullSpaceCreate(
-                mesh->comm, PETSC_TRUE, 0, nullptr, &nsp); CHKERRQ(ierr);
-        ierr = MatSetNullSpace(DBNG, nsp); CHKERRQ(ierr);
-        ierr = MatNullSpaceDestroy(&nsp); CHKERRQ(ierr);
-    }
+    ierr = setNullSpace(); CHKERRQ(ierr);
     
     // destroy temporary operator
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
@@ -175,6 +169,43 @@ PetscErrorCode NavierStokesSolver::createVectors()
         ierr = PetscObjectRegisterDestroy((PetscObject) diff[i]); CHKERRQ(ierr);
     }
 
+    PetscFunctionReturn(0);
+}
+
+
+PetscErrorCode NavierStokesSolver::setNullSpace()
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    std::string type;
+    
+    ierr = pSolver->getType(type); CHKERRQ(ierr);
+    
+    if (type == "PETSc KSP")
+    {
+        MatNullSpace nsp;
+        ierr = MatNullSpaceCreate(
+                mesh->comm, PETSC_TRUE, 0, nullptr, &nsp); CHKERRQ(ierr);
+        ierr = MatSetNullSpace(DBNG, nsp); CHKERRQ(ierr);
+        ierr = MatNullSpaceDestroy(&nsp); CHKERRQ(ierr);
+        isRefP = PETSC_FALSE;
+    }
+    else if (type == "NVIDIA AmgX")
+    {
+        PetscInt row[1] = {0};
+        ierr = MatZeroRowsColumns(
+                DBNG, 1, row, 1.0, nullptr, nullptr); CHKERRQ(ierr);
+        isRefP = PETSC_TRUE;
+    }
+    else
+    {
+        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
+                "Could not recognize the type of linear solver: %s\n",
+                type.c_str());
+    }
+    
     PetscFunctionReturn(0);
 }
 
@@ -308,6 +339,14 @@ PetscErrorCode NavierStokesSolver::assembleRHSPoisson()
     // get Du* (which is equal to (D_{interior} + D_{boundary})u*
     ierr = MatMult(D, solution->UGlobal, rhs2); CHKERRQ(ierr);
     ierr = MatMultAdd(DCorrection, solution->UGlobal, rhs2, rhs2); CHKERRQ(ierr);
+    
+    
+    if (isRefP)
+    {
+        ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
+        ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
+        ierr = VecAssemblyEnd(rhs2); CHKERRQ(ierr);
+    }
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 

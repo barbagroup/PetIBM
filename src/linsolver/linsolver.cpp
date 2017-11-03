@@ -41,6 +41,14 @@ PetscErrorCode LinSolverBase::printInfo() const
 }
 
 
+PetscErrorCode LinSolverBase::getType(std::string &_type) const
+{
+    PetscFunctionBeginUser;
+    _type = type;
+    PetscFunctionReturn(0);
+}
+
+
 // factory function for creating a LinSolver
 PetscErrorCode createLinSolver(const std::string &solverName, 
         const YAML::Node &node, type::LinSolver &solver)

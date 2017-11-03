@@ -183,6 +183,11 @@ protected:
     /** \brief Diffusive terms from previous time steps. */
     std::vector<Vec> diff; 
     
+
+    
+    /** \brief a bool indicating if we'll pin a reference pressure point. */
+    PetscBool   isRefP;
+    
     
 
     /** \brief Log initialize phase. */
@@ -228,4 +233,5 @@ protected:
     
     PetscErrorCode createOperators();
     PetscErrorCode createVectors();
+    PetscErrorCode setNullSpace();
 };

@@ -54,6 +54,16 @@ public:
      * \return PetscErrorCode.
      */
     PetscErrorCode printInfo() const;
+    
+
+    /**
+     * \brief get the type of this instance.
+     * 
+     * \param type [out] a string representing the type.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode getType(std::string &type) const;
 
     /**
      * \brief the function to set the coefficient matrix A in Ax=b.

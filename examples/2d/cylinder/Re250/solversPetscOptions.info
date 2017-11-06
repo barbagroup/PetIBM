@@ -2,17 +2,42 @@
 
 # Velocity solver: prefix `-velocity_`
 -velocity_ksp_type bcgs
--velocity_ksp_rtol 1.0E-05
--velocity_ksp_atol 0.0
--velocity_ksp_max_it 10000
--velocity_pc_type jacobi
--velocity_pc_jacobi_type diagonal
+-velocity_ksp_rtol 1e-50
+-velocity_ksp_atol 1e-08
+#-velocity_ksp_view
+#-velocity_ksp_monitor
+
+
 
 # Poisson solver: prefix `-poisson_`
--poisson_ksp_type cg
--poisson_ksp_rtol 1.0E-05
--poisson_ksp_atol 0.0
--poisson_ksp_max_it 20000
--poisson_pc_type gamg
--poisson_pc_gamg_type agg
--poisson_pc_gamg_agg_nsmooths 1
+-poisson_ksp_type bcgs
+-poisson_ksp_rtol 1e-50
+-poisson_ksp_atol 1e-08
+
+-poisson_pc_type hypre
+-poisson_pc_hypre_type boomeramg
+-poisson_pc_hypre_boomeramg_cycle_type V
+-poisson_pc_hypre_boomeramg_max_levels 100
+-poisson_pc_hypre_boomeramg_max_iter 1
+-poisson_pc_hypre_boomeramg_tol 0.0
+-poisson_pc_hypre_boomeramg_grid_sweeps_down 1
+-poisson_pc_hypre_boomeramg_grid_sweeps_up 1
+-poisson_pc_hypre_boomeramg_grid_sweeps_coarse 1
+-poisson_pc_hypre_boomeramg_relax_type_all Jacobi
+-poisson_pc_hypre_boomeramg_relax_type_coarse Gaussian-elimination
+-poisson_pc_hypre_boomeramg_relax_weight_all 1.0
+-poisson_pc_hypre_boomeramg_outer_relax_weight_all 1.0
+-poisson_pc_hypre_boomeramg_measure_type local
+-poisson_pc_hypre_boomeramg_coarsen_type HMIS
+-poisson_pc_hypre_boomeramg_interp_type ext+i-cc
+#-poisson_ksp_monitor
+#-poisson_ksp_view
+
+
+
+# forces solver: prefix `-forces_`
+-forces_ksp_type preonly
+-forces_pc_type lu
+-forces_pc_factor_mat_solver_package superlu_dist
+#-forces_sub_ksp_monitor
+#-forces_ksp_view

@@ -506,6 +506,8 @@ PetscErrorCode CartesianMesh::createSingleDMDA(
                     1, 1, nullptr, nullptr, nullptr, &da[i]); CHKERRQ(ierr);
             break;
     }
+    
+    ierr = DMSetUp(da[i]); CHKERRQ(ierr);
 
     ierr = DMDAGetLocalInfo(da[i], &lclInfo); CHKERRQ(ierr);
 

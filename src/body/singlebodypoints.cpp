@@ -75,6 +75,8 @@ PetscErrorCode SingleBodyPoints::createDMDA()
 
     ierr = DMDACreate1d(comm, DM_BOUNDARY_NONE, 
             nPts, dim, 0, nullptr, &da); CHKERRQ(ierr);
+    
+    ierr = DMSetUp(da); CHKERRQ(ierr);
 
     ierr = DMDAGetLocalInfo(da, &lclInfo); CHKERRQ(ierr);
 

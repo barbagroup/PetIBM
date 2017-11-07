@@ -30,7 +30,7 @@ PetscErrorCode DecoupledIBPMSolver::initialize(
 
     PetscFunctionBeginUser;
     
-    NavierStokesSolver::initialize(inMesh, inBC, node);
+    ierr = NavierStokesSolver::initialize(inMesh, inBC, node); CHKERRQ(ierr);
     
     // continue on stageInitialize
     ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
@@ -42,10 +42,10 @@ PetscErrorCode DecoupledIBPMSolver::initialize(
     ierr = petibm::linsolver::createLinSolver("forces", settings, fSolver); CHKERRQ(ierr);
 
     // create extra operators for decoupled method
-    ierr = createOperators(); CHKERRQ(ierr);
+    ierr = createExtraOperators(); CHKERRQ(ierr);
 
     // create extra vectors for decoupled method
-    ierr = createVectors(); CHKERRQ(ierr);
+    ierr = createExtraVectors(); CHKERRQ(ierr);
 
     // set coefficient matrix to the force solver
     ierr = fSolver->setMatrix(EBNH); CHKERRQ(ierr);
@@ -62,7 +62,7 @@ PetscErrorCode DecoupledIBPMSolver::initialize(
 
 
 // create extra operators for decoupled method
-PetscErrorCode DecoupledIBPMSolver::createOperators()
+PetscErrorCode DecoupledIBPMSolver::createExtraOperators()
 {
     PetscErrorCode ierr;
 
@@ -127,7 +127,7 @@ PetscErrorCode DecoupledIBPMSolver::createOperators()
 
 
 // create extra vectors for decoupled method
-PetscErrorCode DecoupledIBPMSolver::createVectors()
+PetscErrorCode DecoupledIBPMSolver::createExtraVectors()
 {
     PetscFunctionBeginUser;
     
@@ -180,7 +180,7 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSVelocity()
     PetscFunctionBeginUser;
 
     // prepare the part coming from underlying Navier-Stoke solver
-    NavierStokesSolver::assembleRHSVelocity();
+    ierr = NavierStokesSolver::assembleRHSVelocity(); CHKERRQ(ierr);
 
     // continue on stageRHSVelocity
     ierr = PetscLogStagePush(stageRHSVelocity); CHKERRQ(ierr);
@@ -192,19 +192,6 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSVelocity()
 
     PetscFunctionReturn(0);
 } // assembleRHSVelocity
-
-
-// solve velocity system
-PetscErrorCode DecoupledIBPMSolver::solveVelocity()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = NavierStokesSolver::solveVelocity(); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // solveVelocity
 
 
 // prepare right-hand-side for velocity system
@@ -271,19 +258,6 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSPoisson()
 } // assembleRHSPoisson
 
 
-// solve pressure increment
-PetscErrorCode DecoupledIBPMSolver::solvePoisson()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = NavierStokesSolver::solvePoisson(); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // solvePoisson
-
-
 // project solution to divergence-free field
 PetscErrorCode DecoupledIBPMSolver::projectionStep()
 {
@@ -304,22 +278,6 @@ PetscErrorCode DecoupledIBPMSolver::projectionStep()
 
     PetscFunctionReturn(0);
 } // projectionStep
-
-
-// output time-dependent solutions
-PetscErrorCode DecoupledIBPMSolver::write(const std::string &filePath)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    // write velocity and pressure
-    ierr = NavierStokesSolver::write(filePath); CHKERRQ(ierr);
-    
-    // TODO: should we write Lagrangian forces?
-
-    PetscFunctionReturn(0);
-} // write
 
 
 // output extra data required for restarting to the user provided file

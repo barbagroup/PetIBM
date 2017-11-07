@@ -20,6 +20,9 @@
 class DecoupledIBPMSolver : protected NavierStokesSolver
 {
 public:
+
+    // public members that don't change
+    using NavierStokesSolver::write;
     
     /** \brief Default constructor. */
     DecoupledIBPMSolver() = default;
@@ -51,13 +54,6 @@ public:
 
     /** \brief Advance in time. */
     PetscErrorCode advance();
-
-    /**
-     * \brief Write the solution into a file.
-     *
-     * \param filePath [in] path to file to save (without extension).
-     */
-    PetscErrorCode write(const std::string &filePath);
     
     /**
      * \brief Write the extra data that are required for restarting sessions.
@@ -141,31 +137,25 @@ protected:
     
 
     /** \brief Assemble the RHS vector of the velocity system.  */
-    PetscErrorCode assembleRHSVelocity();
-
-    /** \brief Solve the velocity system. */
-    PetscErrorCode solveVelocity();
+    virtual PetscErrorCode assembleRHSVelocity();
 
     /** \brief Assemble the RHS vector of the Poisson system. */
-    PetscErrorCode assembleRHSPoisson();
-
-    /** \brief Solve the Poisson system. */
-    PetscErrorCode solvePoisson();
+    virtual PetscErrorCode assembleRHSPoisson();
 
     /** \brief Assemble the RHS vector of the system for the boundary forces. */
-    PetscErrorCode assembleRHSForces();
+    virtual PetscErrorCode assembleRHSForces();
 
     /** \brief Solve the system for the boundary forces. */
-    PetscErrorCode solveForces();
+    virtual PetscErrorCode solveForces();
 
     /** \brief Project the velocity to divergence-free space, update
      *         pressure field, and update force.  */
-    PetscErrorCode projectionStep();
+    virtual PetscErrorCode projectionStep();
 
     /** \brief Assembles operators and matrices. */
-    PetscErrorCode createOperators();
+    PetscErrorCode createExtraOperators();
 
     /** \brief create vectors. */
-    PetscErrorCode createVectors();
+    PetscErrorCode createExtraVectors();
 
 }; // DecoupledIBPMSolver

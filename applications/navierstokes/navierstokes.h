@@ -215,23 +215,27 @@ protected:
     
 
     /** \brief Assemble the RHS vector of the velocity system.  */
-    PetscErrorCode assembleRHSVelocity();
+    virtual PetscErrorCode assembleRHSVelocity();
 
     /** \brief Solve the velocity system.  */
-    PetscErrorCode solveVelocity();
+    virtual PetscErrorCode solveVelocity();
 
     /** \brief Assemble the RHS vector of the Poisson system.  */
-    PetscErrorCode assembleRHSPoisson();
+    virtual PetscErrorCode assembleRHSPoisson();
 
     /** \brief Solve the Poisson system.  */
-    PetscErrorCode solvePoisson();
+    virtual PetscErrorCode solvePoisson();
 
     /** \brief Project the velocity field onto the divergence-free space and 
      *         update the pressure field.  */
-    PetscErrorCode projectionStep();
+    virtual PetscErrorCode projectionStep();
     
+    /** \brief create operators.  */
+    virtual PetscErrorCode createOperators();
     
-    PetscErrorCode createOperators();
-    PetscErrorCode createVectors();
-    PetscErrorCode setNullSpace();
+    /** \brief create vectors.  */
+    virtual PetscErrorCode createVectors();
+    
+    /** \brief set null space or apply reference point.  */
+    virtual PetscErrorCode setNullSpace();
 };

@@ -189,6 +189,7 @@ PetscErrorCode NavierStokesSolver::setNullSpace()
         ierr = MatNullSpaceCreate(
                 mesh->comm, PETSC_TRUE, 0, nullptr, &nsp); CHKERRQ(ierr);
         ierr = MatSetNullSpace(DBNG, nsp); CHKERRQ(ierr);
+        ierr = MatSetNearNullSpace(DBNG, nsp); CHKERRQ(ierr);
         ierr = MatNullSpaceDestroy(&nsp); CHKERRQ(ierr);
         isRefP = PETSC_FALSE;
     }

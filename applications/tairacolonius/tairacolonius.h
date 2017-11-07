@@ -19,6 +19,12 @@
 class TairaColoniusSolver : protected NavierStokesSolver
 {
 public:
+
+    // public methods that don't change
+    using NavierStokesSolver::advance;
+    using NavierStokesSolver::writeRestartData;
+    using NavierStokesSolver::readRestartData;
+    using NavierStokesSolver::writeIterations;
     
     /** \brief Default constructor.  */
     TairaColoniusSolver() = default;
@@ -53,43 +59,11 @@ public:
             const YAML::Node &node);
 
     /**
-     * \brief Advance in time for one step.
-     */
-    PetscErrorCode advance();
-
-    /**
      * \brief Write the solution into a file.
      *
      * \param filePath [in] path of the file to save (without the extension)
      */
     PetscErrorCode write(const std::string &filePath);
-    
-    /**
-     * \brief Write the extra data that are required for restarting sessions.
-     * 
-     * If the file already has solutions in it, only extra necessary data will
-     * be writen in. Otherwise, solutions and extra data will all be writen in.
-     *
-     * \param filePath [in] path of the file to save (without the extension)
-     */
-    PetscErrorCode writeRestartData(const std::string &filePath);
-    
-    /**
-     * \brief read data that are required for restarting sessions.
-     * 
-     * \param filePath [in] path of the file to save (without the extension)
-     */
-    PetscErrorCode readRestartData(const std::string &filePath);
-
-    /**
-     * \brief Write number of iterations executed by each solver at current time
-     *        step.
-     *
-     * \param timeIndex Time-step index
-     * \param filePath Path of the file to write in
-     */
-    PetscErrorCode writeIterations(
-            const int &timeIndex, const std::string &filePath);
 
     /**
      * \brief Write the integrated forces acting on the bodies into a ASCII file.
@@ -111,52 +85,27 @@ protected:
     /** \brief a reference to immersed bodies. */
     petibm::type::BodyPack      bodies;
     
-    
-    
-    /** \brief a bool indicating if we'll pin a reference pressure point. */
-    PetscBool   isRefP;
-    
-    
-    /** \brief solution of Lagragian force at time-step n. */
-    Vec f;
-    
     /** \brief combination of pressure and forces. */
-    Vec phi;
+    Vec P;
     
-    /** \brief increment of phi. */
-    Vec dphi;
-    
-    /** \brief boundary correction from divergence operator. */
-    Vec bc2;
-    
-
+    /** \brief PETSc IS objects indicating which entries in phi belonging to 
+     *         pressure or forces. */
     IS isDE[2];
-    
-    
     
     /** \brief Log force integration. */
     PetscLogStage stageIntegrateForces; 
     
-    
 
-    /** \brief Assemble the RHS vector of the velocity system.  */
-    PetscErrorCode assembleRHSVelocity();
-
-    /** \brief Solve the velocity system.  */
-    PetscErrorCode solveVelocity();
 
     /** \brief Assemble the RHS vector of the Poisson system.  */
-    PetscErrorCode assembleRHSPoisson();
-
-    /** \brief Solve the Poisson system.  */
-    PetscErrorCode solvePoisson();
-
-    /** \brief Project the velocity field onto the divergence-free space and 
-     *         update the pressure field.  */
-    PetscErrorCode projectionStep();
+    virtual PetscErrorCode assembleRHSPoisson();
     
+    /** \brief create operators.  */
+    virtual PetscErrorCode createOperators();
     
-    PetscErrorCode createOperators();
-    PetscErrorCode createVectors();
-    PetscErrorCode setNullSpace();
+    /** \brief create vectors.  */
+    virtual PetscErrorCode createVectors();
+    
+    /** \brief set null space or apply reference point.  */
+    virtual PetscErrorCode setNullSpace();
 };

@@ -235,7 +235,7 @@ PetscErrorCode SingleBodyPoints::calculateAvgForces(
     {
         for(PetscInt dof=0; dof<dim; ++dof)
         {
-            fAvgLocal[dof] += fArry[i][dof];
+            fAvgLocal[dof] -= fArry[i][dof]; // fArray is the force applied to fluid
         }
     }
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);

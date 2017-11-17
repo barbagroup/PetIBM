@@ -213,7 +213,7 @@ TEST_F(SingleBodyTest, calculateAvgForces2D)
     body2d->calculateAvgForces(f, avg);
     ASSERT_EQ(body2d->dim, (int)avg.size());
     for (unsigned int d=0; d<avg.size(); d++)
-        ASSERT_EQ(body2d->nPts * 1.0, avg[d]);
+        ASSERT_EQ(body2d->nPts * -1.0, avg[d]);
     VecDestroy(&f);
 }
 
@@ -227,7 +227,7 @@ TEST_F(SingleBodyTest, calculateAvgForces3D)
     body3d->calculateAvgForces(f, avg);
     ASSERT_EQ(body3d->dim, (int)avg.size());
     for (unsigned int d=0; d<avg.size(); d++)
-        ASSERT_EQ(body3d->nPts * 1.0, avg[d]);
+        ASSERT_EQ(body3d->nPts * -1.0, avg[d]);
     VecDestroy(&f);
 }
 

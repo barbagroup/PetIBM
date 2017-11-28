@@ -46,6 +46,9 @@ public:
 
     /** \brief total number of points of all fields and in all directions. */
     type::IntVec2D          n;
+    
+    /** \brief bools indicating if any direction is periodic. */
+    type::BoolVec2D         periodic;
 
     /** \brief coordinates of mesh points of all fields and in all directions. */
     type::GhostedVec3D      coord;

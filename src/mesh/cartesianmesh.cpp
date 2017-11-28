@@ -88,18 +88,17 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
     // check periodic BC
     IntVec2D          bcTypes;
     RealVec2D         bcValues;
-    BoolVec2D         periodic;
     ierr = parser::parseBCs(node, bcTypes, bcValues); CHKERRQ(ierr);
     ierr = misc::checkPeriodicBC(bcTypes, periodic); CHKERRQ(ierr);
     
     // create raw grid information
     ierr = createPressureMesh(); CHKERRQ(ierr);
     ierr = createVertexMesh(); CHKERRQ(ierr);
-    ierr = createVelocityMesh(periodic); CHKERRQ(ierr);
+    ierr = createVelocityMesh(); CHKERRQ(ierr);
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     // create PETSc DMs
-    ierr = initDMDA(periodic); CHKERRQ(ierr);
+    ierr = initDMDA(); CHKERRQ(ierr);
 
     // setup the format of the file that the `write` function will use
     //ierr = setOutputFormat(type); CHKERRQ(ierr);
@@ -189,7 +188,7 @@ PetscErrorCode CartesianMesh::createVertexMesh()
 
 
 // create velocity mesh
-PetscErrorCode CartesianMesh::createVelocityMesh(const BoolVec2D &periodic)
+PetscErrorCode CartesianMesh::createVelocityMesh()
 {
     PetscFunctionBeginUser;
 
@@ -419,14 +418,14 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 
 
 // initialize PETSc DMDA objects
-PetscErrorCode CartesianMesh::initDMDA(const BoolVec2D &periodic)
+PetscErrorCode CartesianMesh::initDMDA()
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode  ierr;
 
-    ierr = createPressureDMDA(periodic); CHKERRQ(ierr);
-    ierr = createVelocityPack(periodic); CHKERRQ(ierr);
+    ierr = createPressureDMDA(); CHKERRQ(ierr);
+    ierr = createVelocityPack(); CHKERRQ(ierr);
 
     // gather numbers of local velocity component
     for(PetscInt f=0; f<dim; ++f)
@@ -474,8 +473,7 @@ PetscErrorCode CartesianMesh::initDMDA(const BoolVec2D &periodic)
 
 
 // create a single PETSc DMDA object
-PetscErrorCode CartesianMesh::createSingleDMDA(
-        const PetscInt &i, const BoolVec2D &periodic)
+PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 {
     using namespace std;
 
@@ -523,7 +521,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(
 
 
 // create a PETSc DMDA for pressure field
-PetscErrorCode CartesianMesh::createPressureDMDA(const BoolVec2D &periodic)
+PetscErrorCode CartesianMesh::createPressureDMDA()
 {
     using namespace std;
 
@@ -531,7 +529,7 @@ PetscErrorCode CartesianMesh::createPressureDMDA(const BoolVec2D &periodic)
 
     PetscErrorCode  ierr;
 
-    ierr = createSingleDMDA(3, periodic); CHKERRQ(ierr);
+    ierr = createSingleDMDA(3); CHKERRQ(ierr);
     
     ierr = DMDAGetAO(da[3], &ao[3]); CHKERRQ(ierr);
 
@@ -544,7 +542,7 @@ PetscErrorCode CartesianMesh::createPressureDMDA(const BoolVec2D &periodic)
 
 
 // create a PETSc DMComposite object for velocity fields
-PetscErrorCode CartesianMesh::createVelocityPack(const BoolVec2D &periodic)
+PetscErrorCode CartesianMesh::createVelocityPack()
 {
     using namespace std;
 
@@ -556,7 +554,7 @@ PetscErrorCode CartesianMesh::createVelocityPack(const BoolVec2D &periodic)
 
     for(int i=0; i<dim; ++i)
     {
-        ierr = createSingleDMDA(i, periodic); CHKERRQ(ierr);
+        ierr = createSingleDMDA(i); CHKERRQ(ierr);
         ierr = DMDAGetAO(da[i], &ao[i]); CHKERRQ(ierr);
         ierr = DMCompositeAddDM(UPack, da[i]); CHKERRQ(ierr);
     }
@@ -595,10 +593,63 @@ PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f,
            i, j, k, f);
 # endif
     
-    if ((i == -1) || (i == n[f][0]) ||
-        (j == -1) || (j == n[f][1]) || (k == -1) || (k == n[f][2]))
+    if (i == -1)
     {
-        idx = -1;
+        if (periodic[0][0])
+            idx = (n[f][0] - 1) + j * n[f][0] + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
+        else
+            idx = -1;
+        
+        PetscFunctionReturn(0);
+    }
+    
+    if (i == n[f][0])
+    {
+        if (periodic[0][0])
+            idx = j * n[f][0] + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
+        else
+            idx = -1;
+        
+        PetscFunctionReturn(0);
+    }
+    
+    if (j == -1)
+    {
+        if (periodic[0][1])
+            idx = i + (n[f][1]-1) * n[f][0] + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
+        else
+            idx = -1;
+        
+        PetscFunctionReturn(0);
+    }
+    
+    if (j == n[f][1])
+    {
+        if (periodic[0][1])
+            idx = i + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
+        else
+            idx = -1;
+        
+        PetscFunctionReturn(0);
+    }
+    
+    if (k == -1)
+    {
+        if (periodic[0][2])
+            idx = i + j * n[f][0] + ((dim == 3) ? ((n[f][2] - 1) * n[f][1] * n[f][0]) : 0);
+        else
+            idx = -1;
+        
+        PetscFunctionReturn(0);
+    }
+    
+    if (k == n[f][2])
+    {
+        if (periodic[0][2])
+            idx = i + j * n[f][0];
+        else
+            idx = -1;
+        
         PetscFunctionReturn(0);
     }
 

@@ -135,7 +135,7 @@ protected:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createVelocityMesh(const type::BoolVec2D &periodic);
+    PetscErrorCode createVelocityMesh();
 
 
     /**
@@ -161,7 +161,7 @@ protected:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode initDMDA(const type::BoolVec2D &periodic);
+    PetscErrorCode initDMDA();
 
 
     /**
@@ -173,8 +173,7 @@ protected:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createSingleDMDA(
-            const PetscInt &i, const type::BoolVec2D &periodic);
+    PetscErrorCode createSingleDMDA(const PetscInt &i);
 
 
     /**
@@ -184,7 +183,7 @@ protected:
      * 
      * \return PetscErrorCode.
      */
-    PetscErrorCode createPressureDMDA(const type::BoolVec2D &periodic);
+    PetscErrorCode createPressureDMDA();
 
 
     /**
@@ -194,7 +193,7 @@ protected:
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode createVelocityPack(const type::BoolVec2D &periodic);
+    PetscErrorCode createVelocityPack();
 
 }; // CartesianMesh
 

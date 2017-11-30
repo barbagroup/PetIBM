@@ -74,7 +74,8 @@ PetscErrorCode readLagrangianPoints(const std::string &file,
         coords = type::RealVec2D(nPts, type::RealVec1D(dim, 0.0));
         
         // read again to get first coordinate set
-        sline = std::stringstream(line);
+        sline.str(line);
+        sline.clear();
         for(PetscInt d=0; d<dim; ++d) sline >> coords[0][d];
         
         // increade c

@@ -199,7 +199,7 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
     vecs.back() = PETSC_NULL;
     
     // return un-packed global Vecs to packed global Vec
-    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, 
             nullptr, vecs.data()); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
@@ -237,7 +237,7 @@ PetscErrorCode SolutionSimple::read(const std::string &file)
     vecs.back() = PETSC_NULL;
     
     // return un-packed global Vecs to packed global Vec
-    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, 
             nullptr, vecs.data()); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);

@@ -13,13 +13,13 @@
 using namespace petibm;
 
 
-class CartesianMeshTest : public ::testing::Test
+class CartesianMeshTest3D : public ::testing::Test
 {
 protected:
 
-    CartesianMeshTest(){  };
+    CartesianMeshTest3D(){  };
 
-    virtual ~CartesianMeshTest(){  };
+    virtual ~CartesianMeshTest3D(){  };
 
     virtual void SetUp()
     {
@@ -80,7 +80,7 @@ protected:
 }; // CartesianMeshTest
 
 
-TEST_F(CartesianMeshTest, init3D)
+TEST_F(CartesianMeshTest3D, init3D)
 {
     // check dimension
     ASSERT_EQ(3, mesh->dim);
@@ -113,17 +113,3 @@ TEST_F(CartesianMeshTest, init3D)
     for (unsigned int d=0; d<3; d++)
         ASSERT_EQ(n_exp[d], mesh->n[4][d]);
 }
-
-
-// Run all tests
-int main(int argc, char **argv)
-{
-    PetscErrorCode ierr, status;
-
-    ::testing::InitGoogleTest(&argc, argv);
-    ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
-    status = RUN_ALL_TESTS();
-    ierr = PetscFinalize(); CHKERRQ(ierr);
-
-    return status;
-} // main

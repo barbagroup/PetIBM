@@ -11,7 +11,8 @@ LADD = $(top_builddir)/src/libpetibm.la \
        $(GTEST_LDFLAGS) $(GTEST_LIBS)
 
 cartesianmesh_test_SOURCES = main.cpp \
-							 cartesianmesh2d_dirichlet.cpp \
-							 cartesianmesh3d_dirichlet.cpp
+                             cartesianmesh2d_dirichlet.cpp \
+                             cartesianmesh2d_yperiodic.cpp \
+                             cartesianmesh3d_dirichlet.cpp
 cartesianmesh_test_CPPFLAGS = $(AM_CPPFLAGS)
 cartesianmesh_test_LDADD = $(LADD)

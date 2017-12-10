@@ -7,9 +7,9 @@
 
 #include <petsc.h>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "petibm/operators.h"
+#include <petibm/operators.h>
 
 
 // Test Mat BNHat up to N=10 when Op is a diagonal Mat

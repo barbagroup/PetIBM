@@ -3,110 +3,209 @@
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `SingleBoundary`.
+ * \brief Definition of the class `SingleBoundaryBase`.
  */
 
 
 # pragma once
 
-// STL
-# include <string>
+// C++ STL
 # include <memory>
-# include <functional>
 
 // here goes PETSc headers
 # include <petscsys.h>
 # include <petscvec.h>
 
 // here goes headers from our PetIBM
-# include "cartesianmesh.h"
-# include "solutions.h"
-# include "types.h"
+# include <petibm/type.h>
+# include <petibm/mesh.h>
 
 
 namespace petibm
 {
-namespace utilities
+namespace boundary
 {
 
-class SingleBoundary
+/** \brief abstract class for ghost points & BC on a single boundary. */
+class SingleBoundaryBase
 {
 public:
 
+    /** \brief dimension. */
     PetscInt            dim;
 
-    types::BCLoc        loc;
+    /** \brief the location of this boundary. */
+    type::BCLoc         loc;
+    
+    /** \brief the field of which the ghost points represent. */
+    type::Field         field;
+    
+    /** \brief the type of boundary conditions. */
+    type::BCType        type;
 
-    PetscBool           onThisProc;
+    /** \brief a constant value representing BC value. */
+    PetscReal           value;
 
-    std::vector<types::BCType>  type;
-
-    types::RealVec1D    value;
-
+    /** \brief the direction of normal vector. */
     PetscReal           normal;
 
-    std::vector<types::GhostPointsList>   points;
+    /** \brief the list of ghost points on this boundary and at this field. */
+    type::GhostPointsList   points;
+
+    /** \brief indicate if this process holds part of this boundary. */
+    PetscBool           onThisProc;
 
 
 
-    SingleBoundary();
+    /** \brief default constructor. */
+    SingleBoundaryBase() = default;
 
-    SingleBoundary(const CartesianMesh &mesh, const types::BCLoc &loc); 
+    /**
+     * \brief constructor.
+     *
+     * \param mesh [in] a Mesh instance.
+     * \param loc [in] the location of the target boundary.
+     * \param field [in] the target field.
+     * \param type [in] the type of BC.
+     * \param value [in] BC value.
+     */
+    SingleBoundaryBase(const type::Mesh &mesh,
+            const type::BCLoc &loc, const type::Field &field,
+            const type::BCType &type, const PetscReal &value); 
 
-    ~SingleBoundary();
+    /** \brief default destructor. */
+    virtual ~SingleBoundaryBase() = default;
 
 
-    PetscErrorCode init(const CartesianMesh &mesh, const types::BCLoc &loc); 
+    /**
+     * \brief set up the initial values of the ghost points.
+     *
+     * \param vec [in] a packed solution Vec containing initial values.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode setGhostICs(const Vec &vec);
 
-    PetscErrorCode setGhostICs(const Solutions &soln);
+    /**
+     * \brief modify the coefficients in the equation of ghost points.
+     * 
+     * The equation of ghost points means the relationship between boundary 
+     * points and ghost points. The equation has a form 
+     * u_ghost = a1 * u_boundary + a0. This function changes a1 and a0 according
+     * to the type of BC.
+     *
+     * \param vec [in] a packed solution Vec at current time step.
+     * \param dt [in] a PetscReal representing time-step size.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode updateEqs(const Vec &vec, const PetscReal &dt);
 
-    std::function<PetscErrorCode(const Solutions &, const PetscReal &)> updateEqs;
+    /**
+     * \brief update the values of ghost points using the equation.
+     *
+     * \param vec [in] a packed solution Vec at current time step.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode updateGhostValues(const Vec &vec);
 
-    std::function<PetscErrorCode(const Solutions &)> updateGhostValues;
-
-    std::function<PetscErrorCode(std::vector<Vec> &)> copyValues2LocalVecs;
+    /**
+     * \brief copy the values of ghost points to a local Vec.
+     * 
+     * In PetIBM, we use a global packed Vec for velocity fields. But in some
+     * occasions, we may need local Vecs that have ghost points in them. So we
+     * have to copy the ghost values from this instance to the local Vesc.
+     *
+     * \param lclVec [in, out] a local Vec with memory allocations for ghost points.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode copyValues2LocalVec(Vec &lclVec);
 
 protected:
 
-    std::shared_ptr<const MPI_Comm>     comm;
+    /**
+     * \brief underlying initialization function.
+     *
+     * \param mesh [in] a Mesh instance.
+     * \param loc [in] the location of the target boundary.
+     * \param field [in] the target field.
+     * \param type [in] the type of BC.
+     * \param value [in] BC value.
+     *
+     * \return  PetscErrorCode.
+     */
+    PetscErrorCode init(const type::Mesh &mesh,
+            const type::BCLoc &loc, const type::Field &field,
+            const type::BCType &type, const PetscReal &bcValue); 
 
-    PetscMPIInt                         mpiSize,
-                                        mpiRank;
+    /**
+     * \brief the underlying kernel for setting initial values and equations.
+     *
+     * \param targetValuea [in] the value of the corresponding boundary point.
+     * \param p [in, out] the target ghost point.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode setGhostICsKernel(
+            const PetscReal &targetValue, type::GhostPointInfo &p) = 0;
+
+    /**
+     * \brief underlying kernel for updating the coefficients of the equation.
+     *
+     * \param targetValue [in] the value of corresponding boundary point.
+     * \param dt [in] the size of a time step.
+     * \param p [in, out] the target ghost point.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode updateEqsKernel(const PetscReal &targetValue,
+            const PetscReal &dt, type::GhostPointInfo &p) = 0;
 
 
-    std::shared_ptr<const CartesianMesh> mesh;
+    /** \brief MPI communicator. */
+    MPI_Comm        comm;
+
+    /** \brief the size of the MPI communicator. */
+    PetscMPIInt     mpiSize;
+    
+    /** \brief the rank of this process. */
+    PetscMPIInt     mpiRank;
 
 
-    std::vector<std::function<
-        void(types::GhostPointInfo &p, const PetscReal &bdValue, 
-                const PetscReal &bc, const PetscReal &dt)>>  updateEqsKernel;
-
-
-    PetscErrorCode setProc();
-
-    PetscErrorCode setPoints(const PetscInt &field);
-
-    PetscErrorCode setPointsX(
-            const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
-
-    PetscErrorCode setPointsY(
-            const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
-
-    PetscErrorCode setPointsZ(
-            const PetscInt &field, const PetscInt &self, const PetscInt &ghost);
-
-    PetscErrorCode setKernels(
-            const PetscInt &field, const PetscInt &dir);
-
-    PetscErrorCode updateEqsTrue(const Solutions &soln, const PetscReal &dt);
-
-    PetscErrorCode updateGhostValuesTrue(const Solutions &soln);
-
-    PetscErrorCode copyValues2LocalVecsTrue(std::vector<Vec> &lclVecs);
-
-private:
+    /** \brief the corresponding Mesh object. */
+    type::Mesh      mesh;
 
 };
 
-} // end of namespace utilities
+} // end of namespace boundary
+
+
+namespace type
+{
+    /** \brief definition of type SingleBoundary. */
+    typedef std::shared_ptr<boundary::SingleBoundaryBase> SingleBoundary;
+}
+
+namespace boundary
+{
+    /**
+     * \brief factory function for creating a SingleBoundary object.
+     *
+     * \param mesh [in] a Mesh instance.
+     * \param loc [in] the location of the target boundary.
+     * \param field [in] the target field.
+     * \param value [in] BC value.
+     * \param singleBd [out] resulting SingleBoundary object.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode createSingleBoundary(
+            const type::Mesh &mesh, const type::BCLoc &loc, 
+            const type::Field &field, const PetscReal &value,
+            const type::BCType &bcType,
+            type::SingleBoundary &singleBd);
+}
+
 } // end of namespace petibm

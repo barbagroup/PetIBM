@@ -44,6 +44,8 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
 
     // the first term; only diagonal values exist, and the value is dt
     // this one works only if the original diagonal is zero. Be careful.
+    ierr = MatAssemblyBegin(BnHead, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+    ierr = MatAssemblyEnd(BnHead, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatShift(BnHead, dt); CHKERRQ(ierr);
 
     // if the order is not greater than 1, exit this function. No need to go 

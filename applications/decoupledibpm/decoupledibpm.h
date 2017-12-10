@@ -5,17 +5,11 @@
 
 #pragma once
 
-#include "petibm/cartesianmesh.h"
-#include "petibm/flowdescription.h"
-#include "petibm/simulationparameters.h"
-#include "petibm/bodypack.h"
-#include "petibm/solutions.h"
-#include "petibm/boundary.h"
-#include "petibm/timeintegration.h"
-#include "petibm/linsolver.h"
-#include "petibm/operators.h"
+// Navier-Stokes solver
+# include "../navierstokes/navierstokes.h"
 
-using namespace petibm;
+// additional PetIBM headers
+# include <petibm/bodypack.h>
 
 
 /**
@@ -23,170 +17,145 @@ using namespace petibm;
  * \brief Solve the incompressible Navier-Stokes equations with a decoupled
  *        version of the Immersed-Boundary Projection Method (Li et al., 2016).
  */
-class DecoupledIBPMSolver
+class DecoupledIBPMSolver : protected NavierStokesSolver
 {
 public:
-	/**
-	 * \brief Default constructor.
-	 */
-	DecoupledIBPMSolver();
-	
-	/**
-	 * \brief Constructor. Set references to the mesh, flow conditions,
-	 *        and simulation parameters.
-	 *
-	 * \param mesh Structured Cartesian mesh
-	 * \param flow Flow conditions
-	 * \param parameters Simulation parameters
-	 */
-	DecoupledIBPMSolver(utilities::CartesianMesh &mesh,
-	                    utilities::FlowDescription &flow,
-	                    utilities::SimulationParameters &parameters,
-	                    utilities::BodyPack &bodies);
 
-	/**
-	 * \brief Default destructor.
-	 */
-	~DecoupledIBPMSolver();
+    // public members that don't change
+    using NavierStokesSolver::write;
+    
+    /** \brief Default constructor. */
+    DecoupledIBPMSolver() = default;
+    
+    /**
+     * \brief Constructor; Set references to the mesh, boundary conditions, and
+     *        immersed bodies.
+     *
+     * \param mesh [in] a type::Mesh object.
+     * \param bc [in] a type::Boundary object.
+     * \param bodies [in] a type::BodyPack object.
+     * \param node [in] YAML::Node containing settings.
+     */
+    DecoupledIBPMSolver(
+            const petibm::type::Mesh &mesh,
+            const petibm::type::Boundary &bc,
+            const petibm::type::BodyPack &bodies,
+            const YAML::Node &node);
 
-	/**
-	 * \brief Initialize vectors, operators, and linear solvers.
-	 */
-	PetscErrorCode initialize();
+    /** \brief Default destructor. */
+    ~DecoupledIBPMSolver() = default;
 
-	/**
-	 * \brief Advance in time.
-	 */
-	PetscErrorCode solve();
+    /** \brief Initialize vectors, operators, and linear solvers. */
+    PetscErrorCode initialize(
+            const petibm::type::Mesh &mesh,
+            const petibm::type::Boundary &bc,
+            const petibm::type::BodyPack &bodies,
+            const YAML::Node &node);
 
-	/**
-	 * \brief Write the solution into a file.
-	 *
-	 * \param directory Directory where to save the file
-	 * \param fileName Name of the file to save (without the extension)
-	 */
-	PetscErrorCode write(std::string directory, std::string fileName);
+    /** \brief Advance in time. */
+    PetscErrorCode advance();
+    
+    /**
+     * \brief Write the extra data that are required for restarting sessions.
+     * 
+     * If file already exists, only extra necessary data will
+     * be writen in. Otherwise, solutions and extra data will all be writen in.
+     *
+     * \param filePath [in] path of the file to save (without extension)
+     */
+    PetscErrorCode writeRestartData(const std::string &filePath);
+    
+    /**
+     * \brief read data that are required for restarting sessions.
+     * 
+     * \param filePath [in] path of the file to save (without extension)
+     */
+    PetscErrorCode readRestartData(const std::string &filePath);
 
-	/**
-	 * \brief Write number of iterations executed by each solver at current time
-	 *        step.
-	 *
-	 * \param timeIndex Time-step index
-	 * \param filePath Path of the file to write in
-	 */
-	PetscErrorCode writeIterations(int timeIndex, std::string filePath);
+    /**
+     * \brief Write number of iterations executed by each solver at current time
+     *        step (to an ASCII file).
+     *
+     * \param timeIndex [in] Time-step index
+     * \param filePath [in] Path of the file to write in
+     */
+    PetscErrorCode writeIterations(
+            const int &timeIndex, const std::string &filePath);
 
-	/**
-	 * \brief Write the integrated forces acting on the bodies into a file.
-	 *
-	 * \param time Time value
-	 * \param directory Directory where to save the file
-	 * \param fileName Name of the file to save (without the extension)
-	 */
-	PetscErrorCode writeIntegratedForces(
-			PetscReal time, std::string directory, std::string fileName);
+    /**
+     * \brief Write the integrated forces acting on the bodies into a ASCII file.
+     *
+     * \param time [in] Time value
+     * \param fileName [in] Name of the file to save.
+     */
+    PetscErrorCode writeIntegratedForces(
+            const PetscReal &t, const std::string &filePath);
 
-	/**
-	 * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
-	 */
-	PetscErrorCode finalize();
+    /** \brief Destroy PETSc objects (vectors and matrices) and linear solvers. */
+    PetscErrorCode finalize();
 
-private:
-	utilities::CartesianMesh mesh;  ///< Structured Cartesian mesh
-	utilities::FlowDescription flow;  ///< Flow conditions
-	utilities::SimulationParameters parameters;  ///< Simulation parameters
-	utilities::BodyPack bodies;
-	utilities::Solutions solution;  ///< Velocity and pressure fields
-	utilities::Boundary bc;  ///< Information about the domain boundaries
-	utilities::TimeIntegration convection,  ///< Time scheme for the convective terms
-	                           diffusion;  ///< Time scheme for the diffusive terms
+protected:
+    
+    /** \brief a reference to immersed bodies. */
+    petibm::type::BodyPack      bodies;
+    
+    /** \brief linear solver object for force solver. */
+    petibm::type::LinSolver     fSolver;
+    
 
-	Mat L,  ///< Laplacian operator
-	    LCorrection,  ///< Laplacian correction for boundary conditions
-	    G,  ///< Gradient operator
-	    D,  ///< Divergence operator
-	    DCorrection,  ///< Divergence correction for boundary conditions
-	    N,  ///< Linear convection operator
-	    I,  ///< Identity matrix
-	    R,
-	    RInv,
-	    M,
-	    MHat,
-	    BNHat,
-	    EHat,
-	    HHat,
-	    BNHHat,
-	    EBNHHat,
-	    A,  ///< Matrix resulting from implicit treatment
-	    BNG, ///< Projection operator
-	    DBNG;  ///< Poisson matrix
+    /** \brief operator interpolating Lagrangian forces to Eulerian forces. */
+    Mat H;
+    
+    /** \brief operator interpolating Eulerian forces to Lagrangian forces. */
+    Mat E;
+    
+    /** \brief coefficient matrix of the force system. */
+    Mat EBNH;
+    
+    /** \brief operator projecting force to intermediate velocity field. */
+    Mat BNH;
+    
 
-	Vec phi,  ///< Pressure-correction vector
-	    rhs1,  ///< Right-hand side vector of the velocity system
-	    bc1,  ///< Boundary terms for the velocity system
-	    rhs2,  ///< Right-hand side vector of the Poisson system
-	    gradP;  ///< Pressure-gradient vector
-	std::vector<Vec> Conv,  ///< Convective terms from previous time steps
-	                 Diff;  ///< Diffusive terms from previous time steps
-	Vec f,
-	    df,
-	    Eu,
-	    Hf;
+    /** \brief right-hand-side of force system. */
+    Vec Eu;
+    
+    /** \brief solution of Lagragian force at time-step n. */
+    Vec f;
+    
+    /** \brief increment of force from time-step n to n+1. */
+    Vec df;
 
-	std::shared_ptr<linsolvers::LinSolver> vSolver,  ///< Velocity linear solver
-	                                       pSolver,  ///< Poisson linear solver
-	                                       fSolver;  ///< Forces linear solver
 
-	PetscLogStage stageInitialize,  ///< Log initialize phase
-	              stageRHSVelocity,  ///< Log RHS of velocity system
-	              stageSolveVelocity,  ///< Log velocity solve
-	              stageRHSPoisson,  ///< Log RHS of Poisson system
-	              stageSolvePoisson,  ///< Log Poisson solve
-	              stageRHSForces,  ///< Log RHS of forces system
-	              stageSolveForces,  ///< Log forces solver
-	              stageProjectionStep,  ///< Log projection step
-	              stageIntegrateForces,  ///< Log force integration
-	              stageWrite;  ///< Log write phase
+    /** \brief Log RHS of forces system. */
+    PetscLogStage stageRHSForces; 
+    
+    /** \brief Log forces solver. */
+    PetscLogStage stageSolveForces; 
+    
+    /** \brief Log force integration. */
+    PetscLogStage stageIntegrateForces; 
+    
 
-	/**
-	 * \brief Assembles the different operators and matrices.
-	 */
-	PetscErrorCode assembleOperators();
+    /** \brief Assemble the RHS vector of the velocity system.  */
+    virtual PetscErrorCode assembleRHSVelocity();
 
-	/**
-	 * \brief Assemble the RHS vector of the velocity system.
-	 */
-	PetscErrorCode assembleRHSVelocity();
+    /** \brief Assemble the RHS vector of the Poisson system. */
+    virtual PetscErrorCode assembleRHSPoisson();
 
-	/**
-	 * \brief Solve the velocity system.
-	 */
-	PetscErrorCode solveVelocity();
+    /** \brief Assemble the RHS vector of the system for the boundary forces. */
+    virtual PetscErrorCode assembleRHSForces();
 
-	/**
-	 * \brief Assemble the RHS vector of the Poisson system.
-	 */
-	PetscErrorCode assembleRHSPoisson();
+    /** \brief Solve the system for the boundary forces. */
+    virtual PetscErrorCode solveForces();
 
-	/**
-	 * \brief Solve the Poisson system.
-	 */
-	PetscErrorCode solvePoisson();
+    /** \brief Project the velocity to divergence-free space, update
+     *         pressure field, and update force.  */
+    virtual PetscErrorCode projectionStep();
 
-	/**
-	 * \brief Assemble the RHS vector of the system for the boundary forces.
-	 */
-	PetscErrorCode assembleRHSForces();
+    /** \brief Assembles operators and matrices. */
+    PetscErrorCode createExtraOperators();
 
-	/**
-	 * \brief Solve the system for the boundary forces.
-	 */
-	PetscErrorCode solveForces();
-
-	/**
-	 * \brief Project the velocity field onto the divergence-free space and update
-	 *        the pressure field.
-	 */
-	PetscErrorCode projectionStep();
+    /** \brief create vectors. */
+    PetscErrorCode createExtraVectors();
 
 }; // DecoupledIBPMSolver

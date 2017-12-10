@@ -1,2 +1,6 @@
-SUBDIRS = navierstokes \
-					decoupledibpm
+SUBDIRS = \
+	navierstokes \
+	decoupledibpm \
+	tairacolonius \
+	vorticity \
+	createxdmf

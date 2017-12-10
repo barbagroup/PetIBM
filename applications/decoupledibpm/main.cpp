@@ -5,103 +5,151 @@
 #include <iomanip>
 #include <sys/stat.h>
 
-#include <petsc.h>
+// PETSc
+#include <petscsys.h>
 
+// YAML-CPP
 #include <yaml-cpp/yaml.h>
 
+// PetIBM
+#include <petibm/parser.h>
+
 #include "decoupledibpm.h"
-#include "petibm/cartesianmesh.h"
-#include "petibm/flowdescription.h"
-#include "petibm/simulationparameters.h"
-#include "petibm/bodypack.h"
-#include "petibm/parser.h"
 
 
 int main(int argc, char **argv)
 {
-	PetscErrorCode ierr;
+    PetscErrorCode ierr;
 
-	ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
+    YAML::Node              config;
+    petibm::type::Mesh      mesh;
+    petibm::type::Boundary  bd;
+    petibm::type::BodyPack  bodies;
 
-	petibm::utilities::SimulationParameters params;
-	petibm::utilities::FlowDescription flow;
-	petibm::utilities::CartesianMesh mesh;
-	petibm::utilities::BodyPack bodies;
-	YAML::Node config;
-	char path[PETSC_MAX_PATH_LEN];
-	std::string directory,
-	            solutionDirectory,
-							configpath;
-	PetscBool flg;
+    ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
+    
+    // get all settings and save into `config`
+    ierr = petibm::parser::getSettings(config); CHKERRQ(ierr);
 
-	// parse command-line looking for simulation directory and configuration path
-	directory = ".";
-	ierr = PetscOptionsGetString(nullptr, nullptr, "-directory",
-	                             path, sizeof(path), &flg); CHKERRQ(ierr);
-	if (flg)
-		directory = path;
-	solutionDirectory = directory + "/solution";
-	mkdir(solutionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	configpath = directory + "/config.yaml";
-	ierr = PetscOptionsGetString(nullptr, nullptr,"-config",
-	                             path, sizeof(path), &flg); CHKERRQ(ierr);
-	if (flg)
-		configpath = path;
+    // create mesh
+    ierr = petibm::mesh::createMesh(PETSC_COMM_WORLD, config, mesh); CHKERRQ(ierr);
+    
+    // output the data of the mesh
+    ierr = mesh->write(config["directory"].as<std::string>() + "/grid"); CHKERRQ(ierr);
+    
+    // create bc
+    ierr = petibm::boundary::createBoundary(mesh, config, bd); CHKERRQ(ierr);
+    
+    // create body pack
+    ierr = petibm::body::createBodyPack(mesh, config, bodies); CHKERRQ(ierr);
+    
 
-	// parse configuration file
-	ierr = petibm::utilities::parser::parseYAMLConfigFile(
-			configpath, config); CHKERRQ(ierr);
+    
+    DecoupledIBPMSolver solver;
 
-	ierr = params.init(PETSC_COMM_WORLD,
-	                   config["simulationParameters"], directory); CHKERRQ(ierr);
-	ierr = params.printInfo(); CHKERRQ(ierr);
+    // initialize the solver based on given mesh, boundary, bodies, and config
+    ierr = solver.initialize(mesh, bd, bodies, config); CHKERRQ(ierr);
 
-	ierr = flow.init(PETSC_COMM_WORLD,
-	                 config["flowDescription"]); CHKERRQ(ierr);
-	ierr = flow.printInfo(); CHKERRQ(ierr);
+    
 
-	ierr = mesh.init(PETSC_COMM_WORLD,
-	                 config["cartesianMesh"], flow.BCInfo,
-	                 params.output.format); CHKERRQ(ierr);
-	ierr = mesh.printInfo(); CHKERRQ(ierr);
-	ierr = mesh.write(params.caseDir, "grid"); CHKERRQ(ierr);
+    // starting step
+    PetscInt start = config["parameters"]["startStep"].as<PetscInt>();
+    
+    // end step
+    PetscInt end = start + config["parameters"]["nt"].as<PetscInt>();
+    
+    // number of steps to save solutions
+    PetscInt nsave = config["parameters"]["nsave"].as<PetscInt>();
+    
+    // number of steps to save solutions
+    PetscInt nrestart = config["parameters"]["nrestart"].as<PetscInt>();
 
-	ierr = bodies.init(mesh, config["bodies"]); CHKERRQ(ierr);
-	ierr = bodies.printInfo(); CHKERRQ(ierr);
-	
-	DecoupledIBPMSolver solver = DecoupledIBPMSolver(
-			mesh, flow, params, bodies); CHKERRQ(ierr);
+    // time-step size
+    PetscReal dt = config["parameters"]["dt"].as<PetscReal>();
 
-	ierr = solver.initialize(); CHKERRQ(ierr);
+    // current time
+    PetscReal t = start * dt;
+             
+    // file to log information of linear solvers
+    std::string iterationsFile = 
+        config["directory"].as<std::string>() + "/iterations.txt";
+             
+    // file to log averaged Lagrangian forces
+    std::string forceFile = 
+        config["directory"].as<std::string>() + "/forces.txt";
+    
+    
+    if (start == 0) // write initial solutions to a HDF5
+    {
+        ierr = PetscPrintf(PETSC_COMM_WORLD,
+                "[time-step 0] Writing solution... "); CHKERRQ(ierr);
+        
+        std::stringstream ss;
+        ss << "/" << std::setfill('0') << std::setw(7) << 0;
+        ierr = solver.write(
+                (config["solution"].as<std::string>() + ss.str()));
+        CHKERRQ(ierr);
+        
+        ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+    }
+    else // restart
+    {
+        ierr = PetscPrintf(PETSC_COMM_WORLD,
+                "[time-step %d] Read solution... ", start); CHKERRQ(ierr);
+        
+        std::stringstream ss;
+        ss << "/" << std::setfill('0') << std::setw(7) << start;
+        ierr = solver.readRestartData(
+                (config["solution"].as<std::string>() + ss.str()));
+        CHKERRQ(ierr);
+        
+        ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+    }
+    
+    // start time marching
+    for (int ite=start+1; ite<=end; ite++)
+    {
+        // update current time
+        t += dt;
+        
+        // advance one time-step
+        ierr = solver.advance(); CHKERRQ(ierr);
+        ierr = solver.writeIterations(ite, iterationsFile); CHKERRQ(ierr);
+        
+        if (ite % nsave == 0)
+        {
+            ierr = PetscPrintf(PETSC_COMM_WORLD,
+                    "[time-step %d] Writing solution... ", ite); CHKERRQ(ierr);
+            
+            std::stringstream ss;
+            ss << "/" << std::setfill('0') << std::setw(7) << ite;
+            ierr = solver.write(
+                    (config["solution"].as<std::string>() + ss.str())); 
+            CHKERRQ(ierr);
+            
+            ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+        }
+        
+        if (ite % nrestart == 0)
+        {
+            ierr = PetscPrintf(PETSC_COMM_WORLD, 
+                    "[time-step %d] Writing necessary data for restarting... ",
+                    ite); CHKERRQ(ierr);
+            
+            std::stringstream ss;
+            ss << "/" << std::setfill('0') << std::setw(7) << ite;
+            ierr = solver.writeRestartData(
+                    (config["solution"].as<std::string>() + ss.str()));
+            CHKERRQ(ierr);
+            
+            ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+        }
+        
+        // write averaged force
+        ierr = solver.writeIntegratedForces(t, forceFile); CHKERRQ(ierr);
+    }
 
-	PetscInt start = params.step.nStart,
-	         end = params.step.nStart + params.step.nTotal,
-	         nsave = params.step.nSave;
-	PetscReal time = params.step.nStart * params.step.dt;
-	std::string iterationsFile = directory + "/iterations.txt";
-	for (int ite=start+1; ite<=end; ite++)
-	{
-		time += params.step.dt;
-		ierr = solver.solve(); CHKERRQ(ierr);
-		ierr = solver.writeIterations(ite, iterationsFile); CHKERRQ(ierr);
-		if (ite % nsave == 0)
-		{
-			ierr = PetscPrintf(PETSC_COMM_WORLD,
-			                   "[time-step %d] Writing solution... ",
-			                   ite); CHKERRQ(ierr);
-			std::stringstream ss;
-			ss << std::setfill('0') << std::setw(7) << ite;
-			ierr = solver.write(solutionDirectory,
-			                    ss.str()); CHKERRQ(ierr);
-			ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
-		}
-		ierr = solver.writeIntegratedForces(
-				time, params.caseDir, "forces"); CHKERRQ(ierr);
-	}
-
-	ierr = solver.finalize(); CHKERRQ(ierr);
-
-	ierr = PetscFinalize(); CHKERRQ(ierr);
-	
-	return 0;
+    ierr = PetscFinalize(); CHKERRQ(ierr);
+    
+    return 0;
 } // main

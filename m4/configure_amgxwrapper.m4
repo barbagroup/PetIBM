@@ -22,7 +22,7 @@ AC_ARG_WITH([amgxwrapper-dir],
 
 AC_ARG_ENABLE([amgxwrapper],
               AS_HELP_STRING([--enable-amgxwrapper],
-                             [download and install AmgXWrapper-1.2]),
+                             [download and install AmgXWrapper-1.3]),
               [DOWNLOAD_AMGXWRAPPER=yes],
               [DOWNLOAD_AMGXWRAPPER=no])
 
@@ -51,13 +51,13 @@ else
 
  ****************************************
  *      Downloading and installing      *
- *           AmgXWrapper-1.2            *
+ *           AmgXWrapper-1.3            *
  ****************************************
 ])
     PACKAGE_INITIALIZE_ENVIRONMENT
     PACKAGE_SETUP_ENVIRONMENT
-    echo "downloading AmgXWrapper-1.2... "
-    VERSION=1.2
+    echo "downloading AmgXWrapper-1.3... "
+    VERSION=1.3
     TARBALL=v$VERSION.tar.gz
     URL=https://github.com/barbagroup/AmgXWrapper/archive/$TARBALL
     wget $URL -P /tmp
@@ -66,7 +66,7 @@ else
     mkdir -p $AMGXWRAPPER_DIR/build
     tar -xzf /tmp/$TARBALL -C $AMGXWRAPPER_DIR --strip-components=1
     rm -f /tmp/$TARBALL
-    echo "building AmgXWrapper-1.2... "
+    echo "building AmgXWrapper-1.3... "
     cd $AMGXWRAPPER_DIR/build
     if test "x$enable_shared" = "xyes"; then
       cmake $AMGXWRAPPER_DIR \
@@ -107,7 +107,7 @@ AC_CHECK_HEADER([AmgXSolver.hpp],
                 [],
                 [AC_MSG_ERROR([Couldn't find AmgXSolver.hpp...
 Please use '--with-amgxwrapper-dir=PATH' to provide the directory of the package
-or '--enable-amgxwrapper' to download and install AmgXWrapper-1.1 (AmgX-2.0).
+or '--enable-amgxwrapper' to download and install AmgXWrapper-1.3 (AmgX-2.0).
 ])])
 
 AMGXWRAPPER_LIBS="-lAmgXWrapper $AMGX_LIBS"

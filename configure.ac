@@ -4,11 +4,11 @@
 
 # set-up
 AC_PREREQ([2.69])
-AC_INIT([PetIBM], [0.3.0dev], [mesnardo@gwu.edu, pychuang@email.gwu.edu])
+AC_INIT([PetIBM], [0.3.0dev], [mesnardo@gwu.edu, pychuang@gwu.edu])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-AC_CONFIG_SRCDIR([src/utilities/delta.cpp])
+AC_CONFIG_SRCDIR([src/mesh/mesh.cpp])
 AC_CONFIG_HEADERS([config/config.h])
 AM_SILENT_RULES([no])
 AM_MAINTAINER_MODE([disable])
@@ -68,14 +68,27 @@ AM_CONDITIONAL([WITH_AMGX], [test "x$ENABLE_AMGX" = xyes])
 AC_CONFIG_FILES([Makefile
                  include/Makefile
                  src/Makefile
-                 src/utilities/Makefile
+                 src/body/Makefile
+                 src/boundary/Makefile
+                 src/io/Makefile
+                 src/linsolver/Makefile
+                 src/mesh/Makefile
+                 src/misc/Makefile
                  src/operators/Makefile
-                 src/linsolvers/Makefile
+                 src/parser/Makefile
+                 src/solution/Makefile
+                 src/timeintegration/Makefile
                  tests/Makefile
-                 tests/utilities/Makefile
+                 tests/body/Makefile
+                 tests/boundary/Makefile
+                 tests/mesh/Makefile
+                 tests/misc/Makefile
                  tests/operators/Makefile
                  applications/Makefile
+                 applications/createxdmf/Makefile
+                 applications/vorticity/Makefile
                  applications/navierstokes/Makefile
+                 applications/tairacolonius/Makefile
                  applications/decoupledibpm/Makefile])
 
 # output message

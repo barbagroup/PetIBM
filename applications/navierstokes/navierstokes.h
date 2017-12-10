@@ -5,16 +5,16 @@
 
 #pragma once
 
-#include "petibm/cartesianmesh.h"
-#include "petibm/flowdescription.h"
-#include "petibm/simulationparameters.h"
-#include "petibm/solutions.h"
-#include "petibm/boundary.h"
-#include "petibm/timeintegration.h"
-#include "petibm/linsolver.h"
-#include "petibm/operators.h"
+// YAML-CPP
+# include <yaml-cpp/yaml.h>
 
-using namespace petibm;
+// PetIBM
+# include <petibm/mesh.h>
+# include <petibm/solution.h>
+# include <petibm/boundary.h>
+# include <petibm/timeintegration.h>
+# include <petibm/linsolver.h>
+# include <petibm/operators.h>
 
 
 /**
@@ -25,132 +25,217 @@ using namespace petibm;
 class NavierStokesSolver
 {
 public:
-	/**
-	 * \brief Default constructor.
-	 */
-	NavierStokesSolver();
-	
-	/**
-	 * \brief Constructor. Set references to the mesh, flow conditions,
-	 *        and simulation parameters.
-	 *
-	 * \param mesh Structured Cartesian mesh
-	 * \param flow Flow conditions
-	 * \param parameters Simulation parameters
-	 */
-	NavierStokesSolver(utilities::CartesianMesh &mesh,
-	                   utilities::FlowDescription &flow,
-	                   utilities::SimulationParameters &parameters);
+    
+    /** \brief Default constructor.  */
+    NavierStokesSolver() = default;
 
-	/**
-	 * \brief Default destructor.
-	 */
-	~NavierStokesSolver();
+    /**
+     * \brief Constructor; Set references to the mesh and boundary conditions.
+     *
+     * \param mesh [in] a type::Mesh object.
+     * \param bc [in] a type::Boundary object.
+     * \param node [in] YAML::Node containing settings.
+     */
+    NavierStokesSolver(
+            const petibm::type::Mesh &mesh,
+            const petibm::type::Boundary &bc,
+            const YAML::Node &node);
 
-	/**
-	 * \brief Initialize vectors, operators, and linear solvers.
-	 */
-	PetscErrorCode initialize();
+    /**
+     * \brief Default destructor.
+     */
+    ~NavierStokesSolver() = default;
 
-	/**
-	 * \brief Advance in time.
-	 */
-	PetscErrorCode solve();
+    /**
+     * \brief Initialize vectors, operators, and linear solvers.
+     */
+    PetscErrorCode initialize(
+            const petibm::type::Mesh &mesh,
+            const petibm::type::Boundary &bc,
+            const YAML::Node &node);
 
-	/**
-	 * \brief Write the solution into a file.
-	 *
-	 * \param directory Directory where to save the file
-	 * \param fileName Name of the file to save (without the extension)
-	 */
-	PetscErrorCode write(std::string directory, std::string fileName);
+    /**
+     * \brief Advance in time for one step.
+     */
+    PetscErrorCode advance();
 
-	/**
-	 * \brief Write number of iterations executed by each solver at current time
-	 *        step.
-	 *
-	 * \param timeIndex Time-step index
-	 * \param filePath Path of the file to write in
-	 */
-	PetscErrorCode writeIterations(int timeIndex, std::string filePath);
+    /**
+     * \brief Write the solution into a file.
+     *
+     * \param filePath [in] path of the file to save (without the extension)
+     */
+    PetscErrorCode write(const std::string &filePath);
+    
+    /**
+     * \brief Write the extra data that are required for restarting sessions.
+     * 
+     * If the file already has solutions in it, only extra necessary data will
+     * be writen in. Otherwise, solutions and extra data will all be writen in.
+     *
+     * \param filePath [in] path of the file to save (without the extension)
+     */
+    PetscErrorCode writeRestartData(const std::string &filePath);
+    
+    /**
+     * \brief read data that are required for restarting sessions.
+     * 
+     * \param filePath [in] path of the file to save (without the extension)
+     */
+    PetscErrorCode readRestartData(const std::string &filePath);
 
-	/**
-	 * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
-	 */
-	PetscErrorCode finalize();
+    /**
+     * \brief Write number of iterations executed by each solver at current time
+     *        step.
+     *
+     * \param timeIndex Time-step index
+     * \param filePath Path of the file to write in
+     */
+    PetscErrorCode writeIterations(
+            const int &timeIndex, const std::string &filePath);
 
-private:
-	utilities::CartesianMesh mesh;  ///< Structured Cartesian mesh
-	utilities::FlowDescription flow;  ///< Flow conditions
-	utilities::SimulationParameters parameters;  ///< Simulation parameters
-	utilities::Solutions solution;  ///< Velocity and pressure fields
-	utilities::Boundary bc;  ///< Information about the domain boundaries
-	utilities::TimeIntegration convection,  ///< Time scheme for the convective terms
-	                           diffusion;  ///< Time scheme for the diffusive terms
+    /**
+     * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
+     */
+    PetscErrorCode finalize();
 
-	Mat L,  ///< Laplacian operator
-	    LCorrection,  ///< Laplacian correction for boundary conditions
-	    G,  ///< Gradient operator
-	    D,  ///< Divergence operator
-	    DCorrection,  ///< Divergence correction for boundary conditions
-	    N,  ///< Linear convection operator
-	    I,  ///< Identity matrix
-	    R,
-	    RInv,
-	    M,
-	    MHat,
-	    BNHat,
-	    A,  ///< Matrix resulting from implicit treatment
-	    BNG, ///< Projection operator
-	    DBNG;  ///< Poisson matrix
+    
+protected:
+    
+    
+    /** \brief a reference to the YAML::Node passed in. */
+    YAML::Node                      settings;
+    
+    /** \brief Structured Cartesian mesh. */
+    petibm::type::Mesh              mesh; 
+    
+    /** \brief Information about the domain boundaries. */
+    petibm::type::Boundary          bc; 
+    
+    /** \brief Velocity and pressure fields. */
+    petibm::type::Solution          solution; 
+    
+    /** \brief Time scheme for the convective terms. */
+    petibm::type::TimeIntegration   convCoeffs; 
+    
+    /** \brief Time scheme for the diffusive terms. */
+    petibm::type::TimeIntegration   diffCoeffs; 
 
-	Vec phi,  ///< Pressure-correction vector
-	    rhs1,  ///< Right-hand side vector of the velocity system
-	    bc1,  ///< Boundary terms for the velocity system
-	    rhs2,  ///< Right-hand side vector of the Poisson system
-	    gradP;  ///< Pressure-gradient vector
-	std::vector<Vec> Conv,  ///< Convective terms from previous time steps
-	                 Diff;  ///< Diffusive terms from previous time steps
+    /** \brief Velocity linear solver. */
+    petibm::type::LinSolver         vSolver; 
+    
+    /** \brief Poisson linear solver. */
+    petibm::type::LinSolver         pSolver; 
+    
 
-	std::shared_ptr<linsolvers::LinSolver> vSolver,  ///< Velocity linear solver
-	                                       pSolver;  ///< Poisson linear solver
+    
+    /** \brief a copy of time-step size. */
+    PetscReal   dt;
+    
+    /** \brief a copy of viscosity. */
+    PetscReal   nu;
+    
 
-	PetscLogStage stageInitialize,  ///< Log initialize phase
-	              stageRHSVelocity,  ///< Log RHS of velocity system
-	              stageSolveVelocity,  ///< Log velocity solve
-	              stageRHSPoisson,  ///< Log RHS of Poisson system
-	              stageSolvePoisson,  ///< Log Poisson solve
-	              stageProjectionStep,  ///< Log projection step
-	              stageWrite;  ///< Log write phase
+    
+    /** \brief Laplacian operator. */
+    Mat         L; 
 
-	/**
-	 * \brief Assembles the different operators and matrices.
-	 */
-	PetscErrorCode assembleOperators();
+    /** \brief Laplacian correction for boundary conditions. */
+    Mat         LCorrection; 
 
-	/**
-	 * \brief Assemble the RHS vector of the velocity system.
-	 */
-	PetscErrorCode assembleRHSVelocity();
+    /** \brief Gradient operator. */
+    Mat         G; 
 
-	/**
-	 * \brief Solve the velocity system.
-	 */
-	PetscErrorCode solveVelocity();
+    /** \brief Divergence operator. */
+    Mat         D; 
 
-	/**
-	 * \brief Assemble the RHS vector of the Poisson system.
-	 */
-	PetscErrorCode assembleRHSPoisson();
+    /** \brief Divergence correction for boundary conditions. */
+    Mat         DCorrection; 
 
-	/**
-	 * \brief Solve the Poisson system.
-	 */
-	PetscErrorCode solvePoisson();
+    /** \brief Non-linear convection operator (matrix-free). */
+    Mat         N; 
 
-	/**
-	 * \brief Project the velocity field onto the divergence-free space and update
-	 *        the pressure field.
-	 */
-	PetscErrorCode projectionStep();
+    /** \brief Matrix resulting from implicit treatment. */
+    Mat         A; 
+
+    /** \brief Projection operator. */
+    Mat         BNG;
+
+    /** \brief Poisson matrix. */
+    Mat         DBNG; 
+    
+    
+
+    /** \brief Pressure-correction vector. */
+    Vec         dP; 
+    
+    /** \brief Boundary terms for the velocity system. */
+    Vec         bc1; 
+    
+    /** \brief Right-hand side vector of the velocity system. */
+    Vec         rhs1; 
+    
+    /** \brief Right-hand side vector of the Poisson system. */
+    Vec         rhs2; 
+    
+    /** \brief Convective terms from previous time steps. */
+    std::vector<Vec> conv; 
+    
+    /** \brief Diffusive terms from previous time steps. */
+    std::vector<Vec> diff; 
+    
+
+    
+    /** \brief a bool indicating if we'll pin a reference pressure point. */
+    PetscBool   isRefP;
+    
+    
+
+    /** \brief Log initialize phase. */
+    PetscLogStage stageInitialize;
+    
+    /** \brief Log RHS of velocity system. */
+    PetscLogStage stageRHSVelocity;
+    
+    /** \brief Log velocity solve. */
+    PetscLogStage stageSolveVelocity;
+    
+    /** \brief Log RHS of Poisson system. */
+    PetscLogStage stageRHSPoisson;
+    
+    /** \brief Log Poisson solve. */
+    PetscLogStage stageSolvePoisson;
+    
+    /** \brief Log projection step. */
+    PetscLogStage stageProjectionStep;
+    
+    /** \brief Log write phase. */
+    PetscLogStage stageWrite;
+    
+
+    
+
+    /** \brief Assemble the RHS vector of the velocity system.  */
+    virtual PetscErrorCode assembleRHSVelocity();
+
+    /** \brief Solve the velocity system.  */
+    virtual PetscErrorCode solveVelocity();
+
+    /** \brief Assemble the RHS vector of the Poisson system.  */
+    virtual PetscErrorCode assembleRHSPoisson();
+
+    /** \brief Solve the Poisson system.  */
+    virtual PetscErrorCode solvePoisson();
+
+    /** \brief Project the velocity field onto the divergence-free space and 
+     *         update the pressure field.  */
+    virtual PetscErrorCode projectionStep();
+    
+    /** \brief create operators.  */
+    virtual PetscErrorCode createOperators();
+    
+    /** \brief create vectors.  */
+    virtual PetscErrorCode createVectors();
+    
+    /** \brief set null space or apply reference point.  */
+    virtual PetscErrorCode setNullSpace();
 };

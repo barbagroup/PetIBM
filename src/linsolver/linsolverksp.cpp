@@ -73,6 +73,7 @@ PetscErrorCode LinSolverKSP::setMatrix(const Mat &A)
 
     PetscErrorCode ierr;
 
+    ierr = KSPReset(ksp); CHKERRQ(ierr);
     ierr = KSPSetOperators(ksp, A, A); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);

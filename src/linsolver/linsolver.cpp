@@ -19,6 +19,15 @@ namespace petibm
 {
 namespace linsolver
 {
+
+
+PetscErrorCode LinSolverBase::destroy()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode  ierr;
+    name = config = type = "";
+    PetscFunctionReturn(0);
+}
     
     
 PetscErrorCode LinSolverBase::printInfo() const

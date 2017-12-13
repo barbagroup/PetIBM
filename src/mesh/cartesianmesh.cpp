@@ -39,7 +39,38 @@ CartesianMesh::CartesianMesh(const MPI_Comm &world, const YAML::Node &node)
 
 
 // default destructor
-CartesianMesh::~CartesianMesh() = default;
+CartesianMesh::~CartesianMesh()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    std::vector<AO>().swap(ao); // DO NOT DESTROY UNDERLYING AOs!!
+}
+
+
+// manually destroy data
+PetscErrorCode CartesianMesh::destroy()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    type::RealVec3D().swap(dLTrue);
+    type::RealVec3D().swap(coordTrue);
+    std::vector<AO>().swap(ao); // DO NOT DESTROY UNDERLYING AOs!!
+    type::IntVec1D().swap(UPackNLocalAllProcs);
+    type::IntVec2D().swap(offsetsAllProcs);
+    type::IntVec1D().swap(offsetsPackAllProcs);
+
+    ierr = MeshBase::destroy(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
 
 
 // initialization

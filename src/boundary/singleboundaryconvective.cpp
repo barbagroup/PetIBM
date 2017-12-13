@@ -57,6 +57,16 @@ SingleBoundaryConvective::SingleBoundaryConvective(
 }
 
 
+PetscErrorCode SingleBoundaryConvective::destroy()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    kernel = nullptr;
+    ierr = SingleBoundaryBase::destroy(); CHKERRQ(ierr);
+    PetscFunctionReturn(0);
+}
+
+
 PetscErrorCode SingleBoundaryConvective::setGhostICsKernel(
         const PetscReal &targetValue, type::GhostPointInfo &p)
 {

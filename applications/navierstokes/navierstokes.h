@@ -44,7 +44,15 @@ public:
     /**
      * \brief Default destructor.
      */
-    ~NavierStokesSolver() = default;
+    ~NavierStokesSolver();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode destroy();
 
     /**
      * \brief Initialize vectors, operators, and linear solvers.
@@ -93,12 +101,6 @@ public:
     PetscErrorCode writeIterations(
             const int &timeIndex, const std::string &filePath);
 
-    /**
-     * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
-     */
-    PetscErrorCode finalize();
-
-    
 protected:
     
     

@@ -53,7 +53,14 @@ public:
     SolutionBase(const type::Mesh &mesh) {};
 
     /** \brief default destructor. */
-    virtual ~SolutionBase() = default;
+    virtual ~SolutionBase();
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
     
     /**
      * \brief print information to standard output.

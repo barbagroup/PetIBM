@@ -47,6 +47,13 @@ public:
 
     /** \brief virtual destruction function. */
     virtual ~LinSolverBase() = default;
+
+    /**
+     * \brief Manually destroy the instance.
+     *
+     * \return  PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
     
     /**
      * \brief print information to standard output.

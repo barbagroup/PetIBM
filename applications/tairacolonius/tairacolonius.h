@@ -47,7 +47,10 @@ public:
     /**
      * \brief Default destructor.
      */
-    ~TairaColoniusSolver() = default;
+    ~TairaColoniusSolver();
+
+    /** \brief manually destroy data.  */
+    PetscErrorCode destroy();
 
     /**
      * \brief Initialize vectors, operators, and linear solvers.
@@ -73,11 +76,6 @@ public:
      */
     PetscErrorCode writeIntegratedForces(
             const PetscReal &t, const std::string &filePath);
-
-    /**
-     * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
-     */
-    PetscErrorCode finalize();
 
     
 protected:

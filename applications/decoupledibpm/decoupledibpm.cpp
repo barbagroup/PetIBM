@@ -20,6 +20,51 @@ DecoupledIBPMSolver::DecoupledIBPMSolver(
 } // DecoupledIBPMSolver
 
 
+DecoupledIBPMSolver::~DecoupledIBPMSolver()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = VecDestroy(&df); CHKERRV(ierr);
+    ierr = VecDestroy(&f); CHKERRV(ierr);
+    ierr = VecDestroy(&Eu); CHKERRV(ierr);
+    
+    ierr = MatDestroy(&H); CHKERRV(ierr);
+    ierr = MatDestroy(&E); CHKERRV(ierr);
+    ierr = MatDestroy(&EBNH); CHKERRV(ierr);
+    ierr = MatDestroy(&BNH); CHKERRV(ierr);
+}
+
+
+// destroy
+PetscErrorCode DecoupledIBPMSolver::destroy()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+    
+    ierr = VecDestroy(&df); CHKERRQ(ierr);
+    ierr = VecDestroy(&f); CHKERRQ(ierr);
+    ierr = VecDestroy(&Eu); CHKERRQ(ierr);
+    
+    ierr = MatDestroy(&H); CHKERRQ(ierr);
+    ierr = MatDestroy(&E); CHKERRQ(ierr);
+    ierr = MatDestroy(&EBNH); CHKERRQ(ierr);
+    ierr = MatDestroy(&BNH); CHKERRQ(ierr);
+    
+    fSolver.reset();
+    bodies.reset();
+    
+    ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+} // finalize
+
+
 PetscErrorCode DecoupledIBPMSolver::initialize(
         const petibm::type::Mesh &inMesh,
         const petibm::type::Boundary &inBC,
@@ -433,28 +478,3 @@ PetscErrorCode DecoupledIBPMSolver::writeIntegratedForces(
 
     PetscFunctionReturn(0);
 } // writeIntegratedForces
-
-
-// finalize
-PetscErrorCode DecoupledIBPMSolver::finalize()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-    
-    fSolver.~shared_ptr();
-    bodies.~shared_ptr();
-    
-    ierr = VecDestroy(&df); CHKERRQ(ierr);
-    ierr = VecDestroy(&f); CHKERRQ(ierr);
-    ierr = VecDestroy(&Eu); CHKERRQ(ierr);
-    
-    ierr = MatDestroy(&H); CHKERRQ(ierr);
-    ierr = MatDestroy(&E); CHKERRQ(ierr);
-    ierr = MatDestroy(&EBNH); CHKERRQ(ierr);
-    ierr = MatDestroy(&BNH); CHKERRQ(ierr);
-    
-    ierr = NavierStokesSolver::finalize(); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // finalize

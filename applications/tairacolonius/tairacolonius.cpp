@@ -20,6 +20,38 @@ TairaColoniusSolver::TairaColoniusSolver(
 } // TairaColoniusSolver
 
 
+TairaColoniusSolver::~TairaColoniusSolver()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = ISDestroy(&isDE[0]); CHKERRV(ierr);
+    ierr = ISDestroy(&isDE[1]); CHKERRV(ierr);
+    ierr = VecDestroy(&P); CHKERRV(ierr);
+}
+
+
+// manual destroy data
+PetscErrorCode TairaColoniusSolver::destroy()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    bodies.reset();
+    ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
+    ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
+    ierr = VecDestroy(&P); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+} // finalize
+
+
 PetscErrorCode TairaColoniusSolver::initialize(
         const petibm::type::Mesh &inMesh, const petibm::type::Boundary &inBC,
         const petibm::type::BodyPack &inBodies,const YAML::Node &node)
@@ -119,17 +151,6 @@ PetscErrorCode TairaColoniusSolver::createOperators()
     
     // destroy temporary operator
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
-    
-    // register auto-destroy objects
-    ierr = PetscObjectRegisterDestroy((PetscObject) DBNG); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) BNG); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) A); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) N); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) LCorrection); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) L); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) G); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) DCorrection); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) D); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // assembleOperators
@@ -146,7 +167,6 @@ PetscErrorCode TairaColoniusSolver::createVectors()
     
     // P; combination of pGlobal and forces
     ierr = MatCreateVecs(G, &P, nullptr); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) P); CHKERRQ(ierr);
     
     // swap pGlobal and P, so we can reuse functions from Navier-Stokes solver
     temp = solution->pGlobal;
@@ -317,19 +337,3 @@ PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
 
     PetscFunctionReturn(0);
 } // writeIntegratedForces
-
-
-// manual finalization
-PetscErrorCode TairaColoniusSolver::finalize()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    bodies.~shared_ptr();
-    ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
-    ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
-    ierr = NavierStokesSolver::finalize(); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // finalize

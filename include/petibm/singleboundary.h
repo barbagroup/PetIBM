@@ -74,7 +74,15 @@ public:
             const type::BCType &type, const PetscReal &value); 
 
     /** \brief default destructor. */
-    virtual ~SingleBoundaryBase() = default;
+    virtual ~SingleBoundaryBase();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
 
 
     /**

@@ -19,6 +19,81 @@ NavierStokesSolver::NavierStokesSolver(const petibm::type::Mesh &inMesh,
 } // NavierStokesSolver
 
 
+NavierStokesSolver::~NavierStokesSolver()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = VecDestroy(&dP); CHKERRV(ierr);
+    ierr = VecDestroy(&bc1); CHKERRV(ierr);
+    ierr = VecDestroy(&rhs1); CHKERRV(ierr);
+    ierr = VecDestroy(&rhs2); CHKERRV(ierr);
+    for (unsigned int i=0; i<conv.size(); ++i) {
+        ierr = VecDestroy(&conv[i]); CHKERRV(ierr);
+    }
+    for (unsigned int i=0; i<diff.size(); ++i) {
+        ierr = VecDestroy(&diff[i]); CHKERRV(ierr);
+    }
+
+    ierr = MatDestroy(&A); CHKERRV(ierr);
+    ierr = MatDestroy(&DBNG); CHKERRV(ierr);
+    ierr = MatDestroy(&BNG); CHKERRV(ierr);
+    ierr = MatDestroy(&N); CHKERRV(ierr);
+    ierr = MatDestroy(&G); CHKERRV(ierr);
+    ierr = MatDestroy(&D); CHKERRV(ierr);
+    ierr = MatDestroy(&DCorrection); CHKERRV(ierr);
+    ierr = MatDestroy(&L); CHKERRV(ierr);
+    ierr = MatDestroy(&LCorrection); CHKERRV(ierr);
+}
+
+
+PetscErrorCode NavierStokesSolver::destroy()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+
+    ierr = VecDestroy(&dP); CHKERRQ(ierr);
+    ierr = VecDestroy(&bc1); CHKERRQ(ierr);
+    ierr = VecDestroy(&rhs1); CHKERRQ(ierr);
+    ierr = VecDestroy(&rhs2); CHKERRQ(ierr);
+    for (unsigned int i=0; i<conv.size(); ++i) {
+        ierr = VecDestroy(&conv[i]); CHKERRQ(ierr);
+    }
+    for (unsigned int i=0; i<diff.size(); ++i) {
+        ierr = VecDestroy(&diff[i]); CHKERRQ(ierr);
+    }
+
+    ierr = MatDestroy(&A); CHKERRQ(ierr);
+    ierr = MatDestroy(&DBNG); CHKERRQ(ierr);
+    ierr = MatDestroy(&BNG); CHKERRQ(ierr);
+    ierr = MatDestroy(&N); CHKERRQ(ierr);
+    ierr = MatDestroy(&G); CHKERRQ(ierr);
+    ierr = MatDestroy(&D); CHKERRQ(ierr);
+    ierr = MatDestroy(&DCorrection); CHKERRQ(ierr);
+    ierr = MatDestroy(&L); CHKERRQ(ierr);
+    ierr = MatDestroy(&LCorrection); CHKERRQ(ierr);
+    
+    settings.reset();
+    bc.reset(); // decrease reference count or destroy
+    solution.reset(); // decrease reference count or destroy
+    mesh.reset(); // decrease reference count or destroy
+    convCoeffs.reset(); // decrease reference count or destroy
+    diffCoeffs.reset(); // decrease reference count or destroy
+    vSolver.reset(); // decrease reference count or destroy
+    pSolver.reset(); // decrease reference count or destroy
+
+    isRefP = PETSC_FALSE;
+    dt = 0.0;
+    nu = 0.0;
+
+    PetscFunctionReturn(0);
+}
+
+
 PetscErrorCode NavierStokesSolver::initialize(const petibm::type::Mesh &inMesh,
             const petibm::type::Boundary &inBC,const YAML::Node &node)
 {
@@ -118,17 +193,6 @@ PetscErrorCode NavierStokesSolver::createOperators()
     
     // destroy temporary operator
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
-    
-    // register auto-destroy objects
-    ierr = PetscObjectRegisterDestroy((PetscObject) DBNG); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) BNG); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) A); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) N); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) LCorrection); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) L); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) G); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) DCorrection); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) D); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // assembleOperators
@@ -153,20 +217,6 @@ PetscErrorCode NavierStokesSolver::createVectors()
     diff.resize(diffCoeffs->nExplicit);
     for (unsigned int i=0; i<diff.size(); ++i) {
         ierr = VecDuplicate(solution->UGlobal, &diff[i]); CHKERRQ(ierr);
-    }
-    
-    // resister auto-destroy
-    ierr = PetscObjectRegisterDestroy((PetscObject) rhs2); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) rhs1); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) bc1); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) dP); CHKERRQ(ierr);
-    
-    for (unsigned int i=0; i<conv.size(); ++i) {
-        ierr = PetscObjectRegisterDestroy((PetscObject) conv[i]); CHKERRQ(ierr);
-    }
-    
-    for (unsigned int i=0; i<diff.size(); ++i) {
-        ierr = PetscObjectRegisterDestroy((PetscObject) diff[i]); CHKERRQ(ierr);
     }
 
     PetscFunctionReturn(0);
@@ -568,44 +618,3 @@ PetscErrorCode NavierStokesSolver::writeIterations(
 
     PetscFunctionReturn(0);
 } // writeIterations
-
-
-// manual finalization
-PetscErrorCode NavierStokesSolver::finalize()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = VecDestroy(&dP); CHKERRQ(ierr);
-    ierr = VecDestroy(&bc1); CHKERRQ(ierr);
-    ierr = VecDestroy(&rhs1); CHKERRQ(ierr);
-    ierr = VecDestroy(&rhs2); CHKERRQ(ierr);
-    for (unsigned int i=0; i<conv.size(); ++i) {
-        ierr = VecDestroy(&conv[i]); CHKERRQ(ierr);
-    }
-    for (unsigned int i=0; i<diff.size(); ++i) {
-        ierr = VecDestroy(&diff[i]); CHKERRQ(ierr);
-    }
-
-    ierr = MatDestroy(&A); CHKERRQ(ierr);
-    ierr = MatDestroy(&DBNG); CHKERRQ(ierr);
-    ierr = MatDestroy(&BNG); CHKERRQ(ierr);
-    ierr = MatDestroy(&N); CHKERRQ(ierr);
-    ierr = MatDestroy(&G); CHKERRQ(ierr);
-    ierr = MatDestroy(&D); CHKERRQ(ierr);
-    ierr = MatDestroy(&DCorrection); CHKERRQ(ierr);
-    ierr = MatDestroy(&L); CHKERRQ(ierr);
-    ierr = MatDestroy(&LCorrection); CHKERRQ(ierr);
-    
-    settings.~Node();
-    mesh.~shared_ptr(); // decrease reference count or destroy
-    bc.~shared_ptr(); // decrease reference count or destroy
-    solution.~shared_ptr(); // decrease reference count or destroy
-    convCoeffs.~shared_ptr(); // decrease reference count or destroy
-    diffCoeffs.~shared_ptr(); // decrease reference count or destroy
-    vSolver.~shared_ptr(); // decrease reference count or destroy
-    pSolver.~shared_ptr(); // decrease reference count or destroy
-
-    PetscFunctionReturn(0);
-} // finalize

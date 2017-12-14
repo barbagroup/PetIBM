@@ -6,6 +6,9 @@
 // PETSc
 # include <petscviewerhdf5.h>
 
+// PetIBM
+# include <petibm/io.h>
+
 // solver header
 # include "tairacolonius.h"
 
@@ -286,6 +289,56 @@ PetscErrorCode TairaColoniusSolver::write(const std::string &filePath)
 
     PetscFunctionReturn(0);
 } // write
+
+
+// output extra data required for restarting to the user provided file
+PetscErrorCode TairaColoniusSolver::writeRestartData(const std::string &filePath)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode ierr;
+
+    ierr = NavierStokesSolver::writeRestartData(filePath); CHKERRQ(ierr);
+
+    // write forces
+    Vec f;
+    ierr = VecGetSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
+    ierr = petibm::io::writeHDF5Vecs(mesh->comm, filePath,
+            "/", {"force"}, {f}, FILE_MODE_APPEND); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+// read data necessary for restarting
+PetscErrorCode TairaColoniusSolver::readRestartData(const std::string &filePath)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    Vec temp = PETSC_NULL;
+    
+    // let solution->pGlobal point to P, so that we can use solution->write
+    temp = solution->pGlobal;
+    solution->pGlobal = P;
+
+    ierr = NavierStokesSolver::readRestartData(filePath); CHKERRQ(ierr);
+    
+    // restore pointers
+    solution->pGlobal = temp;
+    temp = PETSC_NULL;
+
+    // write forces
+    std::vector<Vec> f(1);
+    ierr = VecGetSubVector(solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
+    ierr = petibm::io::readHDF5Vecs(mesh->comm, filePath,
+            "/", {"force"}, f); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
 
 
 // write averaged forces

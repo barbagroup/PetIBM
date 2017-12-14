@@ -22,6 +22,7 @@ public:
 
     // public methods that don't change
     using NavierStokesSolver::advance;
+    using NavierStokesSolver::initializeASCIIFiles;
     using NavierStokesSolver::writeIterations;
     
     /** \brief Default constructor.  */

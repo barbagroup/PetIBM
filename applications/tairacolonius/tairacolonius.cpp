@@ -346,9 +346,7 @@ PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
             const PetscReal &t, const std::string &filePath)
 {
     PetscErrorCode ierr;
-    PetscViewer         viewer;
     petibm::type::RealVec2D     fAvg;
-    static PetscFileMode mode = FILE_MODE_WRITE;
 
     PetscFunctionBeginUser;
 
@@ -362,14 +360,9 @@ PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
     
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
     
-    // create ASCII viewer
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
-    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
-    
     // write current time
-    ierr = PetscViewerASCIIPrintf(viewer, "%10.8e", t); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+            asciiViewers[filePath], "%10.8e", t); CHKERRQ(ierr);
     
     // write forces body by body
     for(unsigned int i=0; i<bodies->nBodies; ++i)
@@ -377,16 +370,10 @@ PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
         for(unsigned int d=0; d<mesh->dim; ++d)
         {
             ierr = PetscViewerASCIIPrintf(
-                    viewer, "\t%10.8e", fAvg[i][d]); CHKERRQ(ierr);
+                    asciiViewers[filePath], "\t%10.8e", fAvg[i][d]); CHKERRQ(ierr);
         }
     }
-    ierr = PetscViewerASCIIPrintf(viewer, "\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "\n"); CHKERRQ(ierr);
     
-    // destroy
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-    
-    // next we'll just append data
-    mode = FILE_MODE_APPEND;
-
     PetscFunctionReturn(0);
 } // writeIntegratedForces

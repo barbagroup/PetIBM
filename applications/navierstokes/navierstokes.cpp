@@ -48,6 +48,10 @@ NavierStokesSolver::~NavierStokesSolver()
     ierr = MatDestroy(&DCorrection); CHKERRV(ierr);
     ierr = MatDestroy(&L); CHKERRV(ierr);
     ierr = MatDestroy(&LCorrection); CHKERRV(ierr);
+
+    for(auto &it: asciiViewers) {
+        ierr = PetscViewerDestroy(&it.second); CHKERRV(ierr);
+    }
 }
 
 
@@ -89,6 +93,11 @@ PetscErrorCode NavierStokesSolver::destroy()
     isRefP = PETSC_FALSE;
     dt = 0.0;
     nu = 0.0;
+
+    for(auto &it: asciiViewers) {
+        ierr = PetscViewerDestroy(&it.second); CHKERRQ(ierr);
+    }
+    asciiViewers.clear();
 
     PetscFunctionReturn(0);
 }
@@ -581,6 +590,22 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
 }
 
 
+PetscErrorCode NavierStokesSolver::initializeASCIIFiles(
+        const std::string &filePath, const PetscFileMode &mode)
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    
+    // create ASCII viewer
+    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &asciiViewers[filePath]); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(asciiViewers[filePath], PETSCVIEWERASCII); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(asciiViewers[filePath], mode); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(asciiViewers[filePath], filePath.c_str()); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+
+
 // write numbers of iterations and residuals of linear solvers to a file
 PetscErrorCode NavierStokesSolver::writeIterations(
         const int &timeIndex, const std::string &filePath)
@@ -588,33 +613,22 @@ PetscErrorCode NavierStokesSolver::writeIterations(
     PetscErrorCode ierr;
     PetscInt nIters;
     PetscReal res;
-    PetscViewer viewer;
-    static PetscFileMode mode = FILE_MODE_WRITE;
 
     PetscFunctionBeginUser;
     
-    // create ASCII viewer
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
-    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
-    
     // write current time
-    ierr = PetscViewerASCIIPrintf(viewer, "%d", timeIndex); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+            asciiViewers[filePath], "%d", timeIndex); CHKERRQ(ierr);
     
     ierr = vSolver->getIters(nIters); CHKERRQ(ierr);
     ierr = vSolver->getResidual(res); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "\t%d\t%e", nIters, res); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+            asciiViewers[filePath], "\t%d\t%e", nIters, res); CHKERRQ(ierr);
     
     ierr = pSolver->getIters(nIters); CHKERRQ(ierr);
     ierr = pSolver->getResidual(res); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "\t%d\t%e\n", nIters, res); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+            asciiViewers[filePath], "\t%d\t%e\n", nIters, res); CHKERRQ(ierr);
     
-    // destroy
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-    
-    // next time we'll append data
-    mode = FILE_MODE_APPEND;
-
     PetscFunctionReturn(0);
 } // writeIterations

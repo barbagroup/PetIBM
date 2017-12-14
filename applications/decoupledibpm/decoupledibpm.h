@@ -23,6 +23,7 @@ public:
 
     // public members that don't change
     using NavierStokesSolver::write;
+    using NavierStokesSolver::initializeASCIIFiles;
     
     /** \brief Default constructor. */
     DecoupledIBPMSolver() = default;

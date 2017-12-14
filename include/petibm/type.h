@@ -63,41 +63,7 @@ namespace type
     extern std::map<BCLoc, std::string> bl2str;
 
 
-    /** \brief Immersed boundary method used to solve the flow. */
-    enum IBMethod
-    {
-        NAVIER_STOKES = 0,  ///< no immersed boundary (Perot, 1993)
-        TAIRA_COLONIUS = 1  ///< immersed boundary projection method (Taira & Colonius, 2007)
-    };
-    /** \brief mapping between `std::string` and `IBMethod` type */
-    extern std::map<std::string, IBMethod> str2ibm;
-    /** \brief mapping between `IBMethod` type and `std::string` */
-    extern std::map<IBMethod, std::string> ibm2str;
-
-
-    /** \brief Staggered mode to define the location of mesh points. */
-    enum StaggeredMode
-    {
-        CELL_CENTERED = 0,     ///< cell-centered quantity
-        STAGGERED_MODE_X = 1,  ///< x-component of staggered quantity
-        STAGGERED_MODE_Y = 2,  ///< y-component of staggered quantity
-        STAGGERED_MODE_Z = 3   ///< z-component of staggered quantity
-    };
-    /** \brief mapping between `std::string` and `StaggeredMode` type */
-    extern std::map<std::string, StaggeredMode> str2sm;
-    /** \brief mapping between `StaggeredMode` type and `std::string` */
-    extern std::map<StaggeredMode, std::string> sm2str;
-
-
-    /** \brief output format */
-    enum OutputType {Binary = 0, VTK = 1, HDF5 = 2};
-    /** \brief mapping between `std::string` and `OutputType` type */
-    extern std::map<std::string, OutputType> str2out;
-    /** \brief mapping between `OutputType` type and `std::string` */
-    extern std::map<OutputType, std::string> out2str;
-
-
-    /** \brief 1D std::vector holding PetscInt. */
+    /** \brief 1D std::vector holding PetscInt. \ingroup type */
     typedef std::vector<PetscInt>   IntVec1D;
     /** \brief 2D std::vector holding PetscInt. */
     typedef std::vector<IntVec1D>   IntVec2D;
@@ -127,35 +93,7 @@ namespace type
     typedef std::vector<GhostedVec2D>           GhostedVec3D;
 
 
-    /** \brief a structure holding information of perturbation. */
-    struct Perturbation
-    {
-        PetscReal   freq = 0.;  ///< frequency
-        PetscReal   amp = 0.;  ///< amplitude
-    };
-
-
-    /** \brief a struct holding information of output */
-    struct OutputInfo
-    {
-        OutputType      format = OutputType::Binary;
-        PetscBool       outputFlux = PETSC_TRUE;
-        PetscBool       outputVelocity = PETSC_FALSE;
-    };
-
-
-    /** \brief a struct holding information of time-stepping */
-    struct SteppingInfo
-    {
-        PetscReal       dt;
-        PetscInt        nStart;
-        PetscInt        nTotal;
-        PetscInt        nSave;
-        PetscInt        nRestart;
-    };
-
-
-    /** \brief a data structure for a single ghost point. */
+    /** \brief a data structure for a single ghost point. \ingroup type */
     struct GhostPointInfo
     {
         PetscInt    lclId;

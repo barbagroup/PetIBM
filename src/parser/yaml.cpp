@@ -83,73 +83,6 @@ using namespace petibm::type;
         return true;
     }
 
-    // for IBMethod
-    Node convert<IBMethod>::encode(const IBMethod &ibm)
-    {
-        Node node;
-        node = ibm2str[ibm];
-        return node;
-    }
-
-    bool convert<IBMethod>::decode(const Node &node, IBMethod &ibm)
-    {
-        if (! node.IsDefined()) return false;
-
-        ibm = str2ibm[node.as<std::string>()];
-        return true;
-    }
-
-    // for StaggeredMode
-    Node convert<StaggeredMode>::encode(const StaggeredMode &sm)
-    {
-        Node node;
-        node = sm2str[sm];
-        return node;
-    }
-
-    bool convert<StaggeredMode>::decode(const Node &node, StaggeredMode &sm)
-    {
-        if (! node.IsDefined()) return false;
-
-        sm = str2sm[node.as<std::string>()];
-        return true;
-    }
-
-    // for Perturbation
-    Node convert<Perturbation>::encode(const Perturbation &pertb)
-    {
-        YAML::Node  node(NodeType::Map);
-        node["frequency"] = pertb.freq;
-        node["amplitude"] = pertb.amp;
-        return node;
-    }
-
-    bool convert<Perturbation>::decode(const Node &node, Perturbation &pertb)
-    {
-        if ((! node["frequency"].IsDefined()) || 
-                (! node["amplitude"].IsDefined())) return false;
-
-        pertb.freq = node["frequency"].as<PetscReal>();
-        pertb.amp = node["amplitude"].as<PetscReal>();
-        return true;
-    }
-
-    // for OutputType
-    Node convert<OutputType>::encode(const OutputType &out)
-    {
-        YAML::Node  node;
-        node = out2str[out];
-        return node;
-    }
-
-    bool convert<OutputType>::decode(const Node &node, OutputType &out)
-    {
-        if (! node.IsDefined()) return false;
-
-        out = str2out[node.as<std::string>()];
-        return true;
-    }
-
     // for PetscBool
     Node convert<PetscBool>::encode(const PetscBool &b)
     {
@@ -163,47 +96,6 @@ using namespace petibm::type;
         if (! node.IsDefined()) return false;
 
         b = PetscBool(node.as<bool>());
-        return true;
-    }
-
-    // for OutputInfo
-    Node convert<OutputInfo>::encode(const OutputInfo &output)
-    {
-        YAML::Node  node(NodeType::Map);
-        node["outputFormat"] = output.format;
-        node["outputFlux"] = output.outputFlux;
-        node["outputVelocity"] = output.outputVelocity;
-        return node;
-    }
-
-    bool convert<OutputInfo>::decode(const Node &node, OutputInfo &output)
-    {
-        output.format = 
-        		node["outputFormat"].as<OutputType>(OutputType::Binary);
-        output.outputFlux = node["outputFlux"].as<PetscBool>(PETSC_TRUE);
-        output.outputVelocity = node["outputVelocity"].as<PetscBool>(PETSC_FALSE);
-        return true;
-    }
-
-    // for SteppingInfo
-    Node convert<SteppingInfo>::encode(const SteppingInfo &stepping)
-    {
-        YAML::Node  node(NodeType::Map);
-        node["dt"] = stepping.dt;
-        node["startStep"] = stepping.nStart;
-        node["nt"] = stepping.nTotal;
-        node["nsave"] = stepping.nSave;
-        node["nrestart"] = stepping.nRestart;
-        return node;
-    }
-
-    bool convert<SteppingInfo>::decode(const Node &node, SteppingInfo &stepping)
-    {
-        stepping.dt = node["dt"].as<PetscReal>();
-        stepping.nStart = node["startStep"].as<PetscInt>(0);
-        stepping.nTotal = node["nt"].as<PetscInt>(1);
-        stepping.nSave = node["nsave"].as<PetscInt>(1);
-        stepping.nRestart = node["nrestart"].as<PetscInt>(1);
         return true;
     }
     

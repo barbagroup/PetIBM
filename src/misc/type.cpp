@@ -38,14 +38,12 @@ namespace type
     /** \copydoc types::dir2str */
     std::map<Dir, std::string> dir2str {{x, "x"}, {y, "y"}, {z, "z"}};
 
-
     /** \copydoc types::str2fd */
     std::map<std::string, Field> str2fd {
         {"u", u}, {"v", v}, {"w", w}, {"p", p}, {"vertex", vertex}};
     /** \copydoc types::fd2str */
     std::map<Field, std::string> fd2str {
         {u, "u"}, {v, "v"}, {w, "w"}, {p, "p"}, {vertex, "vertex"}};
-
 
     /** \copydoc types::str2bt */
     std::map<std::string, BCType> str2bt {{"NOBC", NOBC},
@@ -68,33 +66,6 @@ namespace type
     std::map<BCLoc, std::string> bl2str {
         {XMINUS, "xMinus"}, {XPLUS, "xPlus"}, {YMINUS, "yMinus"}, 
         {YPLUS, "yPlus"}, {ZMINUS, "zMinus"}, {ZPLUS, "zPlus"}};
-
-
-    /** \copydoc types::str2ibm */
-    std::map<std::string, IBMethod> str2ibm {
-        {"NAVIER_STOKES", NAVIER_STOKES}, {"TAIRA_COLONIUS", TAIRA_COLONIUS}};
-    /** \copydoc types::ibm2str */
-    std::map<IBMethod, std::string> ibm2str {
-        {NAVIER_STOKES, "NAVIER_STOKES"}, {TAIRA_COLONIUS, "TAIRA_COLONIUS"}};
-
-
-    /** \copydoc types::str2sm */
-    std::map<std::string, StaggeredMode> str2sm {
-        {"CELL_CENTERED", CELL_CENTERED}, {"STAGGERED_MODE_X", STAGGERED_MODE_X}, 
-        {"STAGGERED_MODE_Y", STAGGERED_MODE_Y}, {"STAGGERED_MODE_Z", STAGGERED_MODE_Z}};
-    /** \copydoc types::sm2str */
-    std::map<StaggeredMode, std::string> sm2str {
-        {CELL_CENTERED, "CELL_CENTERED"}, {STAGGERED_MODE_X, "STAGGERED_MODE_X"}, 
-        {STAGGERED_MODE_Y, "STAGGERED_MODE_Y"}, {STAGGERED_MODE_Z, "STAGGERED_MODE_Z"}};
-
-
-    /** \copydoc types::str2out */
-    std::map<std::string, OutputType> str2out {
-        {"binary", Binary}, {"vtk", VTK}, {"hdf5", HDF5},
-        {"Binary", Binary}, {"VTK", VTK}, {"HDF5", HDF5}};
-    /** \copydoc types::out2str */
-    std::map<OutputType, std::string> out2str {
-        {Binary, "Binary"}, {VTK, "VTK"}, {HDF5, "HDF5"}};
 
 } // end of namespace type
 } // end of namespace petibm

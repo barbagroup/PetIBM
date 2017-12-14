@@ -57,60 +57,12 @@ using namespace petibm::type;
         static bool decode(const Node &node, BCLoc &loc);
     };
 
-    /** \brief converter for `types::IBMethod` */
-    template <>
-    struct convert<IBMethod>
-    {
-        static Node encode(const IBMethod &ibm);
-        static bool decode(const Node &node, IBMethod &ibm);
-    };
-
-    /** \brief converter for `types::StaggeredMode` */
-    template <>
-    struct convert<StaggeredMode>
-    {
-        static Node encode(const StaggeredMode &sm);
-        static bool decode(const Node &node, StaggeredMode &sm);
-    };
-
-    /** \brief converter for `types::Perturbation` */
-    template<>
-    struct convert<Perturbation>
-    {
-        static Node encode(const Perturbation &pertb);
-        static bool decode(const Node &node, Perturbation &pertb);
-    };
-
-    /** \brief converter for `types::OutputType` */
-    template<>
-    struct convert<OutputType>
-    {
-        static Node encode(const OutputType &out);
-        static bool decode(const Node &node, OutputType &out);
-    };
-
     /** \brief converter for `PetscBool` */
     template<>
     struct convert<PetscBool>
     {
         static Node encode(const PetscBool &b);
         static bool decode(const Node &node, PetscBool &b);
-    };
-
-    /** \brief converter for `types::OutputInfo` */
-    template<>
-    struct convert<OutputInfo>
-    {
-        static Node encode(const OutputInfo &output);
-        static bool decode(const Node &node, OutputInfo &output);
-    };
-
-    /** \brief converter for `types::SteppingInfo` */
-    template<>
-    struct convert<SteppingInfo>
-    {
-        static Node encode(const SteppingInfo &stepping);
-        static bool decode(const Node &node, SteppingInfo &stepping);
     };
 
 } // end of namespace YAML

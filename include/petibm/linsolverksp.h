@@ -45,7 +45,7 @@ public:
     /** \copydoc LinSolverBase::getResidual. */
     virtual PetscErrorCode getResidual(PetscReal &res);
 
-private:
+protected:
 
     /** \brief the underlying KSP solver. */
     KSP ksp;

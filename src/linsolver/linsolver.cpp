@@ -1,8 +1,9 @@
-/*
- * linsolver.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/** 
+ * \file linsolver.cpp
+ * \brief Implementations of LinSolverBase, LinSolver, and factory function.
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 

@@ -1,5 +1,9 @@
-/*! Implementation of the methods of the class `LinSolverKSP`.
- * \file kspsolver.cpp
+/** 
+ * \file linsolverksp.h
+ * \brief Implementation of LinSolverKSP.
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 

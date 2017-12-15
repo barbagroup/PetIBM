@@ -1,5 +1,9 @@
-/*! Implementation of the methods of the class `LinSolverAmgX`.
- * \file amgxsolver.cpp
+/** 
+ * \file linsolveramgx.cpp
+ * \brief Implementation of LinSolverAmgX.
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 

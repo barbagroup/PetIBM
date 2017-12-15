@@ -3,14 +3,15 @@
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Implementations of members inside namespace `types`.
+ * \brief Implementations of members inside namespace \ref petibm::type.
+ * \copyright MIT.
  */
 
 // here goes our headers
 #include <petibm/type.h>
 
 
-/** \copydoc operator<(const MatStencil &, const MatStencil &). */
+// operator< for MatStencil
 bool operator<(const MatStencil &l, const MatStencil &r)
 {
     if (l.k < r.k) return true;
@@ -30,31 +31,30 @@ bool operator<(const MatStencil &l, const MatStencil &r)
 
 namespace petibm
 {
-/** \copydoc types */
 namespace type
 {
-    /** \copydoc types::str2dir */
+    /** \showinitializer */
     std::map<std::string, Dir> str2dir {{"x", x}, {"y", y}, {"z", z}};
-    /** \copydoc types::dir2str */
+    /** \showinitializer */
     std::map<Dir, std::string> dir2str {{x, "x"}, {y, "y"}, {z, "z"}};
 
-    /** \copydoc types::str2fd */
+    /** \showinitializer */
     std::map<std::string, Field> str2fd {
         {"u", u}, {"v", v}, {"w", w}, {"p", p}, {"vertex", vertex}};
-    /** \copydoc types::fd2str */
+    /** \showinitializer */
     std::map<Field, std::string> fd2str {
         {u, "u"}, {v, "v"}, {w, "w"}, {p, "p"}, {vertex, "vertex"}};
 
-    /** \copydoc types::str2bt */
+    /** \showinitializer */
     std::map<std::string, BCType> str2bt {{"NOBC", NOBC},
         {"DIRICHLET", DIRICHLET}, {"NEUMANN", NEUMANN}, 
         {"CONVECTIVE", CONVECTIVE}, {"PERIODIC", PERIODIC}};
-    /** \copydoc types::bt2str */
+    /** \showinitializer */
     std::map<BCType, std::string> bt2str {{NOBC, "NOBC"},
         {DIRICHLET, "DIRICHLET"}, {NEUMANN, "NEUMANN"}, 
         {CONVECTIVE, "CONVECTIVE"}, {PERIODIC, "PERIODIC"}};
 
-    /** \copydoc types::str2bl */
+    /** \showinitializer */
     std::map<std::string, BCLoc> str2bl {
         {"left", XMINUS}, {"right", XPLUS}, {"bottom", YMINUS}, 
         {"top", YPLUS}, {"back", ZMINUS}, {"front", ZPLUS},
@@ -62,7 +62,7 @@ namespace type
         {"yPlus", YPLUS}, {"zMinus", ZMINUS}, {"zPlus", ZPLUS},
         {"XMINUS", XMINUS}, {"XPLUS", XPLUS}, {"YMINUS", YMINUS}, 
         {"YPLUS", YPLUS}, {"ZMINUS", ZMINUS}, {"ZPLUS", ZPLUS}};
-    /** \copydoc types::bl2str */
+    /** \showinitializer */
     std::map<BCLoc, std::string> bl2str {
         {XMINUS, "xMinus"}, {XPLUS, "xPlus"}, {YMINUS, "yMinus"}, 
         {YPLUS, "yPlus"}, {ZMINUS, "zMinus"}, {ZPLUS, "zPlus"}};

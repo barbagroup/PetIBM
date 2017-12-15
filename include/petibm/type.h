@@ -1,9 +1,10 @@
 /***************************************************************************//**
  * \file type.h
+ * \brief Definition of user-defined types for convenience.
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of enumerated types.
+ * \copyright MIT.
  */
 
 # pragma once
@@ -18,7 +19,36 @@
 # include <petscmat.h>
 
 
-/** \brief operator < for MatStencil for using it as a key to map. 
+/** 
+ * \defgroup petibm A toolbox for building flow solvers 
+ * 
+ * This part contains building blocks that are necessary for a flow solver in 
+ * Perot (1993) framwork and staggered-grid finite difference method.
+ */
+
+
+/** 
+ * \defgroup type User-defined types in PetIBM
+ * 
+ * User-defined types to simplify the source code.
+ * 
+ * PETSc also has its own type definitions. Here are information of some PETSc
+ * types we use in PetIBM:
+ * 
+ * \arg \c \b PetscInt http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscInt.html
+ * \arg \c \b PetscReal http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscReal.html
+ * \arg \c \b PetscBool http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBool.html
+ * \arg \c \b PetscErrorCode http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscErrorCode.html
+ * \arg \c \b MatStencil http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MatStencil.html
+ * \arg \c \b Mat http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/Mat.html
+ * \arg \c \b Vec http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Vec/Vec.html
+ * \arg \c \b KSP http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/KSP/KSP.html
+ * \ingroup petibm
+ */
+
+
+/** 
+ * \brief Operator< of MatStencil for using it as a key to map. 
  *
  * For the detail of implimentation, please refer to 
  * std::lexicographical_compare. This is just a splified version.
@@ -26,162 +56,117 @@
 bool operator<(const MatStencil &, const MatStencil &);
 
 
+/** 
+ * \brief A toolbox for building flow solvers. 
+ * \ingroup petibm
+ */
 namespace petibm
 {
-/** \brief frequently used types are defined here */
+    
+/** 
+ * \brief Frequently used types, structures, and enums.
+ * \ingroup type
+ */
 namespace type
 {
-    /** \brief legal physical directions. */
+    /** \brief Legal physical directions. \ingroup type */
     enum Dir { x=0, y, z };
-    /** \brief mapping between `std::string` and `Dir` type */
+    /** \brief Mapping between `std::string` and \ref Dir. \ingroup type */
     extern std::map<std::string, Dir> str2dir;
-    /** \brief mapping between `Dir` type and `std::string` */
+    /** \brief Mapping between \ref Dir and `std::string`. \ingroup type */
     extern std::map<Dir, std::string> dir2str;
 
 
-    /** \brief legal fields. */
-    enum Field { u=0, v, w , p, vertex};
-    /** \brief mapping between `std::string` and `Field` type */
+    /** \brief Legal fields. \ingroup type */
+    enum Field { u=0, v, w, p, vertex};
+    /** \brief Mapping between `std::string` and \ref Field. \ingroup type */
     extern std::map<std::string, Field> str2fd;
-    /** \brief mapping between `Field` type and `std::string` */
+    /** \brief Mapping between \ref Field and `std::string`. \ingroup type */
     extern std::map<Field, std::string> fd2str;
 
 
-    /** \brief type of boundary condition. */
+    /** \brief Type of boundary conditions. \ingroup type */
     enum BCType { NOBC=0, PERIODIC, DIRICHLET, NEUMANN, CONVECTIVE };
-    /** \brief mapping between `std::string` and `BCType` type */
+    /** \brief Mapping between `std::string` and \ref BCType. \ingroup type */
     extern std::map<std::string, BCType> str2bt;
-    /** \brief mapping between `BCType` type and `std::string` */
+    /** \brief mapping between \ref BCType and `std::string`. \ingroup type */
     extern std::map<BCType, std::string> bt2str;
 
 
-    /** \brief location of the boundary. */
+    /** \brief Location of a boundary. \ingroup type */
     enum BCLoc { XMINUS=0, XPLUS, YMINUS, YPLUS, ZMINUS, ZPLUS };
-    /** \brief mapping between `std::string` and `BCLoc` type */
+    /** \brief Mapping between `std::string` and \ref BCLoc. \ingroup type */
     extern std::map<std::string, BCLoc> str2bl;
-    /** \brief mapping between `BCLoc` type and `std::string` */
+    /** \brief Mapping between \ref BCLoc and `std::string`. \ingroup type */
     extern std::map<BCLoc, std::string> bl2str;
 
 
     /** \brief 1D std::vector holding PetscInt. \ingroup type */
     typedef std::vector<PetscInt>   IntVec1D;
-    /** \brief 2D std::vector holding PetscInt. */
+    /** \brief 2D std::vector holding PetscInt. \ingroup type */
     typedef std::vector<IntVec1D>   IntVec2D;
-    /** \brief 3D std::vector holding PetscInt. */
+    /** \brief 3D std::vector holding PetscInt. \ingroup type */
     typedef std::vector<IntVec2D>   IntVec3D;
 
 
-    /** \brief 1D std::vector holding PetscReal. */
+    /** \brief 1D std::vector holding PetscReal. \ingroup type */
     typedef std::vector<PetscReal>  RealVec1D;
-    /** \brief 2D std::vector holding PetscReal. */
+    /** \brief 2D std::vector holding PetscReal. \ingroup type */
     typedef std::vector<RealVec1D>  RealVec2D;
-    /** \brief 3D std::vector holding PetscReal. */
+    /** \brief 3D std::vector holding PetscReal. \ingroup type */
     typedef std::vector<RealVec2D>  RealVec3D;
 
 
-    /** \brief 1D std::vector holding PetscBool. */
+    /** \brief 1D std::vector holding PetscBool. \ingroup type */
     typedef std::vector<PetscBool>  BoolVec1D;
-    /** \brief 2D std::vector holding PetscBool. */
+    /** \brief 2D std::vector holding PetscBool. \ingroup type */
     typedef std::vector<BoolVec1D>  BoolVec2D;
-    /** \brief 3D std::vector holding PetscBool. */
+    /** \brief 3D std::vector holding PetscBool. \ingroup type */
     typedef std::vector<BoolVec2D>  BoolVec3D;
 
 
-    /** \brief a vector of pointer to mimic a collection of ghosted 1D vectors. */
+    /** \brief a vector of pointers to mimic ghosted 1D vectors. \ingroup type */
     typedef std::vector<PetscReal*>             GhostedVec2D;
-    /** \brief a vector of vector pointer to mimic a collection of ghosted 2D vectors. */
+    /** \brief a vector of vector pointers to mimic ghosted 2D vectors. \ingroup type */
     typedef std::vector<GhostedVec2D>           GhostedVec3D;
 
 
-    /** \brief a data structure for a single ghost point. \ingroup type */
+    /** \brief A data structure for a single ghost point. \ingroup type */
     struct GhostPointInfo
     {
-        PetscInt    lclId;
-        MatStencil  targetStencil;
-        PetscInt    targetPackedId;
-        PetscReal   area, dL;
-        PetscReal   a0, a1;
-        PetscReal   value;
+        PetscInt    lclId; ///< the index in a local velocity vector of this ghost point
+        MatStencil  targetStencil; ///< the tencil of point corresponding to this ghost point
+        PetscInt    targetPackedId; ///< the index of target point in global packed velocity vector
+        PetscReal   area; ///< the flux area of this ghost point
+        PetscReal   dL; ///< the distance between this ghost point and target velocity point
+        PetscReal   a0; ///< the coefficient of the velocity at the target point
+        PetscReal   a1; ///< the constant coefficient
+        PetscReal   value; ///< the value of this ghost point
     };
 
 
-    /** \brief a map (dictionary) for ghost points. */
+    /** \brief A map between MatStencil and GhostPointInfo. \ingroup type */
     typedef std::map<MatStencil, GhostPointInfo> GhostPointsList;
 
 
-    /** \brief a struct holding information about which row in a matrix should
-     *         be modified based on BCs.
+    /** 
+     * \brief A struct holding information about which row in a matrix should 
+     * be modified based on BCs.
+     * \ingroup type 
      */
     struct RowModifier
     {
-        PetscInt    row;
-        PetscReal   coeff;
+        PetscInt    row; ///< the global index of a row in a Mat
+        PetscReal   coeff; ///< coefficient
     };
 
 
-    /** \brief a type that holds necessary for a matrix modifier that modifies
-     *         matrix coefficient based on BCs.
+    /**
+     * \brief A type that holds necessary info for a matrix modifier that modifies
+     * matrix coefficient based on BCs.
+     * \ingroup type
      */
     typedef std::vector<std::map<MatStencil, RowModifier>> MatrixModifier;
 
 } // end of namespace type
 } // end of namespace petibm
-
-/**
- * \class PetscInt
- * \brief PETSc type that represents an integer.
- * \sa http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscInt.html
- */
-
-/**
- * \class PetscReal
- * \brief PETSc type that represents a real number.
- * \sa http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscReal.html
- */
-
-/**
- * \class PetscBool
- * \brief PETSc type that represents a logical variable.
- * \sa http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBool.html
- */
-
-/**
- * \class PetscErrorCode
- * \brief PETSc type used to return the error code from a function.
- * \sa http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscErrorCode.html
- */
-
-/**
- * \var EULER_EXPLICIT
- * \f[ \frac{u^{n+1}-u^n}{\Delta t} = f(u^n) \f]
- */
-
-/**
- * \var EULER_IMPLICIT
- * \f[ \frac{u^{n+1}-u^n}{\Delta t} = f(u^{n+1}) \f]
- */
-
-/**
- * \var ADAMS_BASHFORTH_2
- * \f[ \frac{u^{n+1}-u^n}{\Delta t} = \frac{3}{2}f(u^n) - \frac{1}{2}f(u^{n-1}) \f]
- */
-
-/**
- * \var CRANK_NICOLSON
- * \f[ \frac{u^{n+1}-u^n}{\Delta t} = \frac{1}{2}\left(f(u^{n+1}) + f(u^n)\right) \f]
- */
-
-/**
- * \var NAVIER_STOKES
- * Solve the incompressible Navier-Stokes equations in the domain without the
- * presence of any immersed boundaries. The method used is the fractional step
- * method as formulated in the paper by Blair Perot
- * <a href="http://dx.doi.org/10.1006/jcph.1993.1162">(J. Comput. Phys, 108.1, 1993)</a>
- */
-
-/**
- * \var TAIRA_COLONIUS
- * Solve the flow using the immersed boundary projection method proposed by
- * Taira and Colonius
- * <a href="http://dx.doi.org/10.1016/j.jcp.2007.03.005">(J. Comput. Phys, 225.2, 2007)</a>
- */

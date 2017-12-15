@@ -100,13 +100,13 @@ public:
     /**
      * \brief Get the type of this instance.
      * 
-     * \param type [out] a string representing the type.
+     * \param _type [out] a string representing the type.
      * 
-     * The possible return of `type` is either `NVIDIA AmgX` or `PETSc KSP`.
+     * The possible return of `_type` is either `NVIDIA AmgX` or `PETSc KSP`.
      *
      * \return PetscErrorCode.
      */
-    PetscErrorCode getType(std::string &type) const;
+    PetscErrorCode getType(std::string &_type) const;
 
     /**
      * \brief Set the coefficient matrix A as in Ax=b.

@@ -40,7 +40,7 @@ public:
      * The argument `name` will be used as a prefix for the configuration of the 
      * underlying KSP solver in the provided configuration file.
      */
-    LinSolverKSP(const std::string &name, const std::string &file);
+    LinSolverKSP(const std::string &solverName, const std::string &file);
 
     /** \copydoc ~LinSolverBase */
     virtual ~LinSolverKSP();

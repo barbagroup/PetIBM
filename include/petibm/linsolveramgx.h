@@ -36,7 +36,7 @@ class LinSolverAmgX : public LinSolverBase
 public:
 
     /** \copydoc LinSolverBase(const std::string &, const std::string &) */
-    LinSolverAmgX(const std::string &name, const std::string &file);
+    LinSolverAmgX(const std::string &solverName, const std::string &file);
 
     /** \copydoc ~LinSolverBase */
     virtual ~LinSolverAmgX();

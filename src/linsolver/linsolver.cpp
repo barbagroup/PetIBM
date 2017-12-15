@@ -21,7 +21,7 @@ namespace petibm
 namespace linsolver
 {
 
-
+// implement LinSolverBase::destroy
 PetscErrorCode LinSolverBase::destroy()
 {
     PetscFunctionBeginUser;
@@ -31,6 +31,7 @@ PetscErrorCode LinSolverBase::destroy()
 }
     
     
+// implement LinSolverBase::printInfo
 PetscErrorCode LinSolverBase::printInfo() const
 {
     PetscFunctionBeginUser;
@@ -51,6 +52,7 @@ PetscErrorCode LinSolverBase::printInfo() const
 }
 
 
+// implement LinSolverBase::getType
 PetscErrorCode LinSolverBase::getType(std::string &_type) const
 {
     PetscFunctionBeginUser;
@@ -59,7 +61,7 @@ PetscErrorCode LinSolverBase::getType(std::string &_type) const
 }
 
 
-// factory function for creating a LinSolver
+// implement petibm::linsolver::createLinSolver
 PetscErrorCode createLinSolver(const std::string &solverName, 
         const YAML::Node &node, type::LinSolver &solver)
 {

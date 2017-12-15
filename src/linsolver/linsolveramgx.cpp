@@ -11,8 +11,10 @@
 #include <petibm/linsolveramgx.h>
 
 
+// a global (in this file scope) vector of references to AmgXSolvers
 std::vector<AmgXSolver*> solvers;
 
+// a wrapper function for PetscFinalize() to destroy AmgXSolvers automatically
 PetscErrorCode preDestroyAmgXSolvers()
 {
     PetscFunctionBeginUser;
@@ -29,12 +31,13 @@ namespace petibm
 namespace linsolver
 {
 
-// constructor
-LinSolverAmgX::LinSolverAmgX(const std::string &_name, const std::string &_config):
-    LinSolverBase(_name, _config) { init(); }
+// implement LinSolverAmgX::LinSolverAmgX
+LinSolverAmgX::LinSolverAmgX(
+        const std::string &solverName, const std::string &file):
+    LinSolverBase(solverName, file) { init(); }
 
 
-// destructor
+// implement LinSolverAmgX::~LinSolverAmgX
 LinSolverAmgX::~LinSolverAmgX()
 { 
     PetscFunctionBeginUser;
@@ -48,7 +51,7 @@ LinSolverAmgX::~LinSolverAmgX()
 }
 
 
-// manually destroy
+// implement LinSolverAmgX::destroy
 PetscErrorCode LinSolverAmgX::destroy()
 {
     PetscFunctionBeginUser;
@@ -62,7 +65,7 @@ PetscErrorCode LinSolverAmgX::destroy()
 }
 
 
-// underlying initialization function
+// implement LinSolverAmgX::init
 PetscErrorCode LinSolverAmgX::init()
 {
     PetscFunctionBeginUser;
@@ -80,7 +83,7 @@ PetscErrorCode LinSolverAmgX::init()
 }
 
 
-// set coefficient matrix
+// implement LinSolverAmgX::setMatrix
 PetscErrorCode LinSolverAmgX::setMatrix(const Mat &A)
 {
     PetscFunctionBeginUser;
@@ -93,7 +96,7 @@ PetscErrorCode LinSolverAmgX::setMatrix(const Mat &A)
 } // setMatrix
 
 
-// solve linear system
+// implement LinSolverAmgX::solve
 PetscErrorCode LinSolverAmgX::solve(Vec &x, Vec &b)
 {
     PetscFunctionBeginUser;
@@ -106,7 +109,7 @@ PetscErrorCode LinSolverAmgX::solve(Vec &x, Vec &b)
 } // solve
 
 
-// get number of iterations
+// implement LinSolverAmgX::getIters
 PetscErrorCode LinSolverAmgX::getIters(PetscInt &iters)
 {
     PetscFunctionBeginUser;
@@ -119,7 +122,7 @@ PetscErrorCode LinSolverAmgX::getIters(PetscInt &iters)
 } // getIters
 
 
-// get the norm of final residual
+// implement LinSolverAmgX::getResidual
 PetscErrorCode LinSolverAmgX::getResidual(PetscReal &res)
 {
     PetscFunctionBeginUser;

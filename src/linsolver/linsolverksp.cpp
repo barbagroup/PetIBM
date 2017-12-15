@@ -16,12 +16,12 @@ namespace petibm
 namespace linsolver
 {
 
-// constructor
+// implement LinSolverKSP::LinSolverKSP
 LinSolverKSP::LinSolverKSP(const std::string &_name, const std::string &_config):
     LinSolverBase(_name, _config) { init(); }
 
 
-// destructor
+// implement LinSolverKSP::~LinSolverKSP
 LinSolverKSP::~LinSolverKSP()
 {
     PetscFunctionBeginUser;
@@ -36,7 +36,7 @@ LinSolverKSP::~LinSolverKSP()
 }
 
 
-// manually destroy
+// implement LinSolverKSP::destroy
 PetscErrorCode LinSolverKSP::destroy()
 {
     PetscErrorCode ierr;
@@ -48,7 +48,7 @@ PetscErrorCode LinSolverKSP::destroy()
 }
 
 
-// underlying initialization function
+// implement LinSolverKSP::init
 PetscErrorCode LinSolverKSP::init()
 {
     PetscFunctionBeginUser;
@@ -70,7 +70,7 @@ PetscErrorCode LinSolverKSP::init()
 }
 
 
-// set coefficient matrix
+// implement LinSolverKSP::setMatrix
 PetscErrorCode LinSolverKSP::setMatrix(const Mat &A)
 {
     PetscFunctionBeginUser;
@@ -84,7 +84,7 @@ PetscErrorCode LinSolverKSP::setMatrix(const Mat &A)
 } // setMatrix
 
 
-// solve linear system
+// implement LinSolverKSP::solve
 PetscErrorCode LinSolverKSP::solve(Vec &x, Vec &b)
 {
     PetscFunctionBeginUser;
@@ -109,7 +109,7 @@ PetscErrorCode LinSolverKSP::solve(Vec &x, Vec &b)
 } // solve
 
 
-// get number of iterations
+// implement LinSolverKSP::getIters
 PetscErrorCode LinSolverKSP::getIters(PetscInt &iters)
 {
     PetscFunctionBeginUser;
@@ -122,7 +122,7 @@ PetscErrorCode LinSolverKSP::getIters(PetscInt &iters)
 } // getIters
 
 
-// get the norm of final residual
+// implement LinSolverKSP::getResidual
 PetscErrorCode LinSolverKSP::getResidual(PetscReal &res)
 {
     PetscFunctionBeginUser;

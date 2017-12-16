@@ -6,6 +6,9 @@
 // PETSc
 # include <petscviewerhdf5.h>
 
+// PetIBM
+# include <petibm/io.h>
+
 // solver header
 # include "tairacolonius.h"
 
@@ -18,6 +21,38 @@ TairaColoniusSolver::TairaColoniusSolver(
 {
     initialize(inMesh, inBC, inBodies, node);
 } // TairaColoniusSolver
+
+
+TairaColoniusSolver::~TairaColoniusSolver()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = ISDestroy(&isDE[0]); CHKERRV(ierr);
+    ierr = ISDestroy(&isDE[1]); CHKERRV(ierr);
+    ierr = VecDestroy(&P); CHKERRV(ierr);
+}
+
+
+// manual destroy data
+PetscErrorCode TairaColoniusSolver::destroy()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    bodies.reset();
+    ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
+    ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
+    ierr = VecDestroy(&P); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+} // finalize
 
 
 PetscErrorCode TairaColoniusSolver::initialize(
@@ -119,17 +154,6 @@ PetscErrorCode TairaColoniusSolver::createOperators()
     
     // destroy temporary operator
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
-    
-    // register auto-destroy objects
-    ierr = PetscObjectRegisterDestroy((PetscObject) DBNG); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) BNG); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) A); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) N); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) LCorrection); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) L); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) G); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) DCorrection); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) D); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 } // assembleOperators
@@ -146,7 +170,6 @@ PetscErrorCode TairaColoniusSolver::createVectors()
     
     // P; combination of pGlobal and forces
     ierr = MatCreateVecs(G, &P, nullptr); CHKERRQ(ierr);
-    ierr = PetscObjectRegisterDestroy((PetscObject) P); CHKERRQ(ierr);
     
     // swap pGlobal and P, so we can reuse functions from Navier-Stokes solver
     temp = solution->pGlobal;
@@ -268,14 +291,62 @@ PetscErrorCode TairaColoniusSolver::write(const std::string &filePath)
 } // write
 
 
+// output extra data required for restarting to the user provided file
+PetscErrorCode TairaColoniusSolver::writeRestartData(const std::string &filePath)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode ierr;
+
+    ierr = NavierStokesSolver::writeRestartData(filePath); CHKERRQ(ierr);
+
+    // write forces
+    Vec f;
+    ierr = VecGetSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
+    ierr = petibm::io::writeHDF5Vecs(mesh->comm, filePath,
+            "/", {"force"}, {f}, FILE_MODE_APPEND); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
+// read data necessary for restarting
+PetscErrorCode TairaColoniusSolver::readRestartData(const std::string &filePath)
+{
+    PetscFunctionBeginUser;
+    
+    PetscErrorCode  ierr;
+    
+    Vec temp = PETSC_NULL;
+    
+    // let solution->pGlobal point to P, so that we can use solution->write
+    temp = solution->pGlobal;
+    solution->pGlobal = P;
+
+    ierr = NavierStokesSolver::readRestartData(filePath); CHKERRQ(ierr);
+    
+    // restore pointers
+    solution->pGlobal = temp;
+    temp = PETSC_NULL;
+
+    // write forces
+    std::vector<Vec> f(1);
+    ierr = VecGetSubVector(solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
+    ierr = petibm::io::readHDF5Vecs(mesh->comm, filePath,
+            "/", {"force"}, f); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
+    
+    PetscFunctionReturn(0);
+}
+
+
 // write averaged forces
 PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
             const PetscReal &t, const std::string &filePath)
 {
     PetscErrorCode ierr;
-    PetscViewer         viewer;
     petibm::type::RealVec2D     fAvg;
-    static PetscFileMode mode = FILE_MODE_WRITE;
 
     PetscFunctionBeginUser;
 
@@ -289,14 +360,9 @@ PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
     
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
     
-    // create ASCII viewer
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
-    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
-    
     // write current time
-    ierr = PetscViewerASCIIPrintf(viewer, "%10.8e", t); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+            asciiViewers[filePath], "%10.8e", t); CHKERRQ(ierr);
     
     // write forces body by body
     for(unsigned int i=0; i<bodies->nBodies; ++i)
@@ -304,32 +370,10 @@ PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
         for(unsigned int d=0; d<mesh->dim; ++d)
         {
             ierr = PetscViewerASCIIPrintf(
-                    viewer, "\t%10.8e", fAvg[i][d]); CHKERRQ(ierr);
+                    asciiViewers[filePath], "\t%10.8e", fAvg[i][d]); CHKERRQ(ierr);
         }
     }
-    ierr = PetscViewerASCIIPrintf(viewer, "\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "\n"); CHKERRQ(ierr);
     
-    // destroy
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-    
-    // next we'll just append data
-    mode = FILE_MODE_APPEND;
-
     PetscFunctionReturn(0);
 } // writeIntegratedForces
-
-
-// manual finalization
-PetscErrorCode TairaColoniusSolver::finalize()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    bodies.~shared_ptr();
-    ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
-    ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
-    ierr = NavierStokesSolver::finalize(); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // finalize

@@ -86,7 +86,15 @@ public:
 
 
     /** \brief the default destructor. */
-    virtual ~SingleBodyBase() = default;
+    virtual ~SingleBodyBase();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
     
     
     /**

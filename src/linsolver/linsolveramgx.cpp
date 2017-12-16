@@ -7,6 +7,19 @@
 #include <petibm/linsolveramgx.h>
 
 
+std::vector<AmgXSolver*> solvers;
+
+PetscErrorCode preDestroyAmgXSolvers()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    for(auto &it: solvers)
+    {
+        ierr = it->finalize(); CHKERRQ(ierr);
+    }
+    PetscFunctionReturn(0);
+}
+
 namespace petibm
 {
 namespace linsolver
@@ -18,7 +31,31 @@ LinSolverAmgX::LinSolverAmgX(const std::string &_name, const std::string &_confi
 
 
 // destructor
-LinSolverAmgX::~LinSolverAmgX() { amgx.finalize(); }
+LinSolverAmgX::~LinSolverAmgX()
+{ 
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = amgx.finalize(); CHKERRV(ierr);
+}
+
+
+// manually destroy
+PetscErrorCode LinSolverAmgX::destroy()
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode ierr;
+
+    ierr = amgx.finalize(); CHKERRQ(ierr);
+    ierr = LinSolverBase::destroy(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
 
 
 // underlying initialization function
@@ -31,6 +68,9 @@ PetscErrorCode LinSolverAmgX::init()
     type = "NVIDIA AmgX";
 
     ierr = amgx.initialize(PETSC_COMM_WORLD, "dDDI", config); CHKERRQ(ierr);
+
+    solvers.push_back(&amgx);
+    ierr = PetscRegisterFinalize(&preDestroyAmgXSolvers); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }

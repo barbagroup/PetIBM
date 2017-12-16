@@ -27,6 +27,8 @@ public:
 
     virtual ~SingleBoundaryConvective() = default;
 
+    virtual PetscErrorCode destroy();
+
 protected:
 
     virtual PetscErrorCode setGhostICsKernel(

@@ -24,6 +24,39 @@ SingleBoundaryBase::SingleBoundaryBase(const type::Mesh &inMesh,
 }
 
 
+SingleBoundaryBase::~SingleBoundaryBase()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    comm = MPI_COMM_NULL;
+}
+
+
+PetscErrorCode SingleBoundaryBase::destroy()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+
+    dim = -1;
+    loc = type::BCLoc(0);
+    field = type::Field(0);
+    value = normal = 0.0;
+    type::GhostPointsList().swap(points);
+    onThisProc = PETSC_FALSE;
+
+    comm = MPI_COMM_NULL;
+    mpiSize = mpiRank = 0;
+    mesh.reset();
+
+    PetscFunctionReturn(0);
+}
+
+
 PetscErrorCode SingleBoundaryBase::init(const type::Mesh &inMesh,
         const type::BCLoc &bcLoc, const type::Field &inField,
         const type::BCType &inType, const PetscReal &inValue)

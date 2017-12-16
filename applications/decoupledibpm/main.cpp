@@ -70,13 +70,11 @@ int main(int argc, char **argv)
     // current time
     PetscReal t = start * dt;
              
-    // file to log information of linear solvers
-    std::string iterationsFile = 
-        config["directory"].as<std::string>() + "/iterations.txt";
+    // directory where file to log information of linear solvers in
+    std::string iterationsFile = config["directory"].as<std::string>() + "/";
              
-    // file to log averaged Lagrangian forces
-    std::string forceFile = 
-        config["directory"].as<std::string>() + "/forces.txt";
+    // directory where file to log averaged Lagrangian forces in
+    std::string forceFile = config["directory"].as<std::string>() + "/";
     
     
     if (start == 0) // write initial solutions to a HDF5
@@ -91,6 +89,9 @@ int main(int argc, char **argv)
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+
+        iterationsFile += "iterations.txt";
+        forceFile += "forces.txt";
     }
     else // restart
     {
@@ -104,7 +105,14 @@ int main(int argc, char **argv)
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
+
+        iterationsFile += "iterations-" + std::to_string(start) + ".txt";
+        forceFile += "forces-" + std::to_string(start) + ".txt";
     }
+
+    // initialize the PetscViewers of ASCII files in the solver class
+    ierr = solver.initializeASCIIFiles(iterationsFile); CHKERRQ(ierr);
+    ierr = solver.initializeASCIIFiles(forceFile); CHKERRQ(ierr);
     
     // start time marching
     for (int ite=start+1; ite<=end; ite++)

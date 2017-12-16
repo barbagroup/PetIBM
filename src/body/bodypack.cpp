@@ -24,6 +24,41 @@ BodyPackBase::BodyPackBase(const type::Mesh &inMesh, const YAML::Node &node)
 }
 
 
+BodyPackBase::~BodyPackBase()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = DMDestroy(&dmPack); CHKERRV(ierr);
+    comm = MPI_COMM_NULL;
+}
+
+
+PetscErrorCode BodyPackBase::destroy()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode ierr;
+
+    dim = -1;
+    nBodies = nPts = nLclPts = 0;
+    std::vector<type::SingleBody>().swap(bodies);
+    ierr = DMDestroy(&dmPack); CHKERRQ(ierr);
+    info = "";
+
+    mesh.reset();
+    comm = MPI_COMM_NULL;
+    mpiSize = mpiRank = 0;
+    type::IntVec1D().swap(nLclAllProcs);
+    type::IntVec1D().swap(offsetsAllProcs);
+
+    PetscFunctionReturn(0);
+}
+
+
 PetscErrorCode BodyPackBase::init(
         const type::Mesh &inMesh, const YAML::Node &node)
 {

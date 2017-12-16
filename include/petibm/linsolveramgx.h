@@ -30,6 +30,9 @@ public:
     /** \brief destructor. */
     virtual ~LinSolverAmgX();
 
+    /** \brief LinSolverBase::destroy. */
+    virtual PetscErrorCode destroy();
+
     /** \copydoc LinSolverBase::setMatrix. */
     virtual PetscErrorCode setMatrix(const Mat &A);
 

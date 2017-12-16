@@ -14,6 +14,39 @@ namespace petibm
 {
 namespace solution
 {
+    SolutionBase::~SolutionBase()
+    {
+        PetscFunctionBeginUser;
+        PetscErrorCode ierr;
+        PetscBool finalized;
+
+        ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+        if (finalized) return;
+
+        ierr = VecDestroy(&UGlobal); CHKERRV(ierr);
+        ierr = VecDestroy(&pGlobal); CHKERRV(ierr);
+        comm = MPI_COMM_NULL;
+    }
+
+
+    PetscErrorCode SolutionBase::destroy()
+    {
+        PetscFunctionBeginUser;
+        PetscErrorCode ierr;
+
+        dim = -1;
+        ierr = VecDestroy(&UGlobal); CHKERRQ(ierr);
+        ierr = VecDestroy(&pGlobal); CHKERRQ(ierr);
+        info = "";
+
+        comm = MPI_COMM_NULL;
+        mpiRank = mpiSize = 0;
+        mesh.reset();
+
+        PetscFunctionReturn(0);
+    }
+
+
     PetscErrorCode SolutionBase::printInfo() const
     {
         PetscFunctionBeginUser;

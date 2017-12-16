@@ -32,7 +32,7 @@ public:
     BoundarySimple(const type::Mesh &mesh, const YAML::Node &node);
 
     /** \copydoc petibm::boundary::BoundaryBase::~BoundaryBase */
-    virtual ~BoundarySimple();
+    virtual ~BoundarySimple() = default;
 
 
     /** \copydoc petibm::boundary::BoundaryBase::setGhostICs */

@@ -44,6 +44,41 @@ SingleBodyBase::SingleBodyBase(const type::Mesh &inMesh,
 }
 
 
+SingleBodyBase::~SingleBodyBase()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode  ierr;
+    PetscBool finalized;
+
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
+
+    ierr = DMDestroy(&da); CHKERRV(ierr);
+    comm = MPI_COMM_NULL;
+}
+
+
+PetscErrorCode SingleBodyBase::destroy()
+{
+    PetscFunctionBeginUser;
+    PetscErrorCode  ierr;
+
+    dim = -1;
+    name = file = info = "";
+    nPts = nLclPts = bgPt = edPt = 0;
+    type::RealVec2D().swap(coords);
+    type::IntVec2D().swap(meshIdx);
+    ierr = DMDestroy(&da); CHKERRQ(ierr);
+    comm = MPI_COMM_NULL;
+    mpiSize = mpiRank = 0;
+    mesh.reset();
+    type::IntVec1D().swap(nLclAllProcs);
+    type::IntVec1D().swap(offsetsAllProcs);
+
+    PetscFunctionReturn(0);
+}
+
+
 PetscErrorCode SingleBodyBase::printInfo() const
 {
     PetscFunctionBeginUser;

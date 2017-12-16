@@ -72,7 +72,15 @@ public:
 
 
     /** \brief default destructor. */
-    ~BodyPackBase() = default;
+    virtual ~BodyPackBase();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
 
 
     /**

@@ -46,7 +46,15 @@ public:
     BoundaryBase(const type::Mesh &mesh, const YAML::Node &node);
 
     /** \brief default destructor. */
-    virtual ~BoundaryBase() = default;
+    virtual ~BoundaryBase();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
 
 
     /**

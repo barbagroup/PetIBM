@@ -44,7 +44,15 @@ public:
     /**
      * \brief Default destructor.
      */
-    ~NavierStokesSolver() = default;
+    ~NavierStokesSolver();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode destroy();
 
     /**
      * \brief Initialize vectors, operators, and linear solvers.
@@ -84,21 +92,28 @@ public:
     PetscErrorCode readRestartData(const std::string &filePath);
 
     /**
+     * \brief initialize vewers for ASCII files, such as iteration log.
+     *
+     * \param filePath [in] a tring indicating the path to the file.
+     * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode initializeASCIIFiles(const std::string &filePath,
+            const PetscFileMode &mode=FILE_MODE_WRITE);
+
+    /**
      * \brief Write number of iterations executed by each solver at current time
      *        step.
      *
-     * \param timeIndex Time-step index
-     * \param filePath Path of the file to write in
+     * For a given `filePath`, an `initializeASCIIFiles` should be called for 
+     * this `filePath` prior any call to `writeIterations`.
+     *
+     * \param timeIndex [in] Time-step index
+     * \param filePath [in] Path of the file to write in
      */
-    PetscErrorCode writeIterations(
-            const int &timeIndex, const std::string &filePath);
+    PetscErrorCode writeIterations(const int &timeIndex, const std::string &filePath);
 
-    /**
-     * \brief Destroy PETSc objects (vectors and matrices) and linear solvers.
-     */
-    PetscErrorCode finalize();
-
-    
 protected:
     
     
@@ -210,6 +225,11 @@ protected:
     
     /** \brief Log write phase. */
     PetscLogStage stageWrite;
+
+
+
+    /** \brief a dictionary mapping file path to PetscViewers. */
+    std::map<std::string, PetscViewer> asciiViewers;
     
 
     

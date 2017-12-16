@@ -23,6 +23,7 @@ public:
 
     // public members that don't change
     using NavierStokesSolver::write;
+    using NavierStokesSolver::initializeASCIIFiles;
     
     /** \brief Default constructor. */
     DecoupledIBPMSolver() = default;
@@ -43,7 +44,10 @@ public:
             const YAML::Node &node);
 
     /** \brief Default destructor. */
-    ~DecoupledIBPMSolver() = default;
+    ~DecoupledIBPMSolver();
+
+    /** \brief manually destroy data. */
+    PetscErrorCode destroy();
 
     /** \brief Initialize vectors, operators, and linear solvers. */
     PetscErrorCode initialize(
@@ -90,9 +94,6 @@ public:
      */
     PetscErrorCode writeIntegratedForces(
             const PetscReal &t, const std::string &filePath);
-
-    /** \brief Destroy PETSc objects (vectors and matrices) and linear solvers. */
-    PetscErrorCode finalize();
 
 protected:
     

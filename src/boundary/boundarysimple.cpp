@@ -19,10 +19,6 @@ namespace boundary
 using namespace type;
 
 
-// default destructor
-BoundarySimple::~BoundarySimple() = default;
-
-
 // constructor
 BoundarySimple::BoundarySimple(const type::Mesh &inMesh, const YAML::Node &node)
 {

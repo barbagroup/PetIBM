@@ -119,7 +119,15 @@ public:
 
 
     /** \brief default destructor. */
-    virtual ~MeshBase() = default;
+    virtual ~MeshBase();
+
+
+    /**
+     * \brief manually destroy data.
+     *
+     * \return PetscErrorCode.
+     */
+    virtual PetscErrorCode destroy();
     
 
     /**

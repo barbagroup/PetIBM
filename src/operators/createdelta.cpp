@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createdelta.cpp
+ * \brief Definition of functions creating Delta operator.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating Delta operators.
+ * \copyright MIT.
  */
 
 
@@ -39,7 +40,7 @@ PetscErrorCode getWindowAndDistance(const PetscInt &dim,
         type::RealVec2D &targetdLs);
 
 
-/** \copydoc createDelta(const CartesianMesh &, const BodyPack &, Mat &). */
+// implementation of petibm::operators::createDelta
 PetscErrorCode createDelta(const type::Mesh &mesh, const type::Boundary &bc,
                            const type::BodyPack &bodies, Mat &D)
 {

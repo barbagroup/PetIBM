@@ -9,6 +9,9 @@ LADD = $(top_builddir)/src/libpetibm.la \
        $(PETSC_LDFLAGS) $(PETSC_LIBS) \
        $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
        $(GTEST_LDFLAGS) $(GTEST_LIBS)
+if WITH_AMGX
+LADD += $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
+endif
 
 singlebody_test_DEPENDENCIES = input_data
 singlebody_test_SOURCES = singlebody_test.cpp

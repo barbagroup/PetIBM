@@ -424,8 +424,6 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
     std::string     pre("\t\t");
 
     ss << pre << "Rank " << mpiRank << ": " << std::endl;

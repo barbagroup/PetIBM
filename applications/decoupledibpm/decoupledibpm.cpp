@@ -443,9 +443,9 @@ PetscErrorCode DecoupledIBPMSolver::writeIntegratedForces(
             asciiViewers[filePath], "%10.8e", t); CHKERRQ(ierr);
     
     // write forces body by body
-    for(unsigned int i=0; i<bodies->nBodies; ++i)
+    for(int i=0; i<bodies->nBodies; ++i)
     {
-        for(unsigned int d=0; d<mesh->dim; ++d)
+        for(int d=0; d<mesh->dim; ++d)
         {
             ierr = PetscViewerASCIIPrintf(
                     asciiViewers[filePath], "\t%10.8e", fAvg[i][d]); CHKERRQ(ierr);

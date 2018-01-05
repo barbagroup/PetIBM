@@ -150,7 +150,7 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
     
     ierr = PetscViewerHDF5PushGroup(viewer, loc.c_str()); CHKERRQ(ierr);
     
-    for(int i=0; i<vecs.size(); ++i)
+    for(unsigned int i=0; i<vecs.size(); ++i)
     {
         ierr = PetscObjectSetName(
                 (PetscObject) vecs[i], names[i].c_str()); CHKERRQ(ierr);
@@ -253,7 +253,7 @@ PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
     
     ierr = PetscViewerHDF5PushGroup(viewer, loc.c_str()); CHKERRQ(ierr);
     
-    for(int i=0; i<vecs.size(); ++i)
+    for(unsigned int i=0; i<vecs.size(); ++i)
     {
         ierr = PetscObjectSetName(
                 (PetscObject) vecs[i], names[i].c_str()); CHKERRQ(ierr);

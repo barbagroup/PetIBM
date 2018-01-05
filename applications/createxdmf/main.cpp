@@ -126,7 +126,7 @@ PetscErrorCode writeSingleXDMF(
             "<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" [\n"); CHKERRQ(ierr);
     ierr = PetscViewerASCIIPrintf(viewer, 
             "    <!ENTITY CaseDir \"%s\">\n", "./"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
     {
         ierr = PetscViewerASCIIPrintf(viewer, "    <!ENTITY N%s \"%d\">\n", 
                 type::dir2str[type::Dir(i)].c_str(), n[i]); CHKERRQ(ierr);
@@ -155,7 +155,7 @@ PetscErrorCode writeSingleXDMF(
     ierr = PetscViewerASCIIPrintf(viewer, 
             "GeometryType=\"VXVY%s\">\n", (dim==3)?"VZ":""); CHKERRQ(ierr);
     
-    for(unsigned int i=0; i<dim; ++i)
+    for(int i=0; i<dim; ++i)
     {
         std::string dir = type::dir2str[type::Dir(i)];
         ierr = PetscViewerASCIIPrintf(viewer, "    " "    " 

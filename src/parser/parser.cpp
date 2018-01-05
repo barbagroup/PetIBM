@@ -283,7 +283,7 @@ PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues)
     
     icValues = type::RealVec1D(3, 0.0);
     
-    for(int i=0; i<temp.size(); i++) icValues[i] = temp[i].as<PetscReal>();
+    for(unsigned int i=0; i<temp.size(); i++) icValues[i] = temp[i].as<PetscReal>();
     
     PetscFunctionReturn(0);
 }

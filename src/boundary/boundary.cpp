@@ -32,7 +32,6 @@ BoundaryBase::~BoundaryBase()
 PetscErrorCode BoundaryBase::destroy()
 {
     PetscFunctionBeginUser;
-    PetscErrorCode ierr;
 
     std::vector<std::vector<type::SingleBoundary>>().swap(bds);
 

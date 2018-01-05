@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     }
 
     // destroy everything from petsc
-    for(PetscInt f=0; f<w.size(); ++f)
+    for(unsigned int f=0; f<w.size(); ++f)
     {
         ierr = VecDestroy(&w[f]); CHKERRQ(ierr);
         ierr = DMDestroy(&wDMs[f]); CHKERRQ(ierr);

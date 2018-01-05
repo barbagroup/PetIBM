@@ -40,7 +40,6 @@ SingleBoundaryBase::~SingleBoundaryBase()
 PetscErrorCode SingleBoundaryBase::destroy()
 {
     PetscFunctionBeginUser;
-    PetscErrorCode ierr;
 
     dim = -1;
     loc = type::BCLoc(0);

@@ -89,7 +89,8 @@ AC_CONFIG_FILES([Makefile
                  applications/vorticity/Makefile
                  applications/navierstokes/Makefile
                  applications/tairacolonius/Makefile
-                 applications/decoupledibpm/Makefile])
+                 applications/decoupledibpm/Makefile
+                 examples/2d/oscillatingcylinder/Makefile])
 
 # output message
 AC_OUTPUT

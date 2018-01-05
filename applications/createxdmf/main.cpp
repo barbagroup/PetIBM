@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
     // get the range of solutions that are going to be calculated
     ierr = PetscOptionsGetInt(nullptr, nullptr, "-bg", &bg, &isSet); CHKERRQ(ierr);
-    if (! isSet) bg = setting["parameters"]["startStep"].as<PetscInt>();
+    if (! isSet) bg = setting["parameters"]["startStep"].as<PetscInt>(0);
 
     ierr = PetscOptionsGetInt(nullptr, nullptr, "-ed", &ed, &isSet); CHKERRQ(ierr);
     if (! isSet) ed = bg + setting["parameters"]["nt"].as<PetscInt>(); 

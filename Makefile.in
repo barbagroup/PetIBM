@@ -363,7 +363,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTION = foreign
-SUBDIRS = src tests applications include
+SUBDIRS = \
+	src \
+	tests \
+	applications \
+	include
+
 EXTRA_DIST = autogen.sh
 all: all-recursive
 

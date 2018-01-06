@@ -326,9 +326,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 oscillatingcylinder_SOURCES = main.cpp
-oscillatingcylinder_CPPFLAGS = -I$(top_srcdir)/include \
-                               $(PETSC_CPPFLAGS) \
-                               $(YAMLCPP_CPPFLAGS)
+oscillatingcylinder_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(PETSC_CPPFLAGS) \
+	$(YAMLCPP_CPPFLAGS)
 
 oscillatingcylinder_LDADD = $(top_builddir)/src/libpetibm.la \
 	$(PETSC_LDFLAGS) $(PETSC_LIBS) $(YAMLCPP_LDFLAGS) \

@@ -2,13 +2,15 @@ EXTRA_PROGRAMS = oscillatingcylinder
 
 oscillatingcylinder_SOURCES = main.cpp
 
-oscillatingcylinder_CPPFLAGS = -I$(top_srcdir)/include \
-                               $(PETSC_CPPFLAGS) \
-                               $(YAMLCPP_CPPFLAGS)
+oscillatingcylinder_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(PETSC_CPPFLAGS) \
+	$(YAMLCPP_CPPFLAGS)
 
-oscillatingcylinder_LDADD = $(top_builddir)/src/libpetibm.la \
-                            $(PETSC_LDFLAGS) $(PETSC_LIBS) \
-                            $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
+oscillatingcylinder_LDADD = \
+	$(top_builddir)/src/libpetibm.la \
+	$(PETSC_LDFLAGS) $(PETSC_LIBS) \
+	$(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS)
 if WITH_AMGX
 oscillatingcylinder_LDADD += $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 endif

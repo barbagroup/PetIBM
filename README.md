@@ -2,14 +2,17 @@
 
 [![Build Status](https://travis-ci.org/barbagroup/PetIBM.png?branch=develop)](https://travis-ci.org/barbagroup/PetIBM)
 
-PetIBM solves the 2D and 3D incompressible Navier-Stokes equations using a projection method with an immersed-boundary method (IBM).
-Currently, two IBMs are implemented:
-* the immersed-boundary projection method (Taira and Colonius, 2007);
-* and its decoupled version (Li et al., 2016).
+PetIBM implements immersed-boundary methods to solve the 2D and 3D incompressible Navier-Stokes on structured Cartesian grids using a projection approach.
 
-PetIBM works on distributed-memory architectures using the [PETSc](http://www.mcs.anl.gov/petsc/) library.
-We use iterative solvers for the different systems of the problem.
-Currently, the system can be solved on CPUs using PETSc or on multiple GPUs using the Nvidia [AmgX](https://developer.nvidia.com/amgx) library and [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper).
+Currently, two immersed boundary methods are implemented:
+
+* Immersed Boundary Projection Method (IBPM; Taira and Colonius, 2007);
+* decoupled version of the IBPM (Li et al., 2016).
+
+PetIBM runs on distributed-memory architectures and relies on the [PETSc](http://www.mcs.anl.gov/petsc/) library for data structures and parallel routines.
+
+PetIBM solves the different linear systems either on CPUs using PETSc KSP objects or on multiple CUDA-capable GPU devices using the Nvidia [AmgX](https://github.com/NVIDIA/AMGX) library.
+The data transfer between PETSc and AmgX is handled by the wrapper AmgXWrapper](https://github.com/barbagroup/AmgXWrapper).
 
 PetIBM runs only on Unix-based systems (no support on Windows) and was last tested on Ubuntu 16.04 and MacOS Sierra 10.12.6.
 

@@ -1,5 +1,12 @@
 Welcome to the [PetIBM](https://github.com/barbagroup/PetIBM) wiki!
 
-PetIBM solves the incompressible Navier-Stokes equations in two and three dimensions using the immersed boundary projection method from [Taira and Colonius](http://colonius.caltech.edu/pdfs/TairaColonius2007.pdf) (2007) and is implemented using [PETSc](http://www.mcs.anl.gov/petsc/), the Portable, Extensible Toolkit for Scientific Computation.
+
+PetIBM implements immersed-boundary methods to solve the 2D and 3D incompressible Navier-Stokes on structured Cartesian grids using a projection approach.
+
+Two immersed boundary methods are implemented:
+
+* Immersed Boundary Projection Method (IBPM; Taira and Colonius, 2007);
+* decoupled version of the IBPM (Li et al., 2016).
+
 
 Please use the sidebar for navigation.

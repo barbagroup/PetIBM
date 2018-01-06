@@ -11,22 +11,44 @@ PetIBM works on distributed-memory architectures using the [PETSc](http://www.mc
 We use iterative solvers for the different systems of the problem.
 Currently, the system can be solved on CPUs using PETSc or on multiple GPUs using the Nvidia [AmgX](https://developer.nvidia.com/amgx) library and [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper).
 
+PetIBM runs only on Unix-based systems (no support on Windows) and was last tested on Ubuntu 16.04 and MacOS Sierra 10.12.6.
 
-PetIBM solves the incompressible Navier-Stokes equations in two and three dimensions using the immersed boundary projection method from [Taira and Colonius](http://colonius.caltech.edu/pdfs/TairaColonius2007.pdf) (2007) and is implemented using [PETSc](http://www.mcs.anl.gov/petsc/), the Portable, Extensible Toolkit for Scientific Computation.
+To build PetIBM, please refer to the [installation instructions](https://github.com/barbagroup/PetIBM/wiki/installation).
 
 ---
 
 ## Dependencies (last tested)
 
-* g++-4.9.2, g++-5.4.0
-* [PETSc](https://www.mcs.anl.gov/petsc/) 3.8.1
-* Python 2.7 (optional, for pre- and post-processing)
+* GNU C++ compiler g++ (4.9.2, 5.4.0)
+* [PETSc](https://www.mcs.anl.gov/petsc/) (3.8.1)
 
-Note: Python and libraries have been installed using [`conda`](http://conda.pydata.org/docs/get-started.html) (4.3.1).
+Optional to solve linear systems on GPUs:
 
-To build `PetIBM`, please refer to the [installation instructions](https://github.com/barbagroup/PetIBM/wiki/installation).
+* NVIDIA's CUDA compiler nvcc (8.0)
+* [AmgX](https://github.com/NVIDIA/AMGX) (2.0)
 
-Users-documentation is available on the [Wiki page](https://github.com/barbagroup/PetIBM/wiki) of this repository.
+Optional for pre- and post-processing scripts:
+
+* Python (3.6)
+* Numpy (1.12.1)
+* H5py (2.7.0)
+* Matplotlib (2.0.2)
+
+Note: Python and libraries have been installed using Anaconda (4.4.0).
+
+---
+
+## Documentation
+
+User's documentation is available on the [Wiki](https://github.com/barbagroup/PetIBM/wiki) pages of the cuIBM repository.
+
+Doxygen API documentation is available [here](http://barbagroup.github.io/PetIBM).
+
+---
+
+## Papers published using PetIBM
+
+* Mesnard, O., & Barba, L. A. (2017). _Reproducible and Replicable Computational Fluid Dynamics: It's Harder Than You Think_. Computing in Science & Engineering, 19(4), 44-55, https://doi.org/10.1109/MCSE.2017.3151254.
 
 ---
 
@@ -37,7 +59,9 @@ Please e-mail [Olivier Mesnard](mailto:mesnardo@gwu.edu) or [Pi-Yueh Chuang](mai
 To report bugs, please use the GitHub issue tracking system.
 We are also open to pull-requests.
 
+---
 
-_References:_
+## References
+
 * Taira, K., & Colonius, T. (2007). The immersed boundary method: a projection approach. Journal of Computational Physics, 225(2), 2118-2137.
 * Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016). An efficient immersed boundary projection method for flow over complex/moving boundaries. Computers & Fluids, 140, 122-135.

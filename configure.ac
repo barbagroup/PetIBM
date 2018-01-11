@@ -90,7 +90,8 @@ AC_CONFIG_FILES([Makefile
                  applications/navierstokes/Makefile
                  applications/tairacolonius/Makefile
                  applications/decoupledibpm/Makefile
-                 examples/2d/oscillatingcylinder/Makefile])
+                 examples/Makefile
+                 examples/decoupledibpm/oscillatingcylinder2dRe100_GPU/Makefile])
 
 # output message
 AC_OUTPUT

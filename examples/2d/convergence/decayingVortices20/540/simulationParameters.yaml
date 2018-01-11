@@ -1,7 +1,0 @@
-# simulationParameters.yaml
-
-- dt: 5.0E-05
-  nt: 10000
-  nsave: 1000
-  convection: EULER_EXPLICIT
-  diffusion: EULER_IMPLICIT

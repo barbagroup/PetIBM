@@ -1,0 +1,12 @@
+# Ignore the numerical solution and post-process data
+solution
+*.h5
+iterations.txt
+forces.txt
+figures
+*.out
+*.xmf
+*.curve
+.logamgx
+stdout.txt
+*.log

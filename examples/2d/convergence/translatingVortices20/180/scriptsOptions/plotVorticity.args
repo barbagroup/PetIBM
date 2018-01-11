@@ -1,6 +1,0 @@
---software petibm
---field vorticity --range -15.0 15.0 101
---bottom-left 0.0 0.0
---top-right 1.0 1.0
---periodic x y
---save-name vorticity

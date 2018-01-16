@@ -26,7 +26,6 @@ AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 AC_PROG_CC_C_O
-CONFIGURE_DOXYGEN
 
 # check for typedefs, structures, and compiler characteristics
 AC_CHECK_HEADER_STDBOOL
@@ -89,7 +88,9 @@ AC_CONFIG_FILES([Makefile
                  applications/vorticity/Makefile
                  applications/navierstokes/Makefile
                  applications/tairacolonius/Makefile
-                 applications/decoupledibpm/Makefile])
+                 applications/decoupledibpm/Makefile
+                 examples/Makefile
+                 examples/decoupledibpm/oscillatingcylinder2dRe100_GPU/Makefile])
 
 # output message
 AC_OUTPUT

@@ -85,13 +85,20 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 subdir = examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
-	$(top_srcdir)/m4/configure_amgx.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
+	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
+	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
-	$(top_srcdir)/m4/configure_doxygen.m4 \
+	$(top_srcdir)/m4/configure_gtest.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
+	$(top_srcdir)/m4/configure_yamlcpp.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -124,6 +131,10 @@ am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMGXWRAPPER_CPPFLAGS = @AMGXWRAPPER_CPPFLAGS@
+AMGXWRAPPER_DIR = @AMGXWRAPPER_DIR@
+AMGXWRAPPER_LDFLAGS = @AMGXWRAPPER_LDFLAGS@
+AMGXWRAPPER_LIBS = @AMGXWRAPPER_LIBS@
 AMGX_DIR = @AMGX_DIR@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -132,6 +143,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
+BOOST_DIR = @BOOST_DIR@
+BUILDDIR = @BUILDDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -145,47 +159,63 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DOXYGEN = @DOXYGEN@
-DOXYGEN_DIR = @DOXYGEN_DIR@
+DLLTOOL = @DLLTOOL@
+DSYMUTIL = @DSYMUTIL@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FGREP = @FGREP@
 GREP = @GREP@
-HAVE_DOXYGEN = @HAVE_DOXYGEN@
+GTEST_CPPFLAGS = @GTEST_CPPFLAGS@
+GTEST_DIR = @GTEST_DIR@
+GTEST_LDFLAGS = @GTEST_LDFLAGS@
+GTEST_LIBS = @GTEST_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
+LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
+NM = @NM@
+NMEDIT = @NMEDIT@
+OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
-PACKAGE_CPPFLAGS = @PACKAGE_CPPFLAGS@
-PACKAGE_LDFLAGS = @PACKAGE_LDFLAGS@
-PACKAGE_LIBS = @PACKAGE_LIBS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PETSCVARIABLES = @PETSCVARIABLES@
-PETSC_ARCH = @PETSC_ARCH@
-PETSC_DIR = @PETSC_DIR@
+PETSC_CPPFLAGS = @PETSC_CPPFLAGS@
+PETSC_LDFLAGS = @PETSC_LDFLAGS@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+YAMLCPP_CPPFLAGS = @YAMLCPP_CPPFLAGS@
+YAMLCPP_DIR = @YAMLCPP_DIR@
+YAMLCPP_LDFLAGS = @YAMLCPP_LDFLAGS@
+YAMLCPP_LIBS = @YAMLCPP_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -193,20 +223,29 @@ abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -231,8 +270,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-PETIBM2D = $(top_builddir)/src/petibm2d
-PETIBM3D = $(top_builddir)/src/petibm3d
 all: all-am
 
 .SUFFIXES:
@@ -265,6 +302,12 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
 tags TAGS:
 
 ctags CTAGS:
@@ -338,7 +381,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -390,7 +433,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-generic mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -404,387 +447,28 @@ uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic cscopelist-am \
-	ctags-am distclean distclean-generic distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am tags-am uninstall uninstall-am
+.PHONY: all all-am check check-am clean clean-generic clean-libtool \
+	cscopelist-am ctags-am distclean distclean-generic \
+	distclean-libtool distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
-include $(PETSC_DIR)/lib/petsc/conf/variables
-
-examples:
+copy-examples:
 	@echo "Copying examples folders..."
 	@if test "$(top_srcdir)" != "$(top_builddir)" ; then \
-		cp -r $(top_srcdir)/examples/2d $(PWD) ; \
-		cp -r $(top_srcdir)/examples/3d $(PWD) ; \
-		cp -r $(top_srcdir)/examples/GPU $(PWD) ; \
+		rsync -a $(top_srcdir)/examples/* $(PWD) \
+			--exclude decoupledibpm/oscillatingcylinder2dRe100_GPU ; \
 	fi ;
 
-# Two-dimensional examples
-
-lidDrivenCavity2dRe100Serial:
-	@echo "==================================================="
-	@echo "2d lid-driven cavity flow at Re=100 using 1 process"
-	@echo "==================================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100
-
-lidDrivenCavity2dRe100Parallel:
-	@echo "====================================================="
-	@echo "2d lid-driven cavity flow at Re=100 using 4 processes"
-	@echo "====================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100
-
-lidDrivenCavity2dRe100NonUniform:
-	@echo "==================================================="
-	@echo "2d lid-driven cavity flow at Re=100 using 1 process"
-	@echo "==================================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re100NonUniform
-
-lidDrivenCavity2dRe1000:
-	@echo "======================================================"
-	@echo "2d lid-driven cavity flow at Re=1000 using 4 processes"
-	@echo "======================================================"
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re1000
-
-lidDrivenCavity2dRe3200:
-	@echo "======================================================"
-	@echo "2d lid-driven cavity flow at Re=3200 using 4 processes"
-	@echo "======================================================"
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re3200
-
-lidDrivenCavity2dRe5000:
-	@echo "======================================================"
-	@echo "2d lid-driven cavity flow at Re=5000 using 4 processes"
-	@echo "======================================================"
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/lidDrivenCavity/Re5000
-
-cylinder2dRe40:
-	@echo "================================================"
-	@echo "2d flow over cylinder at Re=40 using 2 processes"
-	@echo "================================================"
-	@$(MPIEXEC) -n 2 $(PETIBM2D) -directory ./2d/cylinder/Re40
-
-cylinder2dRe40Periodic:
-	@echo "=============================================================="
-	@echo "2d flow over cylinder at Re=40 (y- periodic) using 4 processes"
-	@echo "=============================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re40PeriodicDomain
-
-cylinder2dRe150:
-	@echo "================================================="
-	@echo "2d flow over cylinder at Re=150 using 4 processes"
-	@echo "================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re150
-
-cylinder2dRe250:
-	@echo "================================================="
-	@echo "2d flow over cylinder at Re=250 using 4 processes"
-	@echo "================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re250
-
-cylinder2dRe550:
-	@echo "================================================="
-	@echo "2d flow over cylinder at Re=550 using 4 processes"
-	@echo "================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re550
-
-cylinder2dRe3000:
-	@echo "=================================================="
-	@echo "2d flow over cylinder at Re=3000 using 4 processes"
-	@echo "=================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./2d/cylinder/Re3000
-
-memoryCheck2dSerial:
-	@echo "============================================"
-	@echo "Check memory leak on 2d-case using 1 process"
-	@echo "============================================"
-	@$(MPIEXEC) -n 1 valgrind \
-							--tool=memcheck --leak-check=full --track-origins=yes \
-							$(PETIBM2D) -directory ./2d/memoryTest
-
-memoryCheck2dParallel:
-	@echo "=============================================="
-	@echo "Check memory leak on 2d-case using 2 processes"
-	@echo "=============================================="
-	@$(MPIEXEC) -n 2 valgrind \
-							--tool=memcheck --leak-check=full --track-origins=yes \
-							$(PETIBM2D) -directory ./2d/memoryTest
-
-memoryCheck2dBodySerial:
-	@echo "==============================================================="
-	@echo "Check memory leak on 2d-case with immersed-body using 1 process"
-	@echo "==============================================================="
-	@$(MPIEXEC) -n 1 valgrind \
-							--tool=memcheck --leak-check=full --track-origins=yes \
-							$(PETIBM2D) -directory ./2d/memoryTestBody
-
-convergence2d:
-	@echo "================================="
-	@echo "Two-dimensional convergence tests"
-	@echo "================================="
-	@$(MAKE) lidDrivenCavity2d20
-	@$(MAKE) lidDrivenCavity2d30
-	@$(MAKE) decayingVortices2d20
-	@$(MAKE) decayingVortices2d30
-	@$(MAKE) translatingVortices2d20
-	@$(MAKE) translatingVortices2d30
-
-lidDrivenCavity2d20:
-	@echo "================================="
-	@echo "2d lid-driven cavity flow (20x20)"
-	@echo "================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/20
-	@echo "================================="
-	@echo "2d lid-driven cavity flow (60x60)"
-	@echo "================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/60
-	@echo "==================================="
-	@echo "2d lid-driven cavity flow (180x180)"
-	@echo "==================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/180
-	@echo "==================================="
-	@echo "2d lid-driven cavity flow (540x540)"
-	@echo "==================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/540
-	@echo "====================================="
-	@echo "2d lid-driven cavity flow (1620x1620)"
-	@echo "====================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity20/1620
-
-lidDrivenCavity2d30:
-	@echo "================================="
-	@echo "2d lid-driven cavity flow (30x30)"
-	@echo "================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/30
-	@echo "================================="
-	@echo "2d lid-driven cavity flow (90x90)"
-	@echo "================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/90
-	@echo "==================================="
-	@echo "2d lid-driven cavity flow (270x270)"
-	@echo "==================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/270
-	@echo "==================================="
-	@echo "2d lid-driven cavity flow (810x810)"
-	@echo "==================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/810
-	@echo "====================================="
-	@echo "2d lid-driven cavity flow (2430x2430)"
-	@echo "====================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/lidDrivenCavity30/2430
-
-decayingVortices2d20:
-	@echo "=============================="
-	@echo "2d Taylor-Green vortex (20x20)"
-	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/20
-	@echo "=============================="
-	@echo "2d Taylor-Green vortex (60x60)"
-	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/60
-	@echo "================================"
-	@echo "2d Taylor-Green vortex (180x180)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/180
-	@echo "================================"
-	@echo "2d Taylor-Green vortex (540x540)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices20/540
-
-decayingVortices2d30:
-	@echo "=============================="
-	@echo "2d Taylor-Green vortex (30x30)"
-	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/30
-	@echo "=============================="
-	@echo "2d Taylor-Green vortex (90x90)"
-	@echo "=============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/90
-	@echo "================================"
-	@echo "2d Taylor-Green vortex (270x270)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/270
-	@echo "================================"
-	@echo "2d Taylor-Green vortex (810x810)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/decayingVortices30/810
-
-translatingVortices2d20:
-	@echo "==============================="
-	@echo "2d translating vortices (20x20)"
-	@echo "==============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/20
-	@echo "==============================="
-	@echo "2d translating vortices (60x60)"
-	@echo "==============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/60
-	@echo "================================="
-	@echo "2d translating vortices (180x180)"
-	@echo "================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/180
-	@echo "================================"
-	@echo "2d translatingVortices (540x540)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices20/540
-
-translatingVortices2d30:
-	@echo "==============================="
-	@echo "2d translating vortices (30x30)"
-	@echo "==============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/30
-	@echo "==============================="
-	@echo "2d translating vortices (90x90)"
-	@echo "==============================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/90
-	@echo "================================="
-	@echo "2d translating vortices (270x270)"
-	@echo "================================="
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/270
-	@echo "================================"
-	@echo "2d translatingVortices (810x810)"
-	@echo "================================"
-	@$(MPIEXEC) -n 1 $(PETIBM2D) -directory ./2d/convergence/translatingVortices30/810
-
-# Three-dimensional examples
-
-lidDrivenCavity3dRe100PeriodicX:
-	@echo "=================================================================="
-	@echo "3d lid-driven cavity flow at Re=100 (x-periodic) using 4 processes"
-	@echo "=================================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicX
-
-lidDrivenCavity3dRe100PeriodicY:
-	@echo "=================================================================="
-	@echo "3d lid-driven cavity flow at Re=100 (y-periodic) using 4 processes"
-	@echo "=================================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicY
-
-lidDrivenCavity3dRe100PeriodicZ:
-	@echo "=================================================================="
-	@echo "3d lid-driven cavity flow at Re=100 (z-periodic) using 4 processes"
-	@echo "=================================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/lidDrivenCavity/Re100PeriodicZ
-
-sphere3dRe50:
-	@echo "================================================"
-	@echo "3d flow over a sphere at Re=50 using 8 processes"
-	@echo "================================================"
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re50
-
-sphere3dRe100:
-	@echo "================================================="
-	@echo "3d flow over a sphere at Re=100 using 8 processes"
-	@echo "================================================="
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re100
-
-sphere3dRe150:
-	@echo "================================================="
-	@echo "3d flow over a sphere at Re=150 using 8 processes"
-	@echo "================================================="
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re150
-
-sphere3dRe200:
-	@echo "================================================="
-	@echo "3d flow over a sphere at Re=200 using 8 processes"
-	@echo "================================================="
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/sphere/Re200
-
-flatPlate3dRe100AR2dx04:
-	@echo "==============================================================="
-	@echo "3d flow over an inclined flat-plate (AR=2) at Re=100 using 8 processes"
-	@echo "grid-spacing in uniform region: dx=0.04"
-	@echo "==============================================================="
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA0AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA10AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA20AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA30AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA40AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA50AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA60AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA70AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA80AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.04/flatPlateRe100AoA90AR2
-
-flatPlate3dRe100AR2dx03:
-	@echo "==============================================================="
-	@echo "3d flow over an inclined flat-plate (AR=2) at Re=100 using 8 processes"
-	@echo "grid-spacing in uniform region: dx=0.03"
-	@echo "==============================================================="
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA0AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA10AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA20AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA30AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA40AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA50AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA60AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA70AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA80AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.03/flatPlateRe100AoA90AR2
-
-flatPlate3dRe100AR2dx025:
-	@echo "==============================================================="
-	@echo "3d flow over an inclined flat-plate (AR=2) at Re=100 using 8 processes"
-	@echo "grid-spacing in uniform region: dx=0.025"
-	@echo "==============================================================="
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA0AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA10AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA20AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA30AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA40AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA50AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA60AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA70AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA80AR2
-	@$(MPIEXEC) -n 8 $(PETIBM3D) -directory ./3d/flatePlate/resolution0.025/flatPlateRe100AoA90AR2
-
-cylinder3dRe40:
-	@echo "================================================"
-	@echo "3d flow over cylinder at Re=40 using 4 processes"
-	@echo "================================================"
-	@$(MPIEXEC) -n 4 $(PETIBM3D) -directory ./3d/cylinder/Re40
-
-memoryCheck3dSerial:
-	@echo "============================================"
-	@echo "Check memory leak on 3d-case using 1 process"
-	@echo "============================================"
-	@$(MPIEXEC) -n 1 valgrind \
-							--tool=memcheck --leak-check=full --track-origins=yes \
-							$(PETIBM3D) -directory ./3d/memoryTest
-
-memoryCheck3dParallel:
-	@echo "=============================================="
-	@echo "Check memory leak on 3d-case using 2 processes"
-	@echo "=============================================="
-	@$(MPIEXEC) -n 2 valgrind \
-							--tool=memcheck --leak-check=full --track-origins=yes \
-							$(PETIBM3D) -directory ./3d/memoryTest							
-
-# GPU examples
-
-cylinder2dRe40GPU:
-	@echo "================================================================"
-	@echo "2d flow over cylinder at Re=40 using 2 processes and AmgX solver"
-	@echo "================================================================"
-	@$(MPIEXEC) -n 2 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re40
-
-cylinder2dRe550GPU:
-	@echo "================================================================="
-	@echo "2d flow over cylinder at Re=550 using 4 processes and AmgX solver"
-	@echo "================================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re550
-
-cylinder2dRe3000GPU:
-	@echo "=================================================================="
-	@echo "2d flow over cylinder at Re=3000 using 4 processes and AmgX solver"
-	@echo "=================================================================="
-	@$(MPIEXEC) -n 4 $(PETIBM2D) -directory ./GPU/2d/cylinder/Re3000
+.PHONY: input_data
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

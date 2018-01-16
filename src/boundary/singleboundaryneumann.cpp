@@ -25,8 +25,6 @@ PetscErrorCode SingleBoundaryNeumann::setGhostICsKernel(
 {
     PetscFunctionBeginUser;
     
-    PetscErrorCode  ierr;
-    
     p.a0 = 1.0;
     p.a1 = normal * p.dL * value;
     

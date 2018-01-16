@@ -197,8 +197,6 @@ namespace misc
     PetscErrorCode getPerpendAxes(const PetscInt &self, type::IntVec1D &pAxes)
     {
         PetscFunctionBeginUser;
-
-        PetscErrorCode      ierr;
         
         pAxes = type::IntVec1D(2, 0);
         
@@ -228,8 +226,6 @@ namespace misc
             MatStencil &ghost, MatStencil &target)
     {
         PetscFunctionBeginUser;
-        
-        PetscErrorCode  ierr;
         
         switch (int(loc))
         {

@@ -1,19 +1,9 @@
 All PetIBM output files created during the course of the simulation are located in the simulation directory and its sub-folders. Here is a list of such files:
 
-* `grid.txt`: ASCII file containing the points along a gridline of the structured Cartesian mesh in each direction. The first line stores the number of cells in each direction. Then, coordinates are stored in ascending order along each direction, starting with the x-direction, immediately followed by the y-direction, and finally the z-direction (for 3d problem).
+* `grid.h5`: HDF5 file containing the gridline stations in the x, y, and z directions (datasets `x`, `y`, and `z`) for each fluid variables (group `p` for the pressure and groups `u`, `v`, and `w` for the velocity components).
 
-* `forces.txt`: this files stores the hydrodynamic forces acting on the immersed body at each time-step. The first column contains the time values. Following columns contains the force component in the x-direction, the y-direction (and the z-direction for a 3D simulation). This file is only generated when a body is immersed in the computational domain.
+* `forces.txt`: ASCII file that contains the hydrodynamic forces acting on the immersed body at each time-step. The first column contains the time values. The next two columns (or three columns for 3D runs) contains the forces in the x and y directions (and in the z direction for 3D runs). If there is a second immersed boundary in the domain, the force columns will be append to the right. (Note that this file does not exist for pure Navier-Stokes simulations, i.e. when there is no immersed boundary in the computation domain.)
 
-* `iterationCounts.txt`: this file consists of three columns - the first columns contains the time-step index; the second and third columns contain the number of iterations at a time-step required by the iterative solvers to converge (second column for the velocity solver, third one for the Poisson solver).
+* `iterations.txt`: ASCII file reporting the number of iterations to converge and the residuals for each linear solver: velocity solver, Poisson solver, and forces solver (when using the decoupled version of the immersed-boundary projection method). The first column contains the time-step index; the second and third columns contains the number of iterations to converge and the residuals for the first linear solver (velocity); etc.
 
-* The sub-folder `grids` is generated **only** when HDF5 is chosen as output format (by adding the line `outputFormat: hdf5` to your input file `simulationParameters.yaml`). The folder contains files that store the locations in the computational domain of a cell-centered quantity (`cell-centered.h5`) and of the vector components of a staggered quantity (`staggered-x.h5`, `staggered-y.h5`, and `staggered-z.h5` for 3D runs).
-
-* Every given time-step interval (see `nsave` in the input file `simulationParameters.yaml`), the numerical solution if saved in a sub-folder whose name is the time-step index. The content of these folders depends on the type of output requested (we support PETSc binary and HDF5 formats) and the variables you choose to save (velocity and/or flux components; the pressure field is always saved).
-
-For example, if you choose the PETSc binary format and decide to save the flux components, each sub-folder will contain the following files: 
-  - `qx.dat`, `qy.dat`, and `qz.dat` (for 3D runs): files that store the velocity flux components through each cell faces in the domain;
-  - `phi.dat`: file that stores the values of the discrete pressure field;
-  - `fTilde.dat` (if immersed boundary present in the flow): file that stores a vector of the rescaled body forces calculated at every boundary point;
-  - a `.info` file for each quantity saved that is used by PETSc to read the files.
-
-In case where you choose a HDF5 format and decide to save the velocity components, a time-step sub-folder will contain the following files: `phi.h5`, `ux.h5`, `uy.h5`, `uz.h5` (for 3D runs), `fTilde.h5` (if you have an immersed boundary).
+* The subfolder `solution` contains the numerical solution in HDF5 format at certain time steps. (The frequency of saving is prescribed in the YAML configuration file.) For example, the numerical solution after 100 time steps is saved in the file `solution/0000100.h5`. The velocity field, the pressure field, the boundary forces (when body present in the domain), and the convection and diffusion terms (for restarting) are saved in the same time-step solution file.

@@ -41,7 +41,7 @@ PetscErrorCode SingleBodyPoints::init(const type::Mesh &inMesh,
     ierr = io::readLagrangianPoints(file, nPts, coords); CHKERRQ(ierr);
     
     // check if the dimension of coordinates matches
-    if (dim != coords[0].size())
+    if ((unsigned)dim != coords[0].size())
         SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_FILE_READ,
                 "The dimension of Lagrangian points are different than that "
                 "of the background mesh!\n");

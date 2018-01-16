@@ -314,15 +314,18 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
     // add convection terms from time index n, n-1, n-2, ... to rhs1:
     {
         // 1. discard the oldest-time-step term, and decrease the time-step by 1
-        for(unsigned int i=conv.size()-1; i>0; i--) {
+        for(int i=conv.size()-1; i>0; i--) {
             ierr = VecSwap(conv[i], conv[i-1]); CHKERRQ(ierr);
         }
         
-        // 2. get convection term at time-step n
-        ierr = MatMult(N, solution->UGlobal, conv[0]); CHKERRQ(ierr);
+        if (conv.size() > 0)
+        {
+            // 2. get convection term at time-step n
+            ierr = MatMult(N, solution->UGlobal, conv[0]); CHKERRQ(ierr);
         
-        // 3. move n-th time-step convection term to right-hand-side
-        ierr = VecScale(conv[0], -1.0); CHKERRQ(ierr);
+            // 3. move n-th time-step convection term to right-hand-side
+            ierr = VecScale(conv[0], -1.0); CHKERRQ(ierr);
+        }
         
         // 4. add all explicit convective terms to rhs1
         for(unsigned int i=0; i<conv.size(); ++i) {
@@ -334,15 +337,18 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
     // add diffusion terms from time index n, n-1, n-2, ... to rhs1:
     {
         // 1. discard the oldest-time-step term, and decrease the time-step by 1
-        for(unsigned int i=diff.size()-1; i>0; i--) {
+        for(int i=diff.size()-1; i>0; i--) {
             ierr = VecSwap(diff[i], diff[i-1]); CHKERRQ(ierr);
         }
         
         // 2. get diffusion term at time-step n
-        ierr = MatMult(L, solution->UGlobal, diff[0]); CHKERRQ(ierr);
-        ierr = MatMultAdd(LCorrection, 
-                solution->UGlobal, diff[0], diff[0]); CHKERRQ(ierr);
-        ierr = VecScale(diff[0], nu); CHKERRQ(ierr);
+        if (diff.size() > 0)
+        {
+            ierr = MatMult(L, solution->UGlobal, diff[0]); CHKERRQ(ierr);
+            ierr = MatMultAdd(LCorrection, 
+                    solution->UGlobal, diff[0], diff[0]); CHKERRQ(ierr);
+            ierr = VecScale(diff[0], nu); CHKERRQ(ierr);
+	      }
         
         // 3. add all explicit diffusive terms to rhs1
         for(unsigned int i=0; i<diff.size(); ++i) {

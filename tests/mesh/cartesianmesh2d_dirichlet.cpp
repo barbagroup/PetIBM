@@ -379,7 +379,6 @@ TEST_F(CartesianMeshTest2D_AllDirichlet, check_m)
 // check UNLocal
 TEST_F(CartesianMeshTest2D_AllDirichlet, check_UNLocal)
 {
-    PetscErrorCode ierr;
     int N = mesh->m[0][0] * mesh->m[0][1] + 
         mesh->m[1][0] * mesh->m[1][1];
     ASSERT_EQ(N, mesh->UNLocal);
@@ -388,7 +387,6 @@ TEST_F(CartesianMeshTest2D_AllDirichlet, check_UNLocal)
 // check pNLocal
 TEST_F(CartesianMeshTest2D_AllDirichlet, check_pNLocal)
 {
-    PetscErrorCode ierr;
     int N = mesh->m[3][0] * mesh->m[3][1]; 
     ASSERT_EQ(N, mesh->pNLocal);
 }
@@ -819,7 +817,6 @@ TEST_F(CartesianMeshTest2D_AllDirichlet, check_getPackedGlobalIndex_ijk_internal
 // check getPackedGlobalIndex with i, j, k of ghosts
 TEST_F(CartesianMeshTest2D_AllDirichlet, check_getPackedGlobalIndex_ijk_ghost)
 {
-    PetscInt offset = 0;
     for(int f=0; f<2; ++f)
     {
         // ghost points at top and bottom

@@ -97,7 +97,7 @@ PetscErrorCode LinSolverKSP::solve(Vec &x, Vec &b)
         ierr = KSPReasonView(ksp, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(ierr);
 
         SETERRQ2(PETSC_COMM_WORLD, PETSC_ERR_CONV_FAILED,
-                "PetIBM exited due to PETSc KSP solver %s dirveged with "
+                "PetIBM exited due to PETSc KSP solver %s diverged with "
                 "reason %d.", name.c_str(), reason);
     }
 

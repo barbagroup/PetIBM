@@ -35,7 +35,7 @@ class PETScEnvironment : public ::testing::Environment
 // Run all tests
 int main(int argc, char **argv)
 {
-    PetscErrorCode ierr, status;
+    PetscErrorCode status;
 
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(new PETScEnvironment);

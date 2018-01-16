@@ -25,8 +25,6 @@ PetscErrorCode SingleBoundaryDirichlet::setGhostICsKernel(
 {
     PetscFunctionBeginUser;
     
-    PetscErrorCode  ierr;
-    
     PetscInt    dir = int(loc) / 2;
     
     // bad idea; this means every ghost point, p, passed in will need to go

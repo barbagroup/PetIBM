@@ -1,7 +1,6 @@
 noinst_LTLIBRARIES = libio.la
 
-libio_la_SOURCES = \
-	io.cpp
+libio_la_SOURCES = io.cpp
 
 libio_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \

@@ -658,9 +658,6 @@ BOOST_CPPFLAGS
 BOOST_DIR
 BUILDDIR
 LIBOBJS
-DOXYGEN_DIR
-HAVE_DOXYGEN
-DOXYGEN
 CXXCPP
 CPP
 OTOOL64
@@ -797,7 +794,6 @@ enable_dependency_tracking
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
-with_doxygen
 with_boost_dir
 enable_boost
 with_yamlcpp_dir
@@ -1488,8 +1484,6 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
-  --with-doxygen=PATH     manually set directory where the doxygen executable
-                          resides to PATH
   --with-boost-dir=PATH   set Boost include directory
   --with-yamlcpp-dir=PATH set yaml-cpp directory
   --with-gtest-dir=PATH   set gtest directory
@@ -17258,74 +17252,6 @@ $as_echo "no" >&6; }
 $as_echo "#define NO_MINUS_C_MINUS_O 1" >>confdefs.h
 
 fi
-
-
-DOXYGEN_PATH=$PATH
-
-# Check whether --with-doxygen was given.
-if test "${with_doxygen+set}" = set; then :
-  withval=$with_doxygen; if test ! -d "$withval" ; then
-    as_fn_error $? "it is necessary to specify an existing directory when using --with-doxygen=PATH" "$LINENO" 5
-  fi
-  DOXYGEN_DIR=$withval
-  DOXYGEN_PATH=$DOXYGEN_DIR$PATH_SEPARATOR$DOXYGEN_PATH
-fi
-
-# Extract the first word of "doxygen", so it can be a program name with args.
-set dummy doxygen; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_DOXYGEN+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $DOXYGEN in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_DOXYGEN="$DOXYGEN" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $DOXYGEN_PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_DOXYGEN="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-DOXYGEN=$ac_cv_path_DOXYGEN
-if test -n "$DOXYGEN"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DOXYGEN" >&5
-$as_echo "$DOXYGEN" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-if test x$DOXYGEN != x ; then
-  HAVE_DOXYGEN=yes
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: doxygen not found" >&5
-$as_echo "$as_me: WARNING: doxygen not found" >&2;}
-  HAVE_DOXYGEN=no
-  echo "if doxygen is install, specify its location via --with-doxygen=PATH"
-fi
-HAVE_DOXYGEN=$HAVE_DOXYGEN
-
-DOXYGEN=$DOXYGEN
-
-DOXYGEN_DIR=$DOXYGEN_DIR
-
-
 
 
 # check for typedefs, structures, and compiler characteristics

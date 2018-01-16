@@ -365,7 +365,7 @@ namespace type
     /**
      * \brief Type definition of Mesh.
      * 
-     * Please petibm::mesh::createMesh to create a Mesh object.
+     * Please use petibm::mesh::createMesh to create a Mesh object.
      * 
      * Example usage:
      * \code

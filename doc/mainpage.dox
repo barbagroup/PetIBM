@@ -4,22 +4,20 @@
  * <h2>%PetIBM: A PETSc-based Immersed Boundary Method code.</h2>
  *
  *
- * Core PetIBM functionality relies upon several high-quality open-source
- * libraries, including:
+ * PetIBM implements immersed-boundary methods to solve the 2D and 3D
+ * incompressible Navier-Stokes on structuredCartesian grids using a projection
+ * approach.
  *
- * - <a href="http://www.mcs.anl.gov/petsc">PETSc</a>, the Portable, Extensible
- *    Toolkit for Scientific Computation
+ * PetIBM runs on distributed-memory architectures and relies on the library
+ * PETSc (http://www.mcs.anl.gov/petsc/) for data structures and parallel
+ * routines.
  *
- * PetIBM also uses functionality provided by a number of additional third-party
- * libraries, including: <a href="http://www.boost.org">Boost</a>; <a
- *
- * PetIBM outputs visualization files that can be read by the <a
- * href="https://wci.llnl.gov/codes/visit">VisIt Visualization Tool</a>.
+ * PetIBM solves the different linear systems either on CPUs using PETSc KSP
+ * objects or on multiple CUDA-capable GPU devices using the Nvidia AmgX
+ * (https://github.com/NVIDIA/AMGX) library.
  *
  *
- * <h3>Bugs and Other Issues</h3>
- *
- * Please use the GitHub issue tracking system to report bugs, feature requests,
- * or other issues with IBAMR.
+ * To report bugs, please use the GitHub issue tracking system.
+ * We are also open to pull-requests.
  *
  */

@@ -118,7 +118,7 @@ To run the example using 2 MPI processes and 1 CUDA-capable GPU device:
     export CUDA_VISIBLE_DEVICES=0
     mpiexec -np 2 petibm-tairacolonius
 
-The run should complete in less than 5 minutes (with a Nvidia K40 GPU device) and the numerical solution is saved in the folder `solution`.
+The run should complete in less than 5 minutes (with a NVIDIA K40 GPU device) and the numerical solution is saved in the folder `solution`.
 
 We provide a Python script (located under the folder `scripts` in the simulation directory) to plot the instantaneous drag coefficient and compare it with the numerical results from Koumoutsakos and Leonard (1995).
 To run the script:

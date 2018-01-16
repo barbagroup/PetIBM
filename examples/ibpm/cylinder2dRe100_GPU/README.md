@@ -9,7 +9,7 @@ mpiexec -np 4 petibm-tairacolonius -options_left -log_view ascii:stdout.txt
 
 The simulation completes in less than 2 hours when using:
 - 4 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
-- 2 Nvidia K20 GPU devices.
+- 2 NVIDIA K20 GPU devices.
 
 Plot the instantaneous force coefficients:
 

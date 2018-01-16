@@ -13,7 +13,7 @@ done
 ```
 
 Each simulation completes in about 10 minutes when using:
-- 1 Nvidia K40 GPU device.
+- 1 NVIDIA K40 GPU device.
 
 Plot the instantaneous force coefficients and compare with the experimental
 results from Taira et al. (2007):

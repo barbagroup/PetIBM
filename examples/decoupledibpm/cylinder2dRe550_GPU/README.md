@@ -9,7 +9,7 @@ mpiexec -np 2 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
 
 The simulation takes about 2 minutes to complete when using:
 - 2 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
-- 2 Nvidia K20 GPU devices.
+- 2 NVIDIA K20 GPU devices.
 
 Plot the instantaneous drag coefficients and compares with numerical results
 from Koumoutsakos and Leonard (1995):

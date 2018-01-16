@@ -9,7 +9,7 @@ mpiexec -np 4 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
 
 The simulation completes in less than 30 minutes when using:
 - 4 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
-- 1 Nvidia K40 GPU device.
+- 1 NVIDIA K40 GPU device.
 
 Plot the instantaneous force coefficients:
 

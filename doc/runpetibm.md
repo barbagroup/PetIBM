@@ -44,9 +44,9 @@ To create XDMF files:
     petibm-createxdmf
 
 
-## Running PetIBM using AmgX
+## Running PetIBM using NVIDIA AmgX
 
-To solve one or several linear systems on CUDA-capable GPU devices, PetIBM calls the [Nvidia AmgX](https://github.com/NVIDIA/AMGX) library.
+To solve one or several linear systems on CUDA-capable GPU devices, PetIBM calls the [NVIDIA AmgX](https://github.com/NVIDIA/AMGX) library.
 
 For example to run a simulation using 2 MPI processes and 2 GPU devices, simply use:
 

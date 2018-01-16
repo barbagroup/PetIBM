@@ -11,8 +11,8 @@ Currently, two immersed boundary methods are implemented:
 
 PetIBM runs on distributed-memory architectures and relies on the [PETSc](http://www.mcs.anl.gov/petsc/) library for data structures and parallel routines.
 
-PetIBM solves the different linear systems either on CPUs using PETSc KSP objects or on multiple CUDA-capable GPU devices using the Nvidia [AmgX](https://github.com/NVIDIA/AMGX) library.
-The data transfer between PETSc and AmgX is handled by the wrapper AmgXWrapper](https://github.com/barbagroup/AmgXWrapper).
+PetIBM solves the different linear systems either on CPUs using PETSc KSP objects or on multiple CUDA-capable GPU devices using the NVIDIA [AmgX](https://github.com/NVIDIA/AMGX) library.
+The data transfer between PETSc and AmgX is handled by the wrapper [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper).
 
 PetIBM runs only on Unix-based systems (no support on Windows) and was last tested on Ubuntu 16.04 and MacOS Sierra 10.12.6.
 
@@ -43,7 +43,7 @@ Note: Python and libraries have been installed using Anaconda (4.4.0).
 
 ## Documentation
 
-User's documentation is available on the [Wiki](https://github.com/barbagroup/PetIBM/wiki) pages of the cuIBM repository.
+User's documentation is available on the [Wiki](https://github.com/barbagroup/PetIBM/wiki) pages of the PetIBM repository.
 
 Doxygen API documentation is available [here](http://barbagroup.github.io/PetIBM).
 

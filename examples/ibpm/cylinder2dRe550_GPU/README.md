@@ -9,7 +9,7 @@ mpiexec -np 2 petibm-tairacolonius -options_left -log_view ascii:stdout.txt
 
 The simulation completes in less than 5 minutes when using:
 - 2 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
-- 1 Nvidia K40 GPU device.
+- 1 NVIDIA K40 GPU device.
 
 Plot the instantaneous drag coefficients and compares with numerical results
 from Koumoutsakos and Leonard (1995):

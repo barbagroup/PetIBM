@@ -7,7 +7,7 @@ Ensure that the following dependencies are installed before compiling PetIBM:
 
 Optional to solve linear systems on GPUs:
 
-* NVIDIA's CUDA compiler nvcc (8.0)
+* NVIDIA's CUDA library (8.0)
 * [AmgX](https://github.com/NVIDIA/AMGX) (2.0)
 
 Optional for pre- and post-processing scripts:
@@ -68,7 +68,6 @@ Configure and build an debugging version of PETSc:
         --with-debugging=1 \
         --download-fblaslapack \
         --download-openmpi \
-        --download-hypre \
         --download-hdf5
     make all
     make test
@@ -83,7 +82,6 @@ If you do not have a Fortran compiler ready, you use the following configuration
         --with-debugging=1 \
         --download-f2cblaslapack \
         --download-openmpi \
-        --download-hypre \
         --download-hdf5
 
 Configure and build an optimized version of PETSc:
@@ -100,7 +98,6 @@ Configure and build an optimized version of PETSc:
         --with-debugging=0 \
         --download-fblaslapack \
         --download-openmpi \
-        --download-hypre \
         --download-hdf5
     make all
     make test
@@ -209,9 +206,9 @@ Et voila! You can now add the `bin` directory (that contains the executables) to
 
 ---
 
-### Optional: using AmgX to solve linear systems on multiple GPUs
+### Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs
 
-PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the Nvidia [AmgX](https://github.com/NVIDIA/AMGX) library.
+PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the NVIDIA [AmgX](https://github.com/NVIDIA/AMGX) library.
 
 To solve linear systems on multiple GPU devices with PetIBM, the user must install CUDA and AmgX before building PetIBM.
 

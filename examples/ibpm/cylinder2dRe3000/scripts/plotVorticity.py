@@ -1,6 +1,6 @@
 """
-Computes, plots, and saves the 2D vorticity field from a cuIBM simulation after
-3000 time steps (3 non-dimensional time-units).
+Computes, plots, and saves the 2D vorticity field from a PetIBM simulation
+after 3000 time steps (3 non-dimensional time-units).
 """
 
 import os

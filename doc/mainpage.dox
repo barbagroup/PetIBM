@@ -13,7 +13,7 @@
  * routines.
  *
  * PetIBM solves the different linear systems either on CPUs using PETSc KSP
- * objects or on multiple CUDA-capable GPU devices using the Nvidia AmgX
+ * objects or on multiple CUDA-capable GPU devices using the NVIDIA AmgX
  * (https://github.com/NVIDIA/AMGX) library.
  *
  *

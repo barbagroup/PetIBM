@@ -179,7 +179,7 @@ This node gather various `parameters` regarding the advancement of a simulation.
 - `nsave`: frequency (in number of time steps) of saving for the numerical solution.
 - `nrestart`: frequency (in number of time steps) of saving for the convective and diffusive terms; those terms will required upon restart of a run at a time step different from 0.
 - `convection`: time scheme for the convective terms; choices are the default explicit Euler method (`EULER_EXPLICIT`) or an explicit second-order Adams-Bashforth scheme (`ADAMS_BASHFORTH_2`).
-- `diffusion`: time scheme for the diffusive terms; choices are the default implicit Euler method (`EULER_IMPLICIT`), an explicit Euler method (`EULER_EXPLICIT`), or a second-order Crank-Nicolson scheme ('CRANK_NICOLSON').
+- `diffusion`: time scheme for the diffusive terms; choices are the default implicit Euler method (`EULER_IMPLICIT`), an explicit Euler method (`EULER_EXPLICIT`), or a second-order Crank-Nicolson scheme (`CRANK_NICOLSON`).
 - `velocitySolver`, `poissonSolver`, and `forcesSolver` (for the decoupled version of the immersed-boundary projection method) each references the type of hardware used to solve the linear system (either `CPU` or `GPU`) and the path (relative to the YAML configuration file) of the file containing the parameters for the linear solver.
 
 In the following example, PetIBM will run 1000 time steps (from time step 0) with a time increment of 0.01, saving the numerical solution (velocity vector field, pressure scalar field, and Lagrangian boundary forces) every 100 time steps and saving the convective and diffusive terms every 200 time steps.
@@ -204,7 +204,7 @@ parameters:
 In the example above, the velocity  system will be solved on CPU with PETSc KSP and the parameters of the linear solver can be prescribed in the file `solversPetscOptions.info`.
 (The PETSc prefix for the arguments is `-velocity_`, `-poisson_`, and `-forces_` for the velocity system, the Poisson system, and the Lagrangian forces system, respectively.)
 
-The Poisson system will be solved on GPU devices with the [Nvidia AmgX library](https://github.com/NVIDIA/AMGX) and the parameters of the linear solver are prescribed in the file `solversAmgXOptions.info`.
+The Poisson system will be solved on GPU devices with the [NVIDIA AmgX library](https://github.com/NVIDIA/AMGX) and the parameters of the linear solver are prescribed in the file `solversAmgXOptions.info`.
 
 ---
 

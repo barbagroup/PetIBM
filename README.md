@@ -27,7 +27,7 @@ To build PetIBM, please refer to the [installation instructions](https://github.
 
 Optional to solve linear systems on GPUs:
 
-* NVIDIA's CUDA compiler nvcc (8.0)
+* NVIDIA's CUDA library (8.0)
 * [AmgX](https://github.com/NVIDIA/AMGX) (2.0)
 
 Optional for pre- and post-processing scripts:

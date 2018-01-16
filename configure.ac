@@ -26,7 +26,6 @@ AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 AC_PROG_CC_C_O
-CONFIGURE_DOXYGEN
 
 # check for typedefs, structures, and compiler characteristics
 AC_CHECK_HEADER_STDBOOL

@@ -848,6 +848,16 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
+copy-examples:
+	@echo "Copying examples folders..."
+	@if test "$(top_srcdir)" != "$(top_builddir)" ; then \
+		mkdir -p $(PWD)/examples ;\
+		rsync -a $(top_srcdir)/examples/* examples \
+			--exclude decoupledibpm/oscillatingcylinder2dRe100_GPU ; \
+	fi ;
+
+.PHONY: copy-examples
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

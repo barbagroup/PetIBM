@@ -3,6 +3,10 @@
  */
 
 
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+
 // PetIBM
 #include <petibm/linsolveramgx.h>
 
@@ -67,10 +71,26 @@ PetscErrorCode LinSolverAmgX::init()
     
     type = "NVIDIA AmgX";
 
+    // create temporary empty file if no configuration file is provided
+    char fname[L_tmpnam];
+    if (config == "None")
+    {
+    	config = std::tmpnam(fname);
+    	std::fstream file(fname, std::ios::out);
+    }
+
+  	ierr = PetscPrintf(PETSC_COMM_WORLD,
+                       "[%s solver] Configuration file: %s\n",
+                       name.c_str(), config.c_str()); CHKERRQ(ierr);
+
     ierr = amgx.initialize(PETSC_COMM_WORLD, "dDDI", config); CHKERRQ(ierr);
 
     solvers.push_back(&amgx);
     ierr = PetscRegisterFinalize(&preDestroyAmgXSolvers); CHKERRQ(ierr);
+
+    // remove temporary file if necessary
+    if (config == fname)
+    	std::remove(config.c_str());
 
     PetscFunctionReturn(0);
 }

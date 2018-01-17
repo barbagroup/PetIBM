@@ -113,8 +113,6 @@ protected:
 
     static void TearDownTestCase()
     { 
-        mesh.~shared_ptr(); 
-        
         PetscErrorCode ierr;
         ierr = DMDestroy(&da[0]); ASSERT_FALSE(ierr);
         ierr = DMDestroy(&da[1]); ASSERT_FALSE(ierr);

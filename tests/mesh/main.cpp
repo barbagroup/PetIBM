@@ -8,29 +8,6 @@
 # include <petsc.h>
 # include <gtest/gtest.h>
 
-# include <iostream>
-# include <sstream>
-
-class PETScEnvironment : public ::testing::Environment
-{
-    public:
-        
-        virtual ~PETScEnvironment() {};
-        virtual void SetUp()
-        {
-            char **argv;
-            int argc=0;
-            PetscErrorCode ierr = PetscInitialize(&argc, &argv, nullptr, nullptr);
-            ASSERT_FALSE(ierr);
-        }
-        
-        virtual void TearDown()
-        {
-            PetscErrorCode ierr = PetscFinalize();
-            ASSERT_FALSE(ierr);
-        }
-};
-
 
 // Run all tests
 int main(int argc, char **argv)
@@ -38,9 +15,9 @@ int main(int argc, char **argv)
     PetscErrorCode status;
 
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::AddGlobalTestEnvironment(new PETScEnvironment);
-    
+    status = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(status);
     status = RUN_ALL_TESTS();
+    status = PetscFinalize(); CHKERRQ(status);
 
     return status;
 } // main

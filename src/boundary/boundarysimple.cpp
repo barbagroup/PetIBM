@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file boundarysimple.cpp
+ * \brief Implementation of boundary::BoundarySimple
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `BoundarySimple`.
+ * \copyright MIT.
  */
 
 

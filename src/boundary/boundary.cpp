@@ -1,8 +1,10 @@
-/*
- * boundary.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file boundary.cpp
+ * \brief Implementation of boundary::BoundaryBase, type::Boundary, and factory function.
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 # include <petibm/boundary.h>

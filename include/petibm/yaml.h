@@ -1,7 +1,10 @@
-/***************************************************************************//**
+/**
  * \file yaml.h
+ * \brief Prototypes of YAML converters.
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Declaration of functions under namespace `YAML`.
+ * \copyright MIT.
  */
 
 # pragma once
@@ -19,42 +22,43 @@
 # include <petibm/type.h>
 
 
-/** \brief YAML node converters used by yamp-cpp */
+/**
+ * \brief A supplement to YAML-CPP that adds converters of our user-defined types.
+ * \ingroup miscModule
+ */
 namespace YAML
 {
 
-using namespace petibm::type;
-
     /** \brief converter for `types::Dir` */
     template <>
-    struct convert<Dir>
+    struct convert<petibm::type::Dir>
     {
-        static Node encode(const Dir &dir);
-        static bool decode(const Node &node, Dir &dir);
+        static Node encode(const petibm::type::Dir &dir);
+        static bool decode(const Node &node, petibm::type::Dir &dir);
     };
 
     /** \brief converter for `tpyes::Field` */
     template <>
-    struct convert<Field>
+    struct convert<petibm::type::Field>
     {
-        static Node encode(const Field &vc);
-        static bool decode(const Node &node, Field &vc);
+        static Node encode(const petibm::type::Field &vc);
+        static bool decode(const Node &node, petibm::type::Field &vc);
     };
 
     /** \brief converter for `types::BCType` */
     template <>
-    struct convert<BCType>
+    struct convert<petibm::type::BCType>
     {
-        static Node encode(const BCType &bc);
-        static bool decode(const Node &node, BCType &bc);
+        static Node encode(const petibm::type::BCType &bc);
+        static bool decode(const Node &node, petibm::type::BCType &bc);
     };
 
     /** \brief converter for `types::BCLoc` */
     template <>
-    struct convert<BCLoc>
+    struct convert<petibm::type::BCLoc>
     {
-        static Node encode(const BCLoc &loc);
-        static bool decode(const Node &node, BCLoc &loc);
+        static Node encode(const petibm::type::BCLoc &loc);
+        static bool decode(const Node &node, petibm::type::BCLoc &loc);
     };
 
     /** \brief converter for `PetscBool` */

@@ -1,8 +1,10 @@
-/*
- * yaml.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file yaml.cpp
+ * \brief Implementations of YAML converters.
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 
@@ -10,76 +12,70 @@
 # include "petibm/yaml.h"
 # include "petibm/misc.h"
 
-/**
- * \brief user-defined YAML converter
- * \todo when converting our data types to YAML map, the order of keys are 
- * not retained. Need som extra work if we want to keep the order.
- */
+
 namespace YAML
 {
 
-using namespace petibm::type;
-
     // for Dir
-    Node convert<Dir>::encode(const Dir &dir)
+    Node convert<petibm::type::Dir>::encode(const petibm::type::Dir &dir)
     {
         Node node;
-        node = dir2str[dir];
+        node = petibm::type::dir2str[dir];
         return node;
     }
 
-    bool convert<Dir>::decode(const Node &node, Dir &dir)
+    bool convert<petibm::type::Dir>::decode(const Node &node, petibm::type::Dir &dir)
     {
         if (! node.IsDefined()) return false;
 
-        dir = str2dir[node.as<std::string>()];
+        dir = petibm::type::str2dir[node.as<std::string>()];
         return true;
     }
 
     // for Field
-    Node convert<Field>::encode(const Field &vc)
+    Node convert<petibm::type::Field>::encode(const petibm::type::Field &vc)
     {
         Node node;
-        node = fd2str[vc];
+        node = petibm::type::fd2str[vc];
         return node;
     }
 
-    bool convert<Field>::decode(const Node &node, Field &vc)
+    bool convert<petibm::type::Field>::decode(const Node &node, petibm::type::Field &vc)
     {
         if (! node.IsDefined()) return false;
 
-        vc = str2fd[node.as<std::string>()];
+        vc = petibm::type::str2fd[node.as<std::string>()];
         return true;
     }
 
     // for BCType
-    Node convert<BCType>::encode(const BCType &bc)
+    Node convert<petibm::type::BCType>::encode(const petibm::type::BCType &bc)
     {
         Node node;
-        node = bt2str[bc];
+        node = petibm::type::bt2str[bc];
         return node;
     }
 
-    bool convert<BCType>::decode(const Node &node, BCType &bc)
+    bool convert<petibm::type::BCType>::decode(const Node &node, petibm::type::BCType &bc)
     {
         if (! node.IsDefined()) return false;
-        bc = str2bt[node.as<std::string>()];
+        bc = petibm::type::str2bt[node.as<std::string>()];
         return true;
     }
 
     // for BCLoc
-    Node convert<BCLoc>::encode(const BCLoc &loc)
+    Node convert<petibm::type::BCLoc>::encode(const petibm::type::BCLoc &loc)
     {
         Node node;
-        node = bl2str[loc];
+        node = petibm::type::bl2str[loc];
         return node;
     }
 
-    bool convert<BCLoc>::decode(const Node &node, BCLoc &loc)
+    bool convert<petibm::type::BCLoc>::decode(const Node &node, petibm::type::BCLoc &loc)
     {
         if (! node.IsDefined()) return false;
 
-        loc = str2bl[node.as<std::string>()];
+        loc = petibm::type::str2bl[node.as<std::string>()];
         return true;
     }
 

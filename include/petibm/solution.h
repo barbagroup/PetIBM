@@ -23,6 +23,7 @@
 
 /**
  * \defgroup solutionModule Solution holders
+ * \brief Simple and useful structures for holding solutions.
  *
  * Useful objects that hold solution vectors. These objects also handle the I/O
  * of solutions.

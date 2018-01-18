@@ -20,6 +20,7 @@
 
 /**
  * \defgroup operatorModule Operator factories
+ * \brief Matrices & Operators used in Perot's framework (1993, 2002).
  * 
  * An operator is a matrix, which will be the type of PETSc Mat. It may be a 
  * sparse matrix or a matrix-free matrix. Operators in CFD are based on the 

@@ -26,6 +26,7 @@
 
 /** 
  * \defgroup linsolver Linear solvers
+ * \brief Interfaces to different libraries of linear solvers
  * 
  * The design of PetIBM is to use shared pointer (std::shared_ptr) to hold 
  * instances. The class LinSolverBase is the abstract class for all kinds of 

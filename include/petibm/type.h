@@ -20,7 +20,7 @@
 
 
 /** 
- * \defgroup petibm A toolbox for building flow solvers 
+ * \defgroup petibm Building blocks for building flow solvers 
  * 
  * This part contains building blocks that are necessary for a flow solver in 
  * Perot (1993) framwork and staggered-grid finite difference method.
@@ -29,6 +29,7 @@
 
 /** 
  * \defgroup type User-defined types in PetIBM
+ * \brief Useful user-defined types in PetIBM.
  * 
  * User-defined types to simplify the source code.
  * 

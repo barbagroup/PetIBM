@@ -29,6 +29,7 @@
 
 /**
  * \defgroup meshModule Mesh objects
+ * \brief Objects for meshes and domain decompositions
  * 
  * So far, we only have stretched Cartesian mesh in our code. However, in order
  * to consider future extension of different kinds of mesh, we still design a
@@ -44,6 +45,9 @@
  * And users should also initialize mesh instances with the factory function, 
  * \ref petibm::mesh::createMesh "createMesh", instead of initializing the 
  * instances directly.
+ * 
+ * The domain decomposition is done with PETSc DMDA objects. And the information
+ * of subdomains are retrieved into mesh classes.
  * 
  * \see petibm::type::Mesh, petibm::mesh::createMesh
  * \ingroup petibm

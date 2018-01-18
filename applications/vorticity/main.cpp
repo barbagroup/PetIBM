@@ -1,8 +1,8 @@
-/*
- * main.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file vorticity/main.cpp
+ * \brief An utility that calculates vorticity fields.
+ * \see vorticity
+ * \ingroup vorticity
  */
 
 // STL
@@ -23,6 +23,26 @@
 # include <petibm/boundary.h>
 # include <petibm/solution.h>
 # include <petibm/io.h>
+
+
+/**
+ * \defgroup vorticity Post-processing utility: vorticity
+ * \brief A post-processing utility that calculates vorticity fields.
+ * 
+ * This is a helper utility built with PetIBM components, and it calculates
+ * the vorticity fileds of simulation results from the
+ * \ref nssolver "Navier-Stokes solver",
+ * \ref tairacolonius "IBPM solver", and 
+ * \ref decoupledibpm "decoupled IBPM solver".
+ * 
+ * If readers are interested in using this utility,
+ * please refer to 
+ * \ref md_runpetibm "Running PetIBM",
+ * \ref md_examples2d "2D Exmaples", and
+ * \ref md_examples3d "3D Examples".
+ * 
+ * \ingroup apps
+ */
 
 
 PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh, 

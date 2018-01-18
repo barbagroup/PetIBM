@@ -1,5 +1,8 @@
-/** Decoupled IBPM solver.
- * \file main.cpp
+/**
+ * \file tairacolonius/main.cpp
+ * \brief Main function of IBPM solver (Taira & Colonius 2007).
+ * \see tairacolonius
+ * \ingroup tairacolonius
  */
 
 #include <iomanip>
@@ -15,6 +18,29 @@
 #include <petibm/parser.h>
 
 #include "tairacolonius.h"
+
+
+/**
+ * \defgroup tairacolonius IBPM solver (Taira & Colonius 2007)
+ * \brief Implementation of parallel IBPM solver (Taira & Colonius 2007).
+ * 
+ * This is an example of using PetIBM to build a parallel incompressible flow 
+ * solver with the immersed-boundary method prposed by Taira & Colonius 2007. 
+ * We name this solver \a IBPM.
+ * 
+ * If readers are interested in using this solver instead of coding,
+ * please refer to 
+ * \ref md_runpetibm "Running PetIBM",
+ * \ref md_examples2d "2D Exmaples", and
+ * \ref md_examples3d "3D Examples".
+ * 
+ * \b Reference: \n
+ * \li Taira, K., & Colonius, T. (2007). The immersed boundary method: a 
+ * projection approach. Journal of Computational Physics, 225(2), 2118-2137.
+ * 
+ * \see nssolver, decoupledibpm
+ * \ingroup apps
+ */
 
 
 int main(int argc, char **argv)

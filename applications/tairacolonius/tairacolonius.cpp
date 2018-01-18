@@ -1,6 +1,8 @@
 /**
- * \file navierstokes.cpp
+ * \file tairacolonius.cpp
  * \brief Implementation of the class \c TairaColoniusSolver.
+ * \see tairacolonius
+ * \ingroup tairacolonius
  */
 
 // PETSc

@@ -1,6 +1,8 @@
 /**
- * \file navierstokes.h
+ * \file tairacolonius.h
  * \brief Definition of the class \c TairaColoniusSolver.
+ * \see tairacolonius
+ * \ingroup tairacolonius
  */
 
 #pragma once
@@ -14,7 +16,9 @@
 
 /**
  * \class TairaColoniusSolver
- * \brief Taira and Colonius (2007).
+ * \brief Immersed-boundary method proposed by Taira and Colonius (2007).
+ * \see tairacolonius, NavierStokesSolver
+ * \ingroup tairacolonius
  */
 class TairaColoniusSolver : protected NavierStokesSolver
 {
@@ -43,17 +47,13 @@ public:
             const petibm::type::BodyPack &bodies,
             const YAML::Node &node);
 
-    /**
-     * \brief Default destructor.
-     */
+    /** \brief Default destructor.  */
     ~TairaColoniusSolver();
 
-    /** \brief manually destroy data.  */
+    /** \brief Manually destroy data.  */
     PetscErrorCode destroy();
 
-    /**
-     * \brief Initialize vectors, operators, and linear solvers.
-     */
+    /** \brief Initialize vectors, operators, and linear solvers.  */
     PetscErrorCode initialize(
             const petibm::type::Mesh &mesh,
             const petibm::type::Boundary &bc,
@@ -87,8 +87,8 @@ public:
     /**
      * \brief Write the integrated forces acting on the bodies into a ASCII file.
      *
-     * \param time [in] Time value
-     * \param fileName [in] Name of the file to save.
+     * \param t [in] Time value
+     * \param filePath [in] Name of the file to save.
      */
     PetscErrorCode writeIntegratedForces(
             const PetscReal &t, const std::string &filePath);
@@ -96,10 +96,10 @@ public:
     
 protected:
     
-    /** \brief a reference to immersed bodies. */
+    /** \brief A reference to immersed bodies. */
     petibm::type::BodyPack      bodies;
     
-    /** \brief combination of pressure and forces. */
+    /** \brief Combination of pressure and forces. */
     Vec P;
     
     /** \brief PETSc IS objects indicating which entries in phi belonging to 
@@ -114,12 +114,12 @@ protected:
     /** \brief Assemble the RHS vector of the Poisson system.  */
     virtual PetscErrorCode assembleRHSPoisson();
     
-    /** \brief create operators.  */
+    /** \brief Create operators.  */
     virtual PetscErrorCode createOperators();
     
-    /** \brief create vectors.  */
+    /** \brief Create vectors.  */
     virtual PetscErrorCode createVectors();
     
-    /** \brief set null space or apply reference point.  */
+    /** \brief Set null space or apply reference point.  */
     virtual PetscErrorCode setNullSpace();
 };

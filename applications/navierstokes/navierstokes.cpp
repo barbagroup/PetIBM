@@ -1,6 +1,8 @@
 /**
  * \file navierstokes.cpp
  * \brief Implementation of the class \c NavierStokesSolver.
+ * \see nssolver
+ * \ingroup nssolver
  */
 
 // PETSc
@@ -348,7 +350,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
             ierr = MatMultAdd(LCorrection, 
                     solution->UGlobal, diff[0], diff[0]); CHKERRQ(ierr);
             ierr = VecScale(diff[0], nu); CHKERRQ(ierr);
-	      }
+        }
         
         // 3. add all explicit diffusive terms to rhs1
         for(unsigned int i=0; i<diff.size(); ++i) {

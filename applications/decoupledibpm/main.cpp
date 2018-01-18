@@ -1,5 +1,8 @@
-/** Decoupled IBPM solver.
- * \file main.cpp
+/**
+ * \file decoupledibpm/main.cpp
+ * \brief Main function of decoupled IBPM solver (Li et. al. 2016).
+ * \see decoupledibpm
+ * \ingroup decoupledibpm
  */
 
 #include <iomanip>
@@ -15,6 +18,30 @@
 #include <petibm/parser.h>
 
 #include "decoupledibpm.h"
+
+
+/**
+ * \defgroup decoupledibpm Decoupled IBPM solver (Li et. al. 2016)
+ * \brief Implementation of parallel decoupled IBPM solver (Li et. al. 2016).
+ * 
+ * This is an example of using PetIBM to build a parallel incompressible flow 
+ * solver with the immersed-boundary method prposed by Li et. al. 2016. We name
+ * this solver \a decoupled \a IBPM".
+ * 
+ * If readers are interested in using this solver instead of coding,
+ * please refer to 
+ * \ref md_runpetibm "Running PetIBM",
+ * \ref md_examples2d "2D Exmaples", and
+ * \ref md_examples3d "3D Examples".
+ * 
+ * \b Reference: \n
+ * \li Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016). An efficient 
+ * immersed boundary projection method for flow over complex/moving boundaries. 
+ * Computers & Fluids, 140, 122-135.
+ * 
+ * \see nssolver, tairacolonius
+ * \ingroup apps
+ */
 
 
 int main(int argc, char **argv)

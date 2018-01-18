@@ -1,6 +1,8 @@
 /**
  * \file decoupledibpm.cpp
  * \brief Implementation of the class \c DecoupledIBPMSolver.
+ * \see decoupledibpm
+ * \ingroup decoupledibpm
  */
 
 // PETSc

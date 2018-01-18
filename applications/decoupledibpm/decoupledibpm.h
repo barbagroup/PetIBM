@@ -1,6 +1,8 @@
 /**
  * \file decoupledibpm.h
  * \brief Definition of the class \c DecoupledIBPMSolver.
+ * \see decoupledibpm
+ * \ingroup decoupledibpm
  */
 
 #pragma once
@@ -14,8 +16,9 @@
 
 /**
  * \class DecoupledIBPMSolver
- * \brief Solve the incompressible Navier-Stokes equations with a decoupled
- *        version of the Immersed-Boundary Projection Method (Li et al., 2016).
+ * \brief Immersed-boundary method proposed by Li et. al. (2007).
+ * \see decoupledibpm, NavierStokesSolver
+ * \ingroup decoupledibpm
  */
 class DecoupledIBPMSolver : protected NavierStokesSolver
 {
@@ -70,7 +73,7 @@ public:
     PetscErrorCode writeRestartData(const std::string &filePath);
     
     /**
-     * \brief read data that are required for restarting sessions.
+     * \brief Read data that are required for restarting sessions.
      * 
      * \param filePath [in] path of the file to save (without extension)
      */
@@ -89,41 +92,41 @@ public:
     /**
      * \brief Write the integrated forces acting on the bodies into a ASCII file.
      *
-     * \param time [in] Time value
-     * \param fileName [in] Name of the file to save.
+     * \param t [in] Time value
+     * \param filePath [in] Name of the file to save.
      */
     PetscErrorCode writeIntegratedForces(
             const PetscReal &t, const std::string &filePath);
 
 protected:
     
-    /** \brief a reference to immersed bodies. */
+    /** \brief A reference to immersed bodies. */
     petibm::type::BodyPack      bodies;
     
-    /** \brief linear solver object for force solver. */
+    /** \brief Linear solver object for force solver. */
     petibm::type::LinSolver     fSolver;
     
 
-    /** \brief operator interpolating Lagrangian forces to Eulerian forces. */
+    /** \brief Operator interpolating Lagrangian forces to Eulerian forces. */
     Mat H;
     
-    /** \brief operator interpolating Eulerian forces to Lagrangian forces. */
+    /** \brief Operator interpolating Eulerian forces to Lagrangian forces. */
     Mat E;
     
-    /** \brief coefficient matrix of the force system. */
+    /** \brief Coefficient matrix of the force system. */
     Mat EBNH;
     
-    /** \brief operator projecting force to intermediate velocity field. */
+    /** \brief Operator projecting force to intermediate velocity field. */
     Mat BNH;
     
 
-    /** \brief right-hand-side of force system. */
+    /** \brief Right-hand-side of force system. */
     Vec Eu;
     
-    /** \brief solution of Lagragian force at time-step n. */
+    /** \brief Solution of Lagragian force at time-step n. */
     Vec f;
     
-    /** \brief increment of force from time-step n to n+1. */
+    /** \brief Increment of force from time-step n to n+1. */
     Vec df;
 
 
@@ -156,7 +159,7 @@ protected:
     /** \brief Assembles operators and matrices. */
     PetscErrorCode createExtraOperators();
 
-    /** \brief create vectors. */
+    /** \brief Create vectors. */
     PetscErrorCode createExtraVectors();
 
 }; // DecoupledIBPMSolver

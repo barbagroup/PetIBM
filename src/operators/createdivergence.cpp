@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createdivergence.cpp
+ * \brief Definition of functions creating divergence operator.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating divergence operators.
+ * \copyright MIT.
  */
 
 
@@ -53,7 +54,7 @@ typedef std::function<PetscReal(
         const PetscInt &, const PetscInt &, const PetscInt &)> Kernel;
 
 
-/** \copydoc createDivergence. */
+// implementation of petibm::operators::createDivergence
 PetscErrorCode createDivergence(const type::Mesh &mesh,
                                 const type::Boundary &bc, 
                                 Mat &D,
@@ -207,7 +208,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
 }
 
 
-/** \copydoc DCorrectionMult. */
+// implementation of DCorrectionMult
 PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
@@ -242,7 +243,7 @@ PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y)
 }
 
 
-/** \copydoc DCorrectionDestroy. */
+// implementation of DCorrectionDestroy
 PetscErrorCode DCorrectionDestroy(Mat mat)
 {
     PetscFunctionBeginUser;

@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file singlebody.cpp
+ * \brief Implementations of body::SingleBodyBase and factory function.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief code regarding to objects defined in singlebody.h.
+ * \copyright MIT.
  */
 
 

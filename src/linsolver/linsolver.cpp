@@ -1,8 +1,9 @@
-/*
- * linsolver.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/** 
+ * \file linsolver.cpp
+ * \brief Implementations of LinSolverBase, LinSolver, and factory function.
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 
@@ -20,7 +21,7 @@ namespace petibm
 namespace linsolver
 {
 
-
+// implement LinSolverBase::destroy
 PetscErrorCode LinSolverBase::destroy()
 {
     PetscFunctionBeginUser;
@@ -29,6 +30,7 @@ PetscErrorCode LinSolverBase::destroy()
 }
     
     
+// implement LinSolverBase::printInfo
 PetscErrorCode LinSolverBase::printInfo() const
 {
     PetscFunctionBeginUser;
@@ -49,6 +51,7 @@ PetscErrorCode LinSolverBase::printInfo() const
 }
 
 
+// implement LinSolverBase::getType
 PetscErrorCode LinSolverBase::getType(std::string &_type) const
 {
     PetscFunctionBeginUser;
@@ -57,7 +60,7 @@ PetscErrorCode LinSolverBase::getType(std::string &_type) const
 }
 
 
-// factory function for creating a LinSolver
+// implement petibm::linsolver::createLinSolver
 PetscErrorCode createLinSolver(const std::string &solverName, 
         const YAML::Node &node, type::LinSolver &solver)
 {

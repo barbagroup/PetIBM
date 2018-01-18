@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file creatediagmatrix.cpp
+ * \brief Definitions of functions creating different kinds of diagonal matrices.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definitions of functions creating different kinds of diagonal matrix.
+ * \copyright MIT.
  */
 
 
@@ -37,7 +38,7 @@ typedef std::function<PetscReal(
  *
  * \param mesh an instance of CartesianMesh.
  * \param kernels a length 3 STL vector holding KernelType.
- * \param D the returned matrix.
+ * \param M the returned matrix.
  *
  * This is not designed for public use. It's only valid for the functions 
  * defined in this source file.
@@ -90,7 +91,7 @@ PetscErrorCode createDiagMatrix(const type::Mesh &mesh,
 }
 
 
-/** \copydoc createR(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createR
 PetscErrorCode createR(const type::Mesh &mesh, Mat &R)
 {
     PetscFunctionBeginUser;
@@ -115,7 +116,7 @@ PetscErrorCode createR(const type::Mesh &mesh, Mat &R)
 }
 
 
-/** \copydoc createRInv(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createRInv
 PetscErrorCode createRInv(const type::Mesh &mesh, Mat &RInv)
 {
     PetscFunctionBeginUser;
@@ -140,7 +141,7 @@ PetscErrorCode createRInv(const type::Mesh &mesh, Mat &RInv)
 }
 
 
-/** \copydoc createMHead(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createMHead
 PetscErrorCode createMHead(const type::Mesh &mesh, Mat &MHead)
 {
     PetscFunctionBeginUser;
@@ -165,7 +166,7 @@ PetscErrorCode createMHead(const type::Mesh &mesh, Mat &MHead)
 }
 
 
-/** \copydoc createM(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createM
 PetscErrorCode createM(const type::Mesh &mesh, Mat &M)
 {
     PetscFunctionBeginUser;
@@ -190,7 +191,7 @@ PetscErrorCode createM(const type::Mesh &mesh, Mat &M)
 }
 
 
-/** \copydoc createIdentity(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createIdentity
 PetscErrorCode createIdentity(const type::Mesh &mesh, Mat &I)
 {
     PetscFunctionBeginUser;

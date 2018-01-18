@@ -1,5 +1,5 @@
 /**
- * \file cartesianmesh_test.cpp
+ * \file cartesianmesh2d_dirichlet.cpp
  * \brief Unit-tests for the class `CartesianMesh`.
  */
 

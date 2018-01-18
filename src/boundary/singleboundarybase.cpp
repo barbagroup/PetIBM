@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file singleboundary.cpp
+/**
+ * \file singleboundarybase.cpp
+ * \brief Implementation of the class `SingleBoundaryBase`.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the member functions of class `SingleBoundary`.
+ * \copyright MIT.
  */
 
 // here goes headers from our PetIBM

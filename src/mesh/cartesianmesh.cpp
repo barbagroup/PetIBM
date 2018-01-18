@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file cartesianmesh.cpp
- * \author Anush Krishnan (anush@bu.edu)
+ * \brief Implementations of mesh::CartesianMesh.
+ * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Implementation of the methods of the class `CartesianMesh`.
+ * \copyright MIT.
  */
 
 
@@ -31,14 +32,14 @@ namespace mesh
 using namespace type;
 
 
-// constructor
+// implementation of CartesianMesh::CastesianMesh
 CartesianMesh::CartesianMesh(const MPI_Comm &world, const YAML::Node &node)
 {
     init(world, node);
 }
 
 
-// default destructor
+// implementation of CartesianMesh::~CastesianMesh
 CartesianMesh::~CartesianMesh()
 {
     PetscFunctionBeginUser;
@@ -53,7 +54,7 @@ CartesianMesh::~CartesianMesh()
 }
 
 
-// manually destroy data
+// implementation of CartesianMesh::destroy
 PetscErrorCode CartesianMesh::destroy()
 {
     PetscFunctionBeginUser;
@@ -73,7 +74,7 @@ PetscErrorCode CartesianMesh::destroy()
 }
 
 
-// initialization
+// implementation of CartesianMesh::init
 PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node)
 {
     PetscFunctionBeginUser;
@@ -145,7 +146,7 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
 }
 
 
-// create pressure mesh
+// implementation of CartesianMesh::createPressureMesh
 PetscErrorCode CartesianMesh::createPressureMesh()
 {
     PetscFunctionBeginUser;
@@ -186,7 +187,7 @@ PetscErrorCode CartesianMesh::createPressureMesh()
 }
 
 
-// create vertices information
+// implementation of CartesianMesh::createVertexMesh
 PetscErrorCode CartesianMesh::createVertexMesh()
 {
     PetscFunctionBeginUser;
@@ -218,7 +219,7 @@ PetscErrorCode CartesianMesh::createVertexMesh()
 }
 
 
-// create velocity mesh
+// implementation of CartesianMesh::createCelocityMesh
 PetscErrorCode CartesianMesh::createVelocityMesh()
 {
     PetscFunctionBeginUser;
@@ -362,7 +363,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
 }
 
 
-// create string containing information of this mesh
+// implementation of CartesianMesh::createInfoString
 PetscErrorCode CartesianMesh::createInfoString()
 {
     PetscFunctionBeginUser;
@@ -419,7 +420,7 @@ PetscErrorCode CartesianMesh::createInfoString()
 }
 
 
-// create local information of mesh on this process
+// implementation of CartesianMesh::addLocalInfoString
 PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 {
     PetscFunctionBeginUser;
@@ -446,7 +447,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
 }
 
 
-// initialize PETSc DMDA objects
+// implementation of CartesianMesh::initDMDA
 PetscErrorCode CartesianMesh::initDMDA()
 {
     PetscFunctionBeginUser;
@@ -501,7 +502,7 @@ PetscErrorCode CartesianMesh::initDMDA()
 }
 
 
-// create a single PETSc DMDA object
+// implementation of CartesianMesh::createSingleDMDA
 PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 {
     using namespace std;
@@ -549,7 +550,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 }
 
 
-// create a PETSc DMDA for pressure field
+// implementation of CartesianMesh::createPressureDMDA
 PetscErrorCode CartesianMesh::createPressureDMDA()
 {
     using namespace std;
@@ -570,7 +571,7 @@ PetscErrorCode CartesianMesh::createPressureDMDA()
 }
 
 
-// create a PETSc DMComposite object for velocity fields
+// implementation of CartesianMesh::createVelocityPack
 PetscErrorCode CartesianMesh::createVelocityPack()
 {
     using namespace std;
@@ -592,7 +593,7 @@ PetscErrorCode CartesianMesh::createVelocityPack()
 }
 
 
-// get natural index through MatStencil
+// implementation of CartesianMesh::getNaturalIndex
 PetscErrorCode CartesianMesh::getNaturalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -606,7 +607,7 @@ PetscErrorCode CartesianMesh::getNaturalIndex(
 }
 
 
-// get natural index through i, j, k indices
+// implementation of CartesianMesh::getNaturalIndex
 PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -690,7 +691,7 @@ PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f,
 }
 
 
-// get local index through MatStencil
+// implementation of CartesianMesh::getLocalIndex
 PetscErrorCode CartesianMesh::getLocalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -704,7 +705,7 @@ PetscErrorCode CartesianMesh::getLocalIndex(
 }
 
 
-// get local index through i, j, k indices
+// implementation of CartesianMesh::getLocalIndex
 PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -719,7 +720,7 @@ PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f,
 }
 
 
-// get global index through MatStencil
+// implementation of CartesianMesh::getGlobalIndex
 PetscErrorCode CartesianMesh::getGlobalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -734,7 +735,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(
 }
 
 
-// get global index through i, j, k indices
+// implementation of CartesianMesh::getGlobalIndex
 PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -749,7 +750,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f,
 }
 
 
-// get index in DMComposite through MatStencil
+// implementation of CartesianMesh::getPackedGlobalIndex
 PetscErrorCode CartesianMesh::getPackedGlobalIndex(
         const PetscInt &f, const MatStencil &s, PetscInt &idx) const
 {
@@ -789,7 +790,7 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
 }
 
 
-// get indec in DMComposite through i, j, k indices
+// implementation of CartesianMesh::getPackedGlobalIndex
 PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k, 
         PetscInt &idx) const
@@ -804,6 +805,7 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f,
 }
 
 
+// implementation of CartesianMesh::write
 PetscErrorCode CartesianMesh::write(const std::string &filePath) const
 {
     PetscFunctionBeginUser;

@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file creategradient.cpp
+ * \brief Definition of functions creating gradient operator.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating gradient operators.
+ * \copyright MIT.
  */
 
 
@@ -37,7 +38,7 @@ typedef std::function<type::RealVec1D(
         const PetscInt &, const PetscInt &, const PetscInt &)> Kernel;
 
 
-/** \copydoc createGradient. */
+// implementation of petibm::operators::createGradient
 PetscErrorCode createGradient(const type::Mesh &mesh,
                               Mat &G,
                               const PetscBool &normalize)

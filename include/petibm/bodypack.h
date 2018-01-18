@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file bodypack.h
+ * \brief body::BodyPackBase, type::BodyPack, and factory function.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `BodyPack`.
+ * \copyright MIT.
  */
 
 
@@ -26,57 +27,101 @@
 # include <petibm/singlebody.h>
 
 
+/**
+ * \defgroup bodyModule Immersed-boundary bodies
+ * \brief Objecs related to immersed-boundary bodies.
+ * 
+ * This module contains objects related to immersed-boundary bodies and factory
+ * functions.
+ * 
+ * A petibm::type::SingleBody is an object holding information of a single body,
+ * including coordinates of Lagragian points, and the indices of relevant background
+ * Eulerian mesh points, etc. It also has member functions regarding to a single
+ * body. For example, to update the indices of relevant Eulerian mesh points, 
+ * I/O, calcaulating forces, etc. A petibm::type::SingleBody is distributed to
+ * all MPI processes regardless the decomposition of the background Eulerian mesh.
+ * It also handles the indexing of Lagrangian points in a parallel PETSc Vec.
+ * 
+ * A petibm::type::BodyPack is just a collection of all petibm::type::SingleBody
+ * in the domain for the purpose of easy coding. A member function in a 
+ * petibm::type::BodyPack is generally just calling the corresponding function
+ * inside each single body. petibm::type::BodyPack also works even there is only
+ * one single body. It also handles the indexing of Lagrangian points in a packed
+ * parallel PETSc Vec.
+ * 
+ * Users should use petibm::body::createBodyPack to create an instance. Although
+ * it's not encouraged, users can also use petibm::body::createSingleBody if
+ * there is only one body in their application code.
+ * 
+ * \see petibm::type::BodyPack, petibm::type::SingleBody, petibm::body::createBodyPack
+ * \ingroup petibm
+ */
+
+
 namespace petibm
 {
+/** 
+ * \brief A namespace for objects and functions related to immersed-boundary bodies.
+ * \see petibm::type::BodyPack, petibm::type::SingleBody, petibm::body::createBodyPack
+ * \ingroup bodyModule 
+ */
 namespace body
 {
 
-/** \brief class for a pack of multiple bodies. */
+/**
+ * \brief Base (abstract) class for a pack of bodies.
+ * \see bodyModule, petibm::type::BodyPack, petibm::type::SingleBody, petibm::body::createBodyPack
+ * \ingroup bodyModule 
+ * 
+ * This class is designed to be an abstract class though, it actually has full
+ * implementations of all members because there is currently no necessary to do
+ * otherwise. It's just simply a collection of bodies, though it also deals with
+ * indexing of all Lagragian points in a globally packed Vec.
+ */
 class BodyPackBase
 {
 public:
 
-    /** \brief dimension. */
+    /** \brief Dimension. */
     PetscInt                    dim;
 
-    /** \brief number of bodies in this pack. */
+    /** \brief Number of bodies in this pack. */
     PetscInt                    nBodies;
 
-    /** \brief total number of Lagrangian points. */
+    /** \brief Total number of Lagrangian points. */
     PetscInt                    nPts;
 
-    /** \brief total number of local Lagrangian points. */
+    /** \brief Total number of local Lagrangian points. */
     PetscInt                    nLclPts;
 
-    /** \brief a vector of SingleBody instances. */
+    /** \brief A vector of SingleBody instances. */
     std::vector<type::SingleBody>     bodies;
 
-    /** \brief a DMComposite of DMs of all `SingleBody`s. */
+    /** \brief A DMComposite of DMs of all `SingleBody`s. */
     DM                          dmPack;
 
-    /** \brief a string for printing information. */
+    /** \brief A string for printing information. */
     std::string                 info;
 
 
-    /** \brief default constructor. */
+    /** \brief Default constructor. */
     BodyPackBase() = default;
 
 
     /**
-     * \brief constructor of using a type::Mesh and a YAML node.
-     *
-     * \param mesh [in] an instance of type::Mesh for background mesh.
-     * \param node [in] a YAML node specifying information of all bodies.
+     * \brief Constructor of using a type::Mesh and a YAML node.
+     * \param mesh [in] An instance of type::Mesh for background mesh.
+     * \param node [in] A YAML node specifying information of all bodies.
      */
     BodyPackBase(const type::Mesh &mesh, const YAML::Node &node);
 
 
-    /** \brief default destructor. */
+    /** \brief Default destructor. */
     virtual ~BodyPackBase();
 
 
     /**
-     * \brief manually destroy data.
+     * \brief Manually destroy data.
      *
      * \return PetscErrorCode.
      */
@@ -84,7 +129,7 @@ public:
 
 
     /**
-     * \brief print information.
+     * \brief Print information.
      *
      * \return PetscErrorCode.
      */
@@ -92,7 +137,7 @@ public:
 
 
     /**
-     * \brief find which process owns the target Lagrangian point of target body.
+     * \brief Find which process owns the target Lagrangian point of target body.
      *
      * \param bIdx [in] index of target body.
      * \param ptIdx [in] index of target point.
@@ -105,7 +150,7 @@ public:
 
 
     /**
-     * \brief find un-packed global index of a DoF of Lagrangian point of a body.
+     * \brief Find un-packed global index of a DoF of Lagrangian point of a body.
      *
      * \param bIdx [in] index of target body.
      * \param ptIdx [in] index of target point.
@@ -119,7 +164,7 @@ public:
 
 
     /**
-     * \brief find un-packed global index of a DoF of Lagrangian point of a body.
+     * \brief Find un-packed global index of a DoF of Lagrangian point of a body.
      *
      * \param bIdx [in] index of target body.
      * \param s [in] MatStencil of target point.
@@ -133,7 +178,7 @@ public:
 
 
     /**
-     * \brief find packed global index of a DoF of Lagrangian point of a body.
+     * \brief Find packed global index of a DoF of Lagrangian point of a body.
      *
      * \param bIdx [in] index of target body.
      * \param ptIdx [in] index of target point.
@@ -148,7 +193,7 @@ public:
 
 
     /**
-     * \brief find packed global index of a DoF of Lagrangian point of a body.
+     * \brief Find packed global index of a DoF of Lagrangian point of a body.
      *
      * \param bIdx [in] index of target body.
      * \param s [in] MatStencil of target point.
@@ -161,7 +206,7 @@ public:
 
 
     /**
-     * \brief calculate the averaged force of each body.
+     * \brief Calculate the averaged force of each body.
      *
      * \param f [in] packed force Vec of Lagrangian points.
      * \param fAvg [in] return averaged force for each body.
@@ -175,7 +220,7 @@ public:
     
     
     /**
-     * \brief update the indices of backgrounf Pressure cells for all body.
+     * \brief Update the indices of backgrounf Pressure cells for all body.
      *
      * \return PetscErrorCode.
      */
@@ -186,7 +231,7 @@ protected:
 
 
     /**
-     * \brief constructor of using a type::Mesh and a YAML node.
+     * \brief Constructor of using a type::Mesh and a YAML node.
      *
      * \param mesh [in] an instance of type::Mesh for background mesh.
      * \param node [in] a YAML node specifying information of all bodies.
@@ -194,32 +239,32 @@ protected:
     PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
     
 
-    /** \brief reference to backgrounf mesh. */
+    /** \brief Reference to backgrounf mesh. */
     type::Mesh          mesh;
 
 
-    /** \brief reference to the MPI communicator. */
+    /** \brief Reference to the MPI communicator. */
     MPI_Comm            comm;
 
 
-    /** \brief the total number of processes. */
+    /** \brief The total number of processes. */
     PetscMPIInt         mpiSize;
 
 
-    /** \brief the rank of this process. */
+    /** \brief The rank of this process. */
     PetscMPIInt         mpiRank;
 
 
-    /** \brief number of local packed variables of all processes. */
+    /** \brief Number of local packed variables of all processes. */
     type::IntVec1D      nLclAllProcs;
 
 
-    /** \brief offsets of packed variables of all processes. */
+    /** \brief Offsets of packed variables of all processes. */
     type::IntVec1D      offsetsAllProcs;
 
 
     /**
-     * \brief create DMComposite.
+     * \brief Create DMComposite.
      *
      * \return PetscErrorCode.
      */
@@ -227,7 +272,7 @@ protected:
 
 
     /**
-     * \brief create a string for printing information.
+     * \brief Create a string for printing information.
      *
      * \return PetscErrorCode.
      */
@@ -239,7 +284,11 @@ protected:
 
 namespace type
 {
-    /** \brief definition of type::BodyPack. */
+    /**
+     * \brief Definition of type::BodyPack.
+     * \see bodyModule, petibm::type::SingleBody, petibm::body::createBodyPack
+     * \ingroup bodyModule
+     */
     typedef std::shared_ptr<body::BodyPackBase> BodyPack;
 } // end of namespace type
 
@@ -247,13 +296,15 @@ namespace type
 namespace body
 {
     /**
-     * \brief factory for creating type::BodyPack
+     * \brief Factory function for creating type::BodyPack
      *
      * \param mesh [in] background mesh.
      * \param node [in] YMAL::Node.
      * \param bodies [in] output type::BodyPack instance.
      *
      * \return PetscErrorCode.
+     * \see bodyModule, petibm::type::BodyPack, petibm::type::SingleBody
+     * \ingroup bodyModule
      */
     PetscErrorCode createBodyPack(const type::Mesh &mesh, 
             const YAML::Node &node, type::BodyPack &bodies);

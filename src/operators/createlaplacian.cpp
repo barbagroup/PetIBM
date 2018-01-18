@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createlaplacian.cpp
+ * \brief Definition of functions creating Laplacian operator.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating Laplacian operators.
+ * \copyright MIT.
  */
 
 
@@ -65,6 +66,8 @@ typedef std::function<StencilVec(const PetscInt &,
  * \param j the y-index of current row in the cartesian mesh.
  * \param k the z-index of current row in the cartesian mesh.
  * \param L the Laplacian matrix.
+ * \param rowModifiers an object holding information about where in a matrix 
+ *                     should be modified.
  *
  * \return PetscErrorCode.
  */
@@ -78,7 +81,7 @@ inline PetscErrorCode setRowValues(
         std::map<MatStencil, type::RowModifier> &rowModifiers);
 
 
-/** \copydoc createLaplacian. */
+// implementation of petibm::operators::createLaplacian
 PetscErrorCode createLaplacian(const type::Mesh &mesh,
                                const type::Boundary &bc, 
                                Mat &L, Mat &LCorrection)
@@ -182,7 +185,7 @@ PetscErrorCode createLaplacian(const type::Mesh &mesh,
 }
 
 
-/** \copydoc setRowValues. */
+// implementation of setRowValues
 inline PetscErrorCode setRowValues(
         const type::Mesh &mesh,
         const type::Boundary &bc, 
@@ -242,7 +245,7 @@ inline PetscErrorCode setRowValues(
 }
 
 
-/** \copydoc LCorrectionMult. */
+// implementation of LCorrectionMult
 PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
@@ -277,7 +280,7 @@ PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
 }
 
 
-/** \copydoc LCorrectionDestroy. */
+// implementation of LCorrectionDestroy
 PetscErrorCode LCorrectionDestroy(Mat mat)
 {
     PetscFunctionBeginUser;

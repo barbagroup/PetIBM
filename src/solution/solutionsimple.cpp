@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file solutions.h
- * \author Anush Krishnan (anush@bu.edu)
+/**
+ * \file solutionsimple.cpp
+ * \brief Implementations of the members of SolutionSimple.
+ * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `SimulationParameters`.
+ * \copyright MIT.
  */
 
 

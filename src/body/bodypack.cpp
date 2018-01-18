@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file bodypack.cpp
+ * \brief Implementations of body::BodyPackBase and factory function.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the members of class `BodyPack`.
+ * \copyright MIT.
  */
 
 

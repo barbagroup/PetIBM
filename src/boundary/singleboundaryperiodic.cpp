@@ -1,8 +1,10 @@
-/*
- * singleboundaryperiodic.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file singleboundaryperiodic.cpp
+ * \brief Implementation of the class `SingleBoundaryPeriodic`.
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 

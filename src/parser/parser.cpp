@@ -1,8 +1,10 @@
-/*
- * parser.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file parser.cpp
+ * \brief Implementations of parser functions.
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 // STL
@@ -101,7 +103,6 @@ PetscErrorCode getSettings(YAML::Node &node)
 }
 
 
-/** \copydoc parser::parseMesh */
 PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
                          type::RealVec1D &bg, type::RealVec1D &ed,
                          type::IntVec1D &nTotal, type::RealVec2D &dL)
@@ -138,7 +139,6 @@ PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
 }
 
 
-/** \copydoc parser::parseOneAxis */
 PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
                             PetscReal &bg, PetscReal &ed, PetscInt &nTotal,
                             type::RealVec1D &dL)
@@ -162,7 +162,6 @@ PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
 }
 
 
-/** \copydoc parser::parseSubDomains */
 PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
                                PetscInt &nTotal, PetscReal &ed,
                                type::RealVec1D &dL)
@@ -200,7 +199,6 @@ PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
 }
 
 
-/** \copydoc parser::parseOneSubDomain */
 PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
                                  PetscInt &n, PetscReal &ed,
                                  type::RealVec1D &dL)

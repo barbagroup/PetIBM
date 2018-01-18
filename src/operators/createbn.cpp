@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createbn.cpp
+ * \brief Definition of functions for creating approximated inverse A.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions for creating approximated inverse A.
+ * \copyright MIT.
  */
 
 
@@ -19,7 +20,7 @@ namespace petibm
 namespace operators
 {
 
-/** \copydoc createBnHead. */
+// implementation of createBnHead
 PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &BnHead)
 {
@@ -95,8 +96,7 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
 }
 
 
-/** \copydoc createBn(const Mat &, const Mat &, const Mat &,
-        const PetscReal &, const PetscReal &, const PetscInt &, Mat &). */
+// implementation of createBn
 PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
         const PetscReal &dt, const PetscReal &coeff, const PetscInt &n, 
         Mat &Bn)
@@ -130,8 +130,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
 }
 
 
-/** \copydoc createBn(const Mat &, const Mat &,
-        const PetscReal &, const PetscReal &, const PetscInt &, Mat &). */
+// implementation of createBn
 PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &Bn)
 {

@@ -1,8 +1,10 @@
-/*
- * io_singlebody.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file io.cpp
+ * \brief Implementations of I/O functions.
+ * \author Anush Krishnan (anus@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 

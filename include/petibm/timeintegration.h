@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file SimulationParameters.h
- * \author Anush Krishnan (anush@bu.edu)
+/**
+ * \file timeintegration.h
+ * \brief Definition of TimeIntegration related classes.
+ * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of TimeIntegration related code.
+ * \copyright MIT.
  */
 
 
@@ -23,6 +24,18 @@
 # include <petibm/type.h>
 
 
+/**
+ * \defgroup timeModule Time integration schemes
+ * \brief Objects holding informations of time-integration schemes.
+ * 
+ * API users should use petibm::timeintegration::createTimeIntegration to
+ * create desired instances.
+ * 
+ * \see petibm::timeintegration::createTimeIntegration, petibm::type::TimeIntegration
+ * \ingroup petibm
+ */
+
+
 namespace petibm
 {
 namespace timeintegration
@@ -30,35 +43,36 @@ namespace timeintegration
 
 /**
 * \class TimeIntegrationBase
-* \brief Stores information about temporal integration schemes.
+* \brief Base (abstract) class that stores information of temporal integration.
+* \see timeModule
+* \ingroup timeModule
 */
 class TimeIntegrationBase
 {
 
 public:
     
-    /** \brief name of current instance. */
+    /** \brief Name of current instance. */
     const std::string                 name;
 
-    /** \brief name of the scheme. */
+    /** \brief Name of the scheme. */
     const std::string                 scheme;
 
-    /** \brief coefficient of inplicit term. */
+    /** \brief Coefficient of inplicit term. */
     const PetscReal                   implicitCoeff;
 
-    /** \brief number of explicit terms. */
+    /** \brief Number of explicit terms. */
     const PetscInt                    nExplicit;
 
-    /** \brief coefficients of explicit terms. */
+    /** \brief Coefficients of explicit terms. */
     const type::RealVec1D             explicitCoeffs;
 
 
-    /** \brief default constructor. */
+    /** \brief Default constructor. */
     TimeIntegrationBase(): TimeIntegrationBase("none", "none", 0.0, 0, {}) {};
     
     /**
-     * \brief constructor (normally not being used publicly).
-     *
+     * \brief Constructor (normally not being used publicly).
      * \param inName [in] the name of the instance.
      * \param inScheme [in] the name of the scheme.
      * \param inImplicitCoeff [in] implicit coefficient.
@@ -74,13 +88,12 @@ public:
         name(inName), scheme(inScheme), implicitCoeff(inImplicitCoeff),
         nExplicit(inNEcplicit), explicitCoeffs(inExplicitCoeffs) {};
 
-    /** \brief destructor. */
+    /** \brief Destructor. */
     virtual ~TimeIntegrationBase() = default;
     
     
     /**
-     * \brief print information to standard output.
-     *
+     * \brief Print information to standard output.
      * \return PetscErrorCode.
      */
     PetscErrorCode printInfo() const;
@@ -88,46 +101,86 @@ public:
 }; // TimeIntegrationBase
 
 
-/** \brief 1st order explicit Euler. */
+/** 
+* \brief An implementation of TimeIntegrationBase for 1st order explicit Euler.
+* \see timeModule
+* \ingroup timeModule
+*/
 class Euler_Explicit : public TimeIntegrationBase
 {
 public:
+    
+    /**
+     * \brief Constructor.
+     * \param name [in] the name of the instance.
+     */
     Euler_Explicit(const std::string &name):
         TimeIntegrationBase(name, "1st order explicit Euler", 0.0, 1, {1.0}) {};
     
+    /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Euler_Explicit() = default;
 };
 
 
-/** \brief 1st order implicit Euler. */
+/** 
+* \brief An implementation of TimeIntegrationBase for 1st order implicit Euler.
+* \see timeModule
+* \ingroup timeModule
+*/
 class Euler_Implicit : public TimeIntegrationBase
 {
 public:
+    
+    /**
+     * \brief Constructor.
+     * \param name [in] the name of the instance.
+     */
     Euler_Implicit(const std::string &name):
         TimeIntegrationBase(name, "1st order implicit Euler", 1.0, 0, {}) {};
     
+    /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Euler_Implicit() = default;
 };
 
 
-/** \brief 2nd order Adams-Bashforth. */
+/** 
+* \brief An implementation of TimeIntegrationBase for 2nd order Adams-Bashforth.
+* \see timeModule
+* \ingroup timeModule
+*/
 class Adams_Bashforth_2 : public TimeIntegrationBase
 {
 public:
+    
+    /**
+     * \brief Constructor.
+     * \param name [in] the name of the instance.
+     */
     Adams_Bashforth_2(const std::string &name):
         TimeIntegrationBase(name, "2nd order Adams-Bashforth", 0.0, 2, {1.5, -0.5}) {};
     
+    /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Adams_Bashforth_2() = default;
 };
 
 
-/** \brief 2nd order Crank-Nicolson. */
+/** 
+* \brief An implementation of TimeIntegrationBase for 2nd order Crank-Nicolson.
+* \see timeModule
+* \ingroup timeModule
+*/
 class Crank_Nicolson : public TimeIntegrationBase
 {
 public:
+    
+    /**
+     * \brief Constructor.
+     * \param name [in] the name of the instance.
+     */
     Crank_Nicolson(const std::string &name):
         TimeIntegrationBase(name, "2nd order Crank-Nicolson", 0.5, 1, {0.5}) {};
     
+    /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Crank_Nicolson() = default;
 };
 
@@ -136,7 +189,11 @@ public:
 
 namespace type
 {
-    /** \brief definition of type::TimeIntegration. */
+    /**
+     * \brief Definition of type::TimeIntegration.
+     * \see timeModule, petibm::timeintegration::createTimeIntegration
+     * \ingroup timeModule
+     */
     typedef std::shared_ptr<timeintegration::TimeIntegrationBase> TimeIntegration;
 }
 
@@ -145,12 +202,12 @@ namespace timeintegration
 {
     /**
      * \brief factory function for type::TimeIntegration.
-     *
      * \param name [in] name of the instance.
      * \param node [in] YAML::Node of all configuration.
      * \param integration [out] resulting TimeIntegration object.
-     *
      * \return PetscErrorCode.
+     * \see timeModule, petibm::type::TimeIntegration
+     * \ingroup timeModule
      */
     PetscErrorCode createTimeIntegration(
             const std::string &name, const YAML::Node &node,

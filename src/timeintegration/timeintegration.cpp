@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file timeintegration.h
- * \author Anush Krishnan (anush@bu.edu)
+/**
+ * \file timeintegration.cpp
+ * \brief Implementations of TimeIntegration related classes.
+ * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition TimeIntegration related code.
+ * \copyright MIT.
  */
 
 

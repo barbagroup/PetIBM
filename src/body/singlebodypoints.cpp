@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file singlebody.cpp
+/**
+ * \file singlebodypoints.cpp
+ * \brief Implementation of body::SingleBodyPoints.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the members of `SingleBody`.
+ * \copyright MIT.
  */
 
 
@@ -21,7 +22,6 @@ namespace body
 {
 
 
-/** \copydoc SingleBody::SingleBody(const CartesianMesh &, const std::string &). */
 SingleBodyPoints::SingleBodyPoints(const type::Mesh &inMesh, 
         const std::string &inName, const std::string &inFile) :
     SingleBodyBase(inMesh, inName, inFile)

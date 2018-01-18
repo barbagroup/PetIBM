@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file singlebody.h
+ * \brief body::SingleBodyBase, type::SingleBody factory function.
  * \author Anush Krishnan (anus@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `SingleBody`.
+ * \copyright MIT.
  */
 
 
@@ -28,69 +29,82 @@ namespace body
 
 // TODO: the way we store coords and meshIdx is different from CartesianMesh. 
 //       Will this cause confusion?
-/** \brief the abstract class for a single body. */
+/**
+ * \brief Base (abstract) class for a single body.
+ * \see bodyModule, petibm::type::SingleBody, petibm::body::createSingleBody
+ * \ingroup bodyModule 
+ * 
+ * There is currently only one implementation for this abstract class: body::SingleBodyPoints.
+ */
 class SingleBodyBase
 {
     friend class BodyPackBase;
     
 public:
 
-    /** \brief dimension. */
+    /** \brief Dimension. */
     PetscInt            dim;
 
-    /** \brief the name of this body. */
+    /** \brief The name of this body. */
     std::string         name;
     
-    /** \brief the path/name of the mesh file. */
+    /** \brief The path/name of the mesh file. */
     std::string         file;
 
-    /** \brief the total number of Lagrangian points. */
+    /** \brief The total number of Lagrangian points. */
     PetscInt            nPts;
 
-    /** \brief coordinates of ALL Lagrangian points. */
+    /** \brief Coordinates of ALL Lagrangian points. */
     type::RealVec2D     coords;
 
-    /** \brief number of Lagrangain points owned locally. */
+    /** \brief Number of Lagrangain points owned locally. */
     PetscInt            nLclPts;
 
-    /** \brief indices of the background pressure cells that own LOCAL 
-     *         Lagrangian points.*/
+    /**
+     * \brief Indices of the background pressure cells that own LOCAL 
+     *        Lagrangian points.
+     */
     type::IntVec2D      meshIdx;
 
-    /** \brief the beginning index of local Lagrangian points in all points. */
+    /** \brief The beginning index of local Lagrangian points in all points. */
     PetscInt            bgPt;
 
-    /** \brief the ending index of local Lagrangian points in all points. */
+    /** \brief The ending index of local Lagrangian points in all points. */
     PetscInt            edPt;
 
-    /** \brief the underlying parallel 1D DMDA object. */
+    /** \brief The underlying parallel 1D DMDA object. */
     DM                  da;
 
-    /** \brief a string for printing information. */
+    /** \brief A string for printing information. */
     std::string         info;
 
 
-    /** \brief the default constructor. */
-    SingleBodyBase() = default;
-
-
     /**
-     * \brief constructor using CartesainMesh and input file.
+     * \brief Constructor using CartesainMesh and input file.
      *
      * \param mesh [in] an instance of type::Mesh.
      * \param name [in] the name of this body.
-     * \param file [in] the ASCII file containing coordinates of Lagrangian points.
+     * \param file [in] the input file containing necessary information for this body.
+     * 
+     * The information carried by `file` will be different according to different
+     * implementations. For example, the `file` of the current only one 
+     * implementation, body::SingleBodyPoints, is a file containing the 
+     * coordinates of all Lagragian points for this body.
      */
     SingleBodyBase(const type::Mesh &mesh,
             const std::string &name, const std::string &file);
 
 
-    /** \brief the default destructor. */
+    /** \brief The default constructor. */
+    SingleBodyBase() = default;
+
+
+    /** \brief Default destructor. */
     virtual ~SingleBodyBase();
 
 
     /**
-     * \brief manually destroy data.
+     * \brief Manually destroy data.
      *
      * \return PetscErrorCode.
      */
@@ -98,7 +112,7 @@ public:
     
     
     /**
-     * \brief print information of this body to standard output.
+     * \brief Print information of this body to standard output.
      *
      * \return PetscErrorCode.
      */
@@ -106,12 +120,12 @@ public:
 
 
     /**
-     * \brief find which process owns the Lagrangian point with index i.
+     * \brief Find which process owns the Lagrangian point with index i.
      *
      * \param i [in] index of target Lagrangian point of this body.
      * \param p [out] returned process id.
      *
-     * Note: all degree of freedom of a Lagrangian point are on the same 
+     * Note: all degree of freedoms of a Lagrangian point are on the same 
      * process, so we don't need to know which degree of freedom users is asking.
      *
      * \return PetscErrorCode.
@@ -120,7 +134,7 @@ public:
 
 
     /**
-     * \brief find the global index in un-packed DM of a specified DoF of a 
+     * \brief Find the global index in un-packed DM of a specified DoF of a 
      *        Lagrangian point.
      *
      * \param i [in] index of target Lagrangian point of this body.
@@ -134,7 +148,7 @@ public:
 
 
     /**
-     * \brief find the global index in un-packed DM of specified DoF of a 
+     * \brief Find the global index in un-packed DM of specified DoF of a 
      *        Lagrangian point.
      *
      * \param s [in] MatStencil of target point and DoF.
@@ -147,7 +161,7 @@ public:
 
 
     /**
-     * \brief calculate the averaged force of this body.
+     * \brief Calculate the averaged force of this body.
      *
      * \param f [in] Vec of forces on each Lagrangian point of this body.
      * \param fAvg [out] return averaged force with length equal to dimension.
@@ -162,7 +176,7 @@ public:
     
     
     /**
-     * \brief update the indices of backgrounf Pressure cells.
+     * \brief Update the indices of background Pressure cells.
      *
      * \return PetscErrorCode.
      */
@@ -175,22 +189,22 @@ protected:
     /** \brief MPI communicator. */
     MPI_Comm            comm;
 
-    /** \brief the total number of processes. */
+    /** \brief The total number of processes. */
     PetscMPIInt         mpiSize;
 
-    /** \brief the rank of this process. */
+    /** \brief The rank of this process. */
     PetscMPIInt         mpiRank;
     
 
-    /** \brief reference to backgrounf mesh. */
+    /** \brief Reference to backgrounf mesh. */
     type::Mesh          mesh;
 
 
-    /** \brief number of varaibles (nLcLPts x dim) on each process. */
+    /** \brief Number of varaibles (nLcLPts x dim) on each process. */
     type::IntVec1D      nLclAllProcs;
 
 
-    /** \brief offset on each process. */
+    /** \brief Offset on each process. */
     type::IntVec1D      offsetsAllProcs;
 };
 
@@ -199,7 +213,11 @@ protected:
 
 namespace type
 {
-    /** \brief definition of type::SingleBody. */
+    /**
+     * \brief Definition of type::SingleBody.
+     * \see bodyModule, petibm::body::SingleBodyBase, petibm::body::createSingleBody
+     * \ingroup bodyModule
+     */
     typedef std::shared_ptr<body::SingleBodyBase> SingleBody;
 } // end of namespace type
 
@@ -213,8 +231,11 @@ namespace body
      * \param type [in] the type of mesh file (currently only accept "point").
      * \param name [in] the name of this body.
      * \param file [in] the path to the mesh file.
+     * \param body [out] returned type::SingleBody instance.
      *
      * \return PetscErrorCode.
+     * \see bodyModule, petibm::type::SingleBody
+     * \ingroup bodyModule
      */
     PetscErrorCode createSingleBody(
             const type::Mesh &mesh, const std::string &type, 

@@ -26,7 +26,7 @@ bool operator<(const MatStencil &l, const MatStencil &r)
     if (l.c < r.c) return true;
 
     return false;
-}
+} // operator<
 
 
 namespace petibm

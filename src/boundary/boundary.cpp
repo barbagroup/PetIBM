@@ -1,7 +1,7 @@
 /**
  * \file boundary.cpp
  * \brief Implementation of boundary::BoundaryBase, type::Boundary, and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -28,7 +28,7 @@ BoundaryBase::~BoundaryBase()
     if (finalized) return;
 
     comm = MPI_COMM_NULL;
-}
+} // ~BoundaryBase
 
 
 PetscErrorCode BoundaryBase::destroy()
@@ -42,7 +42,7 @@ PetscErrorCode BoundaryBase::destroy()
     mesh.reset();
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 PetscErrorCode createBoundary(
         const type::Mesh &mesh, const YAML::Node &node,
@@ -53,7 +53,7 @@ PetscErrorCode createBoundary(
     boundary = std::make_shared<BoundarySimple>(mesh, node);
     
     PetscFunctionReturn(0);
-}
+} // createBoundary
 
-}
-}
+} // end of namespace boundary
+} // end of namespace petibm

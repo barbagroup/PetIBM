@@ -1,7 +1,7 @@
 /**
  * \file io.cpp
  * \brief Implementations of I/O functions.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -80,7 +80,7 @@ PetscErrorCode readLagrangianPoints(const std::string &file,
         sline.clear();
         for(PetscInt d=0; d<dim; ++d) sline >> coords[0][d];
         
-        // increade c
+        // increase c
         c += 1;
     }
 
@@ -114,7 +114,7 @@ PetscErrorCode readLagrangianPoints(const std::string &file,
                 file.c_str());
 
     PetscFunctionReturn(0);
-}
+} // readLagrangianPoints
 
 
 PetscErrorCode print(const std::string &info)
@@ -131,7 +131,7 @@ PetscErrorCode print(const std::string &info)
     ierr = PetscPrintf(PETSC_COMM_WORLD, "\n"); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // print
 
 
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file, 
@@ -163,7 +163,7 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeHDF5Vecs
 
 
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
@@ -199,7 +199,7 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeHDF5Vecs
 
 
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
@@ -234,7 +234,7 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeHDF5Vecs
 
 
 PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
@@ -266,7 +266,7 @@ PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // readHDF5Vecs
 
 } // end of namespace io
-} // petibm
+} // end of namespace petibm

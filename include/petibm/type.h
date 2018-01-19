@@ -23,7 +23,7 @@
  * \defgroup petibm Building blocks for building flow solvers 
  * 
  * This part contains building blocks that are necessary for a flow solver in 
- * Perot (1993) framwork and staggered-grid finite difference method.
+ * Perot (1993) framework and staggered-grid finite difference method.
  */
 
 
@@ -51,8 +51,8 @@
 /** 
  * \brief Operator< of MatStencil for using it as a key to map. 
  *
- * For the detail of implimentation, please refer to 
- * std::lexicographical_compare. This is just a splified version.
+ * For the detail of implementation, please refer to 
+ * std::lexicographical_compare. This is just a simplified version.
  */
 bool operator<(const MatStencil &, const MatStencil &);
 
@@ -136,7 +136,7 @@ namespace type
     struct GhostPointInfo
     {
         PetscInt    lclId; ///< the index in a local velocity vector of this ghost point
-        MatStencil  targetStencil; ///< the tencil of point corresponding to this ghost point
+        MatStencil  targetStencil; ///< the stencil of point corresponding to this ghost point
         PetscInt    targetPackedId; ///< the index of target point in global packed velocity vector
         PetscReal   area; ///< the flux area of this ghost point
         PetscReal   dL; ///< the distance between this ghost point and target velocity point

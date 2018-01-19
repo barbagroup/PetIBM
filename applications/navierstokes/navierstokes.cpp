@@ -54,7 +54,7 @@ NavierStokesSolver::~NavierStokesSolver()
     for(auto &it: asciiViewers) {
         ierr = PetscViewerDestroy(&it.second); CHKERRV(ierr);
     }
-}
+} // ~NavierStokesSolver
 
 
 PetscErrorCode NavierStokesSolver::destroy()
@@ -102,7 +102,7 @@ PetscErrorCode NavierStokesSolver::destroy()
     asciiViewers.clear();
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 PetscErrorCode NavierStokesSolver::initialize(const petibm::type::Mesh &inMesh,
@@ -147,7 +147,7 @@ PetscErrorCode NavierStokesSolver::initialize(const petibm::type::Mesh &inMesh,
     // create operators (PETSc Mats)
     ierr = createOperators(); CHKERRQ(ierr);
 
-    // creater PETSc Vecs
+    // create PETSc Vecs
     ierr = createVectors(); CHKERRQ(ierr);
 
     // set coefficient matrix to linear solvers
@@ -206,7 +206,7 @@ PetscErrorCode NavierStokesSolver::createOperators()
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // assembleOperators
+} // createOperators
 
 
 PetscErrorCode NavierStokesSolver::createVectors()
@@ -231,7 +231,7 @@ PetscErrorCode NavierStokesSolver::createVectors()
     }
 
     PetscFunctionReturn(0);
-}
+} // createVectors
 
 
 PetscErrorCode NavierStokesSolver::setNullSpace()
@@ -269,7 +269,7 @@ PetscErrorCode NavierStokesSolver::setNullSpace()
     }
     
     PetscFunctionReturn(0);
-}
+} // setNullSpace
 
 
 // advance the flow solver for one time-step
@@ -283,7 +283,7 @@ PetscErrorCode NavierStokesSolver::advance()
     ierr = assembleRHSVelocity(); CHKERRQ(ierr);
     ierr = solveVelocity(); CHKERRQ(ierr);
 
-    // prepare poisson system and solve it
+    // prepare Poisson system and solve it
     ierr = assembleRHSPoisson(); CHKERRQ(ierr);
     ierr = solvePoisson(); CHKERRQ(ierr);
 
@@ -294,7 +294,7 @@ PetscErrorCode NavierStokesSolver::advance()
     ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // solve
+} // advance
 
 
 // prepare right-hand-side vector for velocity solver
@@ -422,7 +422,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSPoisson()
 } // assembleRHSPoisson
 
 
-// solve poisson system
+// solve Poisson system
 PetscErrorCode NavierStokesSolver::solvePoisson()
 {
     PetscErrorCode ierr;
@@ -535,7 +535,7 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const std::string &filePath)
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeRestartData
 
 
 // read data necessary for restarting
@@ -595,7 +595,7 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
     ierr = bc->setGhostICs(solution); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // readRestartData
 
 
 PetscErrorCode NavierStokesSolver::initializeASCIIFiles(
@@ -611,7 +611,7 @@ PetscErrorCode NavierStokesSolver::initializeASCIIFiles(
     ierr = PetscViewerFileSetName(asciiViewers[filePath], filePath.c_str()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // initializeASCIIFiles
 
 
 // write numbers of iterations and residuals of linear solvers to a file

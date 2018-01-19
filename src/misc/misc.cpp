@@ -1,7 +1,7 @@
 /**
  * \file misc.cpp
  * \brief Implementations of some miscellaneous functions.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -79,7 +79,7 @@ namespace misc
         }
 
         PetscFunctionReturn(0);
-    }
+    } // checkPeriodicBC
     
 
     PetscErrorCode checkBoundaryProc(const DM &da, const type::IntVec1D &n,
@@ -124,7 +124,7 @@ namespace misc
         else
             onThisProc = PETSC_FALSE;
             PetscFunctionReturn(0);
-        }
+        } // checkBoundaryProc
 
 
     PetscErrorCode getGhostPointList(const type::Mesh &mesh,
@@ -193,7 +193,7 @@ namespace misc
         }
 
         PetscFunctionReturn(0);
-    }
+    } // getGhostPointList
     
 
     PetscErrorCode getPerpendAxes(const PetscInt &self, type::IntVec1D &pAxes)
@@ -220,7 +220,7 @@ namespace misc
         }
         
         PetscFunctionReturn(0);
-    }
+    } // getPerpendAxes
     
 
     PetscErrorCode getGhostTargetStencil(const type::IntVec1D &n,
@@ -262,6 +262,7 @@ namespace misc
         }
         
         PetscFunctionReturn(0);
-    }
-}
-}
+    } // getGhostTargetStencil
+
+} // end of namespace misc
+} // end of namespace petibm

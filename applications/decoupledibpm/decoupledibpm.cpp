@@ -39,7 +39,7 @@ DecoupledIBPMSolver::~DecoupledIBPMSolver()
     ierr = MatDestroy(&E); CHKERRV(ierr);
     ierr = MatDestroy(&EBNH); CHKERRV(ierr);
     ierr = MatDestroy(&BNH); CHKERRV(ierr);
-}
+} // ~DecoupledIBPMSolver
 
 
 // destroy
@@ -64,7 +64,7 @@ PetscErrorCode DecoupledIBPMSolver::destroy()
     ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // finalize
+} // destroy
 
 
 PetscErrorCode DecoupledIBPMSolver::initialize(
@@ -146,7 +146,7 @@ PetscErrorCode DecoupledIBPMSolver::createExtraOperators()
     // That is, (H*R^{-1}*f). While H = R*Delta, This means the real scattering
     // operator used in momentum equation is just a Delta operator. So we just
     // let H be the Delta operator. One thing to remember is that this is based
-    // on the assumption that the size of Lagragian element is equal to the size
+    // on the assumption that the size of Lagrangian element is equal to the size
     // of the Eulerian grid near by.
 
     // create operator BN
@@ -170,7 +170,7 @@ PetscErrorCode DecoupledIBPMSolver::createExtraOperators()
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // assembleOperators
+} // createExtraOperators
 
 
 // create extra vectors for decoupled method
@@ -187,7 +187,7 @@ PetscErrorCode DecoupledIBPMSolver::createExtraVectors()
     ierr = VecDuplicate(f, &df); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // createExtraVectors
 
 
 // advance one time-step
@@ -205,7 +205,7 @@ PetscErrorCode DecoupledIBPMSolver::advance()
     ierr = assembleRHSForces(); CHKERRQ(ierr);
     ierr = solveForces(); CHKERRQ(ierr);
     
-    // prepare poisson system and solve it
+    // prepare Poisson system and solve it
     ierr = assembleRHSPoisson(); CHKERRQ(ierr);
     ierr = solvePoisson(); CHKERRQ(ierr);
     
@@ -216,7 +216,7 @@ PetscErrorCode DecoupledIBPMSolver::advance()
     ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // solve
+} // advance
 
 
 // prepare right-hand-side for velocity system
@@ -254,8 +254,8 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSForces()
     ierr = MatMult(E, solution->UGlobal, Eu); CHKERRQ(ierr);
     ierr = VecScale(Eu, -1.0); CHKERRQ(ierr);
     
-    // zerolize df, because the force increment should not have anything to do
-    // with that of the previous teim-step
+    // set Vec df with zeros, because the force increment should not have anything to do
+    // with that of the previous time-step
     ierr = VecSet(df, 0.0); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
@@ -358,7 +358,7 @@ PetscErrorCode DecoupledIBPMSolver::writeRestartData(const std::string &filePath
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeRestartData
 
 
 // read data necessary for restarting
@@ -380,7 +380,7 @@ PetscErrorCode DecoupledIBPMSolver::readRestartData(const std::string &filePath)
     // go to the root node first. Not necessary. Just in case.
     ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
 
-    // save Lagragian forces
+    // save Lagrangian forces
     ierr = PetscObjectSetName((PetscObject) f, "force"); CHKERRQ(ierr);
     ierr = VecLoad(f, viewer); CHKERRQ(ierr);
     
@@ -388,7 +388,7 @@ PetscErrorCode DecoupledIBPMSolver::readRestartData(const std::string &filePath)
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // readRestartData
 
 
 // write # of iterations and residuals of linear solvers

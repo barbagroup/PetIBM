@@ -1,7 +1,7 @@
 /**
  * \file creatediagmatrix.cpp
  * \brief Definitions of functions creating different kinds of diagonal matrices.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -88,7 +88,7 @@ PetscErrorCode createDiagMatrix(const type::Mesh &mesh,
     ierr = MatAssemblyEnd(M, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createDiagMatrix
 
 
 // implementation of petibm::operators::createR
@@ -113,7 +113,7 @@ PetscErrorCode createR(const type::Mesh &mesh, Mat &R)
     ierr = createDiagMatrix(mesh, kernel, R); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createR
 
 
 // implementation of petibm::operators::createRInv
@@ -138,7 +138,7 @@ PetscErrorCode createRInv(const type::Mesh &mesh, Mat &RInv)
     ierr = createDiagMatrix(mesh, kernel, RInv); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createRInv
 
 
 // implementation of petibm::operators::createMHead
@@ -163,7 +163,7 @@ PetscErrorCode createMHead(const type::Mesh &mesh, Mat &MHead)
     ierr = createDiagMatrix(mesh, kernel, MHead); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createMHead
 
 
 // implementation of petibm::operators::createM
@@ -188,7 +188,7 @@ PetscErrorCode createM(const type::Mesh &mesh, Mat &M)
     ierr = createDiagMatrix(mesh, kernel, M); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createM
 
 
 // implementation of petibm::operators::createIdentity
@@ -213,7 +213,7 @@ PetscErrorCode createIdentity(const type::Mesh &mesh, Mat &I)
     ierr = createDiagMatrix(mesh, kernel, I); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createIdentity
 
 } // end of namespace operators
 } // end of namespace petibm

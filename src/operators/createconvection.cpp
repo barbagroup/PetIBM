@@ -1,7 +1,7 @@
 /**
  * \file createconvection.cpp
  * \brief Definition of functions creating convection operator.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -121,7 +121,7 @@ PetscErrorCode createConvection(const type::Mesh &mesh,
         ierr = MatShellSetOperation(H, MATOP_MULT, 
                 (void(*)(void)) ConvectionMult2D); CHKERRQ(ierr);
     }
-    else // assuem the dim is either 2 or 3
+    else // assume the dim is either 2 or 3
     {
         ierr = MatShellSetOperation(H, MATOP_MULT, 
                 (void(*)(void)) ConvectionMult3D); CHKERRQ(ierr);
@@ -132,7 +132,7 @@ PetscErrorCode createConvection(const type::Mesh &mesh,
             (void(*)(void)) ConvectionDestroy); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createConvection
 
 
 // implementation of ConvectionMult2D
@@ -205,7 +205,7 @@ PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y)
             y, ctx->mesh->dim, nullptr, unPacked.data()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // ConvectionMult2D
 
 
 // implementation of ConvectionMult3D
@@ -288,7 +288,7 @@ PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y)
 
 
     PetscFunctionReturn(0);
-}
+} // ConvectionMult3D
 
 
 // implementation of ConvectionDestroy
@@ -313,7 +313,7 @@ PetscErrorCode ConvectionDestroy(Mat mat)
     delete ctx;
 
     PetscFunctionReturn(0);
-}
+} // ConvectionDestroy
 
 
 // implementation of kernelU in 2D
@@ -341,7 +341,7 @@ inline PetscReal kernelU(
     return 
         (uE * uE - uW * uW) / ctx->mesh->dL[0][0][i] + 
         (vN * uN - vS * uS) / ctx->mesh->dL[0][1][j];
-}
+} // kernelU
 
 
 // implementation of kernelV in 2D
@@ -369,7 +369,7 @@ inline PetscReal kernelV(
     return 
         (uE * vE - uW * vW) / ctx->mesh->dL[1][0][i] +
         (vN * vN - vS * vS) / ctx->mesh->dL[1][1][j];
-}
+} // kernelV
 
 
 // implementation of kernelU in 3D
@@ -405,7 +405,7 @@ inline PetscReal kernelU(
         (uE * uE - uW * uW) / ctx->mesh->dL[0][0][i] + 
         (vN * uN - vS * uS) / ctx->mesh->dL[0][1][j] + 
         (wF * uF - wB * uB) / ctx->mesh->dL[0][2][k];
-}
+} // kernelU
 
 
 // implementation of kernelV in 3D
@@ -442,7 +442,7 @@ inline PetscReal kernelV(
         (vN * vN - vS * vS) / ctx->mesh->dL[1][1][j] +
         (wF * vF - wB * vB) / ctx->mesh->dL[1][2][k];
 
-}
+} // kernelV
 
 
 // implementation of kernelW in 3D
@@ -478,7 +478,7 @@ inline PetscReal kernelW(
         (uE * wE - uW * wW) / ctx->mesh->dL[2][0][i] +
         (vN * wN - vS * wS) / ctx->mesh->dL[2][1][j] +
         (wF * wF - wB * wB) / ctx->mesh->dL[2][2][k];
-}
+} // kernelW
 
 } // end of namespace operators
 } // end of namespace petibm

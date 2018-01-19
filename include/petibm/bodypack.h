@@ -1,7 +1,7 @@
 /**
  * \file bodypack.h
  * \brief body::BodyPackBase, type::BodyPack, and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -29,16 +29,16 @@
 
 /**
  * \defgroup bodyModule Immersed-boundary bodies
- * \brief Objecs related to immersed-boundary bodies.
+ * \brief Objects related to immersed-boundary bodies.
  * 
  * This module contains objects related to immersed-boundary bodies and factory
  * functions.
  * 
  * A petibm::type::SingleBody is an object holding information of a single body,
- * including coordinates of Lagragian points, and the indices of relevant background
+ * including coordinates of Lagrangian points, and the indices of relevant background
  * Eulerian mesh points, etc. It also has member functions regarding to a single
  * body. For example, to update the indices of relevant Eulerian mesh points, 
- * I/O, calcaulating forces, etc. A petibm::type::SingleBody is distributed to
+ * I/O, calculating forces, etc. A petibm::type::SingleBody is distributed to
  * all MPI processes regardless the decomposition of the background Eulerian mesh.
  * It also handles the indexing of Lagrangian points in a parallel PETSc Vec.
  * 
@@ -76,7 +76,7 @@ namespace body
  * This class is designed to be an abstract class though, it actually has full
  * implementations of all members because there is currently no necessary to do
  * otherwise. It's just simply a collection of bodies, though it also deals with
- * indexing of all Lagragian points in a globally packed Vec.
+ * indexing of all Lagrangian points in a globally packed Vec.
  */
 class BodyPackBase
 {
@@ -150,7 +150,7 @@ public:
 
 
     /**
-     * \brief Find un-packed global index of a DoF of Lagrangian point of a body.
+     * \brief Find unpacked global index of a DoF of Lagrangian point of a body.
      *
      * \param bIdx [in] index of target body.
      * \param ptIdx [in] index of target point.
@@ -164,11 +164,11 @@ public:
 
 
     /**
-     * \brief Find un-packed global index of a DoF of Lagrangian point of a body.
+     * \brief Find unpacked global index of a DoF of Lagrangian point of a body.
      *
      * \param bIdx [in] index of target body.
      * \param s [in] MatStencil of target point.
-     * \param idx [in] returned un-packed global index.
+     * \param idx [in] returned unpacked global index.
      *
      * \return PetscErrorCode.
      */
@@ -220,7 +220,7 @@ public:
     
     
     /**
-     * \brief Update the indices of backgrounf Pressure cells for all body.
+     * \brief Update the indices of background Pressure cells for all body.
      *
      * \return PetscErrorCode.
      */
@@ -239,7 +239,7 @@ protected:
     PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
     
 
-    /** \brief Reference to backgrounf mesh. */
+    /** \brief Reference to background mesh. */
     type::Mesh          mesh;
 
 
@@ -277,7 +277,7 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createInfoString();
-};
+}; // BodyPackBase
 
 } // end of namespace body
 

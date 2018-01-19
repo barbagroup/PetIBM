@@ -621,7 +621,7 @@ TEST_F(CartesianMeshTest2D_AllDirichlet, check_getGlobalIndex_ijk_internal)
         
         //ierr = ISLocalToGlobalMappingDestroy(&mapping); ASSERT_FALSE(ierr);
         // Seem there's a bug in ISLocalToGlobalMappingDestroy. It should just
-        // decrease the reference number by one. Instead, it now destroies the 
+        // decrease the reference number by one. Instead, it now destroys the 
         // underlying object completely....
         mapping = PETSC_NULL;
     }

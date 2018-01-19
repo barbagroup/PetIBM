@@ -1,7 +1,7 @@
 /**
  * \file misc.h
  * \brief Prototypes of some miscellaneous functions.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -164,7 +164,7 @@ namespace misc
         for(auto it=dL.begin()+1; it<dL.end(); ++it) *it = *(it -1) * r;
 
         PetscFunctionReturn(0);
-    }
+    } // stretchGrid
 
 
     /**
@@ -198,7 +198,7 @@ namespace misc
                 
 
         PetscFunctionReturn(0);
-    }
+    } // doubleLoops
 
 
     /**
@@ -229,7 +229,7 @@ namespace misc
         }
 
         PetscFunctionReturn(0);
-    }
+    } // tripleLoops
 
 } // end of namespace misc
 } // end of namespace petibm

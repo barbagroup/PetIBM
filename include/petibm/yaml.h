@@ -1,7 +1,7 @@
 /**
  * \file yaml.h
  * \brief Prototypes of YAML converters.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -37,7 +37,7 @@ namespace YAML
         static bool decode(const Node &node, petibm::type::Dir &dir);
     };
 
-    /** \brief converter for `tpyes::Field` */
+    /** \brief converter for `types::Field` */
     template <>
     struct convert<petibm::type::Field>
     {

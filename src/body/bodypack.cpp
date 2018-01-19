@@ -1,7 +1,7 @@
 /**
  * \file bodypack.cpp
  * \brief Implementations of body::BodyPackBase and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -22,7 +22,7 @@ namespace body
 BodyPackBase::BodyPackBase(const type::Mesh &inMesh, const YAML::Node &node)
 {
     init(inMesh, node);
-}
+} // BodyPackBase
 
 
 BodyPackBase::~BodyPackBase()
@@ -36,7 +36,7 @@ BodyPackBase::~BodyPackBase()
 
     ierr = DMDestroy(&dmPack); CHKERRV(ierr);
     comm = MPI_COMM_NULL;
-}
+} // ~BodyPackBase
 
 
 PetscErrorCode BodyPackBase::destroy()
@@ -57,7 +57,7 @@ PetscErrorCode BodyPackBase::destroy()
     type::IntVec1D().swap(offsetsAllProcs);
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 PetscErrorCode BodyPackBase::init(
@@ -143,7 +143,7 @@ PetscErrorCode BodyPackBase::init(
     ierr = createInfoString(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // init
 
 
 PetscErrorCode BodyPackBase::createDmPack()
@@ -160,7 +160,7 @@ PetscErrorCode BodyPackBase::createDmPack()
     }
 
     PetscFunctionReturn(0);
-}
+} // createDmPack
 
 
 PetscErrorCode BodyPackBase::createInfoString()
@@ -189,7 +189,7 @@ PetscErrorCode BodyPackBase::createInfoString()
     }
 
     PetscFunctionReturn(0);
-}
+} // createInfoString
 
 
 PetscErrorCode BodyPackBase::printInfo() const
@@ -206,7 +206,7 @@ PetscErrorCode BodyPackBase::printInfo() const
     }
 
     PetscFunctionReturn(0);
-}
+} // printInfo
 
 
 PetscErrorCode BodyPackBase::findProc(
@@ -224,7 +224,7 @@ PetscErrorCode BodyPackBase::findProc(
     ierr = bodies[bIdx]->findProc(ptIdx, proc); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // findProc
 
 
 PetscErrorCode BodyPackBase::getGlobalIndex(const PetscInt &bIdx, 
@@ -242,7 +242,7 @@ PetscErrorCode BodyPackBase::getGlobalIndex(const PetscInt &bIdx,
     ierr = bodies[bIdx]->getGlobalIndex(ptIdx, dof, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getGlobalIndex
 
 
 PetscErrorCode BodyPackBase::getGlobalIndex(
@@ -255,7 +255,7 @@ PetscErrorCode BodyPackBase::getGlobalIndex(
     ierr = getGlobalIndex(bIdx, s.i, s.c, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getGlobalIndex
 
 
 PetscErrorCode BodyPackBase::getPackedGlobalIndex(const PetscInt &bIdx, 
@@ -280,7 +280,7 @@ PetscErrorCode BodyPackBase::getPackedGlobalIndex(const PetscInt &bIdx,
     idx += (unPackedIdx - bodies[bIdx]->offsetsAllProcs[p]);
 
     PetscFunctionReturn(0);
-}
+} // getPackedGlobalIndex
 
 
 PetscErrorCode BodyPackBase::getPackedGlobalIndex(
@@ -293,7 +293,7 @@ PetscErrorCode BodyPackBase::getPackedGlobalIndex(
     ierr = getPackedGlobalIndex(bIdx, s.i, s.c, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getPackedGlobalIndex
 
 
 PetscErrorCode BodyPackBase::calculateAvgForces(
@@ -320,7 +320,7 @@ PetscErrorCode BodyPackBase::calculateAvgForces(
             dmPack, f, nBodies, nullptr, unPacked.data()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // calculateAvgForces
 
 
 PetscErrorCode createBodyPack(const type::Mesh &mesh,
@@ -331,6 +331,6 @@ PetscErrorCode createBodyPack(const type::Mesh &mesh,
     bodies = std::make_shared<BodyPackBase>(mesh, node);
     
     PetscFunctionReturn(0);
-}
+} // createBodyPack
 } // end of namespace body
 } // end of namespace petibm

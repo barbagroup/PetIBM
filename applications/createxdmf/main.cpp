@@ -117,7 +117,7 @@ int main(int argc, char **argv)
     ierr = PetscFinalize(); CHKERRQ(ierr);
     
     return 0;
-}
+} // main
 
 
 PetscErrorCode writeSingleXDMF(
@@ -236,4 +236,4 @@ PetscErrorCode writeSingleXDMF(
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeSingleXDMF

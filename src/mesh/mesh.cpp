@@ -1,7 +1,7 @@
 /**
  * \file mesh.cpp
  * \brief Implementations of mesh::MeshBase and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -36,7 +36,7 @@ MeshBase::~MeshBase()
     ierr = DMDestroy(&da[4]); CHKERRV(ierr);
     ierr = DMDestroy(&UPack); CHKERRV(ierr);
     comm = MPI_COMM_NULL;
-}
+} // ~MeshBase
 
 // implement MeshBase::destroy
 PetscErrorCode MeshBase::destroy()
@@ -73,7 +73,7 @@ PetscErrorCode MeshBase::destroy()
     mpiSize = mpiRank = 0;
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 // implement MeshBase::printInfo
 PetscErrorCode MeshBase::printInfo() const
@@ -84,7 +84,7 @@ PetscErrorCode MeshBase::printInfo() const
     ierr = io::print(info); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // printInfo
     
 // implement petibm::mesh::createMesh
 PetscErrorCode createMesh(const MPI_Comm &comm,
@@ -95,7 +95,7 @@ PetscErrorCode createMesh(const MPI_Comm &comm,
     mesh = std::make_shared<CartesianMesh>(comm, node);
 
     PetscFunctionReturn(0);
-}
+} // createMesh
 
 } // end of mesh
 } // end of petibm

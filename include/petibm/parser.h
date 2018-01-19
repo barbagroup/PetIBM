@@ -1,7 +1,7 @@
 /**
  * \file parser.h
  * \brief Prototypes of parser functions.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -43,13 +43,13 @@ namespace parser
      * -# `-config`: location of config.yaml. If not provided, the default is
      *    [working directory]/config.yaml.
      * -# `-mesh`: location of mesh.yaml. This provides a way to overwrite the
-     *    mesh section indide config.yaml.
+     *    mesh section inside config.yaml.
      * -# `-flow`: location of flow.yaml. This provides a way to overwrite the
-     *    flow section indide config.yaml.
+     *    flow section inside config.yaml.
      * -# `-parameters`: location of parameters.yaml. This provides a way to 
-     *    overwrite the parameters section indide config.yaml.
+     *    overwrite the parameters section inside config.yaml.
      * -# `-bodies`: location of bodies.yaml. This provides a way to overwrite
-     *    the bodies section indide config.yaml.
+     *    the bodies section inside config.yaml.
      *
      * If users provide non-empty YAML node as input, the data inside the node
      * will be discarded.
@@ -92,7 +92,7 @@ namespace parser
             PetscReal &ed, PetscInt &nTotal, type::RealVec1D &dL);
 
     /**
-     * \brief Parse all subdomains in a direction.
+     * \brief Parse all sub-domains in a direction.
      * \param subs [in] the YAML node
      * \param bg [in] an input value providing starting of this direction.
      * \param nTotal [out] returned total number of pressure cells in this direction.
@@ -108,12 +108,12 @@ namespace parser
             PetscInt &nTotal, PetscReal &ed, type::RealVec1D &dL);
 
     /**
-     * \brief Parse only one subdomain
+     * \brief Parse only one sub-domain
      * \param sub [in] the YAML node
-     * \param bg [in] an input providing the starting of this subdomain.
-     * \param n [out] returned number of pressure cells in this subdomain.
-     * \param ed [out] returned ending of this subdomain.
-     * \param dL [out] returned 1D vector for sizes of pressure cells in this subdomain.
+     * \param bg [in] an input providing the starting of this sub-domain.
+     * \param n [out] returned number of pressure cells in this sub-domain.
+     * \param ed [out] returned ending of this sub-domain.
+     * \param dL [out] returned 1D vector for sizes of pressure cells in this sub-domain.
      * \return PetscErrorCode
      * \ingroup miscModule
      */
@@ -140,7 +140,7 @@ namespace parser
     /**
      * \brief Parse initial conditions from a YAML node.
      * \param node [in] a YAML node.
-     * \param icValues [out] IC values of different fileds.
+     * \param icValues [out] IC values of different fields.
      * \return PetscErrorCode.
      * \ingroup miscModule
      * 

@@ -31,14 +31,14 @@
  * \brief Implementation of parallel Navier-Stokes solver
  * 
  * This is an example of using PetIBM to build a parallel incompressible flow 
- * solver. The scheme used can be found in Perot 1993 and Chang et. al. 2002.
+ * solver. The scheme used can be found in Perot (1993) and Chang et. al. (2002).
  * This example is a good starting point to learn how to use PetIBM to build
  * an immersed-boundary solver under Perot's framework.
  * 
  * If readers are interested in using the Navier-Stokes solver instead of coding,
  * please refer to 
  * \ref md_runpetibm "Running PetIBM",
- * \ref md_examples2d "2D Exmaples", and
+ * \ref md_examples2d "2D Examples", and
  * \ref md_examples3d "3D Examples".
  * 
  * \b Reference: \n

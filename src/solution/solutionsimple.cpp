@@ -1,7 +1,7 @@
 /**
  * \file solutionsimple.cpp
  * \brief Implementations of the members of SolutionSimple.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -21,7 +21,7 @@ namespace solution
 
 using namespace type;
 
-// default deconstructor
+// default destructor
 SolutionSimple::~SolutionSimple() = default;
 
 
@@ -29,7 +29,7 @@ SolutionSimple::~SolutionSimple() = default;
 SolutionSimple::SolutionSimple(const Mesh &inMesh)
 {
     init(inMesh);
-}
+} // SolutionSimple
 
 
 // underlying initialization function
@@ -50,17 +50,17 @@ PetscErrorCode SolutionSimple::init(const Mesh &inMesh)
     // get a copy of dim
     dim = mesh->dim;
 
-    // create global composite vaector for q
+    // create global composite vector for q
     ierr = DMCreateGlobalVector(mesh->UPack, &UGlobal); CHKERRQ(ierr);
 
-    // create global composite vaector for pressure
+    // create global composite vector for pressure
     ierr = DMCreateGlobalVector(mesh->da[3], &pGlobal); CHKERRQ(ierr);
 
     // create info string
     ierr = createInfoString(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // init
 
 
 // create a std::string for information
@@ -78,7 +78,7 @@ PetscErrorCode SolutionSimple::createInfoString()
     if (mpiRank == 0)
     {
         ss << std::string(80, '=') << std::endl;
-        ss << "Solution Vecters:" << std::endl;
+        ss << "Solution Vectors:" << std::endl;
         ss << std::string(80, '=') << std::endl;
 
         ss << "\tDimension: " << dim << std::endl;
@@ -96,7 +96,7 @@ PetscErrorCode SolutionSimple::createInfoString()
     info = ss.str();
 
     PetscFunctionReturn(0);
-}
+} // createInfoString
 
 
 // convert flux to velocity
@@ -117,7 +117,7 @@ PetscErrorCode SolutionSimple::convert2Velocity(const Mat &RInv)
     ierr = VecDestroy(&U); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // convert2Velocity
 
 
 // convert velocity to flux
@@ -138,7 +138,7 @@ PetscErrorCode SolutionSimple::convert2Flux(const Mat &R)
     ierr = VecDestroy(&F); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // convert2Flux
 
 
 // apply initial conditions
@@ -166,7 +166,7 @@ PetscErrorCode SolutionSimple::applyIC(const YAML::Node &node)
     ierr = VecSet(pGlobal, 0.0); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // applyIC
 
 
 PetscErrorCode SolutionSimple::write(const std::string &file) const
@@ -186,7 +186,7 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
     // set name for pressure
     names.back() = "p";
     
-    // get un-packed global Vecs from packed global Vec
+    // get unpacked global Vecs from packed global Vec
     ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
             nullptr, vecs.data()); CHKERRQ(ierr);
     
@@ -199,12 +199,12 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;
     
-    // return un-packed global Vecs to packed global Vec
+    // return unpacked global Vecs to packed global Vec
     ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, 
             nullptr, vecs.data()); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // write
 
 
 PetscErrorCode SolutionSimple::read(const std::string &file)
@@ -224,7 +224,7 @@ PetscErrorCode SolutionSimple::read(const std::string &file)
     // set name for pressure
     names.back() = "p";
     
-    // get un-packed global Vecs from packed global Vec
+    // get unpacked global Vecs from packed global Vec
     ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
             nullptr, vecs.data()); CHKERRQ(ierr);
     
@@ -237,12 +237,12 @@ PetscErrorCode SolutionSimple::read(const std::string &file)
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;
     
-    // return un-packed global Vecs to packed global Vec
+    // return unpacked global Vecs to packed global Vec
     ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, 
             nullptr, vecs.data()); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // read
 
 } // end of namespace solution
 } // end of namespace petibm

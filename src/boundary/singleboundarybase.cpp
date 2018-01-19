@@ -1,7 +1,7 @@
 /**
  * \file singleboundarybase.cpp
  * \brief Implementation of the class `SingleBoundaryBase`.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -22,7 +22,7 @@ SingleBoundaryBase::SingleBoundaryBase(const type::Mesh &inMesh,
         const type::BCType &inType, const PetscReal &inValue)
 {
     init(inMesh, bcLoc, inField, inType, inValue);
-}
+} // SingleBoundaryBase
 
 
 SingleBoundaryBase::~SingleBoundaryBase()
@@ -35,7 +35,7 @@ SingleBoundaryBase::~SingleBoundaryBase()
     if (finalized) return;
 
     comm = MPI_COMM_NULL;
-}
+} // ~SingleBoundaryBase
 
 
 PetscErrorCode SingleBoundaryBase::destroy()
@@ -54,7 +54,7 @@ PetscErrorCode SingleBoundaryBase::destroy()
     mesh.reset();
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 PetscErrorCode SingleBoundaryBase::init(const type::Mesh &inMesh,
@@ -104,7 +104,7 @@ PetscErrorCode SingleBoundaryBase::init(const type::Mesh &inMesh,
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // init
 
 
 PetscErrorCode SingleBoundaryBase::setGhostICs(const Vec &vec)
@@ -124,7 +124,7 @@ PetscErrorCode SingleBoundaryBase::setGhostICs(const Vec &vec)
     }
 
     PetscFunctionReturn(0);
-}
+} // setGhostICs
 
 
 PetscErrorCode SingleBoundaryBase::updateEqs(const Vec &vec, const PetscReal &dt)
@@ -144,7 +144,7 @@ PetscErrorCode SingleBoundaryBase::updateEqs(const Vec &vec, const PetscReal &dt
     }
 
     PetscFunctionReturn(0);
-}
+} // updateEqs
 
 
 PetscErrorCode SingleBoundaryBase::updateGhostValues(const Vec &vec)
@@ -164,7 +164,7 @@ PetscErrorCode SingleBoundaryBase::updateGhostValues(const Vec &vec)
     }
 
     PetscFunctionReturn(0);
-}
+} // updateGhostValues
 
 
 PetscErrorCode SingleBoundaryBase::copyValues2LocalVec(Vec &lclVec)
@@ -180,7 +180,7 @@ PetscErrorCode SingleBoundaryBase::copyValues2LocalVec(Vec &lclVec)
     }
 
     PetscFunctionReturn(0);
-}
+} // copyValues2LocalVec
 
 } // end of namespace boundary
 } // end of namespace petibm

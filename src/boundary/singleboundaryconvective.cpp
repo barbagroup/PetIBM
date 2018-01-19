@@ -1,7 +1,7 @@
 /**
  * \file singleboundaryconvective.cpp
  * \brief Implementation of the class `SingleBoundaryConvective`.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -22,7 +22,7 @@ PetscErrorCode kernelConvectiveDiffDir(
         2.0 * normal * dt * value * (p.value - targetValue) / p.dL;
     
     PetscFunctionReturn(0);
-}
+} // kernelConvectiveDiffDir
 
 
 PetscErrorCode kernelConvectiveSameDir(
@@ -36,7 +36,7 @@ PetscErrorCode kernelConvectiveSameDir(
     p.a1 = p.value - normal * dt * value * (p.value - targetValue) / p.dL;
     
     PetscFunctionReturn(0);
-}
+} // kernelConvectiveSameDir
 
 
 namespace petibm
@@ -56,7 +56,7 @@ SingleBoundaryConvective::SingleBoundaryConvective(
         kernel = &kernelConvectiveSameDir;
     else
         kernel = &kernelConvectiveDiffDir;
-}
+} // SingleBoundaryConvective
 
 
 PetscErrorCode SingleBoundaryConvective::destroy()
@@ -66,7 +66,7 @@ PetscErrorCode SingleBoundaryConvective::destroy()
     kernel = nullptr;
     ierr = SingleBoundaryBase::destroy(); CHKERRQ(ierr);
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 PetscErrorCode SingleBoundaryConvective::setGhostICsKernel(
@@ -85,7 +85,7 @@ PetscErrorCode SingleBoundaryConvective::setGhostICsKernel(
     ierr = kernel(targetValue, 0.0, normal, value, p); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // setGhostICsKernel
 
 
 PetscErrorCode SingleBoundaryConvective::updateEqsKernel(const PetscReal &targetValue,
@@ -98,8 +98,7 @@ PetscErrorCode SingleBoundaryConvective::updateEqsKernel(const PetscReal &target
     ierr = kernel(targetValue, dt, normal, value, p); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // updateEqsKernel
 
-
-}
-}
+} // end of namespace boundary
+} // end of namespace petibm

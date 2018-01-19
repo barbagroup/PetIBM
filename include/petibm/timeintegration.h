@@ -1,7 +1,7 @@
 /**
  * \file timeintegration.h
  * \brief Definition of TimeIntegration related classes.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -25,7 +25,7 @@
 
 
 /**
- * \defgroup timeModule Time integration schemes
+ * \defgroup timeModule Time-integration schemes
  * \brief Objects holding informations of time-integration schemes.
  * 
  * API users should use petibm::timeintegration::createTimeIntegration to
@@ -58,7 +58,7 @@ public:
     /** \brief Name of the scheme. */
     const std::string                 scheme;
 
-    /** \brief Coefficient of inplicit term. */
+    /** \brief Coefficient of implicit term. */
     const PetscReal                   implicitCoeff;
 
     /** \brief Number of explicit terms. */
@@ -77,7 +77,7 @@ public:
      * \param inScheme [in] the name of the scheme.
      * \param inImplicitCoeff [in] implicit coefficient.
      * \param inNEcplicit [in] number of explicit coefficients.
-     * \param inExplicitCoeffs [in] a std::vector holding all explit coefficients.
+     * \param inExplicitCoeffs [in] a std::vector holding all explicit coefficients.
      */
     TimeIntegrationBase(
             const std::string &inName,
@@ -119,7 +119,7 @@ public:
     
     /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Euler_Explicit() = default;
-};
+}; // Euler_Explicit
 
 
 /** 
@@ -140,7 +140,7 @@ public:
     
     /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Euler_Implicit() = default;
-};
+}; // Euler_Implicit
 
 
 /** 
@@ -161,7 +161,7 @@ public:
     
     /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Adams_Bashforth_2() = default;
-};
+}; // Adams_Bashforth_2
 
 
 /** 
@@ -182,7 +182,7 @@ public:
     
     /** \copydoc TimeIntegrationBase::~TimeIntegrationBase */
     virtual ~Crank_Nicolson() = default;
-};
+}; // Crank_Nicolson
 
 } // end of namespace timeintegration
 
@@ -195,7 +195,7 @@ namespace type
      * \ingroup timeModule
      */
     typedef std::shared_ptr<timeintegration::TimeIntegrationBase> TimeIntegration;
-}
+} // end of namespace type
 
 
 namespace timeintegration
@@ -212,6 +212,6 @@ namespace timeintegration
     PetscErrorCode createTimeIntegration(
             const std::string &name, const YAML::Node &node,
             type::TimeIntegration &integration);
-}
+} // end of namespace timeintegration
 
 } // end of namespace petibm

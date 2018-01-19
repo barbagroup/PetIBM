@@ -82,7 +82,7 @@ public:
      * \brief Write the extra data that are required for restarting sessions.
      * 
      * If the file already has solutions in it, only extra necessary data will
-     * be writen in. Otherwise, solutions and extra data will all be writen in.
+     * be written in. Otherwise, solutions and extra data will all be written in.
      *
      * \param filePath [in] path of the file to save (without the extension)
      */
@@ -96,9 +96,9 @@ public:
     PetscErrorCode readRestartData(const std::string &filePath);
 
     /**
-     * \brief Initialize vewers for ASCII files, such as iteration log.
+     * \brief Initialize viewers for ASCII files, such as iteration log.
      *
-     * \param filePath [in] a tring indicating the path to the file.
+     * \param filePath [in] a string indicating the path to the file.
      * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
      *
      * \return PetscErrorCode.
@@ -204,7 +204,7 @@ protected:
     
 
     
-    /** \brief A bool indicating if we'll pin a reference pressure point. */
+    /** \brief A Bool indicating if we'll pin a reference pressure point. */
     PetscBool   isRefP;
     
     
@@ -262,4 +262,4 @@ protected:
     
     /** \brief Set null space or apply reference point.  */
     virtual PetscErrorCode setNullSpace();
-};
+}; // NavierStokesSolver

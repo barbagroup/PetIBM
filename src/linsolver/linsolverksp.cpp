@@ -18,7 +18,10 @@ namespace linsolver
 
 // implement LinSolverKSP::LinSolverKSP
 LinSolverKSP::LinSolverKSP(const std::string &_name, const std::string &_config):
-    LinSolverBase(_name, _config) { init(); }
+    LinSolverBase(_name, _config)
+{
+	init();
+} // LinSolverKSP
 
 
 // implement LinSolverKSP::~LinSolverKSP
@@ -33,7 +36,7 @@ LinSolverKSP::~LinSolverKSP()
     if (finalized) return;
 
     ierr = KSPDestroy(&ksp); CHKERRV(ierr);
-}
+} // ~LinSolverKSP
 
 
 // implement LinSolverKSP::destroy
@@ -45,7 +48,7 @@ PetscErrorCode LinSolverKSP::destroy()
     ierr = LinSolverBase::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 // implement LinSolverKSP::init
@@ -67,7 +70,7 @@ PetscErrorCode LinSolverKSP::init()
     ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // init
 
 
 // implement LinSolverKSP::setMatrix

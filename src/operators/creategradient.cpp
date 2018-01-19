@@ -1,7 +1,7 @@
 /**
  * \file creategradient.cpp
  * \brief Definition of functions creating gradient operator.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -128,7 +128,7 @@ PetscErrorCode createGradient(const type::Mesh &mesh,
     ierr = MatAssemblyEnd(G, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createGradient
 
 } // end of namespace operators
 } // end of namespace petibm

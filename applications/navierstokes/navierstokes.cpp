@@ -473,6 +473,19 @@ PetscErrorCode NavierStokesSolver::write(const std::string &filePath)
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
+    // output PETSc log view into file called "<time-step>.log"
+    // located in solution directory
+    {
+    	PetscViewer viewerLog;
+    	ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewerLog); CHKERRQ(ierr);
+      ierr = PetscViewerSetType(viewerLog, PETSCVIEWERASCII); CHKERRQ(ierr);
+      ierr = PetscViewerFileSetMode(viewerLog, FILE_MODE_WRITE); CHKERRQ(ierr);
+      ierr = PetscViewerFileSetName(
+        viewerLog, (filePath + ".log").c_str()); CHKERRQ(ierr);
+      ierr = PetscLogView(viewerLog); CHKERRQ(ierr);
+      ierr = PetscViewerDestroy(&viewerLog); CHKERRQ(ierr);
+    }
+
     PetscFunctionReturn(0);
 } // write
 

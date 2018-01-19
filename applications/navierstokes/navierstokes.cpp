@@ -651,3 +651,49 @@ PetscErrorCode NavierStokesSolver::writeIterations(
     
     PetscFunctionReturn(0);
 } // writeIterations
+
+
+// write the time value into a HDF5 file
+PetscErrorCode NavierStokesSolver::writeTimeHDF5(
+	const PetscReal &t, const std::string &filePath)
+{
+	PetscErrorCode ierr;
+	PetscViewer viewer;
+
+	PetscFunctionBeginUser;
+
+	ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+	ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+	ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+	ierr = PetscViewerFileSetName(
+		viewer, filePath.c_str()); CHKERRQ(ierr);
+	// attribute has to belong to an existing dataset (choosing p)
+	ierr = PetscViewerHDF5WriteAttribute(
+		viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
+	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+	PetscFunctionReturn(0);
+} // writeTimeHDF5
+
+
+// read the time value from a HDF5 file
+PetscErrorCode NavierStokesSolver::readTimeHDF5(
+	const std::string &filePath, PetscReal &t)
+{
+	PetscErrorCode ierr;
+	PetscViewer viewer;
+
+	PetscFunctionBeginUser;
+
+	ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+	ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+	ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+	ierr = PetscViewerFileSetName(
+		viewer, filePath.c_str()); CHKERRQ(ierr);
+	// attribute has to belong to an existing dataset (choosing p)
+	ierr = PetscViewerHDF5ReadAttribute(
+		viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
+	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+	PetscFunctionReturn(0);
+} // readTimeHDF5

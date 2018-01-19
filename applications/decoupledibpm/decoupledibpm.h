@@ -24,6 +24,8 @@ public:
     // public members that don't change
     using NavierStokesSolver::write;
     using NavierStokesSolver::initializeASCIIFiles;
+    using NavierStokesSolver::writeTimeHDF5;
+    using NavierStokesSolver::readTimeHDF5;
     
     /** \brief Default constructor. */
     DecoupledIBPMSolver() = default;

@@ -114,6 +114,29 @@ public:
      */
     PetscErrorCode writeIterations(const int &timeIndex, const std::string &filePath);
 
+    /**
+     * \brief Write the time value into HDF5 file.
+     *
+     * The time value is written as an attribute of the pressure (dataset p),
+     * which must be existing.
+     *
+     * \param t [in] time
+     * \param filePath [in] Path of the file to write in
+     */
+    PetscErrorCode writeTimeHDF5(
+      const PetscReal &t, const std::string &filePath);
+
+    /**
+     * \brief Read the time value from HDF5 file.
+     *
+     * The time value is an attribute of the pressure (dataset p),
+     * which must be existing.
+     *
+     * \param filePath [in] Path of the file to read from
+     * \param t [in] time
+     */
+    PetscErrorCode readTimeHDF5(const std::string &filePath, PetscReal &t);
+
 protected:
     
     

@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     PetscReal dt = config["parameters"]["dt"].as<PetscReal>();
 
     // current time
-    PetscReal t = start * dt;
+    PetscReal t = config["parameters"]["tstart"].as<PetscReal>(start * dt);
              
     // directory where file to log information of linear solvers in
     std::string iterationsFile = config["directory"].as<std::string>() + "/";
@@ -87,6 +87,9 @@ int main(int argc, char **argv)
         ierr = solver.write(
                 (config["solution"].as<std::string>() + ss.str()));
         CHKERRQ(ierr);
+        ierr = solver.writeTimeHDF5(
+          t, config["solution"].as<std::string>() + ss.str() + ".h5");
+        CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
 
@@ -102,6 +105,9 @@ int main(int argc, char **argv)
         ss << "/" << std::setfill('0') << std::setw(7) << start;
         ierr = solver.readRestartData(
                 (config["solution"].as<std::string>() + ss.str()));
+        CHKERRQ(ierr);
+        ierr = solver.readTimeHDF5(
+          config["solution"].as<std::string>() + ss.str() + ".h5", t);
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -134,6 +140,9 @@ int main(int argc, char **argv)
             ierr = solver.write(
                     (config["solution"].as<std::string>() + ss.str())); 
             CHKERRQ(ierr);
+            ierr = solver.writeTimeHDF5(
+              t, config["solution"].as<std::string>() + ss.str() + ".h5");
+          CHKERRQ(ierr);
             
             ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
         }

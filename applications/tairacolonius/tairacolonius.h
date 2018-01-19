@@ -24,6 +24,8 @@ public:
     using NavierStokesSolver::advance;
     using NavierStokesSolver::initializeASCIIFiles;
     using NavierStokesSolver::writeIterations;
+    using NavierStokesSolver::writeTimeHDF5;
+    using NavierStokesSolver::readTimeHDF5;
     
     /** \brief Default constructor.  */
     TairaColoniusSolver() = default;

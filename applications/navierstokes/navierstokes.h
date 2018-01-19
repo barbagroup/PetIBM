@@ -133,7 +133,7 @@ public:
      * which must be existing.
      *
      * \param filePath [in] Path of the file to read from
-     * \param t [in] time
+     * \param t [out] time
      */
     PetscErrorCode readTimeHDF5(const std::string &filePath, PetscReal &t);
 

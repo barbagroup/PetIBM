@@ -1,7 +1,7 @@
 /**
  * \file cartesianmesh.cpp
  * \brief Implementations of mesh::CartesianMesh.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -36,7 +36,7 @@ using namespace type;
 CartesianMesh::CartesianMesh(const MPI_Comm &world, const YAML::Node &node)
 {
     init(world, node);
-}
+} // CartesianMesh
 
 
 // implementation of CartesianMesh::~CastesianMesh
@@ -51,7 +51,7 @@ CartesianMesh::~CartesianMesh()
     if (finalized) return;
 
     std::vector<AO>().swap(ao); // DO NOT DESTROY UNDERLYING AOs!!
-}
+} // ~CartesianMesh
 
 
 // implementation of CartesianMesh::destroy
@@ -71,7 +71,7 @@ PetscErrorCode CartesianMesh::destroy()
     ierr = MeshBase::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 // implementation of CartesianMesh::init
@@ -93,7 +93,7 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
     // set the default sizes and values for members
     // The default values are chosen for 2D cases. We want to eliminate the use
     // of template and also `if` conditions that determine the dimension. So
-    // with carefully choosed default values, we can take care of 2D case with 
+    // with carefully chosen default values, we can take care of 2D case with 
     // 3D code in many places.
     min = RealVec1D(3, 0.0);
     max = RealVec1D(3, 1.0);
@@ -138,12 +138,12 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
     // create a std::string that can be used in `printInfo` and output stream
     ierr = createInfoString(); CHKERRQ(ierr);
 
-    // all processes should be syncrinized
+    // all processes should be synchronized
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
 
     PetscFunctionReturn(0);
-}
+} // init
 
 
 // implementation of CartesianMesh::createPressureMesh
@@ -176,7 +176,7 @@ PetscErrorCode CartesianMesh::createPressureMesh()
     // total number of pressure points
     pN = n[3][0] * n[3][1] * n[3][2];   // for 2D, n[3][2] should be 1
 
-    // in 2D simulation, we still use the varaible dL in z-direction
+    // in 2D simulation, we still use the variable dL in z-direction
     if (dim == 2)
     {
         dL[3][2] = &dLTrue[3][2][0];
@@ -184,7 +184,7 @@ PetscErrorCode CartesianMesh::createPressureMesh()
     }
 
     PetscFunctionReturn(0);
-}
+} // createPressureMesh
 
 
 // implementation of CartesianMesh::createVertexMesh
@@ -204,7 +204,7 @@ PetscErrorCode CartesianMesh::createVertexMesh()
         std::partial_sum(dLTrue[3][i].begin(), dLTrue[3][i].end(), 
                 coordTrue[4][i].begin()+1); // first assume coord[4][i][0]=0.0
 
-        // shift aacording to real coord[4][i][0], which is min
+        // shift according to real coord[4][i][0], which is min
         std::for_each(coordTrue[4][i].begin(), coordTrue[4][i].end(),
                 [i, this] (double &a) -> void { a += this->min[i]; });
 
@@ -212,11 +212,11 @@ PetscErrorCode CartesianMesh::createVertexMesh()
         coord[4][i] = &coordTrue[4][i][0];
     }
 
-    // in 2D simulation, we still use the varaible coord in z-direction
+    // in 2D simulation, we still use the variable coord in z-direction
     if (dim == 2) coord[4][2] = &coordTrue[4][2][0];
 
     PetscFunctionReturn(0);
-}
+} // createVertexMesh
 
 
 // implementation of CartesianMesh::createCelocityMesh
@@ -300,7 +300,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
                 dLTrue[comp][dir].resize(n[comp][dir]+2);
                 coordTrue[comp][dir].resize(n[comp][dir]+2);
 
-                // coordinate and cel size will match that of pressure point,
+                // coordinate and cell size will match that of pressure point,
                 // except the two ghost points
                 std::copy(coordTrue[3][dir].begin(), coordTrue[3][dir].end(),
                         coordTrue[comp][dir].begin()+1);
@@ -360,7 +360,7 @@ PetscErrorCode CartesianMesh::createVelocityMesh()
     }
 
     PetscFunctionReturn(0);
-}
+} // createVelocityMesh
 
 
 // implementation of CartesianMesh::createInfoString
@@ -417,7 +417,7 @@ PetscErrorCode CartesianMesh::createInfoString()
     info = ss.str();
 
     PetscFunctionReturn(0);
-}
+} // createInfoString
 
 
 // implementation of CartesianMesh::addLocalInfoString
@@ -444,7 +444,7 @@ PetscErrorCode CartesianMesh::addLocalInfoString(std::stringstream &ss)
     }
 
     PetscFunctionReturn(0);
-}
+} // addLocalInfoString
 
 
 // implementation of CartesianMesh::initDMDA
@@ -499,7 +499,7 @@ PetscErrorCode CartesianMesh::initDMDA()
     pNLocal = m[3][0] * m[3][1] * m[3][2];
 
     PetscFunctionReturn(0);
-}
+} // initDMDA
 
 
 // implementation of CartesianMesh::createSingleDMDA
@@ -547,7 +547,7 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
         ed[i][comp] = bg[i][comp] + m[i][comp];
 
     PetscFunctionReturn(0);
-}
+} // createSingleDMDA
 
 
 // implementation of CartesianMesh::createPressureDMDA
@@ -568,7 +568,7 @@ PetscErrorCode CartesianMesh::createPressureDMDA()
            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createPressureDMDA
 
 
 // implementation of CartesianMesh::createVelocityPack
@@ -590,7 +590,7 @@ PetscErrorCode CartesianMesh::createVelocityPack()
     }
 
     PetscFunctionReturn(0);
-}
+} // createVelocityPack
 
 
 // implementation of CartesianMesh::getNaturalIndex
@@ -604,7 +604,7 @@ PetscErrorCode CartesianMesh::getNaturalIndex(
     ierr = getNaturalIndex(f, s.i, s.j, s.k, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getNaturalIndex
 
 
 // implementation of CartesianMesh::getNaturalIndex
@@ -688,7 +688,7 @@ PetscErrorCode CartesianMesh::getNaturalIndex(const PetscInt &f,
     idx = i + j * n[f][0] + ((dim == 3) ? (k * n[f][1] * n[f][0]) : 0);
 
     PetscFunctionReturn(0);
-}
+} // getNaturalIndex
 
 
 // implementation of CartesianMesh::getLocalIndex
@@ -702,7 +702,7 @@ PetscErrorCode CartesianMesh::getLocalIndex(
     ierr = DMDAConvertToCell(da[f], s, &idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getLocalIndex
 
 
 // implementation of CartesianMesh::getLocalIndex
@@ -717,7 +717,7 @@ PetscErrorCode CartesianMesh::getLocalIndex(const PetscInt &f,
     ierr = getLocalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getLocalIndex
 
 
 // implementation of CartesianMesh::getGlobalIndex
@@ -732,7 +732,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(
     ierr = AOApplicationToPetsc(ao[f], 1, &idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getGlobalIndex
 
 
 // implementation of CartesianMesh::getGlobalIndex
@@ -747,7 +747,7 @@ PetscErrorCode CartesianMesh::getGlobalIndex(const PetscInt &f,
     ierr = getGlobalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getGlobalIndex
 
 
 // implementation of CartesianMesh::getPackedGlobalIndex
@@ -777,7 +777,7 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
     p = std::upper_bound(offsetsAllProcs[f].begin(), offsetsAllProcs[f].end(), 
             unPackedIdx) - offsetsAllProcs[f].begin() - 1;
 
-    // the beginngin index of process p in packed DM
+    // the beginning index of process p in packed DM
     idx = offsetsPackAllProcs[p]; 
 
     // offset due to previous DMs
@@ -787,7 +787,7 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(
     idx += (unPackedIdx - offsetsAllProcs[f][p]);
 
     PetscFunctionReturn(0);
-}
+} // getPackedGlobalIndex
 
 
 // implementation of CartesianMesh::getPackedGlobalIndex
@@ -802,7 +802,7 @@ PetscErrorCode CartesianMesh::getPackedGlobalIndex(const PetscInt &f,
     ierr = getPackedGlobalIndex(f, {k, j, i, 0}, idx); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getPackedGlobalIndex
 
 
 // implementation of CartesianMesh::write
@@ -831,7 +831,7 @@ PetscErrorCode CartesianMesh::write(const std::string &filePath) const
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // write
 
 } // end of namespace mesh
 } // end of namespace petibm

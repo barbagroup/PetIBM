@@ -1,7 +1,7 @@
 /**
  * \file singlebodypoints.h
  * \brief Definition of body::SingleBodyPoints.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -87,7 +87,7 @@ protected:
     
     
     /**
-     * \brief Find the indices of presure cells that own local Lagrangian points.
+     * \brief Find the indices of pressure cells that own local Lagrangian points.
      *
      * \return PetscErrorCode.
      */
@@ -108,7 +108,7 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createInfoString();
-};
+}; // SingleBodyPoints
 
 } // end of namespace body
 } // end of namespace petibm

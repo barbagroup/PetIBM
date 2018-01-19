@@ -1,7 +1,7 @@
 /**
  * \file yaml.cpp
  * \brief Implementations of YAML converters.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.

@@ -27,7 +27,7 @@ PetscErrorCode LinSolverBase::destroy()
     PetscFunctionBeginUser;
     name = config = type = "";
     PetscFunctionReturn(0);
-}
+} // destroy
     
     
 // implement LinSolverBase::printInfo
@@ -48,7 +48,7 @@ PetscErrorCode LinSolverBase::printInfo() const
     ierr = PetscPrintf(PETSC_COMM_WORLD, "%s", info.c_str()); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // printInfo
 
 
 // implement LinSolverBase::getType
@@ -57,7 +57,7 @@ PetscErrorCode LinSolverBase::getType(std::string &_type) const
     PetscFunctionBeginUser;
     _type = type;
     PetscFunctionReturn(0);
-}
+} // getType
 
 
 // implement petibm::linsolver::createLinSolver
@@ -113,7 +113,7 @@ PetscErrorCode createLinSolver(const std::string &solverName,
                 "\"%s\"\n", type.c_str(), solverName.c_str());
 
     PetscFunctionReturn(0);
-}
+} // createLinSolver
 
 } // end of namespace linsolver
 } // end of namespace petibm

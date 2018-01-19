@@ -1,7 +1,7 @@
 /**
  * \file solutionsimple.h
  * \brief Definition of class solution::SolutionSimple.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -64,6 +64,6 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createInfoString();
-};
+}; // SolutionSimple
 } // end of namespace solution
 } // end of namespace petibm

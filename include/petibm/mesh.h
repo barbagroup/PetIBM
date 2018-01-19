@@ -1,7 +1,7 @@
 /**
  * \file mesh.h
  * \brief Prototype of mesh::MeshBase, type::Mesh, and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -38,7 +38,7 @@
  * derived from the base class: \ref petibm::mesh::CartesianMesh "CartesianMesh".
  * 
  * The design of PetIBM is to use `std::shared_ptr` to hold the base class for
- * instances of different kinds of derived classes, so that we can call the pubilc 
+ * instances of different kinds of derived classes, so that we can call the public 
  * APIs regardless the types of the derived classes. \ref petibm::type::Mesh "Mesh" 
  * is defined as a shared pointer to \ref petibm::mesh::MeshBase "MeshBase". Users
  * should use \ref petibm::type::Mesh "Mesh" instead of using classes directly. 
@@ -47,7 +47,7 @@
  * instances directly.
  * 
  * The domain decomposition is done with PETSc DMDA objects. And the information
- * of subdomains are retrieved into mesh classes.
+ * of sub-domains are retrieved into mesh classes.
  * 
  * \see petibm::type::Mesh, petibm::mesh::createMesh
  * \ingroup petibm
@@ -111,7 +111,7 @@ public:
     /** \brief Number of processes in all directions. */
     type::IntVec1D          nProc;
 
-    /** \brief The beginging index of all fields in all directions of this process. */
+    /** \brief The beginning index of all fields in all directions of this process. */
     type::IntVec2D          bg;
 
     /** \brief The ending index of all fields in all directions of this process. */
@@ -173,7 +173,7 @@ public:
     
 
     /**
-     * \brief Print iformation to standard output.
+     * \brief Print information to standard output.
      *
      * \return PetscErrorCode.
      */
@@ -262,12 +262,12 @@ public:
 
 
     /**
-     * \brief Get the global index of a point in un-packed DM by 
+     * \brief Get the global index of a point in unpacked DM by 
      *        providing MatStencil.
      *
      * \param f [in] target field (u=0, v=1, w=2, p=3).
      * \param s [in] MatStencil of target point.
-     * \param idx [out] global index in un-packed DM.
+     * \param idx [out] global index in unpacked DM.
      * 
      * If the provided MatStencil is not valid or is a ghost point, the `idx`
      * will be `-1`.
@@ -279,14 +279,14 @@ public:
 
 
     /**
-     * \brief Get the global index of a point in un-packed DM by providing
+     * \brief Get the global index of a point in unpacked DM by providing
      *        i, j, and k.
      *
      * \param f [in] target field (u=0, v=1, w=2, p=3).
      * \param i [in] i-index.
      * \param j [in] j-index.
      * \param k [in] k-index.
-     * \param idx [out] global index in un-packed DM.
+     * \param idx [out] global index in unpacked DM.
      *
      * For 2D mesh, the value of k-index will be ignored.
      * 
@@ -389,7 +389,7 @@ namespace type
      * \ingroup meshModule
      */
     typedef std::shared_ptr<mesh::MeshBase> Mesh;
-} // end of type
+} // end of namespace type
 
 
 namespace mesh

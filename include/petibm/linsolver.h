@@ -176,7 +176,7 @@ protected:
     virtual PetscErrorCode init() = 0;
 
 }; // LinSolver
-}
+} // end of namespace linsolver
 
 
 namespace type
@@ -186,7 +186,7 @@ namespace type
      * Please use petibm::linsolver::createLinSolver to create a LinSolver 
      * instance.
      * 
-     * Exmaple Usage:
+     * Example Usage:
      * \code
      * PetscErrorCode ierr;
      * Mat A;
@@ -204,7 +204,7 @@ namespace type
      * \ingroup linsolver
      */
     typedef std::shared_ptr<linsolver::LinSolverBase> LinSolver;
-}
+} // end of namespace type
 
 
 namespace linsolver
@@ -247,6 +247,6 @@ namespace linsolver
      */
     PetscErrorCode createLinSolver(const std::string &solverName,
             const YAML::Node &node, type::LinSolver &solver);
-}
+} // end of namespace linsolver
 
 } // end of namespace petibm

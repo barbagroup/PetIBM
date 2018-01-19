@@ -1,7 +1,7 @@
 /**
  * \file boundarysimple.cpp
  * \brief Implementation of boundary::BoundarySimple
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -24,7 +24,7 @@ using namespace type;
 BoundarySimple::BoundarySimple(const type::Mesh &inMesh, const YAML::Node &node)
 {
     init(inMesh, node);
-}
+} // BoundarySimple
 
 
 // underlying initialization function
@@ -67,10 +67,10 @@ PetscErrorCode BoundarySimple::init(
     }
 
     PetscFunctionReturn(0);
-}
+} // init
 
 
-// set intial values to ghost points
+// set initial values to ghost points
 PetscErrorCode BoundarySimple::setGhostICs(const type::Solution &soln)
 {
     PetscFunctionBeginUser;
@@ -88,7 +88,7 @@ PetscErrorCode BoundarySimple::setGhostICs(const type::Solution &soln)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // setGhostICs
 
 
 // update the equations between boundary and ghost points
@@ -110,7 +110,7 @@ PetscErrorCode BoundarySimple::updateEqs(
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // updateEqs
 
 
 // update values of ghost points
@@ -131,7 +131,7 @@ PetscErrorCode BoundarySimple::updateGhostValues(const type::Solution &soln)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // updateGhostValues
 
 
 // copy values of ghost points to local PETSc Vecs
@@ -152,7 +152,7 @@ PetscErrorCode BoundarySimple::copyValues2LocalVecs(std::vector<Vec> &lclVecs) c
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // copyValues2LocalVecs
 
 } // end of namespace boundary
 } // end of namespace petibm

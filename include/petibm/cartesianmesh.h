@@ -1,7 +1,7 @@
 /**
  * \file cartesianmesh.h
  * \brief Definition of class mesh::CartesianMesh.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -114,7 +114,7 @@ protected:
      *         all processes. */
     type::IntVec1D          UPackNLocalAllProcs;
 
-    /** \brief Offsets of velocity points in un-packed DMs for all processes and
+    /** \brief Offsets of velocity points in unpacked DMs for all processes and
      *         all velocity field. */
     type::IntVec2D          offsetsAllProcs;
 
@@ -173,7 +173,7 @@ protected:
     PetscErrorCode createPressureDMDA();
 
     /**
-     * \brief Create DMDAs for velovity fields and make a DMComposite.
+     * \brief Create DMDAs for velocity fields and make a DMComposite.
      * \return PetscErrorCode.
      */
     PetscErrorCode createVelocityPack();

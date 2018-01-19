@@ -1,7 +1,7 @@
 /**
  * \file boundary.h
  * \brief boundary::BoundaryBase, type::Boundary, and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -121,7 +121,7 @@ public:
     virtual PetscErrorCode setGhostICs(const type::Solution &soln) = 0;
 
     /**
-     * \brief Update the euqations between ghost and boundary points.
+     * \brief Update the equations between ghost and boundary points.
      * \param soln [in] a Solution object.
      * \param dt [in] time-step size.
      * \return PetscErrorCode.
@@ -166,7 +166,7 @@ protected:
     /** \brief A shared_ptr to underlying mesh. */
     type::Mesh                          mesh;
 
-};
+}; // BoundaryBase
 } // end of namespace boundary
 
 

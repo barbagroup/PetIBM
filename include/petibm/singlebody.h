@@ -1,7 +1,7 @@
 /**
  * \file singlebody.h
  * \brief body::SingleBodyBase, type::SingleBody factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -57,7 +57,7 @@ public:
     /** \brief Coordinates of ALL Lagrangian points. */
     type::RealVec2D     coords;
 
-    /** \brief Number of Lagrangain points owned locally. */
+    /** \brief Number of Lagrangian points owned locally. */
     PetscInt            nLclPts;
 
     /**
@@ -89,7 +89,7 @@ public:
      * The information carried by `file` will be different according to different
      * implementations. For example, the `file` of the current only one 
      * implementation, body::SingleBodyPoints, is a file containing the 
-     * coordinates of all Lagragian points for this body.
+     * coordinates of all Lagrangian points for this body.
      */
     SingleBodyBase(const type::Mesh &mesh,
             const std::string &name, const std::string &file);
@@ -134,7 +134,7 @@ public:
 
 
     /**
-     * \brief Find the global index in un-packed DM of a specified DoF of a 
+     * \brief Find the global index in unpacked DM of a specified DoF of a 
      *        Lagrangian point.
      *
      * \param i [in] index of target Lagrangian point of this body.
@@ -148,7 +148,7 @@ public:
 
 
     /**
-     * \brief Find the global index in un-packed DM of specified DoF of a 
+     * \brief Find the global index in unpacked DM of specified DoF of a 
      *        Lagrangian point.
      *
      * \param s [in] MatStencil of target point and DoF.
@@ -196,17 +196,17 @@ protected:
     PetscMPIInt         mpiRank;
     
 
-    /** \brief Reference to backgrounf mesh. */
+    /** \brief Reference to background mesh. */
     type::Mesh          mesh;
 
 
-    /** \brief Number of varaibles (nLcLPts x dim) on each process. */
+    /** \brief Number of variables (nLcLPts x dim) on each process. */
     type::IntVec1D      nLclAllProcs;
 
 
     /** \brief Offset on each process. */
     type::IntVec1D      offsetsAllProcs;
-};
+}; // SingleBodyBase
 
 } // end of namespace body
 

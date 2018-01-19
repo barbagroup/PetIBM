@@ -1,7 +1,7 @@
 /**
  * \file solution.h
  * \brief Definition of solution::SolutionBase, type::Solution, and factory function.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -33,7 +33,7 @@
  * petibm::type::Solution to access this only-one implementation.
  * The flow solvers implemented in PetIBM
  * currently don't need other types of implementation, but using an abstract 
- * class provides potential to expand this catogery in the future.
+ * class provides potential to expand this category in the future.
  * 
  * \see petibm::type::Solution, petibm::solution::createSolution
  * \ingroup petibm
@@ -173,7 +173,7 @@ protected:
     /** \brief A std::shared_ptr to underlying mesh. */
     type::Mesh                              mesh;
 
-};
+}; // SolutionBase
 } // end of namespace solution
 
 
@@ -203,7 +203,7 @@ namespace type
      * \ingroup solutionModule
      */
     typedef std::shared_ptr<solution::SolutionBase> Solution;
-}
+} // end of namespace type
 
 
 namespace solution
@@ -222,6 +222,6 @@ namespace solution
      */
     PetscErrorCode createSolution(
             const type::Mesh &mesh, type::Solution &solution);
-}
+} // end of namespace solution
 
 } // end of namespace petibm

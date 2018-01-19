@@ -1,7 +1,7 @@
 /**
  * \file singleboundaryconvective.h
  * \brief Definition of the class `SingleBoundaryConvective`.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -70,7 +70,7 @@ protected:
             const PetscReal &targetValue, const PetscReal &dt, 
             const PetscReal &normal, const PetscReal &value,
             type::GhostPointInfo &p);
-};
+}; // SingleBoundaryConvective
 
 } // end of namespace boundary
 } // end of namespace petibm

@@ -1,7 +1,7 @@
 /**
  * \file createdivergence.cpp
  * \brief Definition of functions creating divergence operator.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -188,7 +188,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
                 }
 
 
-    // assemble matrix, an implicit mpi barrier is applied
+    // assemble matrix, an implicit MPI barrier is applied
     ierr = MatAssemblyBegin(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
@@ -205,7 +205,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
             (void(*)(void)) DCorrectionDestroy); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createDivergence
 
 
 // implementation of DCorrectionMult
@@ -235,12 +235,12 @@ PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y)
                 }
 
     // assembly (not sure if this is necessary and if this causes overhead)
-    // but there is an implicit MPI barrier in assembly, which we defenitely need
+    // but there is an implicit MPI barrier in assembly, which we definitely need
     ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
     ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // DCorrectionMult
 
 
 // implementation of DCorrectionDestroy
@@ -258,7 +258,7 @@ PetscErrorCode DCorrectionDestroy(Mat mat)
     delete ctx;
 
     PetscFunctionReturn(0);
-}
+} // DCorrectionDestroy
 
 } // end of namespace operators
 } // end of namespace petibm

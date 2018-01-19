@@ -1,7 +1,7 @@
 /**
  * \file singleboundarydirichlet.h
  * \brief Definition of the class `SingleBoundaryDirichlet`.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -51,7 +51,7 @@ protected:
     virtual PetscErrorCode updateEqsKernel(const PetscReal &targetValue,
             const PetscReal &dt, type::GhostPointInfo &p);
 
-};
+}; // SingleBoundaryDirichlet
 
 } // end of namespace boundary
 } // end of namespace petibm

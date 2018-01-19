@@ -1,7 +1,7 @@
 /**
  * \file solution.cpp
  * \brief Implementations of createSolution and members of SolutionBase.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -28,7 +28,7 @@ namespace solution
         ierr = VecDestroy(&UGlobal); CHKERRV(ierr);
         ierr = VecDestroy(&pGlobal); CHKERRV(ierr);
         comm = MPI_COMM_NULL;
-    }
+    } // ~SolutionBase
 
 
     PetscErrorCode SolutionBase::destroy()
@@ -46,7 +46,7 @@ namespace solution
         mesh.reset();
 
         PetscFunctionReturn(0);
-    }
+    } // destroy
 
 
     PetscErrorCode SolutionBase::printInfo() const
@@ -58,7 +58,7 @@ namespace solution
         ierr = io::print(info); CHKERRQ(ierr);
         
         PetscFunctionReturn(0);
-    }
+    } // printInfo
     
 
     PetscErrorCode createSolution(
@@ -69,6 +69,7 @@ namespace solution
         solution = std::make_shared<SolutionSimple>(mesh);
 
         PetscFunctionReturn(0);
-    }
-}
-}
+    } // createSolution
+
+} // end of namespace solution
+} // end of namespace petibm

@@ -1,7 +1,7 @@
 /**
  * \file operators.h
  * \brief Prototypes of factory functions for operators.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -33,9 +33,9 @@
  * only make sense to staggered Cartesian CFD methods. So the operator factories
  * can not create the operators for arbitrary fields. For example, 
  * \ref petibm::operators::createLaplacian "createLaplacian" can only create 
- * Laplacian for velocity fields because in our CFD framwork (Perot 1993), only 
- * the Laplacian of velocity fields is required. This factory function can not 
- * create Laplacians for arbitrary fields.
+ * Laplacian for velocity fields because in our CFD framework (Perot 1993), only 
+ * the Laplacian of velocity fields is required. This factory function cannot 
+ * create Laplacian operators for arbitrary fields.
  * 
  * For operators taking boundary conditions, we decouple the interior part and
  * boundary corrections. For example, applying a divergence operator to velocity
@@ -224,7 +224,7 @@ PetscErrorCode createGradient(const type::Mesh &mesh,
  * The divergence operator calculates the divergence of velocity on pressure 
  * points. The complete divergence operator is \f$(D+D_{bc})\f$. However, the 
  * boundary correction, \f$D_{bc}\f$, represents the constant coefficients (it 
- * means the coefficients that have nothing to do with interior points, thouth
+ * means the coefficients that have nothing to do with interior points, though
  * it may still be time-dependent) in ghost point schemes, so it's safe to put
  * the boundary correction to right-hand side in a linear system.
  *
@@ -263,7 +263,7 @@ PetscErrorCode createLaplacian(const type::Mesh &mesh,
 
 
 /**
- * \brief Create a matrix-free Mat for convection operater, \f$H\f$.
+ * \brief Create a matrix-free Mat for convection operator, \f$H\f$.
  * \param mesh [in] an instance of petibm::type::Mesh.
  * \param bc [in] an instance of petibm::type::Boundary.
  * \param H [out] a PETSc Mat; the returned operator, \f$H\f$.
@@ -365,7 +365,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
  * \param Delta [out] a PETSc Mat; returned \f$Delta\f$.
  * \return PetscErrorCode.
  *
- * In \f$Delta\f$, rows represent Lagrangian points, while columes represent 
+ * In \f$Delta\f$, rows represent Lagrangian points, while columns represent 
  * velocity mesh points.
  * 
  * An entry in \f$Delta\f$, says \f$Delta_{(i,j)}\f$, is defined as

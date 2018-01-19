@@ -1,7 +1,7 @@
 /**
  * \file createbn.cpp
  * \brief Definition of functions for creating approximated inverse A.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -59,7 +59,7 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
     // calculate the matrix for each term if order > 1, and add back to BnHead
     for(PetscInt term=2; term<=n; ++term)
     {
-        // the most right matrix of seccessive mat-mat-multiplication
+        // the most right matrix of successive mat-mat-multiplication
         ierr = MatDuplicate(Op, MAT_COPY_VALUES, &rightMat); CHKERRQ(ierr);
 
         // successive mat-mat-multiplications
@@ -93,7 +93,7 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
     }
 
     PetscFunctionReturn(0);
-}
+} // createBnHead
 
 
 // implementation of createBn
@@ -127,7 +127,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
     ierr = VecDestroy(&MHeadDiagInv); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createBn
 
 
 // implementation of createBn
@@ -177,7 +177,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
 
     for(PetscInt term=2; term<=n; ++term)
     {
-        // the most right matrix of seccessive mat-mat-multiplication
+        // the most right matrix of successive mat-mat-multiplication
         ierr = MatDuplicate(leftMat, MAT_COPY_VALUES, &rightMat); CHKERRQ(ierr);
 
         // successive mat-mat-multiplications
@@ -217,7 +217,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
     ierr = MatDestroy(&leftMat); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createBn
 
 } // end of namespace operators
 } // end of namespace petibm

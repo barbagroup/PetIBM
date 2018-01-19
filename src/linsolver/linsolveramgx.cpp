@@ -24,7 +24,7 @@ PetscErrorCode preDestroyAmgXSolvers()
         ierr = it->finalize(); CHKERRQ(ierr);
     }
     PetscFunctionReturn(0);
-}
+} // preDestroyAmgXSolvers
 
 namespace petibm
 {
@@ -34,7 +34,10 @@ namespace linsolver
 // implement LinSolverAmgX::LinSolverAmgX
 LinSolverAmgX::LinSolverAmgX(
         const std::string &solverName, const std::string &file):
-    LinSolverBase(solverName, file) { init(); }
+    LinSolverBase(solverName, file)
+{
+	init();
+} // LinSolverAmgX
 
 
 // implement LinSolverAmgX::~LinSolverAmgX
@@ -48,7 +51,7 @@ LinSolverAmgX::~LinSolverAmgX()
     if (finalized) return;
 
     ierr = amgx.finalize(); CHKERRV(ierr);
-}
+} // ~LinSolverAmgX
 
 
 // implement LinSolverAmgX::destroy
@@ -62,7 +65,7 @@ PetscErrorCode LinSolverAmgX::destroy()
     ierr = LinSolverBase::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 // implement LinSolverAmgX::init
@@ -80,7 +83,7 @@ PetscErrorCode LinSolverAmgX::init()
     ierr = PetscRegisterFinalize(&preDestroyAmgXSolvers); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // init
 
 
 // implement LinSolverAmgX::setMatrix

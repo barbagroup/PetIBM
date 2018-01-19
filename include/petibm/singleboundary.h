@@ -1,7 +1,7 @@
 /**
  * \file singleboundary.h
  * \brief Definition of the class `SingleBoundaryBase`.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -122,7 +122,7 @@ public:
      * 
      * In PetIBM, we use a global packed Vec for velocity fields. But in some
      * occasions, we may need local Vecs that have ghost points in them. So we
-     * have to copy the ghost values from this instance to the local Vesc.
+     * have to copy the ghost values from this instance to the local Vecs.
      */
     PetscErrorCode copyValues2LocalVec(Vec &lclVec);
 
@@ -174,7 +174,7 @@ protected:
     /** \brief The corresponding Mesh object. */
     type::Mesh      mesh;
 
-};
+}; // SingleBoundaryBase
 
 } // end of namespace boundary
 
@@ -189,7 +189,7 @@ namespace type
      * Please use petibm::boundary::createSingleBoundary to create a Mesh object.
      */
     typedef std::shared_ptr<boundary::SingleBoundaryBase> SingleBoundary;
-}
+} // end of namespace type
 
 namespace boundary
 {
@@ -213,6 +213,6 @@ namespace boundary
             const type::Field &field, const PetscReal &value,
             const type::BCType &bcType,
             type::SingleBoundary &singleBd);
-}
+} // end of namespace boundary
 
 } // end of namespace petibm

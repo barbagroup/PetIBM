@@ -25,13 +25,13 @@
  * \brief Implementation of parallel decoupled IBPM solver (Li et. al. 2016).
  * 
  * This is an example of using PetIBM to build a parallel incompressible flow 
- * solver with the immersed-boundary method prposed by Li et. al. 2016. We name
+ * solver with the immersed-boundary method proposed by Li et. al. 2016. We name
  * this solver \a decoupled \a IBPM".
  * 
  * If readers are interested in using this solver instead of coding,
  * please refer to 
  * \ref md_runpetibm "Running PetIBM",
- * \ref md_examples2d "2D Exmaples", and
+ * \ref md_examples2d "2D Examples", and
  * \ref md_examples3d "3D Examples".
  * 
  * \b Reference: \n

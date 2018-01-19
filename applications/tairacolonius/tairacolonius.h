@@ -71,7 +71,7 @@ public:
      * \brief Write the extra data that are required for restarting sessions.
      * 
      * If the file already has solutions in it, only extra necessary data will
-     * be writen in. Otherwise, solutions and extra data will all be writen in.
+     * be written in. Otherwise, solutions and extra data will all be written in.
      *
      * \param filePath [in] path of the file to save (without the extension)
      */
@@ -122,4 +122,4 @@ protected:
     
     /** \brief Set null space or apply reference point.  */
     virtual PetscErrorCode setNullSpace();
-};
+}; // TairaColoniusSolver

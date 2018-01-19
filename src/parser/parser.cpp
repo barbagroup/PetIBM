@@ -1,7 +1,7 @@
 /**
  * \file parser.cpp
  * \brief Implementations of parser functions.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -31,7 +31,7 @@ namespace petibm
 namespace parser
 {
 
-// get all settings into a sinfle YAML node
+// get all settings into a single YAML node
 PetscErrorCode getSettings(YAML::Node &node)
 {
     PetscFunctionBeginUser;
@@ -52,7 +52,7 @@ PetscErrorCode getSettings(YAML::Node &node)
 
     if (flg) node["directory"] = s;
 
-    // config: location of config.yaml. Default is under worling directory.
+    // config: location of config.yaml. Default is under working directory.
     // TODO: what if users provide a relative path? Where should it relative to?
     node["config.yaml"] = node["directory"].as<std::string>() + "/config.yaml";
 
@@ -100,7 +100,7 @@ PetscErrorCode getSettings(YAML::Node &node)
     ierr = readYAMLs(node); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // getSettings
 
 
 PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
@@ -136,7 +136,7 @@ PetscErrorCode parseMesh(const YAML::Node &meshNode, PetscInt &dim,
     }
 
     PetscFunctionReturn(0);
-}
+} // parseMesh
 
 
 PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
@@ -159,7 +159,7 @@ PetscErrorCode parseOneAxis(const YAML::Node &axis, PetscInt &dir,
     ierr = parseSubDomains(axis["subDomains"], bg, nTotal, ed, dL); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // parseOneAxis
 
 
 PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
@@ -179,24 +179,24 @@ PetscErrorCode parseSubDomains(const YAML::Node &subs, const PetscReal bg,
     // initialize dL
     dL = type::RealVec1D();
 
-    // loop through all subdomains
+    // loop through all sub-domains
     for(auto sub: subs)
     {
-        type::RealVec1D   dLSub;  // cell sizes of the subdomains
-        PetscInt           nSub;  // number of the cells of the subdomains
+        type::RealVec1D   dLSub;  // cell sizes of the sub-domains
+        PetscInt           nSub;  // number of the cells of the sub-domains
 
         // the 1st ed is passed by value, while the 2nd one is by reference
         ierr = parseOneSubDomain(sub, ed, nSub, ed, dLSub); CHKERRQ(ierr);
 
-        // add number of the subdomain to total number of cells
+        // add number of the sub-domain to total number of cells
         nTotal += nSub;
 
-        // append the subdomain dL to global dL
+        // append the sub-domain dL to global dL
         dL.insert(dL.end(), dLSub.begin(), dLSub.end());
     }
 
     PetscFunctionReturn(0);
-}
+} // parseSubDomains
 
 
 PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
@@ -205,10 +205,10 @@ PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
 {
     PetscFunctionBeginUser;
 
-    // get the number of the cells in this subdomain
+    // get the number of the cells in this sub-domain
     n = sub["cells"].as<PetscInt>();
 
-    // get the end of the subdomain
+    // get the end of the sub-domain
     ed = sub["end"].as<PetscReal>();
     
     // get the stretching ratio
@@ -221,7 +221,7 @@ PetscErrorCode parseOneSubDomain(const YAML::Node &sub, const PetscReal bg,
         misc::stretchGrid(bg, ed, n, r, dL);  // stretch grid
 
     PetscFunctionReturn(0);
-}
+} // parseOneSubDomain
 
 
 // get information about if we have periodic BCs from YAML node
@@ -259,7 +259,7 @@ PetscErrorCode parseBCs(const YAML::Node &node,
     }
     
     PetscFunctionReturn(0);
-}
+} // parseBCs
 
 
 // get initial conditions
@@ -284,7 +284,7 @@ PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues)
     for(unsigned int i=0; i<temp.size(); i++) icValues[i] = temp[i].as<PetscReal>();
     
     PetscFunctionReturn(0);
-}
+} // parseICs
 
 } // end of namespace parser
 } // end of namespace petibm
@@ -327,7 +327,7 @@ PetscErrorCode readYAMLs(YAML::Node &node)
     ierr = readSingleYAML(node, "bodies"); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // readYAMLs
 
 
 // private function. Read from a single YAML file that will overwrite a part 
@@ -357,7 +357,7 @@ PetscErrorCode readSingleYAML(YAML::Node &node, const std::string &s)
     }
 
     PetscFunctionReturn(0);
-}
+} // readSingleYAML
 
 
 PetscErrorCode checkAndCreateFolder(const std::string &dir)
@@ -389,4 +389,4 @@ PetscErrorCode checkAndCreateFolder(const std::string &dir)
     }
     
     PetscFunctionReturn(0);
-}
+} // checkAndCreateFolder

@@ -1,7 +1,7 @@
 /**
  * \file delta.h
  * \brief Prototype of Delta functions.
- * \author Anush Krishnan (anus@bu.edu)
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
  * \copyright MIT.
@@ -18,7 +18,7 @@
 namespace petibm
 {
 /**
- * \brief A namespace of all kinds of descritized delta functions.
+ * \brief A namespace of all kinds of discretized delta functions.
  * \ingroup miscModule
  */
 namespace delta

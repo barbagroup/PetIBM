@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     PetscReal dt = config["parameters"]["dt"].as<PetscReal>();
 
     // current time
-    PetscReal t = config["parameters"]["tstart"].as<PetscReal>(start * dt);
+    PetscReal t = 0.0;
              
     // directory where file to log information of linear solvers in
     std::string iterationsFile = config["directory"].as<std::string>() + "/";

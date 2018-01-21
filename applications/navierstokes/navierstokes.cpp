@@ -348,7 +348,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
             ierr = MatMultAdd(LCorrection, 
                     solution->UGlobal, diff[0], diff[0]); CHKERRQ(ierr);
             ierr = VecScale(diff[0], nu); CHKERRQ(ierr);
-	      }
+        }
         
         // 3. add all explicit diffusive terms to rhs1
         for(unsigned int i=0; i<diff.size(); ++i) {
@@ -476,8 +476,8 @@ PetscErrorCode NavierStokesSolver::write(const std::string &filePath)
     // output PETSc log view into file called "<time-step>.log"
     // located in solution directory
     {
-    	PetscViewer viewerLog;
-    	ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewerLog); CHKERRQ(ierr);
+      PetscViewer viewerLog;
+      ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewerLog); CHKERRQ(ierr);
       ierr = PetscViewerSetType(viewerLog, PETSCVIEWERASCII); CHKERRQ(ierr);
       ierr = PetscViewerFileSetMode(viewerLog, FILE_MODE_WRITE); CHKERRQ(ierr);
       ierr = PetscViewerFileSetName(

@@ -24,6 +24,8 @@ public:
     using NavierStokesSolver::advance;
     using NavierStokesSolver::initializeASCIIFiles;
     using NavierStokesSolver::writeIterations;
+    using NavierStokesSolver::writeTimeHDF5;
+    using NavierStokesSolver::readTimeHDF5;
     
     /** \brief Default constructor.  */
     TairaColoniusSolver() = default;
@@ -63,9 +65,10 @@ public:
     /**
      * \brief Write the solution into a file.
      *
+     * \param t [in] time
      * \param filePath [in] path of the file to save (without the extension)
      */
-    PetscErrorCode write(const std::string &filePath);
+    PetscErrorCode write(const PetscReal &t, const std::string &filePath);
     
     /**
      * \brief Write the extra data that are required for restarting sessions.
@@ -73,16 +76,19 @@ public:
      * If the file already has solutions in it, only extra necessary data will
      * be writen in. Otherwise, solutions and extra data will all be writen in.
      *
+     * \param t [in] time
      * \param filePath [in] path of the file to save (without the extension)
      */
-    PetscErrorCode writeRestartData(const std::string &filePath);
+    PetscErrorCode writeRestartData(
+      const PetscReal &t, const std::string &filePath);
     
     /**
      * \brief read data that are required for restarting sessions.
      * 
      * \param filePath [in] path of the file to save (without the extension)
+     * \param t [out] time
      */
-    PetscErrorCode readRestartData(const std::string &filePath);
+    PetscErrorCode readRestartData(const std::string &filePath, PetscReal &t);
 
     /**
      * \brief Write the integrated forces acting on the bodies into a ASCII file.

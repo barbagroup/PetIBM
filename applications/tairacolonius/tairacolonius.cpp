@@ -269,7 +269,8 @@ PetscErrorCode TairaColoniusSolver::assembleRHSPoisson()
 
 
 // output solutions to the user provided file
-PetscErrorCode TairaColoniusSolver::write(const std::string &filePath)
+PetscErrorCode TairaColoniusSolver::write(
+  const PetscReal &t, const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -281,7 +282,7 @@ PetscErrorCode TairaColoniusSolver::write(const std::string &filePath)
     temp = solution->pGlobal;
     solution->pGlobal = P;
 
-    ierr = NavierStokesSolver::write(filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::write(t, filePath); CHKERRQ(ierr);
     
     // restore pointers
     solution->pGlobal = temp;
@@ -292,13 +293,14 @@ PetscErrorCode TairaColoniusSolver::write(const std::string &filePath)
 
 
 // output extra data required for restarting to the user provided file
-PetscErrorCode TairaColoniusSolver::writeRestartData(const std::string &filePath)
+PetscErrorCode TairaColoniusSolver::writeRestartData(
+  const PetscReal &t, const std::string &filePath)
 {
     PetscFunctionBeginUser;
     
     PetscErrorCode ierr;
 
-    ierr = NavierStokesSolver::writeRestartData(filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::writeRestartData(t, filePath); CHKERRQ(ierr);
 
     // write forces
     Vec f;
@@ -312,7 +314,8 @@ PetscErrorCode TairaColoniusSolver::writeRestartData(const std::string &filePath
 
 
 // read data necessary for restarting
-PetscErrorCode TairaColoniusSolver::readRestartData(const std::string &filePath)
+PetscErrorCode TairaColoniusSolver::readRestartData(
+  const std::string &filePath, PetscReal &t)
 {
     PetscFunctionBeginUser;
     
@@ -324,7 +327,7 @@ PetscErrorCode TairaColoniusSolver::readRestartData(const std::string &filePath)
     temp = solution->pGlobal;
     solution->pGlobal = P;
 
-    ierr = NavierStokesSolver::readRestartData(filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::readRestartData(filePath, t); CHKERRQ(ierr);
     
     // restore pointers
     solution->pGlobal = temp;

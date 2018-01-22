@@ -67,32 +67,13 @@ PetscErrorCode createLinSolver(const std::string &solverName,
     
     key = solverName + "Solver";
     
-    if (! node["parameters"].IsDefined())
-        SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
-                "Could not find the key \"parameters\" in the YAML node passed "
-                "to the function \"createLinSolver\"\n");
-    
-    if (! node["parameters"][key].IsDefined())
-        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
-                "Could not find the key \"%s\" under \"parameters\" in the YAML "
-                "node passed to the function \"createLinSolver\"\n", key.c_str());
-    
-    if (! node["parameters"][key]["type"].IsDefined())
-        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
-                "Could not find the key \"type\" under the settings for linear "
-                "solver \"%s\"\n", solverName.c_str());
-    
-    if (! node["parameters"][key]["config"].IsDefined())
-        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
-                "Could not find the key \"config\" under the settings for linear "
-                "solver \"%s\"\n", solverName.c_str());
-    
     // set up type
-    type = node["parameters"][key]["type"].as<std::string>();
+    type = node["parameters"][key]["type"].as<std::string>("CPU");
         
     // set up the path to config file
-    config = node["parameters"][key]["config"].as<std::string>();
-    if (config[0] != '/') config = node["directory"].as<std::string>() + "/" + config;
+    config = node["parameters"][key]["config"].as<std::string>("None");
+    if (config[0] != '/' && config != "None")
+    	config = node["directory"].as<std::string>() + "/" + config;
 
     // factory
     if (type == "CPU")

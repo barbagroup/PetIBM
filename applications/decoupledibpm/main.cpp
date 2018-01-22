@@ -27,6 +27,7 @@ int main(int argc, char **argv)
     petibm::type::BodyPack  bodies;
 
     ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
+    ierr = PetscLogDefaultBegin(); CHKERRQ(ierr);
     
     // get all settings and save into `config`
     ierr = petibm::parser::getSettings(config); CHKERRQ(ierr);
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
     PetscReal dt = config["parameters"]["dt"].as<PetscReal>();
 
     // current time
-    PetscReal t = start * dt;
+    PetscReal t = 0.0;
              
     // directory where file to log information of linear solvers in
     std::string iterationsFile = config["directory"].as<std::string>() + "/";
@@ -85,7 +86,7 @@ int main(int argc, char **argv)
         std::stringstream ss;
         ss << "/" << std::setfill('0') << std::setw(7) << 0;
         ierr = solver.write(
-                (config["solution"].as<std::string>() + ss.str()));
+                t, (config["solution"].as<std::string>() + ss.str()));
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -101,7 +102,7 @@ int main(int argc, char **argv)
         std::stringstream ss;
         ss << "/" << std::setfill('0') << std::setw(7) << start;
         ierr = solver.readRestartData(
-                (config["solution"].as<std::string>() + ss.str()));
+                (config["solution"].as<std::string>() + ss.str()), t);
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -132,7 +133,7 @@ int main(int argc, char **argv)
             std::stringstream ss;
             ss << "/" << std::setfill('0') << std::setw(7) << ite;
             ierr = solver.write(
-                    (config["solution"].as<std::string>() + ss.str())); 
+                    t, (config["solution"].as<std::string>() + ss.str())); 
             CHKERRQ(ierr);
             
             ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -147,7 +148,7 @@ int main(int argc, char **argv)
             std::stringstream ss;
             ss << "/" << std::setfill('0') << std::setw(7) << ite;
             ierr = solver.writeRestartData(
-                    (config["solution"].as<std::string>() + ss.str()));
+                    t, (config["solution"].as<std::string>() + ss.str()));
             CHKERRQ(ierr);
             
             ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);

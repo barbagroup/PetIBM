@@ -27,6 +27,7 @@ int main(int argc, char **argv)
     petibm::type::BodyPack  bodies;
 
     ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
+    ierr = PetscLogDefaultBegin(); CHKERRQ(ierr);
     
     // get all settings and save into `config`
     ierr = petibm::parser::getSettings(config); CHKERRQ(ierr);

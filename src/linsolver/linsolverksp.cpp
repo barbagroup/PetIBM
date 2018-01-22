@@ -55,11 +55,8 @@ PetscErrorCode LinSolverKSP::init()
 
     if (config != "None")
     {
-    	ierr = PetscPrintf(PETSC_COMM_WORLD,
-    	                   "[%s solver] Configuration file: %s\n",
-    	                   name.c_str(), config.c_str()); CHKERRQ(ierr);
-	    ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, nullptr, 
-	            config.c_str(), PETSC_TRUE); CHKERRQ(ierr);
+      ierr = PetscOptionsInsertFile(PETSC_COMM_WORLD, nullptr, 
+              config.c_str(), PETSC_TRUE); CHKERRQ(ierr);
 	  }
 
     ierr = KSPCreate(PETSC_COMM_WORLD, &ksp); CHKERRQ(ierr);

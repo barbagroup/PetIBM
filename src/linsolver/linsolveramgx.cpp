@@ -72,16 +72,11 @@ PetscErrorCode LinSolverAmgX::init()
     type = "NVIDIA AmgX";
 
     // create temporary empty file if no configuration file is provided
-    char fname[L_tmpnam];
     if (config == "None")
     {
-    	config = std::tmpnam(fname);
-    	std::fstream file(fname, std::ios::out);
+      config = "solversAmgXOptions-tmp.info";
+      std::fstream file(config.c_str(), std::ios::out);
     }
-
-  	ierr = PetscPrintf(PETSC_COMM_WORLD,
-                       "[%s solver] Configuration file: %s\n",
-                       name.c_str(), config.c_str()); CHKERRQ(ierr);
 
     ierr = amgx.initialize(PETSC_COMM_WORLD, "dDDI", config); CHKERRQ(ierr);
 
@@ -89,8 +84,8 @@ PetscErrorCode LinSolverAmgX::init()
     ierr = PetscRegisterFinalize(&preDestroyAmgXSolvers); CHKERRQ(ierr);
 
     // remove temporary file if necessary
-    if (config == fname)
-    	std::remove(config.c_str());
+    if (config == "solversAmgXOptions-tmp.info")
+      std::remove(config.c_str());
 
     PetscFunctionReturn(0);
 }

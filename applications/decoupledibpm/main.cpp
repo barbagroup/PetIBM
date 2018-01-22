@@ -30,9 +30,9 @@
  * 
  * If readers are interested in using this solver instead of coding,
  * please refer to 
- * \ref md_runpetibm "Running PetIBM",
- * \ref md_examples2d "2D Examples", and
- * \ref md_examples3d "3D Examples".
+ * \ref md_markdowns_runpetibm "Running PetIBM",
+ * \ref md_markdowns_examples2d "2D Examples", and
+ * \ref md_markdowns_examples3d "3D Examples".
  * 
  * \b Reference: \n
  * \li Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016). An efficient 

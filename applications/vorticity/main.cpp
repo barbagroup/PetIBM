@@ -37,9 +37,9 @@
  * 
  * If readers are interested in using this utility,
  * please refer to 
- * \ref md_runpetibm "Running PetIBM",
- * \ref md_examples2d "2D Examples", and
- * \ref md_examples3d "3D Examples".
+ * \ref md_markdowns_runpetibm "Running PetIBM",
+ * \ref md_markdowns_examples2d "2D Examples", and
+ * \ref md_markdowns_examples3d "3D Examples".
  * 
  * \ingroup apps
  */

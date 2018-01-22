@@ -5,12 +5,12 @@
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="pages" visible="no" title="Quick Start" intro=""/>
     <tab type="usergroup" visible="yes" title="Quick Start" intro="">
-        <tab type="user" url="@ref md_installation" title="Installation"/>
-        <tab type="user" url="@ref md_runpetibm" title="Run PetIBM"/>
-        <tab type="user" url="@ref md_inputs" title="Input files"/>
-        <tab type="user" url="@ref md_outputs" title="Output files"/>
-        <tab type="user" url="@ref md_examples2d" title="2D Examples"/>
-        <tab type="user" url="@ref md_examples3d" title="3D Examples"/>
+        <tab type="user" url="@ref md_markdowns_installation" title="Installation"/>
+        <tab type="user" url="@ref md_markdowns_runpetibm" title="Run PetIBM"/>
+        <tab type="user" url="@ref md_markdowns_inputs" title="Input files"/>
+        <tab type="user" url="@ref md_markdowns_outputs" title="Output files"/>
+        <tab type="user" url="@ref md_markdowns_examples2d" title="2D Examples"/>
+        <tab type="user" url="@ref md_markdowns_examples3d" title="3D Examples"/>
     </tab>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">

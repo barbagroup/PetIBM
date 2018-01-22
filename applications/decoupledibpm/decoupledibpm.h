@@ -67,16 +67,19 @@ public:
      * If file already exists, only extra necessary data will
      * be writen in. Otherwise, solutions and extra data will all be writen in.
      *
+     * \param t [in] time
      * \param filePath [in] path of the file to save (without extension)
      */
-    PetscErrorCode writeRestartData(const std::string &filePath);
+    PetscErrorCode writeRestartData(
+      const PetscReal &t, const std::string &filePath);
     
     /**
      * \brief read data that are required for restarting sessions.
      * 
      * \param filePath [in] path of the file to save (without extension)
+     * \param t [out] time
      */
-    PetscErrorCode readRestartData(const std::string &filePath);
+    PetscErrorCode readRestartData(const std::string &filePath, PetscReal &t);
 
     /**
      * \brief Write number of iterations executed by each solver at current time

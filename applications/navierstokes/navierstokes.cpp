@@ -461,7 +461,8 @@ PetscErrorCode NavierStokesSolver::projectionStep()
 
 
 // output solutions to the user provided file
-PetscErrorCode NavierStokesSolver::write(const std::string &filePath)
+PetscErrorCode NavierStokesSolver::write(
+  const PetscReal &t, const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -470,6 +471,7 @@ PetscErrorCode NavierStokesSolver::write(const std::string &filePath)
     ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
 
     ierr = solution->write(filePath); CHKERRQ(ierr);
+    ierr = writeTimeHDF5(t, filePath + ".h5"); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -491,7 +493,8 @@ PetscErrorCode NavierStokesSolver::write(const std::string &filePath)
 
 
 // output extra data required for restarting to the user provided file
-PetscErrorCode NavierStokesSolver::writeRestartData(const std::string &filePath)
+PetscErrorCode NavierStokesSolver::writeRestartData(
+  const PetscReal &t, const std::string &filePath)
 {
     PetscFunctionBeginUser;
     
@@ -509,6 +512,7 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const std::string &filePath)
     if (! fileExist) // if not, create one and write u, v, w, and p into it
     {
         ierr = solution->write(filePath); CHKERRQ(ierr);
+        ierr = writeTimeHDF5(t, filePath + ".h5"); CHKERRQ(ierr);
     }
     // TODO: should we check if the file exist but data is not up-to-date?
     
@@ -550,7 +554,8 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const std::string &filePath)
 
 
 // read data necessary for restarting
-PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
+PetscErrorCode NavierStokesSolver::readRestartData(
+  const std::string &filePath, PetscReal &t)
 {
     PetscFunctionBeginUser;
     
@@ -570,6 +575,7 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath)
     
     // read primary fields
     ierr = solution->read(filePath); CHKERRQ(ierr);
+    ierr = readTimeHDF5(filePath + ".h5", t); CHKERRQ(ierr);
     
     // create PetscViewer with append mode
     ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);

@@ -326,14 +326,15 @@ PetscErrorCode DecoupledIBPMSolver::projectionStep()
 
 
 // output extra data required for restarting to the user provided file
-PetscErrorCode DecoupledIBPMSolver::writeRestartData(const std::string &filePath)
+PetscErrorCode DecoupledIBPMSolver::writeRestartData(
+  const PetscReal &t, const std::string &filePath)
 {
     PetscFunctionBeginUser;
     
     PetscErrorCode      ierr;
     PetscViewer         viewer;
     
-    ierr = NavierStokesSolver::writeRestartData(filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::writeRestartData(t, filePath); CHKERRQ(ierr);
 
     ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
     
@@ -360,14 +361,15 @@ PetscErrorCode DecoupledIBPMSolver::writeRestartData(const std::string &filePath
 
 
 // read data necessary for restarting
-PetscErrorCode DecoupledIBPMSolver::readRestartData(const std::string &filePath)
+PetscErrorCode DecoupledIBPMSolver::readRestartData(
+  const std::string &filePath, PetscReal &t)
 {
     PetscFunctionBeginUser;
     
     PetscErrorCode      ierr;
     PetscViewer         viewer;
     
-    ierr = NavierStokesSolver::readRestartData(filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::readRestartData(filePath, t); CHKERRQ(ierr);
     
     // create PetscViewer with read-only mode
     ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);

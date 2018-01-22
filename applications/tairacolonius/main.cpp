@@ -86,10 +86,7 @@ int main(int argc, char **argv)
         std::stringstream ss;
         ss << "/" << std::setfill('0') << std::setw(7) << 0;
         ierr = solver.write(
-                (config["solution"].as<std::string>() + ss.str()));
-        CHKERRQ(ierr);
-        ierr = solver.writeTimeHDF5(
-          t, config["solution"].as<std::string>() + ss.str() + ".h5");
+                t, (config["solution"].as<std::string>() + ss.str()));
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -105,10 +102,7 @@ int main(int argc, char **argv)
         std::stringstream ss;
         ss << "/" << std::setfill('0') << std::setw(7) << start;
         ierr = solver.readRestartData(
-                (config["solution"].as<std::string>() + ss.str()));
-        CHKERRQ(ierr);
-        ierr = solver.readTimeHDF5(
-          config["solution"].as<std::string>() + ss.str() + ".h5", t);
+                (config["solution"].as<std::string>() + ss.str()), t);
         CHKERRQ(ierr);
         
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -139,10 +133,7 @@ int main(int argc, char **argv)
             std::stringstream ss;
             ss << "/" << std::setfill('0') << std::setw(7) << ite;
             ierr = solver.write(
-                    (config["solution"].as<std::string>() + ss.str())); 
-            CHKERRQ(ierr);
-            ierr = solver.writeTimeHDF5(
-              t, config["solution"].as<std::string>() + ss.str() + ".h5");
+                    t, (config["solution"].as<std::string>() + ss.str())); 
             CHKERRQ(ierr);
             
             ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -157,7 +148,7 @@ int main(int argc, char **argv)
             std::stringstream ss;
             ss << "/" << std::setfill('0') << std::setw(7) << ite;
             ierr = solver.writeRestartData(
-                    (config["solution"].as<std::string>() + ss.str()));
+                    t, (config["solution"].as<std::string>() + ss.str()));
             CHKERRQ(ierr);
             
             ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);

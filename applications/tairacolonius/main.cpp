@@ -30,9 +30,9 @@
  * 
  * If readers are interested in using this solver instead of coding,
  * please refer to 
- * \ref md_markdowns_runpetibm "Running PetIBM",
- * \ref md_markdowns_examples2d "2D Examples", and
- * \ref md_markdowns_examples3d "3D Examples".
+ * \ref md_doc_markdowns_runpetibm "Running PetIBM",
+ * \ref md_doc_markdowns_examples2d "2D Examples", and
+ * \ref md_doc_markdowns_examples3d "3D Examples".
  * 
  * \b Reference: \n
  * \li Taira, K., & Colonius, T. (2007). The immersed boundary method: a 

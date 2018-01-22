@@ -37,9 +37,9 @@
  * 
  * If readers are interested in using the Navier-Stokes solver instead of coding,
  * please refer to 
- * \ref md_markdowns_runpetibm "Running PetIBM",
- * \ref md_markdowns_examples2d "2D Examples", and
- * \ref md_markdowns_examples3d "3D Examples".
+ * \ref md_doc_markdowns_runpetibm "Running PetIBM",
+ * \ref md_doc_markdowns_examples2d "2D Examples", and
+ * \ref md_doc_markdowns_examples3d "3D Examples".
  * 
  * \b Reference: \n
  * \li Perot, J. B. (1993). An analysis of the fractional step method. Journal 

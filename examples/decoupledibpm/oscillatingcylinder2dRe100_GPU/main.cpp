@@ -1,6 +1,8 @@
 /*! Solve the flow around a 2D inline oscillating cylinder using an decoupled
  *  version of the immersed-boundary projection method (Li et al., 2016).
  * \file decoupledibpm.cpp
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  *
  * Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016).
  * An efficient immersed boundary projection method for flow over

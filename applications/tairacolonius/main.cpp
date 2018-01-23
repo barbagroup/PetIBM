@@ -1,6 +1,8 @@
 /**
  * \file tairacolonius/main.cpp
  * \brief Main function of IBPM solver (Taira & Colonius 2007).
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see tairacolonius
  * \ingroup tairacolonius
  */

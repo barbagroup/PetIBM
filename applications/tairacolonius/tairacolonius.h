@@ -1,6 +1,8 @@
 /**
  * \file tairacolonius.h
  * \brief Definition of the class \c TairaColoniusSolver.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see tairacolonius
  * \ingroup tairacolonius
  */

@@ -1,6 +1,8 @@
 /**
  * \file navierstokes.cpp
  * \brief Implementation of the class \c NavierStokesSolver.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see nssolver
  * \ingroup nssolver
  */

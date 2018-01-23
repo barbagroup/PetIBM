@@ -1,6 +1,8 @@
 /**
  * \file navierstokes/main.cpp
  * \brief Main function of the Navier-Stokes solver.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see nssolver
  * \ingroup nssolver
  */

@@ -1,6 +1,8 @@
 /**
  * \file decoupledibpm/main.cpp
  * \brief Main function of decoupled IBPM solver (Li et. al. 2016).
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see decoupledibpm
  * \ingroup decoupledibpm
  */

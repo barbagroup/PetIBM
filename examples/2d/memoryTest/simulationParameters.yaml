@@ -1,8 +1,0 @@
-# simulationParameters.yaml
-
-- type: simulation
-  dt: 0.2
-  nt: 1
-  nsave: 1
-  convection: ADAMS_BASHFORTH_2
-  diffusion: CRANK_NICOLSON

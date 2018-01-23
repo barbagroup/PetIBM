@@ -1,0 +1,65 @@
+flow:
+  nu: 0.00033333333333
+  initialVelocity: [1.0, 0.0]
+  boundaryConditions:
+    - location: xMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+    - location: xPlus
+      u: [CONVECTIVE, 1.0]
+      v: [CONVECTIVE, 1.0]
+    - location: yMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+    - location: yPlus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+
+mesh:
+  - direction: x
+    start: -15.0
+    subDomains:
+      - end: -0.52
+        cells: 363
+        stretchRatio: 0.9900990099
+      - end: 0.52
+        cells: 260
+        stretchRatio: 1.0
+      - end: 15.0
+        cells: 363
+        stretchRatio: 1.01
+
+  - direction: y
+    start: -15.0
+    subDomains:
+      - end: -0.52
+        cells: 363
+        stretchRatio: 0.9900990099
+      - end: 0.52
+        cells: 260
+        stretchRatio: 1.0
+      - end: 15.0
+        cells: 363
+        stretchRatio: 1.01
+
+parameters:
+  dt: 0.001
+  startStep: 0
+  nt: 3000
+  nsave: 3000
+  nrestart: 3000
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON
+  velocitySolver:
+    type: CPU
+    config: solversPetscOptions.info
+  poissonSolver:
+    type: GPU
+    config: solversAmgXOptions.info
+  forcesSolver:
+    type: CPU
+    config: solversPestcOptions.info
+
+bodies:
+  - type: points
+    file: circle.body

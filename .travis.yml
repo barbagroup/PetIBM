@@ -9,28 +9,28 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-5
-      - g++-5
-      - gfortran-5
+      - gcc-6
+      - g++-6
+      - gfortran-6
 
 before_install:
-  - export CC="gcc-5"
-  - export CXX="g++-5"
-  - export FC="gfortran-5"
+  - export CC="gcc-6"
+  - export CXX="g++-6"
+  - export FC="gfortran-6"
   - export PETIBM_DIR=$PWD
   - $CC --version
   - $CXX --version
   - $FC --version
 
 install:
-  # install PETSc-3.7.4
+  # install PETSc-3.8.2
   - cd ..
-  - wget "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.7.4.tar.gz" -O /tmp/petsc-lite-3.7.4.tar.gz
-  - tar xfz /tmp/petsc-lite-3.7.4.tar.gz
-  - cd petsc-3.7.4
+  - wget "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.8.2.tar.gz" -O /tmp/petsc-lite-3.8.2.tar.gz
+  - tar xfz /tmp/petsc-lite-3.8.2.tar.gz
+  - cd petsc-3.8.2
   - export PETSC_DIR=$PWD
   - export PETSC_ARCH=arch-dbg
-  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=$FC --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-fblaslapack --download-openmpi
+  - ./configure --PETSC_ARCH=$PETSC_ARCH --with-cc=$CC --with-cxx=$CXX --with-fc=0 --COPTFLAGS="-O0" --CXXOPTFLAGS="-O0" --FOPTFLAGS="-O0" --with-debugging=1 --download-f2cblaslapack --download-hdf5 --download-openmpi
   - make all
 
 script:
@@ -38,10 +38,15 @@ script:
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PWD CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH
+  - $PETIBM_DIR/configure --prefix=$PWD CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH --enable-yamlcpp --enable-boost --enable-gtest
   - make all
   - make check
   - make install
 
 notifications:
   email: false
+
+branches:
+  only:
+    - master
+    - develop

@@ -1,8 +1,0 @@
-# simulationParameters.yaml
-
-- type: simulation
-  dt: 0.02
-  nt: 100
-  nsave: 100
-  convection: EULER_EXPLICIT
-  diffusion: EULER_IMPLICIT

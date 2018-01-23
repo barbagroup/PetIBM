@@ -1,8 +1,0 @@
-# solversPetscOptions.info
-
-# Velocity solver: prefix `-velocity_`
-
-# Poisson solver: prefix `-poisson_`
--poisson_pc_type gamg
--poisson_pc_gamg_type agg
--poisson_pc_gamg_agg_nsmooths 1

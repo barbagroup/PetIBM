@@ -1,8 +1,8 @@
-/*
- * main.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file createxdmf/main.cpp
+ * \brief An utility that generates XDMF files for visualization.
+ * \see createxdmf
+ * \ingroup createxdmf
  */
 
 
@@ -14,6 +14,28 @@
 # include <petibm/type.h>
 # include <petibm/parser.h>
 # include <petibm/mesh.h>
+
+
+/**
+ * \defgroup createxdmf Post-processing utility: createxdmf
+ * \brief A post-processing utility that creates XDMF files for visualization.
+ * 
+ * This is a helper utility built with PetIBM components, and it creates XDMF 
+ * files based on the HDF5 files produced by
+ * \ref nssolver "Navier-Stokes solver",
+ * \ref tairacolonius "IBPM solver", and 
+ * \ref decoupledibpm "decoupled IBPM solver".
+ * XDMF files can be used for visualization in 
+ * [VisIt](https://wci.llnl.gov/simulation/computer-codes/visit/)
+ * 
+ * If readers are interested in using this utility,
+ * please refer to 
+ * \ref md_doc_markdowns_runpetibm "Running PetIBM",
+ * \ref md_doc_markdowns_examples2d "2D Exmaples", and
+ * \ref md_doc_markdowns_examples3d "3D Examples".
+ * 
+ * \ingroup apps
+ */
 
 PetscErrorCode writeSingleXDMF(
         const std::string &directory, const std::string &name, 
@@ -95,7 +117,7 @@ int main(int argc, char **argv)
     ierr = PetscFinalize(); CHKERRQ(ierr);
     
     return 0;
-}
+} // main
 
 
 PetscErrorCode writeSingleXDMF(
@@ -214,4 +236,4 @@ PetscErrorCode writeSingleXDMF(
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeSingleXDMF

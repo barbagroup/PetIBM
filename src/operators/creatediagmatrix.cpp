@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file creatediagmatrix.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Definitions of functions creating different kinds of diagonal matrices.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definitions of functions creating different kinds of diagonal matrix.
+ * \copyright MIT.
  */
 
 
@@ -37,7 +38,7 @@ typedef std::function<PetscReal(
  *
  * \param mesh an instance of CartesianMesh.
  * \param kernels a length 3 STL vector holding KernelType.
- * \param D the returned matrix.
+ * \param M the returned matrix.
  *
  * This is not designed for public use. It's only valid for the functions 
  * defined in this source file.
@@ -87,10 +88,10 @@ PetscErrorCode createDiagMatrix(const type::Mesh &mesh,
     ierr = MatAssemblyEnd(M, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createDiagMatrix
 
 
-/** \copydoc createR(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createR
 PetscErrorCode createR(const type::Mesh &mesh, Mat &R)
 {
     PetscFunctionBeginUser;
@@ -112,10 +113,10 @@ PetscErrorCode createR(const type::Mesh &mesh, Mat &R)
     ierr = createDiagMatrix(mesh, kernel, R); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createR
 
 
-/** \copydoc createRInv(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createRInv
 PetscErrorCode createRInv(const type::Mesh &mesh, Mat &RInv)
 {
     PetscFunctionBeginUser;
@@ -137,10 +138,10 @@ PetscErrorCode createRInv(const type::Mesh &mesh, Mat &RInv)
     ierr = createDiagMatrix(mesh, kernel, RInv); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createRInv
 
 
-/** \copydoc createMHead(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createMHead
 PetscErrorCode createMHead(const type::Mesh &mesh, Mat &MHead)
 {
     PetscFunctionBeginUser;
@@ -162,10 +163,10 @@ PetscErrorCode createMHead(const type::Mesh &mesh, Mat &MHead)
     ierr = createDiagMatrix(mesh, kernel, MHead); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createMHead
 
 
-/** \copydoc createM(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createM
 PetscErrorCode createM(const type::Mesh &mesh, Mat &M)
 {
     PetscFunctionBeginUser;
@@ -187,10 +188,10 @@ PetscErrorCode createM(const type::Mesh &mesh, Mat &M)
     ierr = createDiagMatrix(mesh, kernel, M); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createM
 
 
-/** \copydoc createIdentity(const CartesianMesh &, Mat &). */
+// implementation of petibm::operators::createIdentity
 PetscErrorCode createIdentity(const type::Mesh &mesh, Mat &I)
 {
     PetscFunctionBeginUser;
@@ -212,7 +213,7 @@ PetscErrorCode createIdentity(const type::Mesh &mesh, Mat &I)
     ierr = createDiagMatrix(mesh, kernel, I); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createIdentity
 
 } // end of namespace operators
 } // end of namespace petibm

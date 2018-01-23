@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file boundarysimple.h
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Definition of boundary::BoundarySimple
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `BoundarySimple`.
+ * \copyright MIT.
  */
 
 
@@ -23,35 +24,39 @@ namespace petibm
 {
 namespace boundary
 {
-/** \brief a class holding data of ghosted boundaries. */
+/**
+ * \brief An implementation of petibm::boundary::BoundaryBase.
+ * \see boundaryModule, petibm::type::Boundary, petibm::boundary::BoundaryBase
+ * \ingroup boundaryModule
+ */
 class BoundarySimple : public BoundaryBase
 {
 public:
 
-    /** \copydoc petibm::boundary::BoundaryBase::BoundaryBase */
+    /** \copydoc BoundaryBase::BoundaryBase(const type::Mesh &, const YAML::Node &) */
     BoundarySimple(const type::Mesh &mesh, const YAML::Node &node);
 
-    /** \copydoc petibm::boundary::BoundaryBase::~BoundaryBase */
+    /** \copydoc BoundaryBase::~BoundaryBase */
     virtual ~BoundarySimple() = default;
 
 
-    /** \copydoc petibm::boundary::BoundaryBase::setGhostICs */
+    // implementation of BoundaryBase::setGhostICs
     virtual PetscErrorCode setGhostICs(const type::Solution &soln);
 
-    /** \copydoc petibm::boundary::BoundaryBase::updateEqs */
+    // implementation of BoundaryBase::updateEqs
     virtual PetscErrorCode updateEqs(const type::Solution &soln, const PetscReal &dt);
 
-    /** \copydoc petibm::boundary::BoundaryBase::updateGhostValues */
+    // implementation of BoundaryBase::updateGhostValues
     virtual PetscErrorCode updateGhostValues(const type::Solution &soln);
 
-    /** \copydoc petibm::boundary::BoundaryBase::copyValues2LocalVecs */
+    // implementation of BoundaryBase::copyValues2LocalVecs
     virtual PetscErrorCode copyValues2LocalVecs(std::vector<Vec> &lclVecs) const;
 
 protected:
 
-    /** \copydoc petibm::boundary::BoundaryBase::init */
+    // implementation of BoundaryBase::init
     virtual PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
 
-};
+}; // BoundarySimple
 } // end of namespace boundary
 } // end of namespace petibm

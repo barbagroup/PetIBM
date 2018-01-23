@@ -1,8 +1,10 @@
-/*
- * boundary.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file boundary.cpp
+ * \brief Implementation of boundary::BoundaryBase, type::Boundary, and factory function.
+ * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 # include <petibm/boundary.h>
@@ -26,7 +28,7 @@ BoundaryBase::~BoundaryBase()
     if (finalized) return;
 
     comm = MPI_COMM_NULL;
-}
+} // ~BoundaryBase
 
 
 PetscErrorCode BoundaryBase::destroy()
@@ -40,7 +42,7 @@ PetscErrorCode BoundaryBase::destroy()
     mesh.reset();
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 PetscErrorCode createBoundary(
         const type::Mesh &mesh, const YAML::Node &node,
@@ -51,7 +53,7 @@ PetscErrorCode createBoundary(
     boundary = std::make_shared<BoundarySimple>(mesh, node);
     
     PetscFunctionReturn(0);
-}
+} // createBoundary
 
-}
-}
+} // end of namespace boundary
+} // end of namespace petibm

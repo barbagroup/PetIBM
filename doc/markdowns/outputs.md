@@ -1,3 +1,5 @@
+# Output files
+
 All PetIBM output files created during the course of the simulation are located in the simulation directory and its sub-folders. Here is a list of such files:
 
 * `grid.h5`: HDF5 file containing the gridline stations in the x, y, and z directions (datasets `x`, `y`, and `z`) for each fluid variables (group `p` for the pressure and groups `u`, `v`, and `w` for the velocity components).

@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file singleboundary.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Implementation of the function `createSingleBoundary`.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the member functions of class `SingleBoundary`.
+ * \copyright MIT.
  */
 
 // here goes headers from our PetIBM
@@ -52,7 +53,7 @@ PetscErrorCode createSingleBoundary(
     }
     
     PetscFunctionReturn(0);
-}
+} // createSingleBoundary
 
 } // end of namespace boundary
 } // end of namespace petibm

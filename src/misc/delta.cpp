@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file delta.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Implementations of descritized delta functions.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief implementations of  descritized delta functions.
+ * \copyright MIT.
  */
 
 // STL
@@ -18,7 +19,7 @@ namespace petibm
 namespace delta
 {
 
-/** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &). */
+// 1D delta::Roma_et_al
 PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx)
 {
     PetscReal r = std::abs(rx) / drx;
@@ -34,8 +35,7 @@ PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx)
 } // Roma_et_al
 
 
-/** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &, 
- *           const PetscReal &, const PetscReal &). */
+// 2D delta::Roma_et_al
 PetscReal Roma_et_al(
         const PetscReal &rx, const PetscReal &drx,
         const PetscReal &ry, const PetscReal &dry)
@@ -44,9 +44,7 @@ PetscReal Roma_et_al(
 } // Roma_et_al
 
 
-/** \copydoc delta::Roma_et_al(const PetscReal &, const PetscReal &, 
- *           const PetscReal &, const PetscReal &, const PetscReal &, 
- *           const PetscReal &). */
+// 3D delta::Roma_et_al(const PetscReal &, const PetscReal &, 
 PetscReal Roma_et_al(
         const PetscReal &rx, const PetscReal &drx,
         const PetscReal &ry, const PetscReal &dry,

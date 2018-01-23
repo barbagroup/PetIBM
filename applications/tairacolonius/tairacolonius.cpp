@@ -1,6 +1,8 @@
 /**
- * \file navierstokes.cpp
+ * \file tairacolonius.cpp
  * \brief Implementation of the class \c TairaColoniusSolver.
+ * \see tairacolonius
+ * \ingroup tairacolonius
  */
 
 // PETSc
@@ -35,7 +37,7 @@ TairaColoniusSolver::~TairaColoniusSolver()
     ierr = ISDestroy(&isDE[0]); CHKERRV(ierr);
     ierr = ISDestroy(&isDE[1]); CHKERRV(ierr);
     ierr = VecDestroy(&P); CHKERRV(ierr);
-}
+} // ~TairaColoniusSolver
 
 
 // manual destroy data
@@ -52,7 +54,7 @@ PetscErrorCode TairaColoniusSolver::destroy()
     ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // finalize
+} // destroy
 
 
 PetscErrorCode TairaColoniusSolver::initialize(
@@ -156,7 +158,7 @@ PetscErrorCode TairaColoniusSolver::createOperators()
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // assembleOperators
+} // createOperators
 
 
 // create vectors
@@ -188,7 +190,7 @@ PetscErrorCode TairaColoniusSolver::createVectors()
     ierr = NavierStokesSolver::createVectors(); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // createVectors
 
 
 PetscErrorCode TairaColoniusSolver::setNullSpace()
@@ -233,7 +235,7 @@ PetscErrorCode TairaColoniusSolver::setNullSpace()
     }
     
     PetscFunctionReturn(0);
-}
+} // setNullSpace
 
 
 // prepare tight-hand-side vector for Poisson system
@@ -310,7 +312,7 @@ PetscErrorCode TairaColoniusSolver::writeRestartData(
     ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // writeRestartData
 
 
 // read data necessary for restarting
@@ -341,7 +343,7 @@ PetscErrorCode TairaColoniusSolver::readRestartData(
     ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // readRestartData
 
 
 // write averaged forces

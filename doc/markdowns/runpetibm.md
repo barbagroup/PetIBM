@@ -1,3 +1,5 @@
+# Run PetIBM
+
 Once PetIBM is installed, the executables should be located in the `bin` folder of your installation directory.
 For convenience, you can prepend the `bin` directory to your PATH environment variable:
 

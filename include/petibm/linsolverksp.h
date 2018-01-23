@@ -1,5 +1,9 @@
-/*! Implementation of the class `KSPSolver`.
- * \file kspsolver.h
+/** 
+ * \file linsolverksp.h
+ * \brief Def. of LinSolverKSP.
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 
@@ -16,41 +20,52 @@ namespace petibm
 {
 namespace linsolver
 {
-/*!
+    
+/**
  * \class LinSolverKSP
  * \brief Iterative solver using PETSc KSP.
+ * 
+ * This class holds a KSP object from PETSc. The configuration of this underlying
+ * KSP solver will be read from the provided argument `file`.
+ * 
+ * \see petibm::type::LinSolver, petibm::linsolver::createLinSolver.
+ * \ingroup linsolver
  */
 class LinSolverKSP : public LinSolverBase
 {
 public:
 
-    /** \copydoc LinSolverBase::LinSolverBase. */
-    LinSolverKSP(const std::string &name, const std::string &file);
+    /** \copydoc LinSolverBase(const std::string &, const std::string &)
+     * 
+     * The argument `name` will be used as a prefix for the configuration of the 
+     * underlying KSP solver in the provided configuration file.
+     */
+    LinSolverKSP(const std::string &solverName, const std::string &file);
 
-    /** \brief destructor. */
+    /** \copydoc ~LinSolverBase */
     virtual ~LinSolverKSP();
 
-    /** \brief LinSolverBase::destroy. */
+    /** \copydoc LinSolverBase::destroy */
     virtual PetscErrorCode destroy();
 
-    /** \copydoc LinSolverBase::setMatrix. */
+    /** \copydoc LinSolverBase::setMatrix */
     virtual PetscErrorCode setMatrix(const Mat &A);
 
-    /** \copydoc LinSolverBase::solve. */
+    /** \copydoc LinSolverBase::solve */
     virtual PetscErrorCode solve(Vec &x, Vec &b);
 
-    /** \copydoc LinSolverBase::getIters. */
+    /** \copydoc LinSolverBase::getIters */
     virtual PetscErrorCode getIters(PetscInt &iters);
 
-    /** \copydoc LinSolverBase::getResidual. */
+    /** \copydoc LinSolverBase::getResidual */
     virtual PetscErrorCode getResidual(PetscReal &res);
 
-private:
+protected:
 
-    /** \brief the underlying KSP solver. */
+    /** \brief the underlying KSP solver */
     KSP ksp;
 
-    /** \copydoc LinSolverBase::init. */
+    /** \copydoc LinSolverBase::init */
     virtual PetscErrorCode init();
 
 }; // LinSolverKSP

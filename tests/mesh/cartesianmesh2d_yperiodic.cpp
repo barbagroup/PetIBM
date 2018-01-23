@@ -1,5 +1,5 @@
 /**
- * \file cartesianmesh_test.cpp
+ * \file cartesianmesh2d_yperiodic.cpp
  * \brief Unit-tests for the class `CartesianMesh`.
  */
 
@@ -642,7 +642,7 @@ TEST_F(CartesainMeshTest2D_YPeriodic, check_getGlobalIndex_ijk_internal)
         
         //ierr = ISLocalToGlobalMappingDestroy(&mapping); ASSERT_FALSE(ierr);
         // Seem there's a bug in ISLocalToGlobalMappingDestroy. It should just
-        // decrease the reference number by one. Instead, it now destroies the 
+        // decrease the reference number by one. Instead, it now destroys the 
         // underlying object completely....
         mapping = PETSC_NULL;
     }

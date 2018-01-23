@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file solutions.h
+/**
+ * \file solutionsimple.h
+ * \brief Definition of class solution::SolutionSimple.
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `Solutions`.
+ * \copyright MIT.
  */
 
 
@@ -21,36 +22,40 @@ namespace petibm
 {
 namespace solution
 {
-/** \brief a class holding only velocity and pressure solution. */
+/**
+ * \brief A class holding only velocity and pressure solutions.
+ * \see solutionModule, petibm::type::Solution, petibm::solution::createSolution
+ * \ingroup solutionModule
+ */
 class SolutionSimple : public SolutionBase
 {
 public:
 
-    /** \copydoc petibm::solution::SolutionBase::SolutionBase */
+    /** \copydoc SolutionBase(const type::Mesh &) */
     SolutionSimple(const type::Mesh &mesh);
 
-    /** \copydoc petibm::solution::SolutionBase::~SolutionBase */
+    /** \copydoc ~SolutionBase */
     virtual ~SolutionSimple();
 
-    /** \copydoc petibm::solution::SolutionBase::applyIC */
+    // doc is the same as solution::SolutionBase::applyIC
     virtual PetscErrorCode applyIC(const YAML::Node &node);
 
-    /** \copydoc petibm::solution::SolutionBase::convert2Velocity */
+    // doc is the same as solution::SolutionBase::convert2Velocity
     virtual PetscErrorCode convert2Velocity(const Mat &Rinv);
 
-    /** \copydoc petibm::solution::SolutionBase::convert2Flux */
+    // doc is the same as solution::SolutionBase::convert2Flux
     virtual PetscErrorCode convert2Flux(const Mat &R);
     
-    /** \copydoc petibm::solution::SolutionBase::write */
+    // doc is the same as solution::SolutionBase::write
     virtual PetscErrorCode write(const std::string &file) const;
     
-    /** \copydoc petibm::solution::SolutionBase::read */
+    // doc is the same as solution::SolutionBase::read
     virtual PetscErrorCode read(const std::string &file);
 
 
 protected:
 
-    /** \copydoc petibm::solution::SolutionBase::init */
+    // doc is the same as SolutionBase::init */
     virtual PetscErrorCode init(const type::Mesh &mesh);
 
     /**
@@ -59,6 +64,6 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createInfoString();
-};
+}; // SolutionSimple
 } // end of namespace solution
 } // end of namespace petibm

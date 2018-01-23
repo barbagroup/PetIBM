@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file CartesianMesh.h
- * \author Anush Krishnan (anus@bu.edu)
+/**
+ * \file cartesianmesh.h
+ * \brief Definition of class mesh::CartesianMesh.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the class `CartesianMesh`.
+ * \copyright MIT.
  */
 
 
@@ -32,169 +33,147 @@ namespace petibm
 namespace mesh
 {
 
-/** \brief class of composite Cartesian meshes of different field. */
+/**
+ * \brief Class of composite staggered Cartesian mesh.
+ * \see meshModule, petibm::type::Mesh, petibm::mesh::createMesh
+ * \ingroup meshModule
+ */
 class CartesianMesh : public MeshBase
 {
 public:
 
-    /** \copydoc petibm::mesh::MeshBase::MeshBase */
+    /** \copydoc MeshBase(const MPI_Comm &, const YAML::Node &) */
     CartesianMesh(const MPI_Comm &world, const YAML::Node &node);
 
-    /** \brief default destructor. */
+    /** \copydoc ~MeshBase */
     virtual ~CartesianMesh();
 
 
-    /** \copydoc petibm::mesh::MeshBase::destroy */
+    // doc is the same as MeshBase::destroy
     virtual PetscErrorCode destroy();
     
-    /** \copydoc petibm::mesh::MeshBase::write */
+    // doc is the same as MeshBase::write
     virtual PetscErrorCode write(const std::string &filePath) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getLocalIndex */
+    // doc is the same as MeshBase::getLocalIndex
     virtual PetscErrorCode getLocalIndex(
             const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getLocalIndex */
+    // doc is the same as MeshBase::getLocalIndex
     virtual PetscErrorCode getLocalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
             PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getNaturalIndex */
+    // doc is the same as MeshBase::getNaturalIndex
     virtual PetscErrorCode getNaturalIndex(
             const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getNaturalIndex */
+    // doc is the same as MeshBase::getNaturalIndex
     virtual PetscErrorCode getNaturalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
             PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getGlobalIndex */
+    // doc is the same as MeshBase::getGlobalIndex
     virtual PetscErrorCode getGlobalIndex(
             const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getGlobalIndex */
+    // doc is the same as MeshBase::getGlobalIndex
     virtual PetscErrorCode getGlobalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
             PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getPackedGlobalIndex */
+    // doc is the same as MeshBase::getPackedGlobalIndex
     virtual PetscErrorCode getPackedGlobalIndex(
             const PetscInt &f, const MatStencil &s, PetscInt &idx) const;
 
-    /** \copydoc petibm::mesh::MeshBase::getPackedGlobalIndex */
+    // doc is the same as MeshBase::getPackedGlobalIndex
     virtual PetscErrorCode getPackedGlobalIndex(const PetscInt &f, 
             const PetscInt &i, const PetscInt &j, const PetscInt &k, 
             PetscInt &idx) const;
 
 protected:
     
-    /** \copydoc petibm::mesh::MeshBase::init */
+    // doc is the same as MeshBase::init
     PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
 
 
-    /** \brief the underlying data for mesh point spacing. */
+    /** \brief Underlying data for mesh point spacing. */
     type::RealVec3D         dLTrue;
 
-    /** \brief the underlying data for mesh point coordinates. */
+    /** \brief Underlying data for mesh point coordinates. */
     type::RealVec3D         coordTrue;
 
-    /** \brief references to underlying AO objects of velocity DMs. */
+    /** \brief References to underlying AO objects of velocity DMs. */
     std::vector<AO>         ao;
 
-    /** \brief number of local velocity points (without ghosts) for all 
+    /** \brief Number of local velocity points (without ghost points) for all 
      *         processes and all velocity fields. */
     type::IntVec2D          UNLocalAllProcs;
 
-    /** \brief number of local packed velocity points (without ghost) for 
+    /** \brief Number of local packed velocity points (without ghost points) for 
      *         all processes. */
     type::IntVec1D          UPackNLocalAllProcs;
 
-    /** \brief offsets of velocity points in un-packed DMs for each field. */
+    /** \brief Offsets of velocity points in unpacked DMs for all processes and
+     *         all velocity field. */
     type::IntVec2D          offsetsAllProcs;
 
-    /** \brief offsets of packed velocity points in packed DM. */
+    /** \brief Offsets of packed velocity points in packed DM. */
     type::IntVec1D          offsetsPackAllProcs;
 
     
     /**
-     * \brief create vertex information.
-     *
+     * \brief Create vertex information.
      * \return PetscErrorCode.
      */
     PetscErrorCode createVertexMesh();
 
-
     /**
-     * \brief create pressure mesh information.
-     *
+     * \brief Create pressure mesh information.
      * \return PetscErrorCode.
      */
     PetscErrorCode createPressureMesh();
 
-
     /**
-     * \brief create velocity mesh information.
-     * 
-     * \param periodic [in] bools indicating periodicity of boundaries.
-     *
+     * \brief Create velocity mesh information.
      * \return PetscErrorCode.
      */
     PetscErrorCode createVelocityMesh();
 
-
     /**
-     * \brief create a string of information.
-     *
+     * \brief Create a string of information.
      * \return PetscErrorCode.
      */
     PetscErrorCode createInfoString();
 
-
     /**
-     * \brief gather information of parallel distribution and add to info string.
-     *
+     * \brief Gather information of parallel distribution and add to info string.
      * \return PetscErrorCode.
      */
     PetscErrorCode addLocalInfoString(std::stringstream &ss);
 
-
     /**
-     * \brief initialize DMDAs.
-     *
-     * \param periodic [in] bools indicating periodicity of boundaries.
-     *
+     * \brief Initialize DMDAs.
      * \return PetscErrorCode.
      */
     PetscErrorCode initDMDA();
 
-
     /**
-     * \brief function for creating a single DMDA.
-     *
-     * \param i the index of the targeting field (0 ~ 4 represents u, v, w, 
-     *          pressure, and vertex respectively.
-     * \param periodic [in] bools indicating periodicity of boundaries.
-     *
+     * \brief Function for creating a single DMDA.
+     * \param i [in] The index of the targeting field (0 ~ 4 represents u, v, w, 
+     *          pressure, and vertex respectively).
      * \return PetscErrorCode.
      */
     PetscErrorCode createSingleDMDA(const PetscInt &i);
 
-
     /**
-     * \brief create DMDA for pressure.
-     *
-     * \param periodic [in] bools indicating periodicity of boundaries.
-     * 
+     * \brief Create DMDA for pressure.
      * \return PetscErrorCode.
      */
     PetscErrorCode createPressureDMDA();
 
-
     /**
-     * \brief create DMDAs for velovity fields and make a DMComposite.
-     *
-     * \param periodic [in] bools indicating periodicity of boundaries.
-     *
+     * \brief Create DMDAs for velocity fields and make a DMComposite.
      * \return PetscErrorCode.
      */
     PetscErrorCode createVelocityPack();

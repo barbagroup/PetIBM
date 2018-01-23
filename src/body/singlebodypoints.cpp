@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file singlebody.cpp
- * \author Anush Krishnan (anus@bu.edu)
+/**
+ * \file singlebodypoints.cpp
+ * \brief Implementation of body::SingleBodyPoints.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of the members of `SingleBody`.
+ * \copyright MIT.
  */
 
 
@@ -21,13 +22,12 @@ namespace body
 {
 
 
-/** \copydoc SingleBody::SingleBody(const CartesianMesh &, const std::string &). */
 SingleBodyPoints::SingleBodyPoints(const type::Mesh &inMesh, 
         const std::string &inName, const std::string &inFile) :
     SingleBodyBase(inMesh, inName, inFile)
 {
     init(inMesh, inName, inFile);
-}
+} // SingleBodyPoints
 
 
 PetscErrorCode SingleBodyPoints::init(const type::Mesh &inMesh, 
@@ -62,7 +62,7 @@ PetscErrorCode SingleBodyPoints::init(const type::Mesh &inMesh,
     ierr = createInfoString(); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // init
 
 
 PetscErrorCode SingleBodyPoints::createDMDA()
@@ -92,12 +92,12 @@ PetscErrorCode SingleBodyPoints::createDMDA()
     // each point has "dim" degree of freedom, so we have to multiply that
     for(auto &it: nLclAllProcs) it *= dim;
 
-    // calculate the offset of the un-packed DM
+    // calculate the offset of the unpacked DM
     for(PetscMPIInt r=mpiSize-1; r>0; r--) offsetsAllProcs[r] = nLclAllProcs[r-1];
     for(PetscMPIInt r=1; r<mpiSize; r++) offsetsAllProcs[r] += offsetsAllProcs[r-1];
 
     PetscFunctionReturn(0);
-}
+} // createDMDA
 
 
 PetscErrorCode SingleBodyPoints::updateMeshIdx()
@@ -123,7 +123,7 @@ PetscErrorCode SingleBodyPoints::updateMeshIdx()
     }
 
     PetscFunctionReturn(0);
-}
+} // updateMeshIdx
 
 
 PetscErrorCode SingleBodyPoints::createInfoString()
@@ -164,7 +164,7 @@ PetscErrorCode SingleBodyPoints::createInfoString()
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createInfoString
 
 
 PetscErrorCode SingleBodyPoints::findProc(const PetscInt &i, PetscMPIInt &p) const
@@ -181,7 +181,7 @@ PetscErrorCode SingleBodyPoints::findProc(const PetscInt &i, PetscMPIInt &p) con
             offsetsAllProcs.end(), i*dim) - offsetsAllProcs.begin() - 1;
 
     PetscFunctionReturn(0);
-}
+} // findProc
 
 
 PetscErrorCode SingleBodyPoints::getGlobalIndex(
@@ -202,7 +202,7 @@ PetscErrorCode SingleBodyPoints::getGlobalIndex(
     idx = i * dim + dof;
     
     PetscFunctionReturn(0);
-}
+} // getGlobalIndex
 
 
 PetscErrorCode SingleBodyPoints::getGlobalIndex(
@@ -215,7 +215,7 @@ PetscErrorCode SingleBodyPoints::getGlobalIndex(
     ierr = getGlobalIndex(s.i, s.c, idx); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // getGlobalIndex
 
 
 PetscErrorCode SingleBodyPoints::calculateAvgForces(
@@ -246,7 +246,7 @@ PetscErrorCode SingleBodyPoints::calculateAvgForces(
     ierr = DMDAVecRestoreArrayDOF(da, f, &fArry); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // calculateAvgForces
 
 } // end of namespace body
 } // end of namespace petibm

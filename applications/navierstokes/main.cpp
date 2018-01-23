@@ -1,5 +1,8 @@
-/** Navier-Stokes solver
- * \file main.cpp
+/**
+ * \file navierstokes/main.cpp
+ * \brief Main function of the Navier-Stokes solver.
+ * \see nssolver
+ * \ingroup nssolver
  */
 
 #include <iomanip>
@@ -15,6 +18,37 @@
 #include <petibm/parser.h>
 
 #include "navierstokes.h"
+
+
+/**
+ * \defgroup apps Flow solvers and utilities
+ * \brief Flow solvers and utilities.
+ */
+
+
+/**
+ * \defgroup nssolver Navier-Stokes solver
+ * \brief Implementation of parallel Navier-Stokes solver
+ * 
+ * This is an example of using PetIBM to build a parallel incompressible flow 
+ * solver. The scheme used can be found in Perot (1993) and Chang et. al. (2002).
+ * This example is a good starting point to learn how to use PetIBM to build
+ * an immersed-boundary solver under Perot's framework.
+ * 
+ * If readers are interested in using the Navier-Stokes solver instead of coding,
+ * please refer to 
+ * \ref md_doc_markdowns_runpetibm "Running PetIBM",
+ * \ref md_doc_markdowns_examples2d "2D Examples", and
+ * \ref md_doc_markdowns_examples3d "3D Examples".
+ * 
+ * \b Reference: \n
+ * \li Perot, J. B. (1993). An analysis of the fractional step method. Journal 
+ * of Computational Physics, 108(1), 51-58.
+ * \li Chang, W., Giraldo, F., & Perot, B. (2002). Analysis of an exact 
+ * fractional step method. Journal of Computational Physics, 180(1), 183-199.
+ * 
+ * \ingroup apps
+ */
 
 
 int main(int argc, char **argv)

@@ -1,8 +1,10 @@
-/*
- * singleboundaryperiodic.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file singleboundaryperiodic.cpp
+ * \brief Implementation of the class `SingleBoundaryPeriodic`.
+ * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 
@@ -47,7 +49,7 @@ SingleBoundaryPeriodic::SingleBoundaryPeriodic(
     
     // set normal
     normal = ((int(loc)%2) == 0) ? -1.0 : 1.0;
-}
+} // SingleBoundaryPeriodic
 
 
 PetscErrorCode SingleBoundaryPeriodic::setGhostICsKernel(
@@ -56,7 +58,7 @@ PetscErrorCode SingleBoundaryPeriodic::setGhostICsKernel(
     PetscFunctionBeginUser;
     // for Periodic BC, do nothing. Let PETSc handle that. 
     PetscFunctionReturn(0);
-}
+} // setGhostICsKernel
 
 
 PetscErrorCode SingleBoundaryPeriodic::updateEqsKernel(const PetscReal &targetValue,
@@ -65,8 +67,8 @@ PetscErrorCode SingleBoundaryPeriodic::updateEqsKernel(const PetscReal &targetVa
     PetscFunctionBeginUser;
     // for Periodic BC, do nothing. Let PETSc handle that. 
     PetscFunctionReturn(0);
-}
+} // updateEqsKernel
 
 
-}
-}
+} // end of namespace boundary
+} // end of namespace petibm

@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createlaplacian.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Definition of functions creating Laplacian operator.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating Laplacian operators.
+ * \copyright MIT.
  */
 
 
@@ -61,10 +62,12 @@ typedef std::function<StencilVec(const PetscInt &,
  * \param bc an instance of Boundary class.
  * \param getStencils a function that returns stencils according to dim.
  * \param f the index of field (u=0, v=1, z=2).
- * \param i the x-index of current row in the cartesian mesh.
- * \param j the y-index of current row in the cartesian mesh.
- * \param k the z-index of current row in the cartesian mesh.
+ * \param i the x-index of current row in the Cartesian mesh.
+ * \param j the y-index of current row in the Cartesian mesh.
+ * \param k the z-index of current row in the Cartesian mesh.
  * \param L the Laplacian matrix.
+ * \param rowModifiers an object holding information about where in a matrix 
+ *                     should be modified.
  *
  * \return PetscErrorCode.
  */
@@ -78,7 +81,7 @@ inline PetscErrorCode setRowValues(
         std::map<MatStencil, type::RowModifier> &rowModifiers);
 
 
-/** \copydoc createLaplacian. */
+// implementation of petibm::operators::createLaplacian
 PetscErrorCode createLaplacian(const type::Mesh &mesh,
                                const type::Boundary &bc, 
                                Mat &L, Mat &LCorrection)
@@ -162,7 +165,7 @@ PetscErrorCode createLaplacian(const type::Mesh &mesh,
                 }
 
 
-    // assemble matrix, an implicit mpi barrier is applied
+    // assemble matrix, an implicit MPI barrier is applied
     ierr = MatAssemblyBegin(L, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(L, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
@@ -179,10 +182,10 @@ PetscErrorCode createLaplacian(const type::Mesh &mesh,
             (void(*)(void)) LCorrectionDestroy); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createLaplacian
 
 
-/** \copydoc setRowValues. */
+// implementation of setRowValues
 inline PetscErrorCode setRowValues(
         const type::Mesh &mesh,
         const type::Boundary &bc, 
@@ -211,7 +214,7 @@ inline PetscErrorCode setRowValues(
 
 
     // get the values. One direction each time.
-    // Luckly we have dL for ghost points, and the index of -1 is usable in dL,
+    // Luckily we have dL for ghost points, and the index of -1 is usable in dL,
     // so we don't have to use "if" to find out the boundary points
     for(PetscInt dir=0; dir<mesh->dim; ++dir)
     {
@@ -239,10 +242,10 @@ inline PetscErrorCode setRowValues(
         if (cols[id] == -1) rowModifiers[stencils[id]] = {cols[0], values[id]};
 
     PetscFunctionReturn(0);
-}
+} // setRowValues
 
 
-/** \copydoc LCorrectionMult. */
+// implementation of LCorrectionMult
 PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
@@ -269,15 +272,15 @@ PetscErrorCode LCorrectionMult(Mat mat, Vec x, Vec y)
                 }
 
     // assembly (not sure if this is necessary and if this causes overhead)
-    // but there is an implicit MPI barrier in assembly, which we defenitely need
+    // but there is an implicit MPI barrier in assembly, which we definitely need
     ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
     ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // LCorrectionMult
 
 
-/** \copydoc LCorrectionDestroy. */
+// implementation of LCorrectionDestroy
 PetscErrorCode LCorrectionDestroy(Mat mat)
 {
     PetscFunctionBeginUser;
@@ -292,7 +295,7 @@ PetscErrorCode LCorrectionDestroy(Mat mat)
     delete ctx;
 
     PetscFunctionReturn(0);
-}
+} // LCorrectionDestroy
 
 } // end of namespace operators
 } // end of namespace petibm

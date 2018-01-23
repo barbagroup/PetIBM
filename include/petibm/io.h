@@ -1,8 +1,10 @@
-/*
- * io.h
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file io.h
+ * \brief Prototypes of I/O functions.
+ * \author Anush Krishnan (anush@bu.edu)
+ * \author Olivier Mesnard (mesnardo@gwu.edu)
+ * \author Pi-Yueh Chuang (pychuang@gwu.edu)
+ * \copyright MIT.
  */
 
 # pragma once
@@ -20,45 +22,45 @@
 
 namespace petibm
 {
+/** 
+ * \brief A namespace of I/O-related functions.
+ * \ingroup miscModule
+ */
 namespace io
 {
     
 /**
- * \brief read number and coordinates of Lagrangian points from a file.
- *
+ * \brief Read the number and coordinates of Lagrangian points from a file.
  * \param file [in] the path to the file.
- * \param nPts [out] the total number of Lagragian points.
+ * \param nPts [out] the total number of Lagrangian points.
  * \param coords [out] 2D STL vector of coordinates.
- *
  * \return PetscErrorCode.
+ * \ingroup miscModule
  */
 PetscErrorCode readLagrangianPoints(
         const std::string &file, PetscInt &nPts, type::RealVec2D &coords);
 
 /**
- * \brief print information of "info" string of a parallel object to standard output.
- *
+ * \brief Print information of "info" string of a parallel object to standard output.
  * \param info [in] a local string on this process.
- *
  * \return PetscErrorCode.
+ * \ingroup miscModule
  */
 PetscErrorCode print(const std::string &info);
 
 
 /**
- * \brief wirte a vector of Vecs with names to a HDF5 file.
- *
+ * \brief Write a vector of Vecs with names to a HDF5 file.
  * \param comm [in] MPI communicator (should be the same as the one in Vecs).
  * \param file [in] file path + file name (without extension).
- * \param loc [in] where in the HDF5 file tha data will be writen in.
+ * \param loc [in] where in the HDF5 file that data will be written in.
  * \param names [in] a std::vector of std::string for the names of the Vecs.
  * \param vecs [in] a std::vector of Vecs.
+ * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
+ * \return PetscErrorCode.
+ * \ingroup miscModule
  * 
  * Note: this function won't check the length of `vecs` and `names`.
- * 
- * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
- *
- * \return PetscErrorCode.
  */
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file, 
         const std::string &loc, const std::vector<std::string> &names, 
@@ -66,20 +68,18 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
 
 
 /**
- * \brief wirte a vector of raw arrays with names to a HDF5 file.
- *
+ * \brief Write a vector of raw arrays with names to a HDF5 file.
  * \param comm [in] MPI communicator.
  * \param file [in] file path + file name (without extension).
- * \param loc [in] where in the HDF5 file tha data will be writen in.
+ * \param loc [in] where in the HDF5 file that data will be written in.
  * \param names [in] a std::vector of std::string for the names of each array.
  * \param n [in] a std::vector of integer for the length of each array.
  * \param vecs [in] a std::vector of raw arrays (i.e., PetscReal*).
+ * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
+ * \return PetscErrorCode.
+ * \ingroup miscModule
  * 
  * Note: this function won't check the length of `vecs` and `names`.
- * 
- * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
- *
- * \return PetscErrorCode.
  */
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
         const std::string &loc, const std::vector<std::string> &names, 
@@ -88,19 +88,17 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
 
 
 /**
- * \brief wirte type::RealVec2D with names to a HDF5 file.
- *
+ * \brief Write type::RealVec2D with names to a HDF5 file.
  * \param comm [in] MPI communicator.
  * \param file [in] file path + file name (without extension).
- * \param loc [in] where in the HDF5 file tha data will be writen in.
+ * \param loc [in] where in the HDF5 file that data will be written in.
  * \param names [in] a std::vector of std::string for the names of each RealVec1D.
  * \param vecs [in] a type::RealVec2D, i.e., std::vector<type::RealVec1D>.
+ * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
+ * \return PetscErrorCode.
+ * \ingroup miscModule
  * 
  * Note: this function won't check the length of `vecs` and `names`.
- * 
- * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
- *
- * \return PetscErrorCode.
  */
 PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
         const std::string &loc, const std::vector<std::string> &names, 
@@ -109,16 +107,15 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
 
 /**
  * \brief read a vector of Vecs matching the provided names from a HDF5 file.
- *
  * \param comm [in] MPI communicator (should be the same as the one in Vecs).
  * \param file [in] file path + file name (without extension).
- * \param loc [in] where in the HDF5 file tha data will be read from.
+ * \param loc [in] where in the HDF5 file that data will be read from.
  * \param names [in] a std::vector of std::string for the names of the Vecs.
  * \param vecs [out] a std::vector of Vecs.
+ * \return PetscErrorCode.
+ * \ingroup miscModule
  * 
  * Note: this function won't check the length of `vecs` and `names`.
- * 
- * \return PetscErrorCode.
  */
 PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
         const std::string &loc, const std::vector<std::string> &names, 

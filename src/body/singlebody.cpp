@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file singlebody.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Implementations of body::SingleBodyBase and factory function.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief code regarding to objects defined in singlebody.h.
+ * \copyright MIT.
  */
 
 
@@ -41,7 +42,7 @@ SingleBodyBase::SingleBodyBase(const type::Mesh &inMesh,
     // allocate vectors
     nLclAllProcs = type::IntVec1D(mpiSize, 0);
     offsetsAllProcs = type::IntVec1D(mpiSize, 0);
-}
+} // SingleBodyBase
 
 
 SingleBodyBase::~SingleBodyBase()
@@ -55,7 +56,7 @@ SingleBodyBase::~SingleBodyBase()
 
     ierr = DMDestroy(&da); CHKERRV(ierr);
     comm = MPI_COMM_NULL;
-}
+} // ~SingleBodyBase
 
 
 PetscErrorCode SingleBodyBase::destroy()
@@ -76,7 +77,7 @@ PetscErrorCode SingleBodyBase::destroy()
     type::IntVec1D().swap(offsetsAllProcs);
 
     PetscFunctionReturn(0);
-}
+} // destroy
 
 
 PetscErrorCode SingleBodyBase::printInfo() const
@@ -85,7 +86,7 @@ PetscErrorCode SingleBodyBase::printInfo() const
     PetscErrorCode  ierr;
     ierr = io::print(info); CHKERRQ(ierr);
     PetscFunctionReturn(0);
-}
+} // printInfo
 
 
 PetscErrorCode createSingleBody(
@@ -102,7 +103,7 @@ PetscErrorCode createSingleBody(
                 "The type of mesh file \"%s\" is not recognized!\n", type.c_str());
     
     PetscFunctionReturn(0);
-}
+} // createSingleBody
 
 } // end of namespace body
 } // end of namespace petibm

@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createbn.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Definition of functions for creating approximated inverse A.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions for creating approximated inverse A.
+ * \copyright MIT.
  */
 
 
@@ -19,7 +20,7 @@ namespace petibm
 namespace operators
 {
 
-/** \copydoc createBnHead. */
+// implementation of createBnHead
 PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &BnHead)
 {
@@ -58,7 +59,7 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
     // calculate the matrix for each term if order > 1, and add back to BnHead
     for(PetscInt term=2; term<=n; ++term)
     {
-        // the most right matrix of seccessive mat-mat-multiplication
+        // the most right matrix of successive mat-mat-multiplication
         ierr = MatDuplicate(Op, MAT_COPY_VALUES, &rightMat); CHKERRQ(ierr);
 
         // successive mat-mat-multiplications
@@ -92,11 +93,10 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
     }
 
     PetscFunctionReturn(0);
-}
+} // createBnHead
 
 
-/** \copydoc createBn(const Mat &, const Mat &, const Mat &,
-        const PetscReal &, const PetscReal &, const PetscInt &, Mat &). */
+// implementation of createBn
 PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
         const PetscReal &dt, const PetscReal &coeff, const PetscInt &n, 
         Mat &Bn)
@@ -127,11 +127,10 @@ PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
     ierr = VecDestroy(&MHeadDiagInv); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createBn
 
 
-/** \copydoc createBn(const Mat &, const Mat &,
-        const PetscReal &, const PetscReal &, const PetscInt &, Mat &). */
+// implementation of createBn
 PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt, 
         const PetscReal &coeff, const PetscInt &n, Mat &Bn)
 {
@@ -178,7 +177,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
 
     for(PetscInt term=2; term<=n; ++term)
     {
-        // the most right matrix of seccessive mat-mat-multiplication
+        // the most right matrix of successive mat-mat-multiplication
         ierr = MatDuplicate(leftMat, MAT_COPY_VALUES, &rightMat); CHKERRQ(ierr);
 
         // successive mat-mat-multiplications
@@ -218,7 +217,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
     ierr = MatDestroy(&leftMat); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createBn
 
 } // end of namespace operators
 } // end of namespace petibm

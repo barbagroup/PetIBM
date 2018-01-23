@@ -1,9 +1,10 @@
-/***************************************************************************//**
- * \file timeintegration.h
+/**
+ * \file timeintegration.cpp
+ * \brief Implementations of TimeIntegration related classes.
  * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition TimeIntegration related code.
+ * \copyright MIT.
  */
 
 
@@ -37,7 +38,7 @@ PetscErrorCode TimeIntegrationBase::printInfo() const
     ierr = PetscPrintf(PETSC_COMM_WORLD, "%s", info.c_str()); CHKERRQ(ierr);
     
     PetscFunctionReturn(0);
-}
+} // printInfo
 
 PetscErrorCode createTimeIntegration(const std::string &name,
         const YAML::Node &node, type::TimeIntegration &integration)
@@ -81,7 +82,7 @@ PetscErrorCode createTimeIntegration(const std::string &name,
 
 
     PetscFunctionReturn(0);
-}
+} // createTimeIntegration
 
 } // end of namespace timeintegration
 } // end of namespace petibm

@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createconvection.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Definition of functions creating convection operator.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating Convection operators.
+ * \copyright MIT.
  */
 
 
@@ -90,7 +91,7 @@ inline PetscReal kernelW(
         const PetscInt &i, const PetscInt &j, const PetscInt &k);
 
 
-/** \copydoc createConvection. */
+// implementation of petibm::operators::createConvection
 PetscErrorCode createConvection(const type::Mesh &mesh,
                                 const type::Boundary &bd,
                                 Mat &H)
@@ -120,7 +121,7 @@ PetscErrorCode createConvection(const type::Mesh &mesh,
         ierr = MatShellSetOperation(H, MATOP_MULT, 
                 (void(*)(void)) ConvectionMult2D); CHKERRQ(ierr);
     }
-    else // assuem the dim is either 2 or 3
+    else // assume the dim is either 2 or 3
     {
         ierr = MatShellSetOperation(H, MATOP_MULT, 
                 (void(*)(void)) ConvectionMult3D); CHKERRQ(ierr);
@@ -131,10 +132,10 @@ PetscErrorCode createConvection(const type::Mesh &mesh,
             (void(*)(void)) ConvectionDestroy); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createConvection
 
 
-/** \copydoc UserMult2D. */
+// implementation of ConvectionMult2D
 PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
@@ -204,10 +205,10 @@ PetscErrorCode ConvectionMult2D(Mat mat, Vec x, Vec y)
             y, ctx->mesh->dim, nullptr, unPacked.data()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // ConvectionMult2D
 
 
-/** \copydoc UserMult3D. */
+// implementation of ConvectionMult3D
 PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y)
 {
     PetscFunctionBeginUser;
@@ -287,10 +288,10 @@ PetscErrorCode ConvectionMult3D(Mat mat, Vec x, Vec y)
 
 
     PetscFunctionReturn(0);
-}
+} // ConvectionMult3D
 
 
-/** \copydoc UserDestroy. */
+// implementation of ConvectionDestroy
 PetscErrorCode ConvectionDestroy(Mat mat)
 {
     PetscFunctionBeginUser;
@@ -312,10 +313,10 @@ PetscErrorCode ConvectionDestroy(Mat mat)
     delete ctx;
 
     PetscFunctionReturn(0);
-}
+} // ConvectionDestroy
 
 
-/** \brief a private kernel for the convection at a u-velocity point in 2D. */
+// implementation of kernelU in 2D
 inline PetscReal kernelU(
         NonLinearCtx const * const &ctx, const std::vector<PetscReal**> &flux, 
         const PetscInt &i, const PetscInt &j)
@@ -340,10 +341,10 @@ inline PetscReal kernelU(
     return 
         (uE * uE - uW * uW) / ctx->mesh->dL[0][0][i] + 
         (vN * uN - vS * uS) / ctx->mesh->dL[0][1][j];
-}
+} // kernelU
 
 
-/** \brief a private kernel for the convection at a v-velocity point in 2D. */
+// implementation of kernelV in 2D
 inline PetscReal kernelV(
         NonLinearCtx const * const &ctx, const std::vector<PetscReal**> &flux, 
         const PetscInt &i, const PetscInt &j)
@@ -368,10 +369,10 @@ inline PetscReal kernelV(
     return 
         (uE * vE - uW * vW) / ctx->mesh->dL[1][0][i] +
         (vN * vN - vS * vS) / ctx->mesh->dL[1][1][j];
-}
+} // kernelV
 
 
-/** \brief a private kernel for the convection at a u-velocity point in 3D. */
+// implementation of kernelU in 3D
 inline PetscReal kernelU(
         NonLinearCtx const * const &ctx, const std::vector<PetscReal***> &flux, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k)
@@ -404,10 +405,10 @@ inline PetscReal kernelU(
         (uE * uE - uW * uW) / ctx->mesh->dL[0][0][i] + 
         (vN * uN - vS * uS) / ctx->mesh->dL[0][1][j] + 
         (wF * uF - wB * uB) / ctx->mesh->dL[0][2][k];
-}
+} // kernelU
 
 
-/** \brief a private kernel for the convection at a v-velocity point in 3D. */
+// implementation of kernelV in 3D
 inline PetscReal kernelV(
         NonLinearCtx const * const &ctx, const std::vector<PetscReal***> &flux, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k)
@@ -441,10 +442,10 @@ inline PetscReal kernelV(
         (vN * vN - vS * vS) / ctx->mesh->dL[1][1][j] +
         (wF * vF - wB * vB) / ctx->mesh->dL[1][2][k];
 
-}
+} // kernelV
 
 
-/** \brief a private kernel for the convection at a 3-velocity point in 3D. */
+// implementation of kernelW in 3D
 inline PetscReal kernelW(
         NonLinearCtx const * const &ctx, const std::vector<PetscReal***> &flux, 
         const PetscInt &i, const PetscInt &j, const PetscInt &k)
@@ -477,7 +478,7 @@ inline PetscReal kernelW(
         (uE * wE - uW * wW) / ctx->mesh->dL[2][0][i] +
         (vN * wN - vS * wS) / ctx->mesh->dL[2][1][j] +
         (wF * wF - wB * wB) / ctx->mesh->dL[2][2][k];
-}
+} // kernelW
 
 } // end of namespace operators
 } // end of namespace petibm

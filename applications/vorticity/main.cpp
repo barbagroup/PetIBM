@@ -1,8 +1,8 @@
-/*
- * main.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+/**
+ * \file vorticity/main.cpp
+ * \brief An utility that calculates vorticity fields.
+ * \see vorticity
+ * \ingroup vorticity
  */
 
 // STL
@@ -23,6 +23,26 @@
 # include <petibm/boundary.h>
 # include <petibm/solution.h>
 # include <petibm/io.h>
+
+
+/**
+ * \defgroup vorticity Post-processing utility: vorticity
+ * \brief A post-processing utility that calculates vorticity fields.
+ * 
+ * This is a helper utility built with PetIBM components, and it calculates
+ * the vorticity field of simulation results from the
+ * \ref nssolver "Navier-Stokes solver",
+ * \ref tairacolonius "IBPM solver", and 
+ * \ref decoupledibpm "decoupled IBPM solver".
+ * 
+ * If readers are interested in using this utility,
+ * please refer to 
+ * \ref md_doc_markdowns_runpetibm "Running PetIBM",
+ * \ref md_doc_markdowns_examples2d "2D Examples", and
+ * \ref md_doc_markdowns_examples3d "3D Examples".
+ * 
+ * \ingroup apps
+ */
 
 
 PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh, 
@@ -136,14 +156,14 @@ int main(int argc, char **argv)
         else
         { ierr = calculateVorticity3D(mesh, bc, soln, wDMs, w); CHKERRQ(ierr); }
 
-        // append to existing hdf5 file
+        // append to existing HDF5 file
         ierr = petibm::io::writeHDF5Vecs(mesh->comm, ss.str(), "/",
                 wNames, w, FILE_MODE_APPEND); CHKERRQ(ierr);
 
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done.\n"); CHKERRQ(ierr);
     }
 
-    // destroy everything from petsc
+    // destroy everything from PETSc
     for(unsigned int f=0; f<w.size(); ++f)
     {
         ierr = VecDestroy(&w[f]); CHKERRQ(ierr);
@@ -154,7 +174,7 @@ int main(int argc, char **argv)
     ierr = PetscFinalize(); CHKERRQ(ierr);
 
     return 0;
-}
+} // main
 
 
 PetscErrorCode calculateVorticity2D(const petibm::type::Mesh &mesh, 
@@ -233,7 +253,7 @@ PetscErrorCode calculateVorticity2D(const petibm::type::Mesh &mesh,
     }
 
     PetscFunctionReturn(0);
-}
+} // calculateVorticity2D
 
 
 PetscErrorCode calculateVorticity3D(const petibm::type::Mesh &mesh, 
@@ -374,7 +394,7 @@ PetscErrorCode calculateVorticity3D(const petibm::type::Mesh &mesh,
     }
 
     PetscFunctionReturn(0);
-}
+} // calculateVorticity3D
 
 
 PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh, 
@@ -404,7 +424,7 @@ PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh,
         coord[0][1].assign(mesh->coord[4][1], mesh->coord[4][1]+n[0][1]);
         coord[0][2].assign(mesh->coord[3][2], mesh->coord[3][2]+n[0][2]);
 
-        // name of vorticity fileds
+        // name of vorticity fields
         names = std::vector<std::string>(1);
 
         // set name for wz
@@ -462,7 +482,7 @@ PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh,
         coord[2][1].assign(mesh->coord[4][1], mesh->coord[4][1]+n[2][1]);
         coord[2][2].assign(mesh->coord[3][2], mesh->coord[3][2]+n[2][2]);
 
-        // name of vorticity fileds
+        // name of vorticity fields
         names = std::vector<std::string>(3);
 
         // set name for wx
@@ -496,4 +516,4 @@ PetscErrorCode initVorticityMesh(const petibm::type::Mesh &mesh,
         }
     }
     PetscFunctionReturn(0);
-}
+} // initVorticityMesh

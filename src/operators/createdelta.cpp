@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file createdelta.cpp
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Definition of functions creating Delta operator.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to creating Delta operators.
+ * \copyright MIT.
  */
 
 
@@ -24,7 +25,7 @@ namespace petibm
 namespace operators
 {
 
-// TODO: it's anti-readiable that we mix the use of local and global Lagrangian index
+// TODO: it's anti-readable that we mix the use of local and global Lagrangian index
 // TODO: no pre-allocation for D matrix, this may be inefficient, though it works
 
 
@@ -39,7 +40,7 @@ PetscErrorCode getWindowAndDistance(const PetscInt &dim,
         type::RealVec2D &targetdLs);
 
 
-/** \copydoc createDelta(const CartesianMesh &, const BodyPack &, Mat &). */
+// implementation of petibm::operators::createDelta
 PetscErrorCode createDelta(const type::Mesh &mesh, const type::Boundary &bc,
                            const type::BodyPack &bodies, Mat &D)
 {
@@ -173,7 +174,7 @@ PetscErrorCode createDelta(const type::Mesh &mesh, const type::Boundary &bc,
     ierr = MatAssemblyEnd(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+} // createDelta
 
 
 PetscErrorCode getWindowAndDistance(const PetscInt &dim,
@@ -221,7 +222,7 @@ PetscErrorCode getWindowAndDistance(const PetscInt &dim,
     }
 
     PetscFunctionReturn(0);
-}
+} // getWindowAndDistance
 
 } // end of namespace operators
 } // end of namespace petibm

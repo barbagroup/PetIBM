@@ -1,9 +1,10 @@
-/***************************************************************************//**
+/**
  * \file delta.h
- * \author Anush Krishnan (anus@bu.edu)
+ * \brief Prototype of Delta functions.
+ * \author Anush Krishnan (anush@bu.edu)
  * \author Olivier Mesnard (mesnardo@gwu.edu)
  * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \brief Definition of functions regarding to descritized delta functions.
+ * \copyright MIT.
  */
 
 
@@ -16,47 +17,47 @@
 
 namespace petibm
 {
-/** \brief namespace for all kinds of descritized delta functions. */
+/**
+ * \brief A namespace of all kinds of discretized delta functions.
+ * \ingroup miscModule
+ */
 namespace delta
 {
-    /*!
-     * \brief one-dimensional discrete delta function from Roma et al. (1999).
-     *
-     * \param rx distance between target and source.
-     * \param drx window size.
-     *
+    /**
+     * \brief One-dimensional discrete delta function from Roma et al. (1999).
+     * \param rx [in] distance between target and source.
+     * \param drx [in] window size.
      * \returns The value of the discrete delta function.
+     * \ingroup miscModule
      */
     PetscReal Roma_et_al(
             const PetscReal &rx, const PetscReal &drx);
 
 
-    /*!
-     * \brief two-dimensional discrete delta function from Roma et al. (1999).
-     *
-     * \param rx distance of the 1st component between target and source.
-     * \param drx window size of the 1st component.
-     * \param ry distance of the 2nd component between target and source.
-     * \param dry window size of the 2nd component.
-     *
+    /**
+     * \brief Two-dimensional discrete delta function from Roma et al. (1999).
+     * \param rx [in] distance of the 1st component between target and source.
+     * \param drx [in] window size of the 1st component.
+     * \param ry [in] distance of the 2nd component between target and source.
+     * \param dry [in] window size of the 2nd component.
      * \returns The value of the discrete delta function.
+     * \ingroup miscModule
      */
     PetscReal Roma_et_al(
             const PetscReal &rx, const PetscReal &drx,
             const PetscReal &ry, const PetscReal &dry);
 
 
-    /*!
-     * \brief three-dimensional discrete delta function from Roma et al. (1999).
-     *
-     * \param rx distance of the 1st component between target and source.
-     * \param drx window size of the 1st component.
-     * \param ry distance of the 2nd component between target and source.
-     * \param dry window size of the 2nd component.
-     * \param rz distance of the 3rd component between target and source.
-     * \param drz window size of the 3rd component.
-     *
+    /**
+     * \brief Three-dimensional discrete delta function from Roma et al. (1999).
+     * \param rx [in] distance of the 1st component between target and source.
+     * \param drx [in] window size of the 1st component.
+     * \param ry [in] distance of the 2nd component between target and source.
+     * \param dry [in] window size of the 2nd component.
+     * \param rz [in] distance of the 3rd component between target and source.
+     * \param drz [in] window size of the 3rd component.
      * \returns The value of the discrete delta function.
+     * \ingroup miscModule
      */
     PetscReal Roma_et_al(
             const PetscReal &rx, const PetscReal &drx,

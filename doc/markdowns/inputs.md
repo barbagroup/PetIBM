@@ -1,3 +1,5 @@
+# Input files
+
 PetIBM reads input parameters from a YAML configuration file (typically called `config.yaml`) that is located in the simulation directory (i.e. directory where the numerical solution will be written).
 
 If the current working directory is not the simulation directory, the user should provide the command-line argument `-directory <simulation-directory>`.
@@ -7,7 +9,7 @@ If the configuration file is located in another directory, the user should provi
 
 ---
 
-### Basic YAML configuration file
+## Basic YAML configuration file
 
 A basic YAML configuration file for a 2D run will look like:
 
@@ -68,7 +70,7 @@ The node `bodies` is required when running a simulation with at least one bounda
 
 ---
 
-### YAML node `mesh`
+## YAML node `mesh`
 
 `mesh` controls the parameters of the structured Cartesian grid to be created.
 We need to provide sufficient information to generate the gridline coordinates in the `direction` `x`, `y`, and `z`.
@@ -116,7 +118,7 @@ mesh:
 
 ---
 
-### YAML node `flow`
+## YAML node `flow`
 
 `flow` prescribed the characteristics of the fluid as well as the initial and boundary conditions of the flow velocity.
 
@@ -169,7 +171,7 @@ flow:
 
 ---
 
-### YAML node `parameters`
+## YAML node `parameters`
 
 This node gather various `parameters` regarding the advancement of a simulation.
 
@@ -208,7 +210,7 @@ The Poisson system will be solved on GPU devices with the [NVIDIA AmgX library](
 
 ---
 
-### YAML node `bodies`
+## YAML node `bodies`
 
 `bodies` provides information about the boundaries immersed in the computational domain.
 

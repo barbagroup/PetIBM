@@ -1,4 +1,6 @@
-### Dependencies (last tested)
+# Installation
+
+## Dependencies (last tested)
 
 Ensure that the following dependencies are installed before compiling PetIBM:
 
@@ -25,7 +27,7 @@ PetIBM has been tested on:
 
 ---
 
-### GNU C++ Compiler (`g++`)
+## GNU C++ Compiler (`g++`)
 
 On Ubuntu, install `g++` using the following command:
 
@@ -39,7 +41,7 @@ On Mac OS X, `g++` can be installed on Mac OS X via XCode or [Homebrew](brew.sh)
 
 ---
 
-### PETSc
+## PETSc
 
 PetIBM relies on the data structures and parallel routines of the PETSc library.
 
@@ -111,7 +113,7 @@ The PETSc Users Manual and the Manual Pages can be found on their
 
 ---
 
-### yaml-cpp
+## yaml-cpp
 
 [yaml-cpp](https://github.com/jbeder/yaml-cpp) is a YAML parser in C++ used in PetIBM to parse the input configuration file.
 
@@ -119,21 +121,21 @@ The PetIBM configuration script gives the possibility to a previously installed 
 
 ---
 
-### Boost
+## Boost
 
 yaml-cpp depends on the Boost library.
 When configuring PetIBM, you can either use a previously installed version of Boost and provide the path of the directory that contains the headers' folder `boost` with `--with-boost-dir=<directory>` or request to download Boost-1.65.1 with `--enable-boost`.
 
 ---
 
-### gtest
+## gtest
 
 We use the Google's C++ test framework [gtest](https://github.com/google/googletest) to run unit-tests after compiling PetIBM.
 When configuring PetIBM, you can either use a previously installed version of gtest and provide the path of the directory of the gtest installation with `--with-gtest-dir=<directory>` or request to download and install gtest-1.7.0 with `--enable-gtest`.
 
 ---
 
-### PetIBM
+## PetIBM
 
 Create a local copy of the PetIBM repository:
 
@@ -206,7 +208,7 @@ Et voila! You can now add the `bin` directory (that contains the executables) to
 
 ---
 
-### Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs
+## Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs
 
 PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the NVIDIA [AmgX](https://github.com/NVIDIA/AMGX) library.
 
@@ -238,7 +240,7 @@ For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWr
 
 ---
 
-### Contributing and reporting bugs
+## Contributing and reporting bugs
 
 To report bugs, please use the GitHub issue tracking system.
 We are also open to pull-requests.

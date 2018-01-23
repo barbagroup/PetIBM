@@ -3,7 +3,7 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
-    <tab type="user" url="@ref md_CHANGELOG" title="Change Logs"/>
+    <tab type="user" url="@ref md_CHANGELOG" title="Change Log"/>
     <tab type="user" url="@ref md_CONTRIBUTING" title="Contributing"/>
     <tab type="pages" visible="no" title="Quick Start" intro=""/>
     <tab type="usergroup" visible="yes" title="Quick Start" intro="">

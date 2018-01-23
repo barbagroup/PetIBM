@@ -1,3 +1,5 @@
+# 2D examples
+
 ## 2D lid-driven cavity flow at Re=100
 
 Input files are located in the folder `examples/navierstokes/liddrivencavity2dRe100` of the PetIBM directory.

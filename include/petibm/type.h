@@ -20,7 +20,7 @@
 
 
 /** 
- * \defgroup petibm Building blocks for building flow solvers 
+ * \defgroup petibm PetIBM building blocks 
  * 
  * This part contains building blocks that are necessary for a flow solver in 
  * Perot (1993) framework and staggered-grid finite difference method.

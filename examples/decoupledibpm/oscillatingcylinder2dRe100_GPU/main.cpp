@@ -698,16 +698,6 @@ int main(int argc, char **argv)
 	ierr = MatDestroy(&H); CHKERRQ(ierr);
 	ierr = MatDestroy(&BNH); CHKERRQ(ierr);
 	ierr = MatDestroy(&EBNH); CHKERRQ(ierr);
-	config.~Node();
-	mesh.~shared_ptr();
-	boundary.~shared_ptr();
-	bodyPack.~shared_ptr();
-	solution.~shared_ptr();
-	convCoeffs.~shared_ptr();
-	diffCoeffs.~shared_ptr();
-	vSolver.~shared_ptr();
-	pSolver.~shared_ptr();
-	fSolver.~shared_ptr();
 
 	ierr = PetscPrintf(
 		PETSC_COMM_WORLD, "\n\n*** End of run ***\n\n"); CHKERRQ(ierr);

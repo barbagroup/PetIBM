@@ -1,17 +1,21 @@
 # 2D flow around inline oscillating cylinder (Re=100)
 
-To compile this example:
+If `Makefile` is present in this folder, you can compile the example with
 
 ```
 make oscillatingcylinder
 ```
 
-Run the example using 4 CPU processes and 1 GPU:
+This will create the executable `oscillatingcylinder` and you can run the example (with 4 MPI processes and 1 GPU device) with
 
 ```
 export CUDA_VISIBLE_DEVICES=<idx1>
-mpiexec -np 4 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
+mpiexec -np 4 ./oscillatingcylinder -options_left -log_view ascii:stdout.txt
 ```
+
+Otherwise, there is the source file `main.cpp` and it is up to the user to it compile against the PetIBM library.
+
+`Makefile.am` and `Makefile.in` are only included for simplicity but useless.
 
 The simulation completes in less than 30 minutes when using:
 - 4 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),

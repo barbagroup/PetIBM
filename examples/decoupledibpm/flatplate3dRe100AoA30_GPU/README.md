@@ -1,15 +1,15 @@
 # 3D flow around inclined flat plate (Re=100, AR=2, AoA=30deg)
 
-Run the example using 4 CPU processes and 2 GPUs:
+Run the example using 4 CPU processes and 1 GPU:
 
 ```
-export CUDA_VISIBLE_DEVICES=1,3
+export CUDA_VISIBLE_DEVICES=0
 mpiexec -np 4 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
 ```
 
-The simulation completes in less than 30 minutes when using:
+The simulation completes in less than 20 minutes when using:
 - 4 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
-- 2 NVIDIA K20 GPU devices.
+- 1 NVIDIA K40 GPU device.
 
 Plot the instantaneous force coefficients:
 

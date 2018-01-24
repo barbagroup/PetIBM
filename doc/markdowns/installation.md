@@ -2,28 +2,39 @@
 
 ## Dependencies (last tested)
 
-Ensure that the following dependencies are installed before compiling PetIBM:
+**Required**:
 
-* GNU C++ compiler g++ (4.9.2, 5.4.0)
-* [PETSc](https://www.mcs.anl.gov/petsc/) (3.8.1)
+* GNU C++ compiler g++: v4.9.2, v5.4.0, and v7.2.1 have been tested
+* [PETSc](https://www.mcs.anl.gov/petsc/): v3.8.1 or above; with HDF5 enabled
+* MPI: OpenMPI, MPICH, and Intel MPI have been tested
+* [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+* [gtest](https://github.com/google/googletest)
 
-Optional to solve linear systems on GPUs:
+**Optional for GPU linear solvers**:
 
-* NVIDIA's CUDA library (8.0)
-* [AmgX](https://github.com/NVIDIA/AMGX) (2.0)
+* [AmgX](https://github.com/NVIDIA/AMGX)
+* [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) (v1.3)
 
-Optional for pre- and post-processing scripts:
+**Optional for pre- and post-processing scripts**:
 
 * Python (3.6)
 * Numpy (1.12.1)
 * H5py (2.7.0)
 * Matplotlib (2.0.2)
 
-Note: Python and libraries have been installed using Anaconda (4.4.0).
+**Note**:
 
-PetIBM has been tested on:
-* Ubuntu 16.04 with g++-5.4, and PETSc-3.8.1;
-* MacOS Sierra with g++-6.0, and PETSc-3.8.2.
+* MPI can be either installed during [PETSc configuration](#petsc) or installed explicitly by users.
+* [yaml-cpp](https://github.com/jbeder/yaml-cpp), 
+  [gtest](https://github.com/google/googletest), and 
+  [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) can be automatically installed during PetIBM configuration or explicitly installed by users in advance.
+* PetIBM has been tested on:
+    * Ubuntu 16.04 with g++-5.4, and PETSc-3.8.1
+    * MacOS Sierra with g++-6.0, and PETSc-3.8.2
+    * Arch Linux with g++-7.2, and PETSc-3.8.2
+* PetIBM has also been tested on the following HPC systems:
+    * [GW ColonialOne](https://colonialone.gwu.edu/)
+    * [Titan](https://www.olcf.ornl.gov/titan/) at ORNL
 
 ---
 
@@ -130,7 +141,7 @@ When configuring PetIBM, you can either use a previously installed version of Bo
 
 ## gtest
 
-We use the Google's C++ test framework [gtest](https://github.com/google/googletest) to run unit-tests after compiling PetIBM.
+We use Google's C++ test framework [gtest](https://github.com/google/googletest) to run unit-tests after compiling PetIBM.
 When configuring PetIBM, you can either use a previously installed version of gtest and provide the path of the directory of the gtest installation with `--with-gtest-dir=<directory>` or request to download and install gtest-1.7.0 with `--enable-gtest`.
 
 ---
@@ -205,6 +216,17 @@ You may also want to build a optimized version:
 Et voila! You can now add the `bin` directory (that contains the executables) to you PATH environment variable:
 
     export PATH=$HOME/sfw/petibm/petibm-linux-opt/bin:$PATH
+
+---
+
+## PetIBM examples
+
+We provide some examples!
+Input files are located in `$PETIBM_DIR`, but can be copied to another directory with
+
+    make copy-examples EXAMPLES_DIR=<directory>
+
+`EXAMPLES_DIR` is optional and the default directory is the folder `examples` in the top build directory.
 
 ---
 

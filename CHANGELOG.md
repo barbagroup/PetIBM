@@ -6,17 +6,36 @@
 
 ---
 
+WARNING: this is a major re-factorization of the code that is not backward compatible.
+
 ### Added
 
+* PetIBM is now a library.
+* Add `include` folder with all header files.
+* Add `applications` folder with code applications that use the PetIBM library.
+* Add some unit-tests.
+* Add instructions on how to contribute (`CONTRIBUTING.md`).
+* Add multi-body example (2 vertically aligned cylinders at Re=100).
+* Add moving-body example (oscillating cylinder at Re=100).
+* Require PETSc-3.8.
 
 ### Changed
 
+* Code is now under the BSD 3-clause license.
+* Move from a single PetIBM executable to a PetIBM library with a set of application codes (Navier-Stokes solver, immersed-boundary method solvers, and post-processing utilities to compute the vorticity field and generate XMDF files).
+* Update user's documentation and API documentation. (Markdown files for user's documentation are now in `doc/markdowns`; API documentation is generated with Doxygen into `doc/hmtl`.)
+* External dependencies such as yaml-cpp, Boost, Gtest, and AmgXWrapper are now optional; they can be installed separately or when configuring PetIBM.
+* Application codes solve the systems for the velocity components, not anymore for the velocity fluxes.
+* Update previous examples with new configuration file.
 
 ### Fixed
 
 
 ### Removed
 
+* Remove `scripts` folder from the project directory. (It contained old Python scripts that were not used anymore.)
+* Cannot output the fields into PETSc binary format; only HDF5 is supported.
+* Remove Wiki pages. (User's documentation and API documentation now available [here](https://barbagroup.github.io/PetIBM).)
 
 ---
 

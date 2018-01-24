@@ -3,7 +3,7 @@
 Once PetIBM is installed, the executables should be located in the `bin` folder of your installation directory.
 For convenience, you can prepend the `bin` directory to your PATH environment variable:
 
-    export PATH:<petibm-installation-directory>/bin:$PATH
+    export PATH=<petibm-installation-directory>/bin:$PATH
 
 To run a pure Navier-Stokes simulation (no immersed boundary in the computational domain) in serial:
 

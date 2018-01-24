@@ -3,7 +3,7 @@
 Run the example using 4 CPU processes and 2 GPUs:
 
 ```
-export CUDA_VISIBLE_DEVICES=1,3
+export CUDA_VISIBLE_DEVICES=<idx1>,<idx2>
 mpiexec -np 4 petibm-tairacolonius -options_left -log_view ascii:stdout.txt
 ```
 
@@ -20,7 +20,7 @@ python scripts/plotDragCoefficient.py
 We obtained a mean drag coefficient of 1.3336 and a mean lift coefficient of
 0.0032 (min: -0.3488, max: 0.3487).
 
-The plot is saved in the subfolder `figures` of the simulation directory.
+The plot is saved in the sub-folder `figures` of the simulation directory.
 
 Compute the vorticity field at saved time steps:
 

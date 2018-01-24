@@ -28,5 +28,5 @@ Plot the contour of the vorticity field at last saved time step:
 python scripts/plotVorticity.py
 ```
 
-The plots are saved as PNG files in the subfolder `figures` of the simulation
+The plots are saved as PNG files in the sub-folder `figures` of the simulation
 directory.

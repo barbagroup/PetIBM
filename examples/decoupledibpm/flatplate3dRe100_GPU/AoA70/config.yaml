@@ -33,39 +33,39 @@ mesh:
     subDomains:
       - end: -0.5
         cells: 43
-        stretchRatio: 0.970026190707
+        stretchRatio: 0.970873786407767
       - end: 0.7
         cells: 30
         stretchRatio: 1.0
-      - end: 3.1
-        cells: 55
-        stretchRatio: 1.0298
+      - end: 6.1
+        cells: 54
+        stretchRatio: 1.03
 
   - direction: y
     start: -5.0
     subDomains:
       - end: -0.6
         cells: 13
-        stretchRatio: 0.767872226062
+        stretchRatio: 0.7692307692307692
       - end: 0.6
         cells: 30
         stretchRatio: 1.0
       - end: 5.0
         cells: 13
-        stretchRatio: 1.3023
+        stretchRatio: 1.3
 
   - direction: z
     start: -5.0
     subDomains:
       - end: -1.2
-        cells: 13
-        stretchRatio: 0.769526741054
+        cells: 12
+        stretchRatio: 0.7692307692307692
       - end: 1.2
         cells: 60
         stretchRatio: 1.0
       - end: 5.0
-        cells: 13
-        stretchRatio: 1.2995
+        cells: 12
+        stretchRatio: 1.3
 
 parameters:
   dt: 0.01

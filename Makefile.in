@@ -366,6 +366,7 @@ SUBDIRS = \
 	include
 
 EXTRA_DIST = autogen.sh
+EXAMPLES_DIR = $(top_builddir)/examples
 all: all-recursive
 
 .SUFFIXES:
@@ -849,10 +850,10 @@ uninstall-am:
 
 
 copy-examples:
-	@echo "Copying examples folders..."
-	@if test "$(top_srcdir)" != "$(top_builddir)" ; then \
-		mkdir -p $(PWD)/examples ;\
-		rsync -a $(top_srcdir)/examples/* examples \
+	@if test $(EXAMPLES_DIR) != "$(top_srcdir)/examples" ; then \
+		echo "Copying examples folders into $(EXAMPLES_DIR)..." ; \
+		mkdir -p $(EXAMPLES_DIR) ; \
+		rsync -a $(top_srcdir)/examples/* $(EXAMPLES_DIR) \
 			--exclude decoupledibpm/oscillatingcylinder2dRe100_GPU ; \
 	fi ;
 

@@ -13,7 +13,7 @@ export CUDA_VISIBLE_DEVICES=<idx1>
 mpiexec -np 4 ./oscillatingcylinder -options_left -log_view ascii:stdout.txt
 ```
 
-Otherwise, there is the source file `main.cpp` and it is up to the user to it compile against the PetIBM library.
+Otherwise, there is the source file `main.cpp` and it is up to the user to compile it against the PetIBM library.
 
 `Makefile.am` and `Makefile.in` are only included for simplicity but useless.
 

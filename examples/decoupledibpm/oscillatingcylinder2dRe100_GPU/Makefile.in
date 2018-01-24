@@ -627,10 +627,11 @@ uninstall-am:
 
 input_data:
 	if test "$(top_srcdir)" != "$(top_builddir)" ; then \
+		cp -f $(srcdir)/README.md $(PWD) ; \
 		cp -f $(srcdir)/config.yaml $(PWD) ; \
 		cp -rf $(srcdir)/configs $(PWD) ; \
 		cp -f $(srcdir)/circle.body $(PWD) ; \
-		cp -rf $(top_srcdir)/scripts $(PWD) ; \
+		cp -rf $(srcdir)/scripts $(PWD) ; \
 	fi ;
 
 .PHONY: input_data

@@ -109,6 +109,9 @@ PETSC_ARCH: ${PETSC_ARCH}
 
 Now type 'make @<:@<target>@:>@'
   where the optional @<:@<target>@:>@ is:
-    all            - build all binaries
+    all            - build library and application codes
+    check          - compile and run unit-tests
     install        - install everything
+    copy-examples  - copy examples (use EXAMPLES_DIR=<dir> to choose directory,
+                     default is the folder "examples" in the top build directory)
 ])

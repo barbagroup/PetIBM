@@ -219,6 +219,17 @@ Et voila! You can now add the `bin` directory (that contains the executables) to
 
 ---
 
+## PetIBM examples
+
+We provide some examples!
+Input files are located in `$PETIBM_DIR`, but can be copied to another directory with
+
+    make copy-examples EXAMPLES_DIR=<directory>
+
+`EXAMPLES_DIR` is optional and the default directory is the folder `examples` in the top build directory.
+
+---
+
 ## Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs
 
 PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the NVIDIA [AmgX](https://github.com/NVIDIA/AMGX) library.

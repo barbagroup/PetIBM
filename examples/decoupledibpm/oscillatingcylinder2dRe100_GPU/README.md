@@ -1,5 +1,11 @@
 # 2D flow around inline oscillating cylinder (Re=100)
 
+To compile this example:
+
+```
+make oscillatingcylinder
+```
+
 Run the example using 4 CPU processes and 1 GPU:
 
 ```

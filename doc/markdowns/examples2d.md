@@ -7,7 +7,7 @@ Input files are located in the folder `examples/navierstokes/liddrivencavity2dRe
 Make sure that the PetIBM executables are available in your PATH environment variable.
 To add the PetIBM installation directory to you PATH:
 
-    export PATH:<petibm-installation-directory>:$PATH
+    export PATH=<petibm-installation-directory>:$PATH
 
 We are going to solve the flow in a 2D square cavity of unit length with the top wall moving in the positive x direction at speed 1.
 The Reynolds number (based on the kinematic viscosity, the length of the cavity, and the speed of the moving wall) is 100.
@@ -56,7 +56,7 @@ Input files are located in the folder `examples/ibpm/cylinder2dRe40` of the PetI
 Make sure that the PetIBM executables are available in your PATH environment variable.
 To add the PetIBM installation directory to you PATH:
 
-    export PATH:<petibm-installation-directory>:$PATH
+    export PATH=<petibm-installation-directory>:$PATH
 
 A circular cylinder of diameter 1.0 is placed at the center of a two-dimensional domain spanning [-15,15]x[-15,15].
 The initial velocity of the fluid in the domain is (1, 0).
@@ -102,7 +102,7 @@ Input files are located in the folder `examples/ibpm/cylinder2dRe550_GPU` of the
 Make sure that the PetIBM executables are available in your PATH environment variable.
 To add the PetIBM installation directory to you PATH:
 
-    export PATH:<petibm-installation-directory>:$PATH
+    export PATH=<petibm-installation-directory>:$PATH
 
 A circular cylinder of diameter 1.0 is placed at the center of a two-dimensional domain spanning [-15,15]x[-15,15].
 The initial velocity of the fluid in the domain is (1, 0).

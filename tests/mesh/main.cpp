@@ -1,8 +1,7 @@
 /*
- * main.cpp
- * Copyright (C) 2017 Pi-Yueh Chuang <pychuang@gwu.edu>
- *
- * Distributed under terms of the MIT license.
+ * \file tests/mesh/main.cpp
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  */
 
 # include <petsc.h>

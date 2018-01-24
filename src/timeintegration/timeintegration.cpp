@@ -1,10 +1,8 @@
 /**
  * \file timeintegration.cpp
  * \brief Implementations of TimeIntegration related classes.
- * \author Anush Krishnan (anush@bu.edu)
- * \author Olivier Mesnard (mesnardo@gwu.edu)
- * \author Pi-Yueh Chuang (pychuang@gwu.edu)
- * \copyright MIT.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  */
 
 

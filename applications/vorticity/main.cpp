@@ -1,6 +1,8 @@
 /**
  * \file vorticity/main.cpp
  * \brief An utility that calculates vorticity fields.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see vorticity
  * \ingroup vorticity
  */

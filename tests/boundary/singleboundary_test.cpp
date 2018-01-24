@@ -1,6 +1,8 @@
 /**
  * \file singleboundary_test.cpp
  * \brief Unit-tests for the class `SingleBoundary`.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  */
 
 #include <petsc.h>

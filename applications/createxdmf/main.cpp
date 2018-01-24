@@ -1,6 +1,8 @@
 /**
  * \file createxdmf/main.cpp
  * \brief An utility that generates XDMF files for visualization.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
  * \see createxdmf
  * \ingroup createxdmf
  */

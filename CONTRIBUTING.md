@@ -36,6 +36,4 @@ You should also add code documentation whenever necessary; it will greatly help 
 For new features, user's documentation must also be written.
 For this purpose, we use Markdown files that are located in the `doc` folder of the root directory of PetIBM.
 
-The Wiki pages and Doxygen API documentation are up-to-date with the latest release of PetIBM, which should also be the latest commit on the `master` branch.
-
-Once a new release is drafted, we will merge the `doc` folder into the Wiki of PetIBM and the API documentation will be merged into the branch `gh-pages`.
+The User's documentation and API documentation are up-to-date with the latest release of PetIBM, which should be close to the latest commit on the `master` branch.

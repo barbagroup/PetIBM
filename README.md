@@ -16,7 +16,7 @@ The data transfer between PETSc and AmgX is handled by the wrapper [AmgXWrapper]
 
 PetIBM runs only on Unix-based systems (no support on Windows) and was last tested on Ubuntu 16.04 and MacOS Sierra 10.12.6.
 
-To build PetIBM, please refer to the [installation instructions](https://github.com/barbagroup/PetIBM/wiki/installation).
+To build PetIBM, please refer to the [installation instructions](https://barbagroup.github.io/PetIBM).
 
 ---
 
@@ -43,9 +43,7 @@ Note: Python and libraries have been installed using Anaconda (4.4.0).
 
 ## Documentation
 
-User's documentation is available on the [Wiki](https://github.com/barbagroup/PetIBM/wiki) pages of the PetIBM repository.
-
-Doxygen API documentation is available [here](http://barbagroup.github.io/PetIBM).
+User's documentation and API documentation are available [here](https://barbagroup.github.io/PetIBM)
 
 ---
 

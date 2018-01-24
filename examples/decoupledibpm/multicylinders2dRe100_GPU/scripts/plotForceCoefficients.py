@@ -8,6 +8,29 @@ from matplotlib import pyplot
 
 
 def get_force_coefficients(filepath, label=None, coeff=1.0, usecols=None):
+  """
+  Returns the force coefficients after reading the forces from file.
+
+  Parameters
+  ----------
+    filepath: string
+      Path of the file to read.
+    label: string, optional
+      Name of the body;
+      default: None.
+    coeff: float, optional
+      Coefficient to convert force into force coefficient;
+      default: 1.0.
+    usecols: tuple of integers, optional
+      Columns to read in the file;
+      default: None.
+
+  Returns
+  -------
+    dict: dictionary
+      Contains the label of the body, the time values,
+      and the force coefficients.
+  """
   with open(filepath, 'r') as infile:
     data = numpy.loadtxt(infile,
                          dtype=numpy.float64, usecols=usecols, unpack=True)
@@ -16,8 +39,21 @@ def get_force_coefficients(filepath, label=None, coeff=1.0, usecols=None):
 
 
 def get_time_mask(data, time_limits=(-numpy.inf, numpy.inf)):
-  mask = numpy.where(numpy.logical_and(time_limits[0] <= data['t'],
-                                       data['t'] <= time_limits[1]))[0]
+  """
+  Get a mask given the time limits.
+
+  Parameters
+  ----------
+    data: 1D Numpy array of floats
+      The time values
+
+  Returns
+  -------
+    mask: 1D Numpy array of integers
+      The mask
+  """
+  mask = numpy.where(numpy.logical_and(time_limits[0] <= data,
+                                       data <= time_limits[1]))[0]
   return mask
 
 
@@ -33,10 +69,10 @@ bodies.append(get_force_coefficients(filepath, label='Body 1',
 bodies.append(get_force_coefficients(filepath, label='Body 2',
                                      coeff=2.0, usecols=(0, 3, 4)))
 
-# Compute the time-averaged force coefficients and min/max lift coefficient
+# Compute the time-averaged force coefficients and min/max lift coefficient.
 time_limits = (125.0, 200.0)
 for body in bodies:
-  mask = get_time_mask(body, time_limits=time_limits)
+  mask = get_time_mask(body['t'], time_limits=time_limits)
   cd, cl = body['cd'], body['cl']
   cd_mean, cl_mean = cd[mask].mean(), cl[mask].mean()
   cl_min, cl_max = cl[mask].min(), cl[mask].max()
@@ -45,7 +81,7 @@ for body in bodies:
   print('\t<Cl> = {:0.4f} ([{:0.4f}, {:0.4f}])'
         .format(cl_mean, cl_min, cl_max))
 
-# Plot the force coefficients
+# Plot the force coefficients.
 pyplot.style.use('seaborn-dark')
 fig, ax = pyplot.subplots(2, figsize=(10.0, 6.0), sharex=True)
 ax[0].grid(zorder=0)
@@ -74,7 +110,7 @@ fig.legend(handles, labels,
            frameon=False, bbox_to_anchor=(0.54, 0.53))
 fig.tight_layout()
 
-# Save the figure
+# Save the figure.
 figures_dir = os.path.join(root_dir, 'figures')
 if not os.path.isdir(figures_dir):
   os.makedirs(figures_dir)

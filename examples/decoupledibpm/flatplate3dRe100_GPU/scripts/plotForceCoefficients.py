@@ -92,6 +92,7 @@ fig.legend(handles, labels,
            frameon=False, bbox_to_anchor=(0.54, 0.53))
 fig.tight_layout()
 
+# Save the figure.
 figures_dir = os.path.join(root_dir, 'figures')
 if not os.path.isdir(figures_dir):
   os.makedirs(figures_dir)

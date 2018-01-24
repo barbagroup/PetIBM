@@ -3,7 +3,7 @@
 Run the example using 1 GPU (index 0):
 
 ```
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=<idx1>
 mpiexec -np 2 petibm-navierstokes -options_left -log_view ascii:stdout.txt
 ```
 
@@ -18,4 +18,4 @@ from Ghia et al. (1982):
 python scripts/plotCenterlineVelocities.py
 ```
 
-The plot is saved in the subfolder `figures` of the simulation directory.
+The plot is saved in the sub-folder `figures` of the simulation directory.

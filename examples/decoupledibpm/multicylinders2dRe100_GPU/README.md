@@ -9,7 +9,7 @@ python scripts/createBodies.py
 To run the example using 4 CPU processes and 1 GPU:
 
 ```
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=<idx1>
 mpiexec -np 4 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
 ```
 

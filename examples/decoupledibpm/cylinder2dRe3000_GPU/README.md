@@ -3,7 +3,7 @@
 Run the example using 4 CPU processes and 2 GPUs:
 
 ```
-export CUDA_VISIBLE_DEVICES=1,3
+export CUDA_VISIBLE_DEVICES=<idx1>,<idx2>
 mpiexec -np 4 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
 ```
 
@@ -30,5 +30,5 @@ Plot the contour of the vorticity field at last saved time step:
 python scripts/plotVorticity.py
 ```
 
-The plots are saved as PNG files in the subfolder `figures` of the simulation
+The plots are saved as PNG files in the sub-folder `figures` of the simulation
 directory.

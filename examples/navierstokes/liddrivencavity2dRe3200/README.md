@@ -16,4 +16,4 @@ from Ghia et al. (1982):
 python scripts/plotCenterlineVelocities.py
 ```
 
-The plot is saved in the subfolder `figures` of the simulation directory.
+The plot is saved in the sub-folder `figures` of the simulation directory.

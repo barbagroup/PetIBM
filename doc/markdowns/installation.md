@@ -22,14 +22,12 @@
 * H5py (2.7.0)
 * Matplotlib (2.0.2)
 
-**Note**: 
-* MPI can be either installed during [PETSc configuration](#petsc) or installed
-  ecplicitly
-  by users.
+**Note**:
+
+* MPI can be either installed during [PETSc configuration](#petsc) or installed explicitly by users.
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp), 
   [gtest](https://github.com/google/googletest), and 
-  [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) can be automatically
-  installed during PetIBM configuration or explicitly installed by users in advance.
+  [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) can be automatically installed during PetIBM configuration or explicitly installed by users in advance.
 * PetIBM has been tested on:
     * Ubuntu 16.04 with g++-5.4, and PETSc-3.8.1
     * MacOS Sierra with g++-6.0, and PETSc-3.8.2
@@ -37,7 +35,6 @@
 * PetIBM has also been tested on the following HPC systems:
     * [GW ColonialOne](https://colonialone.gwu.edu/)
     * [Titan](https://www.olcf.ornl.gov/titan/) at ORNL
-
 
 ---
 

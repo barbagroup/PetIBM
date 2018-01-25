@@ -29,13 +29,13 @@ bibliography: paper.bib
 # Summary
 
 PetIBM solves the two- and three-dimensional Navier-Stokes equations with an immersed-boundary method on fixed structured Cartesian grids.
-The immersed boundary is defined by a collection of Lagrangian markers and the fluid equations are solved over the extended domain (including the body domain).
-This approach allows to compute the flow around multiple moving immersed bodies without the need to modify the Eulerian mesh every time step.
-The fluid equations are discretized with a finite-difference technique and integrated in time with a fully-discrete projection method (@perot_1993).
-Currently, PetIBM implements two immersed-boundary algorithms: the immersed-boundary projection method (@taira_colonius_2007) and its decoupled version (@li_et_al_2016).
+In this method, a collection of Lagrangian markers defines the immersed boundary (where boundary conditions are enforced) and the fluid equations are solved over the extended domain (including the body domain).
+The Eulerian mesh remains unmodified when computing the flow around multiple moving immersed bodies, which removes the need for remeshing at every time step.
+PetIBM discretizes the fluid equations using a second-order finite-difference scheme, various optional time-integrators, and a fully discrete projection method (@perot_1993).
+It implements two immersed-boundary algorithms: the immersed-boundary projection method (@taira_colonius_2007) and its decoupled version (@li_et_al_2016).
 
 PetIBM is written in C++ and relies on the PETSc library (@petsc_1997, @petsc_user_ref_2017) to run on memory-distributed architectures.
-PetIBM also implements the feature to solve one or several linear systems on multiple distributed CUDA-capable GPU devices with the NVIDIA AmgX library and AmgXWrapper (@chuang_barba_2017).
+PetIBM can solve one or several linear systems on multiple distributed CUDA-capable GPU devices with the NVIDIA AmgX library and AmgXWrapper (@chuang_barba_2017).
 
 PetIBM has already been used to generate results published in @mesnard_barba_2017, a full replication of a study on the aerodynamics of a gliding snake species (@krishnan_et_al_2014).
 PetIBM is currently used to compute the three-dimensional flow of a gliding-snake model on the cloud platform Microsoft Azure.

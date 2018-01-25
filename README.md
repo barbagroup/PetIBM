@@ -1,4 +1,4 @@
-# PetIBM - A PETSc-based Immersed Boundary Method code
+# PetIBM - toolbox and applications of the immersed-boundary method on distributed-memory architectures
 
 [Build Status]: https://travis-ci.org/barbagroup/PetIBM.png?branch=develop
 [![Build Status]](https://travis-ci.org/barbagroup/PetIBM)

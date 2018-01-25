@@ -38,6 +38,7 @@ It can handle deforming immersed bodies and has been used in a variety of scenar
 PetIBM and IBAMR use different immersed-boundary schemes, however. We developed PetIBM to work with the immersed-boundary projection method, which is based on the fully discrete formulation of Perot and thus eliminates the need for pressure boundary conditions (which have caused many headaches for CFD practitioners!). 
 PetIBM features an operator-based design, so it can be used as a toolbox for researching new solution methods.
 It is also capable of using GPU architectures, a feature missing from other software, as far as we know.
+A previous project implementing immersed-boundary methods on GPU architecture is cuIBM (@krishnan_et_al_2017), but it is limited to two-dimensional problems that fit on a single GPU device.
 
 PetIBM is written in C++ and relies on the PETSc library (@petsc_1997, @petsc_user_ref_2017) to run on memory-distributed architectures.
 PetIBM can solve one or several linear systems on multiple distributed CUDA-capable GPU devices with the NVIDIA AmgX library and AmgXWrapper (@chuang_barba_2017).

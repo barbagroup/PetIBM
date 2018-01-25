@@ -33,6 +33,11 @@ In this method, a collection of Lagrangian markers defines the immersed boundary
 The Eulerian mesh remains unmodified when computing the flow around multiple moving immersed bodies, which removes the need for remeshing at every time step.
 PetIBM discretizes the fluid equations using a second-order finite-difference scheme, various optional time-integrators, and a fully discrete projection method (@perot_1993).
 It implements two immersed-boundary algorithms: the immersed-boundary projection method (@taira_colonius_2007) and its decoupled version (@li_et_al_2016).
+Other open-source software packages offer immersed-boundary solvers: for example, IBAMR (@) is a long-standing C++ library with MPI parallelization that also provides adaptive mesh refinement. 
+It can handle deforming immersed bodies and has been used in a variety of scenarios, including cardiac fluid dynamics, swimming, insect flight, and others. 
+PetIBM and IBAMR use different immersed-boundary schemes, however. We developed PetIBM to work with the immersed-boundary projection method, which is based on the fully discrete formulation of Perot and thus eliminates the need for pressure boundary conditions (which have caused many headaches for CFD practitioners!). 
+PetIBM features an operator-based design, so it can be used as a toolbox for researching new solution methods.
+It is also capable of using GPU architectures, a feature missing from other software, as far as we know.
 
 PetIBM is written in C++ and relies on the PETSc library (@petsc_1997, @petsc_user_ref_2017) to run on memory-distributed architectures.
 PetIBM can solve one or several linear systems on multiple distributed CUDA-capable GPU devices with the NVIDIA AmgX library and AmgXWrapper (@chuang_barba_2017).

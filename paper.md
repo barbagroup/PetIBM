@@ -12,11 +12,11 @@ authors:
  - name: Olivier Mesnard
    orcid:  0000-0001-5335-7853
    affiliation: 1
+ - name: Anush Krishnan
+   affiliation: 2
  - name: Lorena A. Barba
    orcid: 0000-0001-5812-2711
    affiliation: 1
- - name: Anush Krishnan
-   affiliation: 2
 affiliations:
  - name: The George Washington University
    index: 1

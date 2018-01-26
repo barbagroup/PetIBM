@@ -37,7 +37,7 @@
   "dateModified": "2017-01-25",
   "dateCreated": "2018-01-25",
   "description": "PetIBM is a toolbox with applications of the immersed-boundary method on distributed-memory architectures.",
-  "keywords": "Computational Fluid Dynamics, Immersed-Boundary Method, PETSc, NVIDIA AmgX",
+  "keywords": "Computational Fluid Dynamics, Immersed-Boundary Method, PETSc, GPU, NVIDIA AmgX",
   "license": "BSD 3-Clause",
   "title": "PetIBM",
   "version": "v0.3"

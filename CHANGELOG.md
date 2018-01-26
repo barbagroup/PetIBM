@@ -27,13 +27,14 @@ WARNING: this is a major re-factorization of the code that is not backward compa
 * External dependencies such as yaml-cpp, Boost, Gtest, and AmgXWrapper are now optional; they can be installed separately or when configuring PetIBM.
 * Application codes solve the systems for the velocity components, not anymore for the velocity fluxes.
 * Update previous examples with new configuration file.
+* Update Travis CI build to cache PETSc-3.8.2.
 
 ### Fixed
 
 
 ### Removed
 
-* Remove `scripts` folder from the project directory. (It contained old Python scripts that were not used anymore.)
+* Remove all Python scripts from the `scripts` folder. (It contained old Python scripts that were not used anymore.)
 * Cannot output the fields into PETSc binary format; only HDF5 is supported.
 * Remove Wiki pages. (User's documentation and API documentation now available [here](https://barbagroup.github.io/PetIBM).)
 

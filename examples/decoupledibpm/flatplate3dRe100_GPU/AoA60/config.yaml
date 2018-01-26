@@ -1,0 +1,90 @@
+flow:
+  nu: 0.01
+  initialVelocity: [1.0, 0.0, 0.0]
+  boundaryConditions:
+    - location: xMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: xPlus
+      u: [CONVECTIVE, 1.0]
+      v: [CONVECTIVE, 0.0]
+      w: [CONVECTIVE, 0.0]
+    - location: yMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: yPlus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: zMinus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+    - location: zPlus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+      w: [DIRICHLET, 0.0]
+
+mesh:
+  - direction: x
+    start: -4.0
+    subDomains:
+      - end: -0.5
+        cells: 43
+        stretchRatio: 0.970873786407767
+      - end: 0.7
+        cells: 30
+        stretchRatio: 1.0
+      - end: 6.1
+        cells: 54
+        stretchRatio: 1.03
+
+  - direction: y
+    start: -5.0
+    subDomains:
+      - end: -0.6
+        cells: 13
+        stretchRatio: 0.7692307692307692
+      - end: 0.6
+        cells: 30
+        stretchRatio: 1.0
+      - end: 5.0
+        cells: 13
+        stretchRatio: 1.3
+
+  - direction: z
+    start: -5.0
+    subDomains:
+      - end: -1.2
+        cells: 12
+        stretchRatio: 0.7692307692307692
+      - end: 1.2
+        cells: 60
+        stretchRatio: 1.0
+      - end: 5.0
+        cells: 12
+        stretchRatio: 1.3
+
+parameters:
+  dt: 0.01
+  startStep: 0
+  nt: 2000
+  nsave: 2000
+  nrestart: 2000
+  convection: ADAMS_BASHFORTH_2
+  diffusion: CRANK_NICOLSON
+  velocitySolver:
+    type: GPU
+    config: ../configs/velocity_solver.txt
+  poissonSolver:
+    type: GPU
+    config: ../configs/poisson_solver.txt
+  forcesSolver:
+    type: CPU
+    config: ../configs/forces_solver.txt
+
+bodies:
+  - type: points
+    file: flatplateAoA60.body

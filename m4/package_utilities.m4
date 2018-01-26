@@ -1,6 +1,6 @@
 # PACKAGE_INITIALIZE_ENVIRONMENT
 # ------------------------------
-# brief: Initializes PACKAGE environement variables to empty strings.
+# brief: Initializes PACKAGE environment variables to empty strings.
 AC_DEFUN([PACKAGE_INITIALIZE_ENVIRONMENT], [
 ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
 PACKAGE_CFLAGS=""
@@ -22,6 +22,7 @@ PACKAGE_save_CPPFLAGS=$CPPFLAGS
 PACKAGE_save_CXXFLAGS=$CXXFLAGS
 PACKAGE_save_FCFLAGS=$FCFLAGS
 PACKAGE_save_LDFLAGS=$LDFLAGS
+PACKAGE_save_LIBS=$LIBS
 PACKAGE_save_FCLIBS=$FCLIBS
 PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
 CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
@@ -36,7 +37,7 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 # PACKAGE_RESTORE_ENVIRONMENT
 # ---------------------------
-# brief: Restores saved envorinment variables.
+# brief: Restores saved environment variables.
 AC_DEFUN([PACKAGE_RESTORE_ENVIRONMENT], [
 CFLAGS=$PACKAGE_save_CFLAGS
 CPPFLAGS=$PACKAGE_save_CPPFLAGS

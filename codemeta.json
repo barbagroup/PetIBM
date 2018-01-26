@@ -1,0 +1,44 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [    
+    {
+      "@id": "http://orcid.org/0000-0001-6330-2709",
+      "@type": "Person",
+      "email": "pychuang@gwu.edu",
+      "name": "Pi-Yueh Chuang",
+      "affiliation": "The George Washington University"
+    },
+    {
+      "@id": "http://orcid.org/0000-0001-5335-7853",
+      "@type": "Person",
+      "email": "mesnardo@gwu.edu",
+      "name": "Olivier Mesnard",
+      "affiliation": "The George Washington University"
+    },
+    {
+      "@id": "http://orcid.org/0000-0001-6409-7022",
+      "@type": "Person",
+      "email": "k.anush@gmail.com",
+      "name": "Anush Krishnan",
+      "affiliation": "nuTonomy Inc. (previously at Boston University)"
+    },
+    {
+      "@id": "http://orcid.org/0000-0001-5812-2711",
+      "@type": "Person",
+      "email": "labarba@gwu.edu",
+      "name": "Lorena A. Barba",
+      "affiliation": "The George Washington University"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/barbagroup/PetIBM",
+  "datePublished": "2018-01-25",
+  "dateModified": "2017-01-25",
+  "dateCreated": "2018-01-25",
+  "description": "PetIBM is a toolbox with applications of the immersed-boundary method on distributed-memory architectures.",
+  "keywords": "Computational Fluid Dynamics, Immersed-Boundary Method, PETSc, GPU, NVIDIA AmgX",
+  "license": "BSD 3-Clause",
+  "title": "PetIBM",
+  "version": "v0.3"
+}

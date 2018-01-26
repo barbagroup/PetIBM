@@ -1,7 +1,15 @@
-SUBDIRS = CartesianMesh \
-          NavierStokes \
-          TairaColonius
+SUBDIRS = \
+	body \
+	boundary \
+	mesh \
+	misc \
+	operators
 
-TESTS = CartesianMesh/cartesianMeshTest \
-        NavierStokes/navierStokesTest \
-        TairaColonius/tairaColoniusTest
+TESTS = \
+	misc/delta-test \
+	body/singlebody-test \
+	mesh/cartesianmesh-test \
+	boundary/singleboundary-test \
+	operators/createbnhead-test
+
+AM_COLOR_TESTS = always

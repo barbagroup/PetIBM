@@ -1,0 +1,45 @@
+mesh:
+  - direction: x
+    start: 0.0
+    subDomains:
+      - end: 1.0
+        cells: 192
+        stretchRatio: 1.0
+  - direction: y
+    start: 0.0
+    subDomains:
+      - end: 1.0
+        cells: 192
+        stretchRatio: 1.0
+
+flow:
+    nu: 0.0003125
+    initialVelocity: [0.0, 0.0]
+    boundaryConditions:
+      - location: xMinus
+        u: [DIRICHLET, 0.0]
+        v: [DIRICHLET, 0.0]
+      - location: xPlus
+        u: [DIRICHLET, 0.0]
+        v: [DIRICHLET, 0.0]
+      - location: yMinus
+        u: [DIRICHLET, 0.0]
+        v: [DIRICHLET, 0.0]
+      - location: yPlus
+        u: [DIRICHLET, 1.0]
+        v: [DIRICHLET, 0.0]
+
+parameters:
+    dt: 0.002
+    startStep: 0
+    nt: 25000
+    nsave: 25000
+    nrestart: 25000
+    convection: ADAMS_BASHFORTH_2
+    diffusion: CRANK_NICOLSON
+    velocitySolver:
+      type: CPU
+      config: solversPetscOptions.info
+    poissonSolver:
+      type: CPU
+      config: solversPetscOptions.info

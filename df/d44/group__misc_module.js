@@ -1,0 +1,36 @@
+var group__misc_module =
+[
+    [ "delta", "db/d4d/namespacepetibm_1_1delta.html", null ],
+    [ "io", "dc/d3a/namespacepetibm_1_1io.html", null ],
+    [ "misc", "dd/d40/namespacepetibm_1_1misc.html", null ],
+    [ "parser", "dc/dc0/namespacepetibm_1_1parser.html", null ],
+    [ "YAML", "d7/d1e/namespace_y_a_m_l.html", null ],
+    [ "LoopBound", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html", [
+      [ "bg", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html#a21ecd85d8bf6167be6c850d3749e6fe9", null ],
+      [ "ed", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html#aafbdc37e976a9f9f349bfb78e376adf1", null ]
+    ] ],
+    [ "checkBoundaryProc", "df/d44/group__misc_module.html#ga1563391046620fa87eaa4f2540599062", null ],
+    [ "checkPeriodicBC", "df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797", null ],
+    [ "doubleLoops", "df/d44/group__misc_module.html#ga578ec39e388d83904da4e836abbc9bab", null ],
+    [ "getGhostPointList", "df/d44/group__misc_module.html#gae51df343993fcb388fdf63def6d859b2", null ],
+    [ "getGhostTargetStencil", "df/d44/group__misc_module.html#ga086e1b6dfa6f5bfeecfb75471f7abd8c", null ],
+    [ "getPerpendAxes", "df/d44/group__misc_module.html#ga37603d55dcb07a958f03f3b61f24f8cd", null ],
+    [ "getSettings", "df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97", null ],
+    [ "parseBCs", "df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339", null ],
+    [ "parseICs", "df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e", null ],
+    [ "parseMesh", "df/d44/group__misc_module.html#ga434ba3d6f208b9370b4a2024254ee4ee", null ],
+    [ "parseOneAxis", "df/d44/group__misc_module.html#ga2e6d3015fdebb6013160ecd7ae01592f", null ],
+    [ "parseOneSubDomain", "df/d44/group__misc_module.html#gafafb413cef72933548a11fe8ead9672c", null ],
+    [ "parseSubDomains", "df/d44/group__misc_module.html#ga33fdd0338cbd5c00c50325fb1cb1a532", null ],
+    [ "print", "df/d44/group__misc_module.html#gadd71230142c7050daf20da48dd5e5664", null ],
+    [ "readHDF5Vecs", "df/d44/group__misc_module.html#ga49bb8316775bbafd794b6b89c5e90f37", null ],
+    [ "readLagrangianPoints", "df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded", null ],
+    [ "Roma_et_al", "df/d44/group__misc_module.html#ga36f60d698bf9ddfd52f81d03c9a65d87", null ],
+    [ "Roma_et_al", "df/d44/group__misc_module.html#gadbf7c91389ecf9cf6c36e850f41f4460", null ],
+    [ "Roma_et_al", "df/d44/group__misc_module.html#gaf71607ad49ad08a7a21954d441f3b024", null ],
+    [ "stretchGrid", "df/d44/group__misc_module.html#gae63b24b614ceb71dc6f0ca42e129d226", null ],
+    [ "tripleLoops", "df/d44/group__misc_module.html#ga7bf3e89e4f41fb4cfdac1986ed4286ff", null ],
+    [ "writeHDF5Vecs", "df/d44/group__misc_module.html#gae6cbd6a9cc53ac4a98936e7e493e4e15", null ],
+    [ "writeHDF5Vecs", "df/d44/group__misc_module.html#gac39aebda34c7ca0ee65777aabc0749ca", null ],
+    [ "writeHDF5Vecs", "df/d44/group__misc_module.html#ga5fc969835357bf378cdad45f5344fc23", null ]
+];

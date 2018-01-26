@@ -1,0 +1,65 @@
+\form#0:$u_g$
+\form#1:$u_b$
+\form#2:$t$
+\form#3:\[u_g^t = a_0 \times u_b^t + a_1\]
+\form#4:$a_0$
+\form#5:$a_1$
+\form#6:\[u_g^t = 0 \times u_b^t + U_{Dirichlet}(t, y, z)\]
+\form#7:\[ u_g^t = -1.0 \times u_b^t + \left(u_g^{t-1} + u_b^{t-1} - 2.0 * \Delta t * U_c\frac{u_g^{t-1} - u_b^{t-1}}{\Delta L}\right) \]
+\form#8:\[(D + D_{bc})u\]
+\form#9:$D$
+\form#10:$D_{bc}$
+\form#11:\[ u_{i} = a_{0} u_{i-1} + a_{1} \]
+\form#12:$u_{i}$
+\form#13:$u_{i-1}$
+\form#14:$a_{0}$
+\form#15:$a_{1}$
+\form#16:$R$
+\form#17:$q$
+\form#18:$u$
+\form#19:$Rq=u$
+\form#20:$R^{-1}$
+\form#21:$R^{-1}u=q$
+\form#22:$\hat{M}$
+\form#23:$(i, j, k)$
+\form#24:$dx_{i,j,k}$
+\form#25:$v$
+\form#26:$dy_{i,j,k}$
+\form#27:$\hat{M}R=cell\ volumes$
+\form#28:$M=\hat{M}R^{-1}$
+\form#29:$M$
+\form#30:$I$
+\form#31:$G$
+\form#32:$(D+D_{bc})$
+\form#33:$L$
+\form#34:$L_{bc}$
+\form#35:$(L+L_{bc})$
+\form#36:$H$
+\form#37:$Hu$
+\form#38:$A^{-1}$
+\form#39:$B_n$
+\form#40:$A$
+\form#41:\[A=\frac{I}{dt} - coeff \times Op\]
+\form#42:$Op$
+\form#43:$coeff$
+\form#44:\[A = \frac{I}{dt} - 0.5 \times L\]
+\form#45:$1$
+\form#46:\[ A = \frac{I}{dt} - c_{1}\times Op_{1} - c_{2}\times Op_{2}\]
+\form#47:\[Op = c_1\times Op_1 + c_2\times Op_2\]
+\form#48:\[ A = \frac{I}{dt} - 1.0\times Op \]
+\form#49:$M = \hat{M}R^{-1}$
+\form#50:\[ A = \frac{M}{dt} - coeff \times \hat{M}OpR \]
+\form#51:\[ M = \hat{M}R^{-1} \]
+\form#52:$A = M/dt - coeff * Op$
+\form#53:\[ A = \frac{M}{dt} - coeff \times Op \]
+\form#54:$Delta$
+\form#55:$Delta_{(i,j)}$
+\form#56:\[ Delta_{(i,j)} = d(x_j-\xi_i)d(y_j-\eta_i)d(z_j-\zeta_i) \]
+\form#57:$(x_j,y_j,z_j)$
+\form#58:$(\xi_i,\eta_i,\zeta_i)$
+\form#59:$j$
+\form#60:$i$
+\form#61:$d(...)$
+\form#62:$t-1$
+\form#63:$+1$
+\form#64:$-1$

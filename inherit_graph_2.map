@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$dc/dc6/classpetibm_1_1body_1_1_single_body_base.html" title="Base (abstract) class for a single body. " alt="" coords="5,12,208,37"/>
+<area shape="rect" id="node2" href="$d9/d83/classpetibm_1_1body_1_1_single_body_points.html" title="An implementation of body::SingleBodyBase that uses point data as input. " alt="" coords="256,5,429,44"/>
+</map>

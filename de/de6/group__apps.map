@@ -1,0 +1,7 @@
+<map id="Flow solvers and utilities" name="Flow solvers and utilities">
+<area shape="rect" id="node1" href="$d7/db7/group__vorticity.html" title="A post&#45;processing utility that calculates vorticity fields. " alt="" coords="224,5,375,44"/>
+<area shape="rect" id="node3" href="$d1/d9d/group__tairacolonius.html" title="Implementation of parallel IBPM solver (Taira &amp; Colonius 2007). " alt="" coords="234,68,365,107"/>
+<area shape="rect" id="node4" href="$df/db8/group__createxdmf.html" title="A post&#45;processing utility that creates XDMF files for visualization. " alt="" coords="224,131,375,169"/>
+<area shape="rect" id="node5" href="$d0/d4b/group__decoupledibpm.html" title="Implementation of parallel decoupled IBPM solver (Li et. al. 2016). " alt="" coords="219,193,380,232"/>
+<area shape="rect" id="node6" href="$dc/d6a/group__nssolver.html" title="Implementation of parallel Navier&#45;Stokes solver. " alt="" coords="227,256,372,281"/>
+</map>

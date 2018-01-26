@@ -11,9 +11,10 @@ authors:
    orcid: 0000-0001-6330-2709
    affiliation: 1
  - name: Olivier Mesnard
-   orcid:  0000-0001-5335-7853
+   orcid: 0000-0001-5335-7853
    affiliation: 1
  - name: Anush Krishnan
+   orcid: 0000-0001-6409-7022
    affiliation: 2
  - name: Lorena A. Barba
    orcid: 0000-0001-5812-2711

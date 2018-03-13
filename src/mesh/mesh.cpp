@@ -14,7 +14,7 @@ namespace petibm
 {
 namespace mesh
 {
-    
+
 // implement MeshBase::~MeshBase
 MeshBase::~MeshBase()
 {
@@ -43,6 +43,14 @@ PetscErrorCode MeshBase::destroy()
 
     PetscErrorCode ierr;
 
+    for(int f=0; f<dim; ++f)
+    {
+        ierr = DMDestroy(&da[f]); CHKERRQ(ierr);
+    }
+    ierr = DMDestroy(&da[3]); CHKERRQ(ierr);
+    ierr = DMDestroy(&da[4]); CHKERRQ(ierr);
+    ierr = DMDestroy(&UPack); CHKERRQ(ierr);
+
     dim = -1;
     type::RealVec1D().swap(min);
     type::RealVec1D().swap(max);
@@ -53,19 +61,11 @@ PetscErrorCode MeshBase::destroy()
     UN = pN = 0;
     info = std::string();
 
-    for(int f=0; f<dim; ++f)
-    {
-        ierr = DMDestroy(&da[f]); CHKERRQ(ierr);
-    }
-    ierr = DMDestroy(&da[3]); CHKERRQ(ierr);
-    ierr = DMDestroy(&da[4]); CHKERRQ(ierr);
-
     type::IntVec1D().swap(nProc);
     type::IntVec2D().swap(bg);
     type::IntVec2D().swap(ed);
     type::IntVec2D().swap(m);
     UNLocal = pNLocal = 0;
-    ierr = DMDestroy(&UPack); CHKERRQ(ierr);
 
     comm = MPI_COMM_NULL;
     mpiSize = mpiRank = 0;
@@ -83,7 +83,7 @@ PetscErrorCode MeshBase::printInfo() const
 
     PetscFunctionReturn(0);
 } // printInfo
-    
+
 // implement petibm::mesh::createMesh
 PetscErrorCode createMesh(const MPI_Comm &comm,
         const YAML::Node &node, type::Mesh &mesh)

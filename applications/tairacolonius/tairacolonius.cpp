@@ -52,6 +52,7 @@ PetscErrorCode TairaColoniusSolver::destroy()
     bodies.reset();
     ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
     ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
+    ierr = VecResetArray(P); CHKERRQ(ierr);
     ierr = VecDestroy(&P); CHKERRQ(ierr);
     ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
 
@@ -180,11 +181,14 @@ PetscErrorCode TairaColoniusSolver::createVectors()
     solution->pGlobal = P;
     P = temp;
     temp = PETSC_NULL;
+
+    // destroy P's underlying raw array but keep all other information
+    ierr = VecReplaceArray(P, nullptr); CHKERRQ(ierr);
     
     // reset the underlying data of P to the pressure portion in pGlobal
     ierr = VecGetSubVector(solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
     ierr = VecGetArrayRead(temp, &data); CHKERRQ(ierr);
-    ierr = VecReplaceArray(P, data); CHKERRQ(ierr);
+    ierr = VecPlaceArray(P, data); CHKERRQ(ierr);
     ierr = VecRestoreArrayRead(temp, &data); CHKERRQ(ierr);
     ierr = VecRestoreSubVector(solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
     

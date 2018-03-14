@@ -115,7 +115,10 @@ int main(int argc, char **argv)
         ierr = writeSingleXDMF(setting["directory"].as<std::string>(),
                 "wy", mesh->dim, wn, bg, ed, step); CHKERRQ(ierr);
     }
-    
+
+    // manually destroy PETSc objects inside the mesh instance
+    ierr = mesh->destroy(); CHKERRQ(ierr);
+
     ierr = PetscFinalize(); CHKERRQ(ierr);
     
     return 0;

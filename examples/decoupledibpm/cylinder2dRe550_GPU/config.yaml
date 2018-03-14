@@ -58,7 +58,7 @@ parameters:
     config: solversAmgXOptions.info
   forcesSolver:
     type: CPU
-    config: solversPestcOptions.info
+    config: solversPetscOptions.info
 
 bodies:
   - type: points

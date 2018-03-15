@@ -85,11 +85,11 @@ AC_MSG_NOTICE([
 
  ****************************************
  *      Downloading and installing      *
- *           AmgXWrapper-1.3            *
+ *           AmgXWrapper-1.4            *
  ****************************************
 ])
-echo "*** INFO *** Downloading AmgXWrapper-1.3... "
-VERSION=1.3
+echo "*** INFO *** Downloading AmgXWrapper-1.4... "
+VERSION=1.4
 TARBALL=v$VERSION.tar.gz
 URL=https://github.com/barbagroup/AmgXWrapper/archive/$TARBALL
 wget $URL -P /tmp
@@ -98,7 +98,7 @@ AC_SUBST(AMGXWRAPPER_DIR, $AMGXWRAPPER_DIR)
 mkdir -p $AMGXWRAPPER_DIR/build
 tar -xzf /tmp/$TARBALL -C $AMGXWRAPPER_DIR --strip-components=1
 rm -f /tmp/$TARBALL
-echo "*** INFO *** Building AmgXWrapper-1.3... "
+echo "*** INFO *** Building AmgXWrapper-1.4... "
 cd $AMGXWRAPPER_DIR/build
 if test "x$enable_shared" = "xyes"; then
   cmake $AMGXWRAPPER_DIR \

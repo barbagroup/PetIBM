@@ -64,7 +64,6 @@ To run the series of simulations:
 Once all simulations completed, we provide a Python script to plot the force coefficients versus the angle of attack and compare our results with experimental data from Taira et al. (2007).
 To post-process the force coefficients:
 
-    cd flatplate3dRe100_GPU
     python scripts/plotForceCoefficients.py
 
 The figure will be saved in the sub-folder `figures`.

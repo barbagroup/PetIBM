@@ -27,10 +27,9 @@ The simulation should completes within few seconds.
 The numerical solution is saved in the sub-folder `solution`.
 
 We provide a Python script to visualize the velocity components along the centerlines and compare with the numerical results from Ghia et al. (1982).
-To access the data for comparison you will need to set the environment variable `PETIBM_EXAMPLES` as the root directory of the PetIBM examples (for example, `export PETIBM_EXAMPLES=$PETIBM_DIR/examples`).
 To run the script:
 
-    python <simulation-directory>/scripts/plotCenterlineVelocities.py
+    python scripts/plotCenterlineVelocities.py
 
 The plot will be saved as a PNG file in the folder `figures` of the simulation directory.
 
@@ -38,15 +37,18 @@ Here is what we obtained:
 
 ![liddrivencavity2dRe100_velocitycenterlines](./images/liddrivencavity2dRe100_velocitycenterlines.png)
 
-You can also create XDMF files for the field variables (pressure and velocity components) with
+You can also run the utility `petibm-vorticity` to compute and write the 2D vorticity field at saved time steps:
 
-    cd <simulation-directory>
+    petibm-vorticity
+
+The field `wz` will be written in the time-step HDF5 files; the grid for the vorticity is also written in the file `grid.h5` under the group `wz`.
+
+Next, you can create XDMF files for the field variables with the utility
+
     petibm-createxdmf
 
-To compute the 2D vorticity field, use:
-
-    cd <simulation-directory>
-    petibm-vorticity
+It will create XDMF files for the pressure (`p.xmf`), the velocity components (`u.xmf` and `v.xmf`), and the vorticity (`wz.xmf`).
+These files can be open with VisIt to read, visualize, and process the field solutions.
 
 
 ## 2D flow over a circular cylinder at Re=40
@@ -78,21 +80,29 @@ The run should complete in less than 5 minutes and the numerical solution is sav
 We provide a Python script (located under the folder `scripts` in the simulation directory) to plot the instantaneous drag coefficient and compare it with the numerical results from Koumoutsakos and Leonard (1995).
 To run the script:
 
-    python <simulation-directory>/scripts/plotDragCoefficient.py
+    python scripts/plotDragCoefficient.py
 
-To compute the 2D vorticity field, use:
+You can also run the utility `petibm-vorticity` to compute and write the 2D vorticity field at saved time steps:
 
-    cd <simulation-directory>
     petibm-vorticity
+
+The field `wz` will be written in the time-step HDF5 files; the grid for the vorticity is also written in the file `grid.h5` under the group `wz`.
 
 We also provide a Python script to plot the vorticity field and save it in the folder `figures` in the simulation directory:
 
-    python <simulation-directory>/scripts/plotVorticity.py
+    python scripts/plotVorticity.py
 
 Here is what we obtained:
 
 ![cylinder2dRe40_dragcoefficient](./images/cylinder2dRe40_dragcoefficient.png)
 ![cylinder2dRe40_vorticity](./images/cylinder2dRe40_vorticity.png)
+
+Next, you can create XDMF files for the field variables with the utility
+
+    petibm-createxdmf
+
+It will create XDMF files for the pressure (`p.xmf`), the velocity components (`u.xmf` and `v.xmf`), and the vorticity (`wz.xmf`).
+These files can be open with VisIt to read, visualize, and process the field solutions.
 
 
 ## 2D flow over a circular cylinder at Re=550 (using AmgX)
@@ -125,21 +135,29 @@ The run should complete in less than 5 minutes (with a NVIDIA K40 GPU device) an
 We provide a Python script (located under the folder `scripts` in the simulation directory) to plot the instantaneous drag coefficient and compare it with the numerical results from Koumoutsakos and Leonard (1995).
 To run the script:
 
-    python <simulation-directory>/scripts/plotDragCoefficient.py
+    python scripts/plotDragCoefficient.py
 
-To compute the 2D vorticity field, use:
+You can also run the utility `petibm-vorticity` to compute and write the 2D vorticity field at saved time steps:
 
-    cd <simulation-directory>
     petibm-vorticity
+
+The field `wz` will be written in the time-step HDF5 files; the grid for the vorticity is also written in the file `grid.h5` under the group `wz`.
 
 We also provide a Python script to plot the vorticity field and save it in the folder `figures` in the simulation directory:
 
-    python <simulation-directory>/scripts/plotVorticity.py
+    python scripts/plotVorticity.py
 
 Here is what we obtained:
 
 ![cylinder2dRe550_GPU_dragcoefficient](./images/cylinder2dRe550_GPU_dragcoefficient.png)
 ![cylinder2dRe550_GPU_vorticity](./images/cylinder2dRe550_GPU_vorticity.png)
+
+Next, you can create XDMF files for the field variables with the utility
+
+    petibm-createxdmf
+
+It will create XDMF files for the pressure (`p.xmf`), the velocity components (`u.xmf` and `v.xmf`), and the vorticity (`wz.xmf`).
+These files can be open with VisIt to read, visualize, and process the field solutions.
 
 
 ## References

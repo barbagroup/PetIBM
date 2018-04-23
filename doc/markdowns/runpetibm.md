@@ -37,13 +37,19 @@ To run a simulation with a decoupled version of the Immersed Boundary Projection
 
 We also provide application codes to compute the vorticity field and to create XDMF files (to visualize HDF5 fields with [VisIt](https://wci.llnl.gov/simulation/computer-codes/visit/)).
 
-To compute the vorticity:
+To compute the vorticity field at saved time steps:
 
     petibm-vorticity
+
+It will compute the vorticity fields (`wz` for 2D configurations; `wx`, `wy`, and `wz` for 3D configurations) and write them in the time-step solution HDF5 files
+The utility will also write the grid associated with each vorticity component in the file `grid.h5` (under the names `wx`, `wy`, and `wz`).
 
 To create XDMF files:
 
     petibm-createxdmf
+
+It will create XDMF files for the pressure (`p.xmf`), the velocity components (`u.xmf` and `v.xmf` for 2D configurations;`u.xmf`, `v.xmf`, and `w.xmf` for 3D configurations), and the vorticity components (`wz.xmf` for 2D configurations; `wx.xmf`, `wy.xmf`, and `wz.xmf` for 3D configurations).
+These files can be open with VisIt to read, visualize, and process the field solutions.
 
 
 ## Running PetIBM using NVIDIA AmgX

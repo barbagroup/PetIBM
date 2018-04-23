@@ -15,7 +15,7 @@ w = 2.0 * numpy.pi * f  # angular frequency
 Am = Um / w  # amplitude of oscillation
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+simu_dir = os.path.dirname(script_dir)
 
 # Reads forces from file.
 filepath = os.path.join(simu_dir, 'forces.txt')

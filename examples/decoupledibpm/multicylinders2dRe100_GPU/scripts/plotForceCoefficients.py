@@ -59,7 +59,7 @@ def get_time_mask(data, time_limits=(-numpy.inf, numpy.inf)):
 
 # Set up root directory
 script_dir = os.path.dirname(os.path.realpath(__file__))
-root_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+root_dir = os.path.dirname(script_dir)
 
 # Get force coefficients for all immersed bodies
 filepath = os.path.join(root_dir, 'forces.txt')

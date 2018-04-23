@@ -50,6 +50,9 @@ To create XDMF files:
 
 It will create XDMF files for the pressure (`p.xmf`), the velocity components (`u.xmf` and `v.xmf` for 2D configurations;`u.xmf`, `v.xmf`, and `w.xmf` for 3D configurations), and the vorticity components (`wz.xmf` for 2D configurations; `wx.xmf`, `wy.xmf`, and `wz.xmf` for 3D configurations).
 These files can be open with VisIt to read, visualize, and process the field solutions.
+[ParaView](https://www.paraview.org/) also supports XDMF format.
+However, we has tested only ParaView-5.5.0.
+Also, though ParaView provides both XDMF2 and XDMF3 readers, only XDMF2 reader works with our files. 
 
 
 ## Running PetIBM using NVIDIA AmgX

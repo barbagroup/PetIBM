@@ -151,104 +151,89 @@ PetscErrorCode writeSingleXDMF(
     // write macro definitions
     ierr = PetscViewerASCIIPrintf(viewer,
             "<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" [\n"); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer,
-            "    <!ENTITY CaseDir \"%s\">\n", "./"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t"
+            "<!ENTITY CaseDir \"%s\">\n", "./"); CHKERRQ(ierr);
 
     // always use 3D XDMF format, so both Visit and Paraview works
     for(int i=0; i<3; ++i)
     {
-        ierr = PetscViewerASCIIPrintf(viewer, "    <!ENTITY N%s \"%d\">\n",
+        ierr = PetscViewerASCIIPrintf(viewer, "\t"
+                "<!ENTITY N%s \"%d\">\n",
                 type::dir2str[type::Dir(i)].c_str(), n[i]); CHKERRQ(ierr);
     }
-    ierr = PetscViewerASCIIPrintf(viewer, "]>\n\n"); CHKERRQ(ierr);
 
-    // write Xdmf block
-    ierr = PetscViewerASCIIPrintf(viewer,
-            "<Xdmf Version=\"2.2\">\n"); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "    "
-            "<Information Name=\"MeteData\" Value=\"ID-23454\"/>\n"); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "    " "<Domain>\n\n"); CHKERRQ(ierr);
+    // topology
+    ierr = PetscViewerASCIIPrintf(viewer, "\t"
+            "<!ENTITY Topo \"<Topology TopologyType=\'3DRectMesh\' "
+            "Dimensions=\'&Nz; &Ny; &Nx;\'/>\">\n"); CHKERRQ(ierr);
 
-    // write topology; always use 3DRectMesh
-    ierr = PetscViewerASCIIPrintf(viewer, "    "
-            "<Topology Name=\"%s Topo\" ", name.c_str()); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer,
-            "TopologyType=\"3DRectMesh\" "); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer,
-            "NumberOfElements=\"&Nz; &Ny; &Nx;\"/>\n\n"); CHKERRQ(ierr);
+    // geometry
+    ierr = PetscViewerASCIIPrintf(viewer, "\t<!ENTITY Geo\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t\t"
+            "\"<Geometry GeometryType=\'VXVYVZ\'>\n"); CHKERRQ(ierr);
 
-    // write geometry; always use 3D, i.e., VXVYVZ
-    ierr = PetscViewerASCIIPrintf(viewer, "    "
-            "<Geometry Name=\"%s Geo\" ", name.c_str()); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer,
-            "GeometryType=\"VXVYVZ\">\n"); CHKERRQ(ierr);
-
-    // output grid coordinates
     for(int i=0; i<dim; ++i)
     {
         std::string dir = type::dir2str[type::Dir(i)];
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    "
-                "<DataItem Dimensions=\"&N%s;\" ", dir.c_str()); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer,
-                "Format=\"HDF\" NumberType=\"Float\" Precision=\"8\">\n"); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
-                "&CaseDir;/grid.h5:/%s/%s\n", name.c_str(), dir.c_str()); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    "
-                "</DataItem>\n"); CHKERRQ(ierr);
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t"
+                "<DataItem Dimensions=\'&N%s;\' Format=\'HDF\' Precision=\'8\'>\n"
+                "\t\t\t\t&CaseDir;/grid.h5:/%s/%s\n"
+                "\t\t\t</DataItem>\n",
+                dir.c_str(), name.c_str(), dir.c_str()); CHKERRQ(ierr);
     }
 
-    if (dim == 2) // we still pretend everything's 3D, so write a dummy z-axis
+    if (dim == 2) // if dim == 2, use dummy z-axis
     {
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    "
-                "<DataItem Dimensions=\"&Nz;\" "); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer,
-                "Format=\"XML\" NumberType=\"Float\" Precision=\"8\">\n"); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
-                "0.0\n"); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    "
-                "</DataItem>\n"); CHKERRQ(ierr);
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t"
+                "<DataItem Dimensions=\'&Nz;\' Format=\'XML\' Precision=\'8\'>\n"
+                "\t\t\t\t0.0\n"
+                "\t\t\t</DataItem>\n"); CHKERRQ(ierr);
     }
+    ierr = PetscViewerASCIIPrintf(viewer, "\t\t</Geometry>\"\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t>\n"); CHKERRQ(ierr);
 
-    ierr = PetscViewerASCIIPrintf(viewer, "    " "</Geometry>\n\n"); CHKERRQ(ierr);
+    // the end of enitiy definitions
+    ierr = PetscViewerASCIIPrintf(viewer, "]>\n\n"); CHKERRQ(ierr);
+
+
+    // write Xdmf block
+    ierr = PetscViewerASCIIPrintf(viewer, "<Xdmf Version=\"3.0\">\n"); CHKERRQ(ierr);
+
+    // write Domain block
+    ierr = PetscViewerASCIIPrintf(viewer, "\t<Domain>\n"); CHKERRQ(ierr);
 
 
     //write temporal grid collection
-    ierr = PetscViewerASCIIPrintf(viewer, "    "
-            "<Grid GridType=\"Collection\" CollectionType=\"Temporal\">\n\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t"
+            "<Grid GridType=\"Collection\" CollectionType=\"Temporal\">\n"); CHKERRQ(ierr);
 
     // write each step
     for(PetscInt t=bg; t<=ed; t+=step)
     {
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t"
                 "<Grid GridType=\"Uniform\" Name=\"%s Grid\">\n", name.c_str()); CHKERRQ(ierr);
 
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t"
                 "<Time Value=\"%07d\" />\n", t); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
-                "<Topology Reference=\"/Xdmf/Domain/Topology"
-                "[@Name=\'%s Topo\']\" />\n", name.c_str()); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
-                "<Geometry Reference=\"/Xdmf/Domain/Geometry"
-                "[@Name=\'%s Geo\']\" />\n", name.c_str()); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t&Topo; &Geo;\n"); CHKERRQ(ierr);
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t"
                 "<Attribute Name=\"%s\" AttributeType=\"Scalar\" Center=\"Node\">\n",
                 name.c_str()); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t\t"
                 "<DataItem Dimensions=\"&Nz; &Ny; &Nx;\" "); CHKERRQ(ierr);
         ierr = PetscViewerASCIIPrintf(viewer,
                 "Format=\"HDF\" NumberType=\"Float\" Precision=\"8\">\n"); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    " "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t\t\t"
                 "&CaseDir;/solution/%07d.h5:/%s\n", t, name.c_str()); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t\t"
                 "</DataItem>\n"); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "    "
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t\t"
                 "</Attribute>\n"); CHKERRQ(ierr);
-        ierr = PetscViewerASCIIPrintf(viewer, "    " "    " "</Grid>\n\n"); CHKERRQ(ierr);
+        ierr = PetscViewerASCIIPrintf(viewer, "\t\t" "</Grid>\n"); CHKERRQ(ierr);
     }
 
-    ierr = PetscViewerASCIIPrintf(viewer, "    "
-            "</Grid>\n\n"); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "    " "</Domain>\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t</Grid>\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "\t</Domain>\n"); CHKERRQ(ierr);
     ierr = PetscViewerASCIIPrintf(viewer, "</Xdmf>\n"); CHKERRQ(ierr);
 
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);

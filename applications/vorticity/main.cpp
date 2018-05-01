@@ -34,7 +34,7 @@
  * This is a helper utility built with PetIBM components, and it calculates
  * the vorticity field of simulation results from the
  * \ref nssolver "Navier-Stokes solver",
- * \ref tairacolonius "IBPM solver", and 
+ * \ref ibpm "IBPM solver", and 
  * \ref decoupledibpm "decoupled IBPM solver".
  * 
  * If readers are interested in using this utility,

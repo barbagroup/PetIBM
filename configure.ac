@@ -87,7 +87,7 @@ AC_CONFIG_FILES([Makefile
                  applications/createxdmf/Makefile
                  applications/vorticity/Makefile
                  applications/navierstokes/Makefile
-                 applications/tairacolonius/Makefile
+                 applications/ibpm/Makefile
                  applications/decoupledibpm/Makefile
                  examples/decoupledibpm/oscillatingcylinder2dRe100_GPU/Makefile])
 

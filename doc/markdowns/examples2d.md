@@ -68,12 +68,12 @@ The Reynolds number (based on the freestream speed, the diameter of the circular
 The computational domain is discretized using an stretched Cartesian grid with 186x186 cells.
 The mesh is kept uniform in the sub-domain [-0.6, 0.6]x[-0.6, 0.6] and stretched to the external boundaries with a constant ratio of 1.05.
 
-We will run the simulation with the immersed-boundary projection method for 2000 time steps with a time increment of 0.01 and save the numerical solution at the end.
+For this example, we will run the simulation with the immersed-boundary projection method (Taira and Colonius, 2007) for 2000 time steps with a time increment of 0.01 and save the numerical solution at the end.
 
 To run the example using 2 MPI processes:
 
     cd <simulation-directory>
-    mpiexec -np 2 petibm-tairacolonius
+    mpiexec -np 2 petibm-ibpm
 
 The run should complete in less than 5 minutes and the numerical solution is saved in the folder `solution`.
 
@@ -122,13 +122,13 @@ The Reynolds number (based on the freestream speed, the diameter of the circular
 The computational domain is discretized using an stretched Cartesian grid with 450x450 cells.
 The mesh is kept uniform in the sub-domain [-0.54, 0.54]x[-0.54, 0.54] and stretched to the external boundaries with a constant ratio of 1.02.
 
-We will run the simulation with the immersed-boundary projection method for 1200 time steps with a time increment of 0.0025 and save the numerical solution at the end.
+For this example, we will run the simulation with the immersed-boundary projection method (Taira and Colonius, 2007) for 1200 time steps with a time increment of 0.0025 and save the numerical solution at the end.
 
 To run the example using 2 MPI processes and 1 CUDA-capable GPU device:
 
     cd <simulation-directory>
     export CUDA_VISIBLE_DEVICES=0
-    mpiexec -np 2 petibm-tairacolonius
+    mpiexec -np 2 petibm-ibpm
 
 The run should complete in less than 5 minutes (with a NVIDIA K40 GPU device) and the numerical solution is saved in the folder `solution`.
 
@@ -164,3 +164,4 @@ These files can be open with VisIt to read, visualize, and process the field sol
 
 * Ghia, U. K. N. G., Ghia, K. N., & Shin, C. T. (1982). High-Re solutions for incompressible flow using the Navier-Stokes equations and a multigrid method. Journal of computational physics, 48(3), 387-411.
 * Koumoutsakos, P., & Leonard, A. (1995). High-resolution simulations of the flow around an impulsively started cylinder using vortex methods. Journal of Fluid Mechanics, 296, 1-38.
+* Taira, K., & Colonius, T. (2007). The immersed boundary method: a projection approach. Journal of Computational Physics, 225(2), 2118-2137.

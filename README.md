@@ -47,6 +47,7 @@ PetIBM supports:
     * [Output files](doc/markdowns/outputs.md)
     * [2D Examples](doc/markdowns/examples2d.md)
     * [3D Examples](doc/markdowns/examples3d.md)
+    * [Use PetIBM API](doc/markdowns/usepetibmapi.md)
 * [Online API manual](https://barbagroup.github.io/PetIBM)
 * [Change Log](CHANGELOG.md)
 * [Contributing](CONTRIBUTING.md)

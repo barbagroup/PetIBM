@@ -33,8 +33,8 @@ not our intention to demonstration how to compile and build software under Linux
 environment, so we don't provide any Makefile or CMake files in this example.
 But the shell script should be enough to show how to link against PetIBM library.
 
-In nutshell, when using PetIBM as a library, we also need to link against PETSc
-library, AmgX library (if used), and other user provided third party library (
+In a nutshell, when using PetIBM as a library, we also need to link against PETSc
+library, AmgX library (if used), and other user-provided third-party libraries (
 for example, if users provide their own yaml-cpp, instead of using the one 
 provided by PetIBM configuration system).
 
@@ -48,19 +48,19 @@ to build this example.
 
 The data file of the solution output is in HDF5. After building this
 example and running it, the solver should create two HDF5, `grid.h5` and a 
-`0002000.h5` under solution folder. They contains data of grid points and solutions
-at the 2000-th time step.
+`0002000.h5` under solution folder. They contain data of grid points and solutions
+at the 2000th time-step.
 
-A HDF5 file is just a file containing raw data, and most post-processing software 
-don't know what the data in a HDF5 file means. So we need to tell post-processing 
-software what data in a HDF5 file mean what. For example, what array in the file 
+An HDF5 file is just a file containing raw data, and most post-processing software 
+don't know what the data in an HDF5 file means. So we need to tell post-processing 
+software what data in as HDF5 file mean what. For example, what array in the file 
 represents the x-coordinates of velocity grid points, or what array represents a 
 pressure solution.
 
 To do this, we utilize XDMF format to provide such information to post-processing
 software. Software such as ParaView and VisIt understand XDMF format. In this
-example, we also provide a XDMF file `postprocessing.xmf` as an example of
-how to write a XDMF file. 
+example, we also provide an XDMF file `postprocessing.xmf` as an example of
+how to write an XDMF file. 
 
 For those who are just interested in using PetIBM as a CFD solver, there's no 
 need to write XDMF format. The utility provided in the application folder, 

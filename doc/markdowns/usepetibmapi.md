@@ -14,7 +14,7 @@ flow solvers built on those building blocks.
 A local version of Doxygen pages can be created by `doxygen` utility. Go into
 the **doc** folder of PetIBM, and run `doxygen` command. HTML pages will be
 created and put into a subfolder called **html**. Users then can open up the 
-main page of the manual, **html/index.html**, using preferred browser 
+main page of the manual, **html/index.html**, using a preferred browser. 
 
 ## API usage examples
 
@@ -22,7 +22,7 @@ The source code of the flow solvers mentioned in the API documentation may be
 unfriendly for beginners, so we provide other simplified solvers in the folder
 **$PETIBM_SOURCE/examples/api_examples**. 
 The one in the sub-folder **liddrivencavity2d**
-provides a step-by-step instruction in the comments of the source code. See the
+provides step-by-step instruction in the comments of the source code. See the
 README files in those folders.
 
 ## Compiling and linking against PetIBM

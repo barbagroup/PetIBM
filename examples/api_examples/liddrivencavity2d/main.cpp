@@ -1,4 +1,4 @@
-/* A simple coding exmaple for using PetIBM API to build a Navier-Stokes solver.
+/* A simple coding example for using PetIBM API to build a Navier-Stokes solver.
  *
  * The numerical method used is based on the following paper:
  *
@@ -52,7 +52,7 @@
 // as matrix-free operators (matrix-free matrices).
 # include <petibm/operators.h>
 
-// `linsolver.h` defines classes and functions for linear solvers. It alse defines
+// `linsolver.h` defines classes and functions for linear solvers. It also defines
 // a top-level data type `LinSolver` under the namespace `type` to unify the
 // interface of different kinds of underlying linear solvers. The factory
 // function `createLinSolver` will create the correct underlying linear solver
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
      * Step 0: pre-define some parameters.
      *
      * Though all parameters should be able to be specified by the YAML text
-     * file provided by end-users and hance are available in the `YAML::Node`
+     * file provided by end-users and hence are available in the `YAML::Node`
      * object later, we hard-coded them here to simplify this example code.
      */
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
     PetscInt start = 0;     // starting step of time marching
     PetscInt end = 2000;    // end step of time marching
     PetscReal dt = 0.01;    // time-step size
-    PetscReal t = 0.0;      // beginning time vlaue
+    PetscReal t = 0.0;      // beginning time value
 
     // flow parameter
     PetscReal nu = 0.01;    // flow viscosity
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 
     ierr = petibm::solution::createSolution(mesh, soln); CHKERRQ(ierr);
 
-    // Set the solution to be the initial conditions at this point. The intial
+    // Set the solution to be the initial conditions at this point. The initial
     // condition should exist in the simulation configurations.
     ierr = soln->applyIC(config); CHKERRQ(ierr);
 
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
     // Declare vectors
     Vec dP;         // pressure increment
     Vec bc1;        // boundary correction values for velocity (resulting from Lbc * velocity)
-    Vec rhs1;       // rigth-hand side for velocity system
+    Vec rhs1;       // right-hand side for velocity system
     Vec rhs2;       // right-hand side for Poisson system
 
     // create dp; it has the same structure as the pressure, so we just copy the structure
@@ -274,10 +274,10 @@ int main(int argc, char **argv)
             // Add convection term
             ierr = MatMultAdd(N, soln->UGlobal, rhs1, rhs1);
 
-            // Add explicit termporal derivation term, \frac{u^n}{\Delta t}
+            // Add explicit temporal derivation term, \frac{u^n}{\Delta t}
             ierr = VecAXPBY(rhs1, 1.0/dt, -1.0, soln->UGlobal); CHKERRQ(ierr);
 
-            // Add boundary condition correction of Laplacian at tiem n+1
+            // Add boundary condition correction of Laplacian at time n+1
             {
                 // Update the equation between ghost points and solution points
                 // based on the current state of solution

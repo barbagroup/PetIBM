@@ -19586,7 +19586,7 @@ fi
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/tairacolonius/Makefile applications/decoupledibpm/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
 
 
 # output message

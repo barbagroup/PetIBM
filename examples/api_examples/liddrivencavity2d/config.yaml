@@ -1,0 +1,37 @@
+mesh:
+  - direction: x
+    start: 0.0
+    subDomains:
+      - end: 1.0
+        cells: 32
+        stretchRatio: 1.0
+  - direction: y
+    start: 0.0
+    subDomains:
+      - end: 1.0
+        cells: 32
+        stretchRatio: 1.0
+
+flow:
+  initialVelocity: [0.0, 0.0]
+  boundaryConditions:
+    - location: xMinus
+      u: [DIRICHLET, 0.0]
+      v: [DIRICHLET, 0.0]
+    - location: xPlus
+      u: [DIRICHLET, 0.0]
+      v: [DIRICHLET, 0.0]
+    - location: yMinus
+      u: [DIRICHLET, 0.0]
+      v: [DIRICHLET, 0.0]
+    - location: yPlus
+      u: [DIRICHLET, 1.0]
+      v: [DIRICHLET, 0.0]
+
+parameters:
+  velocitySolver:
+    type: CPU
+    config: solversPetscOptions.info
+  poissonSolver:
+    type: CPU
+    config: solversPetscOptions.info

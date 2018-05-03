@@ -25,7 +25,7 @@
  * This is a helper utility built with PetIBM components, and it creates XDMF
  * files based on the HDF5 files produced by
  * \ref nssolver "Navier-Stokes solver",
- * \ref tairacolonius "IBPM solver", and
+ * \ref ibpm "IBPM solver", and
  * \ref decoupledibpm "decoupled IBPM solver".
  * XDMF files can be used for visualization in
  * [VisIt](https://wci.llnl.gov/simulation/computer-codes/visit/)

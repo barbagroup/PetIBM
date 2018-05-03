@@ -332,8 +332,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = \
 	navierstokes \
+	ibpm \
 	decoupledibpm \
-	tairacolonius \
 	vorticity \
 	createxdmf
 

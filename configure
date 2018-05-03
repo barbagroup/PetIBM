@@ -20736,7 +20736,7 @@ do
     "applications/createxdmf/Makefile") CONFIG_FILES="$CONFIG_FILES applications/createxdmf/Makefile" ;;
     "applications/vorticity/Makefile") CONFIG_FILES="$CONFIG_FILES applications/vorticity/Makefile" ;;
     "applications/navierstokes/Makefile") CONFIG_FILES="$CONFIG_FILES applications/navierstokes/Makefile" ;;
-    "applications/tairacolonius/Makefile") CONFIG_FILES="$CONFIG_FILES applications/tairacolonius/Makefile" ;;
+    "applications/ibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/ibpm/Makefile" ;;
     "applications/decoupledibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/decoupledibpm/Makefile" ;;
     "examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile") CONFIG_FILES="$CONFIG_FILES examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile" ;;
 

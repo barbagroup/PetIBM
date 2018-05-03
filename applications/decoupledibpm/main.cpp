@@ -41,7 +41,7 @@
  * immersed boundary projection method for flow over complex/moving boundaries. 
  * Computers & Fluids, 140, 122-135.
  * 
- * \see nssolver, tairacolonius
+ * \see nssolver, ibpm
  * \ingroup apps
  */
 

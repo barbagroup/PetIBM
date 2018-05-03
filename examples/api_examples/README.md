@@ -1,14 +1,18 @@
 # API examples
 
-This folder contains the examples of using PetIBM API to build flow solvers.
-The solvers provided in this folder are just for demonstration purpose. While
-they may still be used to conduct flow simulations, their functionalities are 
-limited.
+This folder contains examples on how to use the PetIBM API to build flow solvers.
+The examples provided here are just for demonstration purpose.
+While they may still be used to conduct flow simulations, their functionalities are limited.
 
-The solvers with more complete features can be found in the application
-folder under PetIBM source folder. And their executable binary can be found in 
-*bin* folder after building and installing PetIBM.
+Solvers with more complete features can be found in the `applications` folder under the PetIBM directory.
+(Binary executables for those solvers can be found in the `bin` folder of the PetIBM installation directory.)
 
-The basic example is the Navier-Stokes solver in the `liddrivencavity2d`. And
-in `oscillatingcylinder2dRe100_GPU` is the solver solving the flow over
-an oscillating cylinder in 2D and using GPU.
+Contents of the present folder:
+* `liddrivencavity2d`: a basic Navier-Stokes solver using a projection method (Perot, 1993);
+* `oscillatingcylinder2dRe100_GPU`: a Navier-Stokes solver using a decoupled immersed-boundary projection method (Li et al., 2016) to compute the 2D flow around an inline-oscillating cylinder (Poisson system solved on GPU devices).
+
+
+__References:__
+
+* Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016). An efficient immersed boundary projection method for flow over complex/moving boundaries. Computers & Fluids, 140, 122-135.
+* Perot, J. B. (1993). An analysis of the fractional step method. Journal of Computational Physics, 108(1), 51-58.

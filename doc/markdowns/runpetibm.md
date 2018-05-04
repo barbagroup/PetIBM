@@ -48,7 +48,7 @@ To run on two CPU processes:
 
 The program solves the 2D and 3D Navier-Stokes equations with an immersed-boundary method: the Immersed Boundary Projection Method (IBPM) proposed by Taira and Colonius (2007).
 The method is based on the projection approach of Perot (1993) and is suitable to solve the flow around one or several, fixed or moving, rigid immersed boundaries.
-Note that the current implementation of the method in PetIBM only works for fixed fixed immersed boundaries.
+Note that the current implementation of the method in PetIBM only works for fixed immersed boundaries.
 At each time step, the program solves a system for the velocity field and then a modified Poisson system for the pressure field and Lagrangian forces.
 Finally, the velocity field  is projected onto the space of divergence-free fields that satisfy the no-slip condition at the location of the Lagrangian boundary points.
 

@@ -118,7 +118,7 @@ PetscErrorCode checkAndCreateFolder(const std::string &dir)
 
     PetscFunctionReturn(0);
 } // checkAndCreateFolder
-}
+} // end of anonymous namespace
 
 
 namespace petibm

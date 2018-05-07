@@ -37,7 +37,7 @@ namespace // anonymous namespace for internal linkage
 
         PetscFunctionReturn(0);
     } // kernelConvectiveSameDir
-}
+} // end of anonymous namespace
 
 
 namespace petibm

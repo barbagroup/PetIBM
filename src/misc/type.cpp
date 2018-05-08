@@ -9,24 +9,6 @@
 #include <petibm/type.h>
 
 
-// implement operator< for MatStencil
-bool operator<(const MatStencil &l, const MatStencil &r)
-{
-    if (l.k < r.k) return true;
-    if (l.k > r.k) return false;
-
-    if (l.j < r.j) return true;
-    if (l.j > r.j) return false;
-
-    if (l.i < r.i) return true;
-    if (l.i > r.i) return false;
-
-    if (l.c < r.c) return true;
-
-    return false;
-} // operator<
-
-
 namespace petibm
 {
 namespace type
@@ -45,24 +27,24 @@ namespace type
 
     // default values of type::str2bt
     std::map<std::string, BCType> str2bt {{"NOBC", NOBC},
-        {"DIRICHLET", DIRICHLET}, {"NEUMANN", NEUMANN}, 
+        {"DIRICHLET", DIRICHLET}, {"NEUMANN", NEUMANN},
         {"CONVECTIVE", CONVECTIVE}, {"PERIODIC", PERIODIC}};
     // default values of type::bt2str
     std::map<BCType, std::string> bt2str {{NOBC, "NOBC"},
-        {DIRICHLET, "DIRICHLET"}, {NEUMANN, "NEUMANN"}, 
+        {DIRICHLET, "DIRICHLET"}, {NEUMANN, "NEUMANN"},
         {CONVECTIVE, "CONVECTIVE"}, {PERIODIC, "PERIODIC"}};
 
     // default values of type::str2bl
     std::map<std::string, BCLoc> str2bl {
-        {"left", XMINUS}, {"right", XPLUS}, {"bottom", YMINUS}, 
+        {"left", XMINUS}, {"right", XPLUS}, {"bottom", YMINUS},
         {"top", YPLUS}, {"back", ZMINUS}, {"front", ZPLUS},
-        {"xMinus", XMINUS}, {"xPlus", XPLUS}, {"yMinus", YMINUS}, 
+        {"xMinus", XMINUS}, {"xPlus", XPLUS}, {"yMinus", YMINUS},
         {"yPlus", YPLUS}, {"zMinus", ZMINUS}, {"zPlus", ZPLUS},
-        {"XMINUS", XMINUS}, {"XPLUS", XPLUS}, {"YMINUS", YMINUS}, 
+        {"XMINUS", XMINUS}, {"XPLUS", XPLUS}, {"YMINUS", YMINUS},
         {"YPLUS", YPLUS}, {"ZMINUS", ZMINUS}, {"ZPLUS", ZPLUS}};
     // default values of type::bl2str
     std::map<BCLoc, std::string> bl2str {
-        {XMINUS, "xMinus"}, {XPLUS, "xPlus"}, {YMINUS, "yMinus"}, 
+        {XMINUS, "xMinus"}, {XPLUS, "xPlus"}, {YMINUS, "yMinus"},
         {YPLUS, "yPlus"}, {ZMINUS, "zMinus"}, {ZPLUS, "zPlus"}};
 
 } // end of namespace type

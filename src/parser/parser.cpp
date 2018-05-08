@@ -11,7 +11,6 @@
 
 // here goes our own headers
 # include <petibm/parser.h>
-# include <petibm/yaml.h>
 # include <petibm/misc.h>
 
 
@@ -119,6 +118,112 @@ PetscErrorCode checkAndCreateFolder(const std::string &dir)
     PetscFunctionReturn(0);
 } // checkAndCreateFolder
 } // end of anonymous namespace
+
+
+// A supplement to YAML-CPP that adds converters of our user-defined types.
+namespace YAML
+{
+
+    // converter for `types::Dir`
+    template <>
+    struct convert<petibm::type::Dir>
+    {
+        static Node encode(const petibm::type::Dir &dir)
+        {
+            Node node;
+            node = petibm::type::dir2str[dir];
+            return node;
+        }
+
+        static bool decode(const Node &node, petibm::type::Dir &dir)
+        {
+            if (! node.IsDefined()) return false;
+
+            dir = petibm::type::str2dir[node.as<std::string>()];
+            return true;
+        }
+    };
+
+    // converter for `types::Field`
+    template <>
+    struct convert<petibm::type::Field>
+    {
+        static Node encode(const petibm::type::Field &vc)
+        {
+            Node node;
+            node = petibm::type::fd2str[vc];
+            return node;
+        }
+
+        static bool decode(const Node &node, petibm::type::Field &vc)
+        {
+            if (! node.IsDefined()) return false;
+
+            vc = petibm::type::str2fd[node.as<std::string>()];
+            return true;
+        }
+    };
+
+    // converter for `types::BCType`
+    template <>
+    struct convert<petibm::type::BCType>
+    {
+        static Node encode(const petibm::type::BCType &bc)
+        {
+            Node node;
+            node = petibm::type::bt2str[bc];
+            return node;
+        }
+
+        static bool decode(const Node &node, petibm::type::BCType &bc)
+        {
+            if (! node.IsDefined()) return false;
+            bc = petibm::type::str2bt[node.as<std::string>()];
+            return true;
+        }
+    };
+
+    // converter for `types::BCLoc`
+    template <>
+    struct convert<petibm::type::BCLoc>
+    {
+        static Node encode(const petibm::type::BCLoc &loc)
+        {
+            Node node;
+            node = petibm::type::bl2str[loc];
+            return node;
+        }
+
+        static bool decode(const Node &node, petibm::type::BCLoc &loc)
+        {
+            if (! node.IsDefined()) return false;
+
+            loc = petibm::type::str2bl[node.as<std::string>()];
+            return true;
+        }
+    };
+
+    // converter for `PetscBool`
+    template<>
+    struct convert<PetscBool>
+    {
+        static Node encode(const PetscBool &b)
+        {
+            YAML::Node  node;
+            node = bool(b);
+            return node;
+        }
+
+        static bool decode(const Node &node, PetscBool &b)
+        {
+            if (! node.IsDefined()) return false;
+
+            b = PetscBool(node.as<bool>());
+            return true;
+        }
+    };
+
+} // end of namespace YAML
 
 
 namespace petibm

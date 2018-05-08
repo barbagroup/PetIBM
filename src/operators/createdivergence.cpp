@@ -17,6 +17,9 @@
 # include <petibm/mesh.h>
 # include <petibm/boundary.h>
 
+// private functions
+# include "../private/private.h"
+
 
 namespace // anonymous namespace for internal linkage
 {

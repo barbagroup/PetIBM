@@ -20,9 +20,9 @@ authors:
    orcid: 0000-0001-5812-2711
    affiliation: 1
 affiliations:
- - name: The George Washington University
+ - name: Department of Mechanical and Aerospace Engineering, The George Washington University, Washington, DC, USA
    index: 1
- - name: nuTonomy Inc. (previously at Boston University)
+ - name: nuTonomy Inc., Cambridge, MA, USA (previously at Boston University)
    index: 2
 date: 25 January 2018
 bibliography: paper.bib

@@ -19,7 +19,7 @@ PetIBM solves the incompressible Navier-Stokes equations in two and three dimens
 ## Dependencies (last tested)
 
 * g++-4.9.2, g++-5.4.0
-* [PETSc](https://www.mcs.anl.gov/petsc/) 3.7.4
+* [PETSc](https://www.mcs.anl.gov/petsc/) 3.8.1
 * Python 2.7 (optional, for pre- and post-processing)
 
 Note: Python and libraries have been installed using [`conda`](http://conda.pydata.org/docs/get-started.html) (4.3.1).

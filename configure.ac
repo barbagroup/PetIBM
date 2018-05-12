@@ -4,7 +4,7 @@
 
 # set-up
 AC_PREREQ([2.69])
-AC_INIT([PetIBM], [0.2.0], [mesnardo@gwu.edu, pychuang@email.gwu.edu])
+AC_INIT([PetIBM], [0.2.1], [mesnardo@gwu.edu, pychuang@email.gwu.edu])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
@@ -25,7 +25,6 @@ AC_PROG_RANLIB
 AM_PROG_AR
 AC_PROG_MKDIR_P
 AC_PROG_CC_C_O
-CONFIGURE_DOXYGEN
 
 # check for typedefs, structures, and compiler characteristics
 AC_CHECK_HEADER_STDBOOL
@@ -47,8 +46,7 @@ AC_CHECK_FUNCS([dup2 fchdir getcwd getpagesize gettimeofday memset mkdir munmap 
 # check for optional and required third-party libraries
 PACKAGE_INITIALIZE_ENVIRONMENT
 CONFIGURE_PETSC
-AC_ARG_WITH([amgx],, [CHECK_VERSION_OPENMPI
-                      CONFIGURE_CUDA
+AC_ARG_WITH([amgx],, [CONFIGURE_CUDA
                       CONFIGURE_AMGX])
 AM_CONDITIONAL([WITH_AMGXWRAPPER], [test "x$WITH_AMGX" = xyes])
 PACKAGE_SETUP_ENVIRONMENT
@@ -61,7 +59,7 @@ AC_CONFIG_FILES([Makefile
                  external/Makefile
                  external/yaml-cpp-0.5.1/Makefile
                  external/gtest-1.7.0/Makefile
-                 external/AmgXWrapper-1.0-beta2/Makefile
+                 external/AmgXWrapper-1.4/Makefile
                  tests/Makefile
                  tests/CartesianMesh/Makefile
                  tests/NavierStokes/Makefile

@@ -34,25 +34,6 @@ LIBS_PREPEND($CUDA_LIBRARY_PATH)
 AC_CHECK_HEADER([cuda_runtime.h], ,
                 AC_MSG_ERROR([could not find header file cuda_runtime.h]))
 
-AC_MSG_CHECKING([for CUDA version])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[[
-#include <cuda_runtime.h>
-#define CUDART_VERSION_EQ65 (CUDART_VERSION==6050)
-]], [[
-#if (CUDART_VERSION_EQ65)
-#else
-asdf
-#endif
-]]
-                                  )],
-                  [CUDART_VERSION_VALID=yes],
-                  [CUDART_VERSION_VALID=no])
-AC_MSG_RESULT([${CUDART_VERSION_VALID}])
-if test "$CUDART_VERSION_VALID" = no; then
-  AC_MSG_ERROR([invalid CUDA version detected; please use CUDA 6.5])
-fi
-
 AC_CHECK_LIB([cudart], [cudaRuntimeGetVersion], ,
              AC_MSG_ERROR([could not find library cudart]))
 AC_CHECK_LIB([cublas], [cublasGetVersion], ,

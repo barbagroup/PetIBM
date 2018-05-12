@@ -19,9 +19,7 @@ class AMGXSolver : public Solver
 {
 public:
   AMGXSolver(std::string f): options(f) { };
-  virtual ~AMGXSolver(){
-    amgx.finalize();
-  };
+  virtual ~AMGXSolver();
 
   PetscErrorCode create(const Mat &A);
   PetscErrorCode solve(Vec &x, Vec &b);

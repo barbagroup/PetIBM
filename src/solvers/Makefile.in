@@ -86,17 +86,15 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-@WITH_AMGXWRAPPER_TRUE@am__append_1 = -I$(top_srcdir)/external/AmgXWrapper-1.0-beta2/src \
+@WITH_AMGXWRAPPER_TRUE@am__append_1 = -I$(top_srcdir)/external/AmgXWrapper-1.4/src \
 @WITH_AMGXWRAPPER_TRUE@                         -I$(CUDA_DIR)/include \
 @WITH_AMGXWRAPPER_TRUE@                         -I$(AMGX_DIR)/examples \
 @WITH_AMGXWRAPPER_TRUE@                         -D HAVE_AMGX
 
 subdir = src/solvers
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/check_version_openmpi.m4 \
-	$(top_srcdir)/m4/configure_amgx.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
-	$(top_srcdir)/m4/configure_doxygen.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
 	$(top_srcdir)/m4/package_utilities.m4 \
 	$(top_srcdir)/configure.ac
@@ -204,15 +202,12 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DOXYGEN = @DOXYGEN@
-DOXYGEN_DIR = @DOXYGEN_DIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 GREP = @GREP@
-HAVE_DOXYGEN = @HAVE_DOXYGEN@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@

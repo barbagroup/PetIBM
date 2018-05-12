@@ -14,7 +14,7 @@ petibm2d_LDADD = solvers/libsolvers.a \
                  $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 if WITH_AMGXWRAPPER
-petibm2d_LDADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
+petibm2d_LDADD += $(top_builddir)/external/AmgXWrapper-1.4/libamgxwrapper.a
 endif
 
 petibm3d_SOURCES = PetIBM.cpp
@@ -28,5 +28,5 @@ petibm3d_LDADD = solvers/libsolvers.a \
                  $(top_builddir)/external/yaml-cpp-0.5.1/libyamlcpp.a
 
 if WITH_AMGXWRAPPER
-petibm3d_LDADD += $(top_builddir)/external/AmgXWrapper-1.0-beta2/libamgxwrapper.a
+petibm3d_LDADD += $(top_builddir)/external/AmgXWrapper-1.4/libamgxwrapper.a
 endif

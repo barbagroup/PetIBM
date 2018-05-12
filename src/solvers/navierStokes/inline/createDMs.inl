@@ -51,6 +51,7 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
                       DMDA_STENCIL_STAR, 
                       numX, numY, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, 
                       &pda); CHKERRQ(ierr);
+  ierr = DMSetUp(pda); CHKERRQ(ierr);
 
   // create DMDA objects for fluxes using the one for pressure
   const PetscInt *plx, *ply;
@@ -75,6 +76,7 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
                       DMDA_STENCIL_BOX, 
                       numX, numY, m, n, 1, 1, ulx, uly, 
                       &uda); CHKERRQ(ierr);
+  ierr = DMSetUp(uda); CHKERRQ(ierr);
   ierr = PetscFree(ulx); CHKERRQ(ierr);
   ierr = PetscFree(uly); CHKERRQ(ierr);
   // fluxes in y-direction
@@ -95,6 +97,7 @@ PetscErrorCode NavierStokesSolver<2>::createDMs()
                       DMDA_STENCIL_BOX, 
                       numX, numY, m, n, 1, 1, vlx, vly, 
                       &vda); CHKERRQ(ierr);
+  ierr = DMSetUp(vda); CHKERRQ(ierr);
   ierr = PetscFree(vlx); CHKERRQ(ierr);
   ierr = PetscFree(vly); CHKERRQ(ierr);
 
@@ -137,6 +140,7 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
                       DMDA_STENCIL_STAR, 
                       numX, numY, numZ, PETSC_DECIDE, PETSC_DECIDE, PETSC_DECIDE, 1, 1, NULL, NULL, NULL, 
                       &pda); CHKERRQ(ierr);
+  ierr = DMSetUp(pda); CHKERRQ(ierr);
   
   // create DMDA objects for fluxes from DMDA object for pressure
   const PetscInt *plx, *ply, *plz;
@@ -164,6 +168,7 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
                       DMDA_STENCIL_BOX, 
                       numX, numY, numZ, m, n, p, 1, 1, ulx, uly, ulz, 
                       &uda); CHKERRQ(ierr);
+  ierr = DMSetUp(uda); CHKERRQ(ierr);
   ierr = PetscFree(ulx); CHKERRQ(ierr);
   ierr = PetscFree(uly); CHKERRQ(ierr);
   ierr = PetscFree(ulz); CHKERRQ(ierr);
@@ -188,6 +193,7 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
                       DMDA_STENCIL_BOX, 
                       numX, numY, numZ, m, n, p, 1, 1, vlx, vly, vlz, 
                       &vda); CHKERRQ(ierr);
+  ierr = DMSetUp(vda); CHKERRQ(ierr);
   ierr = PetscFree(vlx); CHKERRQ(ierr);
   ierr = PetscFree(vly); CHKERRQ(ierr);
   ierr = PetscFree(vlz); CHKERRQ(ierr);
@@ -212,6 +218,7 @@ PetscErrorCode NavierStokesSolver<3>::createDMs()
                       DMDA_STENCIL_BOX, 
                       numX, numY, numZ, m, n, p, 1, 1, wlx, wly, wlz, 
                       &wda); CHKERRQ(ierr);
+  ierr = DMSetUp(wda); CHKERRQ(ierr);
   ierr = PetscFree(wlx); CHKERRQ(ierr);
   ierr = PetscFree(wly); CHKERRQ(ierr);
   ierr = PetscFree(wlz); CHKERRQ(ierr);

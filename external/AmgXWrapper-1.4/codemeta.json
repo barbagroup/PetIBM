@@ -1,0 +1,30 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "0000-0001-6330-2709",
+      "@type": "Person",
+      "email": "pychuang@gwu.edu",
+      "name": "Pi-Yueh Chuang",
+      "affiliation": "The George Washington University"
+    },
+    {
+      "@id": "0000-0001-5812-2711",
+      "@type": "Person",
+      "email": "labarba@gwu.edu",
+      "name": "Lorena A. Barba",
+      "affiliation": "The George Washington University"
+    }
+  ],
+  "identifier": "https://doi.org/10.6084/m9.figshare.5018774.v1",
+  "codeRepository": "https://github.com/barbagroup/AmgXWrapper",
+  "datePublished": "2017-06-02",
+  "dateModified": "2017-06-02",
+  "dateCreated": "2017-06-02",
+  "description": "A wrapper for using AmgX in PETSc applications",
+  "keywords": "PETSc, AmgX, multigrid, multi-GPU computing",
+  "license": "MIT",
+  "title": "AmgXWrapper",
+  "version": ""
+}

@@ -5,6 +5,20 @@
 #include "amgxsolver.h"
 
 
+AMGXSolver::~AMGXSolver()
+{
+	PetscErrorCode ierr;
+	PetscBool finalized;
+
+	PetscFunctionBeginUser;
+
+	ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+	if (finalized) return;
+
+	ierr = amgx.finalize(); CHKERRV(ierr);
+} // ~AMGXSolver
+
+
 /*!
  * \brief Creates the AmgX solver.
  */
@@ -37,7 +51,9 @@ PetscErrorCode AMGXSolver::solve(Vec &x, Vec &b)
  */
 PetscErrorCode AMGXSolver::getIters(PetscInt &iters)
 {
-  iters = amgx.getIters();
+  PetscErrorCode ierr;
+
+  ierr = amgx.getIters(iters); CHKERRQ(ierr);
 
   return 0;
 } // getIters

@@ -28,6 +28,7 @@ PetscErrorCode LiEtAlSolver<dim>::createDMs()
   ierr = DMDACreate1d(PETSC_COMM_WORLD, DM_BOUNDARY_NONE,
                       numLagPoints, dim, 0, &numLagPointsOnProcess.front(),
                       &bda); CHKERRQ(ierr);
+  ierr = DMSetUp(bda); CHKERRQ(ierr);
   ierr = PetscObjectViewFromOptions((PetscObject) bda, NULL,
                                     "-bda_dmda_view"); CHKERRQ(ierr);
 

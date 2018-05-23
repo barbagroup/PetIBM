@@ -86,37 +86,23 @@ PetscErrorCode readYAMLs(YAML::Node &node)
 } // readYAMLs
 
 
-// private function. Check if a directory exists. Create one if not.
-PetscErrorCode checkAndCreateFolder(const std::string &dir)
+// private function. Create a directory if not already existing.
+PetscErrorCode createDirectory(const std::string &dir)
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-    PetscBool           flg;
-
-    ierr = PetscTestDirectory(dir.c_str(), 'w', &flg); CHKERRQ(ierr);
-
-    if (! flg)
+    if (mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
     {
-        PetscMPIInt     rank;
-        ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank); CHKERRQ(ierr);
-
-        if (rank == 0)
+        if (errno != EEXIST)  // if error != "File exists"
         {
-            int status;
-            status = mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
-            if (status != 0)
-                SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
-                        "Could not create the folder \"%s\".\n",
-                        dir.c_str());
+            SETERRQ2(PETSC_COMM_WORLD, 1,
+                     "Could not create the folder \"%s\" (%s).\n",
+                     dir.c_str(), strerror(errno));
         }
-
-        ierr = MPI_Barrier(PETSC_COMM_WORLD); CHKERRQ(ierr);
     }
 
     PetscFunctionReturn(0);
-} // checkAndCreateFolder
+} // createDirectory
 } // end of anonymous namespace
 
 
@@ -294,7 +280,7 @@ PetscErrorCode getSettings(YAML::Node &node)
 
     // solution: path to solution folder. Always under working directory.
     node["solution"] = node["directory"].as<std::string>() + "/solution";
-    ierr = checkAndCreateFolder(node["solution"].as<std::string>());
+    ierr = createDirectory(node["solution"].as<std::string>());
 
     // read setting from YAML files
     ierr = readYAMLs(node); CHKERRQ(ierr);

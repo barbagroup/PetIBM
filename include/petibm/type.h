@@ -17,23 +17,23 @@
 # include <petscmat.h>
 
 
-/** 
- * \defgroup petibm PetIBM building blocks 
- * 
- * This part contains building blocks that are necessary for a flow solver in 
+/**
+ * \defgroup petibm PetIBM building blocks
+ *
+ * This part contains building blocks that are necessary for a flow solver in
  * Perot (1993) framework and staggered-grid finite difference method.
  */
 
 
-/** 
+/**
  * \defgroup type User-defined types in PetIBM
  * \brief Useful user-defined types in PetIBM.
- * 
+ *
  * User-defined types to simplify the source code.
- * 
+ *
  * PETSc also has its own type definitions. Here are information of some PETSc
  * types we use in PetIBM:
- * 
+ *
  * \arg \c \b PetscInt http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscInt.html
  * \arg \c \b PetscReal http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscReal.html
  * \arg \c \b PetscBool http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBool.html
@@ -46,23 +46,14 @@
  */
 
 
-/** 
- * \brief Operator< of MatStencil for using it as a key to map. 
- *
- * For the detail of implementation, please refer to 
- * std::lexicographical_compare. This is just a simplified version.
- */
-bool operator<(const MatStencil &, const MatStencil &);
-
-
-/** 
- * \brief A toolbox for building flow solvers. 
+/**
+ * \brief A toolbox for building flow solvers.
  * \ingroup petibm
  */
 namespace petibm
 {
-    
-/** 
+
+/**
  * \brief Frequently used types, structures, and enums.
  * \ingroup type
  */
@@ -148,10 +139,10 @@ namespace type
     typedef std::map<MatStencil, GhostPointInfo> GhostPointsList;
 
 
-    /** 
-     * \brief A struct holding information about which row in a matrix should 
+    /**
+     * \brief A struct holding information about which row in a matrix should
      * be modified based on BCs.
-     * \ingroup type 
+     * \ingroup type
      */
     struct RowModifier
     {

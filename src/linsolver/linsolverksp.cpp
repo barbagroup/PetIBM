@@ -110,7 +110,7 @@ PetscErrorCode LinSolverKSP::solve(Vec &x, Vec &b)
                 "reason %d.", name.c_str(), reason);
     }
 
-    return 0;
+    PetscFunctionReturn(0);
 } // solve
 
 

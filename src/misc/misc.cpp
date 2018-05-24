@@ -9,6 +9,9 @@
 # include <petibm/misc.h>
 # include <petibm/mesh.h>
 
+// private functions
+# include "../private/private.h"
+
 
 namespace petibm
 {
@@ -18,12 +21,12 @@ namespace misc
             const type::IntVec2D &bcTypes, type::BoolVec2D &periodic)
     {
         using namespace petibm::type;
-        
+
         PetscFunctionBeginUser;
-        
+
         // dimension
         PetscInt dim = 3;
-        
+
         // initialize periodic bools
         periodic = BoolVec2D(3, BoolVec1D(3, PETSC_FALSE));
 
@@ -34,7 +37,7 @@ namespace misc
             {
                 bool p1 = (bcTypes[f][d*2] == int(BCType::PERIODIC));
                 bool p2 = (bcTypes[f][d*2+1] == int(BCType::PERIODIC));
-                
+
                 if (p1 && (!p2))
                 {
                     SETERRQ3(PETSC_COMM_WORLD, PETSC_ERR_ARG_INCOMP,
@@ -43,7 +46,7 @@ namespace misc
                             bl2str[BCLoc(d*2)].c_str(), fd2str[Field(f)].c_str(),
                             bl2str[BCLoc(d*2+1)].c_str());
                 }
-                
+
                 if ((!p1) && p2)
                 {
                     SETERRQ3(PETSC_COMM_WORLD, PETSC_ERR_ARG_INCOMP,
@@ -52,11 +55,11 @@ namespace misc
                             bl2str[BCLoc(d*2+1)].c_str(), fd2str[Field(f)].c_str(),
                             bl2str[BCLoc(d*2)].c_str());
                 }
-                
+
                 if (p1 && p2) periodic[f][d] = PETSC_TRUE;
             }
         }
-        
+
         // if all BCs of w velocity are NOBC, it's a 3D simulation
         if (std::all_of(bcTypes[2].begin(), bcTypes[2].end(),
                     [](int t){return t == int(BCType::NOBC);}))
@@ -78,13 +81,13 @@ namespace misc
 
         PetscFunctionReturn(0);
     } // checkPeriodicBC
-    
+
 
     PetscErrorCode checkBoundaryProc(const DM &da, const type::IntVec1D &n,
             const type::BCLoc &loc, PetscBool &onThisProc)
     {
         PetscFunctionBeginUser;
-        
+
         PetscErrorCode  ierr;
 
         MPI_Comm    bcMPI;
@@ -92,27 +95,27 @@ namespace misc
         switch (loc)
         {
             case type::BCLoc::XMINUS:
-                ierr = DMDAGetProcessorSubset(da, DMDA_X, 0, &bcMPI); 
+                ierr = DMDAGetProcessorSubset(da, DMDA_X, 0, &bcMPI);
                 CHKERRQ(ierr);
                 break;
             case type::BCLoc::XPLUS:
-                ierr = DMDAGetProcessorSubset(da, DMDA_X, n[0]-1, &bcMPI); 
+                ierr = DMDAGetProcessorSubset(da, DMDA_X, n[0]-1, &bcMPI);
                 CHKERRQ(ierr);
                 break;
             case type::BCLoc::YMINUS:
-                ierr = DMDAGetProcessorSubset(da, DMDA_Y, 0, &bcMPI); 
+                ierr = DMDAGetProcessorSubset(da, DMDA_Y, 0, &bcMPI);
                 CHKERRQ(ierr);
                 break;
             case type::BCLoc::YPLUS:
-                ierr = DMDAGetProcessorSubset(da, DMDA_Y, n[1]-1, &bcMPI); 
+                ierr = DMDAGetProcessorSubset(da, DMDA_Y, n[1]-1, &bcMPI);
                 CHKERRQ(ierr);
                 break;
             case type::BCLoc::ZMINUS:
-                ierr = DMDAGetProcessorSubset(da, DMDA_Z, 0, &bcMPI); 
+                ierr = DMDAGetProcessorSubset(da, DMDA_Z, 0, &bcMPI);
                 CHKERRQ(ierr);
                 break;
             case type::BCLoc::ZPLUS:
-                ierr = DMDAGetProcessorSubset(da, DMDA_Z, n[2]-1, &bcMPI); 
+                ierr = DMDAGetProcessorSubset(da, DMDA_Z, n[2]-1, &bcMPI);
                 CHKERRQ(ierr);
                 break;
         }
@@ -132,13 +135,13 @@ namespace misc
         PetscFunctionBeginUser;
 
         PetscErrorCode      ierr;
-        
+
         // the direction of the normal of this boundary; 1: x, 2: y, 3: z
         PetscInt            axis = int(loc) / 2;
 
         // the two directions that will be used in the following double loop
         type::IntVec1D      pAxes;
-        
+
         // get pAxes
         ierr = getPerpendAxes(axis, pAxes); CHKERRQ(ierr);
 
@@ -155,7 +158,7 @@ namespace misc
             {
                 // he stencil of the ghost point
                 MatStencil  ghost;
-                
+
                 // the stencil of the point associated to the ghost point
                 MatStencil  target;
 
@@ -164,14 +167,14 @@ namespace misc
 
                 // ghostId is the index of ghost in a local Vec
                 PetscInt    ghostId;
-                
+
                 // get the stencils of ghost and target
                 ierr = misc::getGhostTargetStencil(
                         n, loc, {a, b}, ghost, target); CHKERRQ(ierr);
 
                 // get packed index of the target
                 ierr = mesh->getPackedGlobalIndex(field, target, targetId); CHKERRQ(ierr);
-                
+
                 // get the local index of the ghost
                 ierr = mesh->getLocalIndex(field, ghost, ghostId); CHKERRQ(ierr);
 
@@ -192,14 +195,14 @@ namespace misc
 
         PetscFunctionReturn(0);
     } // getGhostPointList
-    
+
 
     PetscErrorCode getPerpendAxes(const PetscInt &self, type::IntVec1D &pAxes)
     {
         PetscFunctionBeginUser;
-        
+
         pAxes = type::IntVec1D(2, 0);
-        
+
         switch (self)
         {
             case 0:
@@ -216,17 +219,17 @@ namespace misc
                         "Can not recongnize axis %d in the function "
                         "getPerpendAxes!", self);
         }
-        
+
         PetscFunctionReturn(0);
     } // getPerpendAxes
-    
+
 
     PetscErrorCode getGhostTargetStencil(const type::IntVec1D &n,
             const type::BCLoc &loc, const type::IntVec1D &pIdx,
             MatStencil &ghost, MatStencil &target)
     {
         PetscFunctionBeginUser;
-        
+
         switch (int(loc))
         {
             case 0: // XMINUS
@@ -258,7 +261,7 @@ namespace misc
                         "Can not recongnize BC location %s in the function "
                         "getGhostTargetStencil!", type::bl2str[loc].c_str());
         }
-        
+
         PetscFunctionReturn(0);
     } // getGhostTargetStencil
 

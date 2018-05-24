@@ -44,7 +44,7 @@ AC_CHECK_FILE([$PETSCVARIABLES],
               [HAVE_PETSCVARIABLES=no])
 if test "$HAVE_PETSCVARIABLES" = no; then
   AC_MSG_ERROR([could not find file petscvariables;
-please use PETSc-3.7])
+please use PETSc-3.8])
 fi
 
 PETSC_CC_INCLUDES=`grep "PETSC_CC_INCLUDES =" $PETSCVARIABLES | sed -e 's/.*=//' -e 's/^[ \t]*//'`
@@ -70,7 +70,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 #define PETSC_VERSION_GE(MAJOR, MINOR, SUBMINOR) (!PETSC_VERSION_LT(MAJOR, MINOR, SUBMINOR))
 #endif
 ]], [[
-#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 8, 4)) || !PETSC_VERSION_RELEASE)
+#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 9, 0)) || PETSC_VERSION_RELEASE != 1)
 #else
 asdf
 #endif

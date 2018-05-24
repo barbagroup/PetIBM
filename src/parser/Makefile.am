@@ -1,8 +1,7 @@
 noinst_LTLIBRARIES = libparser.la
 
 libparser_la_SOURCES = \
-	parser.cpp \
-	yaml.cpp
+	parser.cpp
 
 libparser_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \

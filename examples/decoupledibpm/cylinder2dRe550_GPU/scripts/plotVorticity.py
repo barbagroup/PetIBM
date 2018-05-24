@@ -10,7 +10,7 @@ from matplotlib import pyplot
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+simu_dir = os.path.dirname(script_dir)
 
 # Read vorticity field from file.
 name = 'wz'

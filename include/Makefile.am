@@ -22,5 +22,4 @@ nobase_include_HEADERS = \
 	petibm/solution.h \
 	petibm/solutionsimple.h \
 	petibm/timeintegration.h \
-	petibm/type.h \
-	petibm/yaml.h
+	petibm/type.h

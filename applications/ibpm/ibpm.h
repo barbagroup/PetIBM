@@ -1,10 +1,10 @@
 /**
- * \file tairacolonius.h
- * \brief Definition of the class \c TairaColoniusSolver.
+ * \file ibpm.h
+ * \brief Definition of the class \c IBPMSolver.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
- * \see tairacolonius
- * \ingroup tairacolonius
+ * \see ibpm
+ * \ingroup ibpm
  */
 
 #pragma once
@@ -17,12 +17,12 @@
 
 
 /**
- * \class TairaColoniusSolver
+ * \class IBPMSolver
  * \brief Immersed-boundary method proposed by Taira and Colonius (2007).
- * \see tairacolonius, NavierStokesSolver
- * \ingroup tairacolonius
+ * \see ibpm, NavierStokesSolver
+ * \ingroup ibpm
  */
-class TairaColoniusSolver : protected NavierStokesSolver
+class IBPMSolver : protected NavierStokesSolver
 {
 public:
 
@@ -34,7 +34,7 @@ public:
     using NavierStokesSolver::readTimeHDF5;
     
     /** \brief Default constructor.  */
-    TairaColoniusSolver() = default;
+    IBPMSolver() = default;
 
     /**
      * \brief Constructor; Set references to the mesh, boundary conditions, and
@@ -45,14 +45,14 @@ public:
      * \param bodies [in] a type::BodyPack object.
      * \param node [in] YAML::Node containing settings.
      */
-    TairaColoniusSolver(
+    IBPMSolver(
             const petibm::type::Mesh &mesh,
             const petibm::type::Boundary &bc,
             const petibm::type::BodyPack &bodies,
             const YAML::Node &node);
 
     /** \brief Default destructor.  */
-    ~TairaColoniusSolver();
+    ~IBPMSolver();
 
     /** \brief Manually destroy data.  */
     PetscErrorCode destroy();
@@ -130,4 +130,4 @@ protected:
     
     /** \brief Set null space or apply reference point.  */
     virtual PetscErrorCode setNullSpace();
-}; // TairaColoniusSolver
+}; // IBPMSolver

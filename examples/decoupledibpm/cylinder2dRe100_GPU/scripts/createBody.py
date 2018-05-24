@@ -10,7 +10,7 @@ xc, yc = 0.0, 0.0
 ds = 0.02
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+simu_dir = os.path.dirname(script_dir)
 
 n = int(2.0 * numpy.pi * R / ds)
 theta = numpy.linspace(0.0, 2.0 * numpy.pi, num=n, endpoint=False)

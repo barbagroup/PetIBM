@@ -41,7 +41,7 @@
  * immersed boundary projection method for flow over complex/moving boundaries. 
  * Computers & Fluids, 140, 122-135.
  * 
- * \see nssolver, tairacolonius
+ * \see nssolver, ibpm
  * \ingroup apps
  */
 
@@ -186,6 +186,12 @@ int main(int argc, char **argv)
         // write averaged force
         ierr = solver.writeIntegratedForces(t, forceFile); CHKERRQ(ierr);
     }
+
+    // manually destroy PETSc objects before PetscFinalize
+    ierr = solver.destroy(); CHKERRQ(ierr);
+    ierr = bodies->destroy(); CHKERRQ(ierr);
+    ierr = bd->destroy(); CHKERRQ(ierr);
+    ierr = mesh->destroy(); CHKERRQ(ierr);
 
     ierr = PetscFinalize(); CHKERRQ(ierr);
     

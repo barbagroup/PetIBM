@@ -1,10 +1,10 @@
 /**
- * \file tairacolonius.cpp
- * \brief Implementation of the class \c TairaColoniusSolver.
+ * \file ibpm.cpp
+ * \brief Implementation of the class \c IBPMSolver.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
- * \see tairacolonius
- * \ingroup tairacolonius
+ * \see ibpm
+ * \ingroup ibpm
  */
 
 // PETSc
@@ -14,20 +14,20 @@
 # include <petibm/io.h>
 
 // solver header
-# include "tairacolonius.h"
+# include "ibpm.h"
 
 using namespace petibm;
 
 
-TairaColoniusSolver::TairaColoniusSolver(
+IBPMSolver::IBPMSolver(
         const petibm::type::Mesh &inMesh, const petibm::type::Boundary &inBC,
         const petibm::type::BodyPack &inBodies,const YAML::Node &node)
 {
     initialize(inMesh, inBC, inBodies, node);
-} // TairaColoniusSolver
+} // IBPMSolver
 
 
-TairaColoniusSolver::~TairaColoniusSolver()
+IBPMSolver::~IBPMSolver()
 {
     PetscFunctionBeginUser;
     PetscErrorCode ierr;
@@ -39,11 +39,11 @@ TairaColoniusSolver::~TairaColoniusSolver()
     ierr = ISDestroy(&isDE[0]); CHKERRV(ierr);
     ierr = ISDestroy(&isDE[1]); CHKERRV(ierr);
     ierr = VecDestroy(&P); CHKERRV(ierr);
-} // ~TairaColoniusSolver
+} // ~IBPMSolver
 
 
 // manual destroy data
-PetscErrorCode TairaColoniusSolver::destroy()
+PetscErrorCode IBPMSolver::destroy()
 {
     PetscErrorCode ierr;
 
@@ -52,6 +52,7 @@ PetscErrorCode TairaColoniusSolver::destroy()
     bodies.reset();
     ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
     ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
+    ierr = VecResetArray(P); CHKERRQ(ierr);
     ierr = VecDestroy(&P); CHKERRQ(ierr);
     ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
 
@@ -59,7 +60,7 @@ PetscErrorCode TairaColoniusSolver::destroy()
 } // destroy
 
 
-PetscErrorCode TairaColoniusSolver::initialize(
+PetscErrorCode IBPMSolver::initialize(
         const petibm::type::Mesh &inMesh, const petibm::type::Boundary &inBC,
         const petibm::type::BodyPack &inBodies,const YAML::Node &node)
 {
@@ -77,7 +78,7 @@ PetscErrorCode TairaColoniusSolver::initialize(
 
 
 // create operators, i.e., PETSc Mats
-PetscErrorCode TairaColoniusSolver::createOperators()
+PetscErrorCode IBPMSolver::createOperators()
 {
     PetscErrorCode ierr;
 
@@ -164,7 +165,7 @@ PetscErrorCode TairaColoniusSolver::createOperators()
 
 
 // create vectors
-PetscErrorCode TairaColoniusSolver::createVectors()
+PetscErrorCode IBPMSolver::createVectors()
 {
     PetscFunctionBeginUser;
     
@@ -180,11 +181,14 @@ PetscErrorCode TairaColoniusSolver::createVectors()
     solution->pGlobal = P;
     P = temp;
     temp = PETSC_NULL;
+
+    // destroy P's underlying raw array but keep all other information
+    ierr = VecReplaceArray(P, nullptr); CHKERRQ(ierr);
     
     // reset the underlying data of P to the pressure portion in pGlobal
     ierr = VecGetSubVector(solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
     ierr = VecGetArrayRead(temp, &data); CHKERRQ(ierr);
-    ierr = VecReplaceArray(P, data); CHKERRQ(ierr);
+    ierr = VecPlaceArray(P, data); CHKERRQ(ierr);
     ierr = VecRestoreArrayRead(temp, &data); CHKERRQ(ierr);
     ierr = VecRestoreSubVector(solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
     
@@ -195,7 +199,7 @@ PetscErrorCode TairaColoniusSolver::createVectors()
 } // createVectors
 
 
-PetscErrorCode TairaColoniusSolver::setNullSpace()
+PetscErrorCode IBPMSolver::setNullSpace()
 {
     PetscFunctionBeginUser;
     
@@ -241,7 +245,7 @@ PetscErrorCode TairaColoniusSolver::setNullSpace()
 
 
 // prepare tight-hand-side vector for Poisson system
-PetscErrorCode TairaColoniusSolver::assembleRHSPoisson()
+PetscErrorCode IBPMSolver::assembleRHSPoisson()
 {
     PetscErrorCode ierr;
 
@@ -273,7 +277,7 @@ PetscErrorCode TairaColoniusSolver::assembleRHSPoisson()
 
 
 // output solutions to the user provided file
-PetscErrorCode TairaColoniusSolver::write(
+PetscErrorCode IBPMSolver::write(
   const PetscReal &t, const std::string &filePath)
 {
     PetscErrorCode ierr;
@@ -297,7 +301,7 @@ PetscErrorCode TairaColoniusSolver::write(
 
 
 // output extra data required for restarting to the user provided file
-PetscErrorCode TairaColoniusSolver::writeRestartData(
+PetscErrorCode IBPMSolver::writeRestartData(
   const PetscReal &t, const std::string &filePath)
 {
     PetscFunctionBeginUser;
@@ -318,7 +322,7 @@ PetscErrorCode TairaColoniusSolver::writeRestartData(
 
 
 // read data necessary for restarting
-PetscErrorCode TairaColoniusSolver::readRestartData(
+PetscErrorCode IBPMSolver::readRestartData(
   const std::string &filePath, PetscReal &t)
 {
     PetscFunctionBeginUser;
@@ -349,7 +353,7 @@ PetscErrorCode TairaColoniusSolver::readRestartData(
 
 
 // write averaged forces
-PetscErrorCode TairaColoniusSolver::writeIntegratedForces(
+PetscErrorCode IBPMSolver::writeIntegratedForces(
             const PetscReal &t, const std::string &filePath)
 {
     PetscErrorCode ierr;

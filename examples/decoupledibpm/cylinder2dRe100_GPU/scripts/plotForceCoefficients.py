@@ -11,7 +11,7 @@ from matplotlib import pyplot
 
 # Set up root directory.
 script_dir = os.path.dirname(os.path.realpath(__file__))
-root_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+root_dir = os.path.dirname(script_dir)
 
 # Get the force coefficients.
 filepath = os.path.join(root_dir, 'forces.txt')

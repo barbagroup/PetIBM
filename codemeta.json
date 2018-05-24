@@ -7,28 +7,28 @@
       "@type": "Person",
       "email": "pychuang@gwu.edu",
       "name": "Pi-Yueh Chuang",
-      "affiliation": "The George Washington University"
+      "affiliation": "Department of Mechanical and Aerospace Engineering, The George Washington University, Washington, DC, USA"
     },
     {
       "@id": "http://orcid.org/0000-0001-5335-7853",
       "@type": "Person",
       "email": "mesnardo@gwu.edu",
       "name": "Olivier Mesnard",
-      "affiliation": "The George Washington University"
+      "affiliation": "Department of Mechanical and Aerospace Engineering, The George Washington University, Washington, DC, USA"
     },
     {
       "@id": "http://orcid.org/0000-0001-6409-7022",
       "@type": "Person",
       "email": "k.anush@gmail.com",
       "name": "Anush Krishnan",
-      "affiliation": "nuTonomy Inc. (previously at Boston University)"
+      "affiliation": "nuTonomy Inc., Cambridge, MA, USA (previously at Boston University)"
     },
     {
       "@id": "http://orcid.org/0000-0001-5812-2711",
       "@type": "Person",
       "email": "labarba@gwu.edu",
       "name": "Lorena A. Barba",
-      "affiliation": "The George Washington University"
+      "affiliation": "Department of Mechanical and Aerospace Engineering, The George Washington University, Washington, DC, USA"
     }
   ],
   "identifier": "",

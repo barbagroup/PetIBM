@@ -1,15 +1,15 @@
-bin_PROGRAMS = petibm-tairacolonius
+bin_PROGRAMS = petibm-ibpm
 
-petibm_tairacolonius_SOURCES = \
+petibm_ibpm_SOURCES = \
 	main.cpp \
-	tairacolonius.cpp
+	ibpm.cpp
 
-petibm_tairacolonius_CPPFLAGS = \
+petibm_ibpm_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	$(PETSC_CPPFLAGS) \
 	$(YAMLCPP_CPPFLAGS)
 
-petibm_tairacolonius_LDADD = \
+petibm_ibpm_LDADD = \
 	$(top_builddir)/applications/navierstokes/petibm_navierstokes-navierstokes.o \
 	$(top_builddir)/src/libpetibm.la \
 	$(PETSC_LDFLAGS) $(PETSC_LIBS) \

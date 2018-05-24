@@ -1,0 +1,49 @@
+<?xml version='1.0' ?>
+
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>
+
+<Xdmf Version="3.0">
+    <Domain>
+		<Grid GridType="Uniform" Name="p Grid">
+            <Topology TopologyType='3DRectMesh' Dimensions='1 32 32'/>
+            <Geometry GeometryType='VXVYVZ'>
+                <DataItem Dimensions='32' Format='HDF' Precision='8'> ./grid.h5:/p/x </DataItem>
+                <DataItem Dimensions='32' Format='HDF' Precision='8'> ./grid.h5:/p/y </DataItem>
+                <DataItem Dimensions='1' Format='XML' Precision='8'> 0.0 </DataItem>
+            </Geometry>
+			<Attribute Name="p" AttributeType="Scalar" Center="Node">
+				<DataItem Dimensions="1 32 32" Format="HDF" NumberType="Float" Precision="8">
+                    ./solution/0002000.h5:/p
+				</DataItem>
+			</Attribute>
+		</Grid>
+
+		<Grid GridType="Uniform" Name="u Grid">
+            <Topology TopologyType='3DRectMesh' Dimensions='1 32 31'/>
+            <Geometry GeometryType='VXVYVZ'>
+                <DataItem Dimensions='31' Format='HDF' Precision='8'> ./grid.h5:/u/x </DataItem>
+                <DataItem Dimensions='32' Format='HDF' Precision='8'> ./grid.h5:/u/y </DataItem>
+                <DataItem Dimensions='1' Format='XML' Precision='8'> 0.0 </DataItem>
+            </Geometry>
+			<Attribute Name="u" AttributeType="Scalar" Center="Node">
+				<DataItem Dimensions="1 32 31" Format="HDF" NumberType="Float" Precision="8">
+                    ./solution/0002000.h5:/u
+				</DataItem>
+			</Attribute>
+		</Grid>
+
+		<Grid GridType="Uniform" Name="v Grid">
+            <Topology TopologyType='3DRectMesh' Dimensions='1 31 32'/>
+            <Geometry GeometryType='VXVYVZ'>
+                <DataItem Dimensions='32' Format='HDF' Precision='8'> ./grid.h5:/v/x </DataItem>
+                <DataItem Dimensions='31' Format='HDF' Precision='8'> ./grid.h5:/v/y </DataItem>
+                <DataItem Dimensions='1' Format='XML' Precision='8'> 0.0 </DataItem>
+            </Geometry>
+			<Attribute Name="v" AttributeType="Scalar" Center="Node">
+				<DataItem Dimensions="1 31 32" Format="HDF" NumberType="Float" Precision="8">
+                    ./solution/0002000.h5:/v
+				</DataItem>
+			</Attribute>
+		</Grid>
+	</Domain>
+</Xdmf>

@@ -16,12 +16,8 @@ import numpy
 from matplotlib import pyplot
 
 
-if not os.environ.get('PETIBM_EXAMPLES'):
-  raise KeyError('Environment variable PETIBM_EXAMPLES is not set; '
-                 'Set PETIBM_EXAMPLES as the root directory of the examples.')
-
 script_dir = os.path.dirname(os.path.realpath(__file__))
-root_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+root_dir = os.path.dirname(script_dir)
 
 # Read forces and computes mean values for each angle of inclination.
 time_limits = (15.0, 20.0)
@@ -37,13 +33,15 @@ for i, angle in enumerate(angles):
   cd[i], cl[i] = data[1][mask].mean(), data[2][mask].mean()
 
 # Read experimental data from Taira et al. (2007).
-directory = os.path.join(os.environ['PETIBM_EXAMPLES'], 'data')
+examples_dir = os.environ.get('PETIBM_EXAMPLES',
+                              os.path.dirname(os.path.dirname(root_dir)))
+data_dir = os.path.join(examples_dir, 'data')
 taira = {'cd': {'aoa': None, 'values': None,
                 'filename': 'taira_et_al_2007_flatPlateRe100AR2_CdvsAoA.dat'},
          'cl': {'aoa': None, 'values': None,
                 'filename': 'taira_et_al_2007_flatPlateRe100AR2_ClvsAoA.dat'}}
 for key in taira.keys():
-  filepath = os.path.join(directory, taira[key]['filename'])
+  filepath = os.path.join(data_dir, taira[key]['filename'])
   with open(filepath, 'r') as infile:
     data = numpy.loadtxt(infile, dtype=numpy.float64, unpack=True)
   taira[key]['aoa'], taira[key]['values'] = data[0], data[1]

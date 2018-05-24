@@ -40,7 +40,7 @@ flatplate3dRe100_GPU:
 The sub-folder `configs` contains the configuration files for the iterative solvers.
 In this example, both the Poisson system and the velocity system are solved on GPU with NVIDIA AmgX library.
 
-We use the decoupled version of the immersed-boundary projection method (Li et al., 2016); executable `petibm-decoupledibpm`.
+For this example, we use the decoupled version of the immersed-boundary projection method (Li et al., 2016); executable `petibm-decoupledibpm`.
 
 When we use 4 MPI processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz) and 1 GPU device (NVIDIA K40), each run finished in less than 8 minutes.
 
@@ -64,7 +64,6 @@ To run the series of simulations:
 Once all simulations completed, we provide a Python script to plot the force coefficients versus the angle of attack and compare our results with experimental data from Taira et al. (2007).
 To post-process the force coefficients:
 
-    cd flatplate3dRe100_GPU
     python scripts/plotForceCoefficients.py
 
 The figure will be saved in the sub-folder `figures`.
@@ -73,7 +72,8 @@ Here is what we obtained:
 
 ![flatplate3dRe100_forceCoefficients](./images/flatplate3dRe100_forceCoefficients.png)
 
-__References:__
+
+## References
 
 * Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016). An efficient immersed boundary projection method for flow over complex/moving boundaries. Computers & Fluids, 140, 122-135.
 * Taira, K., Dickson, W. B., Colonius, T., Dickinson, M. H., & Rowley, C. W. (2007). Unsteadiness in flow over a flat plate at angle-of-attack at low Reynolds numbers. AIAA Paper, 710, 2007.

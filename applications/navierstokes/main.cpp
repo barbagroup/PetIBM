@@ -180,6 +180,11 @@ int main(int argc, char **argv)
         }
     }
 
+    // manually destroy the solver and PETSc objects in it
+    ierr = solver.destroy(); CHKERRQ(ierr);
+    ierr = bd->destroy(); CHKERRQ(ierr);
+    ierr = mesh->destroy(); CHKERRQ(ierr);
+
     ierr = PetscFinalize(); CHKERRQ(ierr);
     
     return 0;

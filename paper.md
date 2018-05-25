@@ -56,9 +56,9 @@ PetIBM is currently used to compute the three-dimensional flow of a gliding-snak
 
 PetIBM solves the Navier-Stokes equations on an extended discretization grid that includes the interior of the immersed boundary.
 To model the presence of the boundary, a forcing term is added to the momentum equation and an additional equation for the no-slip condition completes the system.
-Many variants of the immersed-boundary method (IBM) depend on one models the forcing.
+Variants of the immersed-boundary method (IBM) depend on how one models the forcing.
 In PetIBM, we use regularized-delta functions to transfer data between the Eulerian grid and the Lagrangian boundary points.
-The system of equation is:
+The system of equations is:
 
 \begin{equation}
 \begin{cases}
@@ -149,7 +149,7 @@ r_2 \equiv \left( \begin{matrix} bc_2 \\ u_B^{n+1} \end{matrix} \right)
 \end{equation*}
 
 In practice, we never form the full system.
-Instead, we apply a block-LU decomposition as follow:
+Instead, we apply a block-LU decomposition as follows:
 
 \begin{equation}
 \left[

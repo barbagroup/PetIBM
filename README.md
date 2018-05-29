@@ -1,7 +1,8 @@
 # PetIBM - toolbox and applications of the immersed-boundary method on distributed-memory architectures
 
-[Build Status]: https://travis-ci.org/barbagroup/PetIBM.png?branch=develop
-[![Build Status]](https://travis-ci.org/barbagroup/PetIBM)
+[![Build Status](https://travis-ci.org/barbagroup/PetIBM.png?branch=develop)](https://travis-ci.org/barbagroup/PetIBM)
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.00558/status.svg)](https://doi.org/10.21105/joss.00558)
+[![CITE_BIB](https://img.shields.io/badge/Cite%20PetIBM-bibtex-blue.svg)](https://www.doi2bib.org/bib/10.21105%2Fjoss.00558)
 
 PetIBM implements immersed-boundary methods to solve 2D and 3D incompressible Navier-Stokes on stretched Cartesian grids using a projection approach.
 
@@ -78,3 +79,30 @@ We are also open to pull-requests.
 * Li, R. Y., Xie, C. M., Huang, W. X., & Xu, C. X. (2016). *An efficient immersed boundary projection method for flow over complex/moving boundaries*. Computers & Fluids, 140, 122-135.
 * Perot, J. B. (1993). *An analysis of the fractional step method*. Journal of Computational Physics, 108(1), 51-58.
 * Taira, K., & Colonius, T. (2007). *The immersed boundary method: a projection approach*. Journal of Computational Physics, 225(2), 2118-2137.
+
+---
+
+## How to cite PetIBM
+
+If PetIBM contributes to a project that leads to a scientific publication, please cite the project.
+You can use this citation or the BibTeX entry below.
+
+### PetIBM - toolbox and applications of the immersed-boundary method on distributed-memory architectures
+
+> Pi-Yueh Chuang, Olivier Mesnard, Anush Krishnan, Lorena A. Barba (2018). PetIBM: toolbox and applications of the immersed-boundary method on distributed-memory architectures. _Journal of Open Source Software_, **3**(25), 558, [doi:10.21105/joss.00558](https://doi.org/10.21105/joss.00558) 
+
+```console
+@article{chuang2018petibm,
+  doi = {10.21105/joss.00558},
+  url = {https://doi.org/10.21105/joss.00558},
+  year = {2018},
+  month = {may},
+  publisher = {The Open Journal},
+  volume = {3},
+  number = {25},
+  pages = {558},
+  author = {Pi-Yueh Chuang and Olivier Mesnard and Anush Krishnan and Lorena A. Barba},
+  title = {{PetIBM}: toolbox and applications of the immersed-boundary method on distributed-memory architectures},
+  journal = {The Journal of Open Source Software}
+}
+```

@@ -3,7 +3,7 @@
 Run the example using 2 CPU processes:
 
 ```
-mpiexec -np 2 petibm-tairacolonius -options_left -log_view ascii:stdout.txt
+mpiexec -np 2 petibm-ibpm -options_left -log_view ascii:stdout.txt
 ```
 
 The simulation takes less than 5 minutes to complete when using:

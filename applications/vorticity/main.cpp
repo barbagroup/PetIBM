@@ -34,7 +34,7 @@
  * This is a helper utility built with PetIBM components, and it calculates
  * the vorticity field of simulation results from the
  * \ref nssolver "Navier-Stokes solver",
- * \ref tairacolonius "IBPM solver", and 
+ * \ref ibpm "IBPM solver", and 
  * \ref decoupledibpm "decoupled IBPM solver".
  * 
  * If readers are interested in using this utility,
@@ -171,7 +171,12 @@ int main(int argc, char **argv)
         ierr = VecDestroy(&w[f]); CHKERRQ(ierr);
         ierr = DMDestroy(&wDMs[f]); CHKERRQ(ierr);
     }
-    
+
+    // manually destroy PETSc objects inside the PetIBM objects
+    ierr = soln->destroy(); CHKERRQ(ierr);
+    ierr = bc->destroy(); CHKERRQ(ierr);
+    ierr = mesh->destroy(); CHKERRQ(ierr);
+
 
     ierr = PetscFinalize(); CHKERRQ(ierr);
 

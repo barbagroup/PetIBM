@@ -17,7 +17,7 @@ aoa = 30  # angle of inclination in degrees
 ds = 0.04  # mesh spacing
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+simu_dir = os.path.dirname(script_dir)
 
 # Generate coordinates of the flat plate.
 n = int(L / ds)

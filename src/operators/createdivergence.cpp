@@ -17,44 +17,96 @@
 # include <petibm/mesh.h>
 # include <petibm/boundary.h>
 
+// private functions
+# include "../private/private.h"
+
+
+namespace // anonymous namespace for internal linkage
+{
+
+// a private struct for matrix-free constraint mat
+struct DivergenceCtx
+{
+    const petibm::type::Boundary    bc;
+    petibm::type::MatrixModifier    modifier;
+
+    DivergenceCtx(const petibm::type::Boundary &_bc):
+        bc(_bc), modifier(bc->dim) {};
+};
+
+
+// a function type for functions returning neighbor's stencil
+typedef std::function<MatStencil(
+        const PetscInt &, const PetscInt &, const PetscInt &)> GetNeighborFunc;
+
+
+// a function type for functions returning the value of a matrix entry
+typedef std::function<PetscReal(
+        const PetscInt &, const PetscInt &, const PetscInt &)> Kernel;
+
+
+// a user-defined MatMult for constraint mat
+PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+
+    DivergenceCtx       *ctx;
+
+    // get the context
+    ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
+
+    // zero the output vector
+    ierr = VecSet(y, 0.0); CHKERRQ(ierr);
+
+    // set the correction values to corresponding rows
+    for(PetscInt f=0; f<ctx->bc->dim; ++f)
+        for(auto &bd: ctx->bc->bds[f])
+            if (bd->onThisProc)
+                for(auto &pt: bd->points)
+                {
+                    ierr = VecSetValue(y, ctx->modifier[f][pt.first].row,
+                            ctx->modifier[f][pt.first].coeff * pt.second.a1,
+                            ADD_VALUES); CHKERRQ(ierr);
+                }
+
+    // assembly (not sure if this is necessary and if this causes overhead)
+    // but there is an implicit MPI barrier in assembly, which we definitely need
+    ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
+    ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+} // DCorrectionMult
+
+
+// a user-defined MatDestroy for constraint mat
+PetscErrorCode DCorrectionDestroy(Mat mat)
+{
+    PetscFunctionBeginUser;
+
+    PetscErrorCode      ierr;
+    DivergenceCtx       *ctx;
+
+    // get the context
+    ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
+
+    // deallocate the context
+    delete ctx;
+
+    PetscFunctionReturn(0);
+} // DCorrectionDestroy
+} // end of anonymous namespace
+
 
 namespace petibm
 {
 namespace operators
 {
 
-/** \brief a private struct for matrix-free constraint mat. */
-struct DivergenceCtx
-{
-    const type::Boundary    bc;
-    type::MatrixModifier    modifier;
-    
-    DivergenceCtx(const type::Boundary &_bc): 
-        bc(_bc), modifier(bc->dim) {};
-};
-
-
-/** \brief a user-defined MatMult for constraint mat. */
-PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y);
-
-
-/** \brief a user-defined MatDestroy for constraint mat. */
-PetscErrorCode DCorrectionDestroy(Mat mat);
-
-
-/** \brief a function type for functions returning neighbor's stencil. */
-typedef std::function<MatStencil(
-        const PetscInt &, const PetscInt &, const PetscInt &)> GetNeighborFunc;
-
-
-/** \brief a function type for functions returning the value of a matrix entry. */
-typedef std::function<PetscReal(
-        const PetscInt &, const PetscInt &, const PetscInt &)> Kernel;
-
-
 // implementation of petibm::operators::createDivergence
 PetscErrorCode createDivergence(const type::Mesh &mesh,
-                                const type::Boundary &bc, 
+                                const type::Boundary &bc,
                                 Mat &D,
                                 Mat &DCorrection,
                                 const PetscBool &normalize)
@@ -62,7 +114,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
     PetscFunctionBeginUser;
 
     PetscErrorCode                  ierr;
-    
+
     std::vector<GetNeighborFunc>    getNeighbor(3);
 
     std::vector<Kernel>             kernel(3);
@@ -85,7 +137,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
 
     // set up kernel
     if (normalize)
-        kernel[0] = kernel[1] = kernel[2] = 
+        kernel[0] = kernel[1] = kernel[2] =
             std::bind([]() -> PetscReal { return 1.0; });
     else
     {
@@ -100,7 +152,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
 
     // create matrix
     ierr = MatCreate(mesh->comm, &D); CHKERRQ(ierr);
-    ierr = MatSetSizes(D, mesh->pNLocal, mesh->UNLocal, 
+    ierr = MatSetSizes(D, mesh->pNLocal, mesh->UNLocal,
             PETSC_DETERMINE, PETSC_DETERMINE); CHKERRQ(ierr);
     ierr = MatSetFromOptions(D); CHKERRQ(ierr);
     ierr = MatSeqAIJSetPreallocation(D, mesh->dim*2, nullptr); CHKERRQ(ierr);
@@ -119,7 +171,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
             for(PetscInt i=mesh->bg[3][0]; i<mesh->ed[3][0]; ++i)
             {
                 PetscInt    self;
-                
+
                 // row index is based on pressure grid
                 ierr = mesh->getGlobalIndex(3, {k, j, i, 0}, self); CHKERRQ(ierr);
 
@@ -141,11 +193,11 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
 
                     ierr = mesh->getPackedGlobalIndex(field, target, targetIdx); CHKERRQ(ierr);
 
-                    ierr = MatSetValue(D, self, targetIdx, 
+                    ierr = MatSetValue(D, self, targetIdx,
                             value, INSERT_VALUES); CHKERRQ(ierr);
 
                     // store the coefficient of ghost points for future use
-                    if (targetIdx == -1) 
+                    if (targetIdx == -1)
                         ctx->modifier[field][target] = {self, value};
 
 
@@ -155,11 +207,11 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
                     ierr = mesh->getPackedGlobalIndex(field, target, targetIdx); CHKERRQ(ierr);
 
                     // note the value for this face is just a negative version
-                    ierr = MatSetValue(D, self, targetIdx, 
+                    ierr = MatSetValue(D, self, targetIdx,
                             - value, INSERT_VALUES); CHKERRQ(ierr);
 
                     // store the coefficient of ghost points for future use
-                    if (targetIdx == -1) 
+                    if (targetIdx == -1)
                         ctx->modifier[field][target] = {self, - value};
                 }
             }
@@ -193,7 +245,7 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
 
     // create a matrix-free constraint matrix for boundary correction
     ierr = MatCreateShell(mesh->comm, mesh->pNLocal, mesh->UNLocal,
-            PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &DCorrection); 
+            PETSC_DETERMINE, PETSC_DETERMINE, (void *) ctx, &DCorrection);
     CHKERRQ(ierr);
 
     ierr = MatShellSetOperation(DCorrection, MATOP_MULT,
@@ -204,59 +256,6 @@ PetscErrorCode createDivergence(const type::Mesh &mesh,
 
     PetscFunctionReturn(0);
 } // createDivergence
-
-
-// implementation of DCorrectionMult
-PetscErrorCode DCorrectionMult(Mat mat, Vec x, Vec y)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-
-    DivergenceCtx       *ctx;
-
-    // get the context
-    ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
-
-    // zero the output vector
-    ierr = VecSet(y, 0.0); CHKERRQ(ierr);
-
-    // set the correction values to corresponding rows
-    for(PetscInt f=0; f<ctx->bc->dim; ++f)
-        for(auto &bd: ctx->bc->bds[f])
-            if (bd->onThisProc)
-                for(auto &pt: bd->points)
-                {
-                    ierr = VecSetValue(y, ctx->modifier[f][pt.first].row,
-                            ctx->modifier[f][pt.first].coeff * pt.second.a1, 
-                            ADD_VALUES); CHKERRQ(ierr);
-                }
-
-    // assembly (not sure if this is necessary and if this causes overhead)
-    // but there is an implicit MPI barrier in assembly, which we definitely need
-    ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
-    ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-} // DCorrectionMult
-
-
-// implementation of DCorrectionDestroy
-PetscErrorCode DCorrectionDestroy(Mat mat)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-    DivergenceCtx       *ctx;
-
-    // get the context
-    ierr = MatShellGetContext(mat, (void *) &ctx); CHKERRQ(ierr);
-
-    // deallocate the context
-    delete ctx;
-
-    PetscFunctionReturn(0);
-} // DCorrectionDestroy
 
 } // end of namespace operators
 } // end of namespace petibm

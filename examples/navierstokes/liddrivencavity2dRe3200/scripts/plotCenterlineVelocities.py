@@ -20,13 +20,10 @@ Re = 3200.0  # Reynolds number
 time_step = 25000  # Time step at which to read the solution
 # End of user's parameters
 
-if not os.environ.get('PETIBM_EXAMPLES'):
-  raise KeyError('Environment variable PETIBM_EXAMPLES is not set; '
-                 'Set PETIBM_EXAMPLES as the root directory of the examples.')
-
 script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.sep.join(script_dir.split(os.sep)[:-1])
-root_dir = os.environ['PETIBM_EXAMPLES']
+simu_dir = os.path.dirname(script_dir)
+root_dir = os.environ.get('PETIBM_EXAMPLES',
+                          os.path.dirname(os.path.dirname(simu_dir)))
 
 
 def get_gridline_velocity(x_target, u, x, axis=0):

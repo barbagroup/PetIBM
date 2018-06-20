@@ -89,7 +89,7 @@ build_triplet = @build@
 host_triplet = @host@
 EXTRA_PROGRAMS = oscillatingcylinder$(EXEEXT)
 @WITH_AMGX_TRUE@am__append_1 = $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
-subdir = examples/decoupledibpm/oscillatingcylinder2dRe100_GPU
+subdir = examples/api_examples/oscillatingcylinder2dRe100_GPU
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
@@ -344,9 +344,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign examples/decoupledibpm/oscillatingcylinder2dRe100_GPU/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign examples/decoupledibpm/oscillatingcylinder2dRe100_GPU/Makefile
+	  $(AUTOMAKE) --foreign examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

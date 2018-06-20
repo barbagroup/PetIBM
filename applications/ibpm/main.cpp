@@ -1,10 +1,10 @@
 /**
- * \file tairacolonius/main.cpp
+ * \file ibpm/main.cpp
  * \brief Main function of IBPM solver (Taira & Colonius 2007).
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
- * \see tairacolonius
- * \ingroup tairacolonius
+ * \see ibpm
+ * \ingroup ibpm
  */
 
 #include <iomanip>
@@ -19,11 +19,11 @@
 // PetIBM
 #include <petibm/parser.h>
 
-#include "tairacolonius.h"
+#include "ibpm.h"
 
 
 /**
- * \defgroup tairacolonius IBPM solver (Taira & Colonius 2007)
+ * \defgroup ibpm IBPM solver (Taira & Colonius 2007)
  * \brief Implementation of parallel IBPM solver (Taira & Colonius 2007).
  * 
  * This is an example of using PetIBM to build a parallel incompressible flow 
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     
 
     
-    TairaColoniusSolver solver;
+    IBPMSolver solver;
 
     // initialize the solver based on given mesh, boundary, bodies, and config
     ierr = solver.initialize(mesh, bd, bodies, config); CHKERRQ(ierr);
@@ -185,6 +185,12 @@ int main(int argc, char **argv)
         // write averaged force
         ierr = solver.writeIntegratedForces(t, forceFile); CHKERRQ(ierr);
     }
+
+    // manually destroy PETSc objects before PetscFinalize
+    ierr = solver.destroy(); CHKERRQ(ierr);
+    ierr = bodies->destroy(); CHKERRQ(ierr);
+    ierr = bd->destroy(); CHKERRQ(ierr);
+    ierr = mesh->destroy(); CHKERRQ(ierr);
 
     ierr = PetscFinalize(); CHKERRQ(ierr);
     

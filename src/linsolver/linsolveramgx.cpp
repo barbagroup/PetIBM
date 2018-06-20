@@ -14,21 +14,6 @@
 #include <petibm/linsolveramgx.h>
 
 
-// a global (in this file scope) vector of references to AmgXSolvers
-std::vector<AmgXSolver*> solvers;
-
-// a wrapper function for PetscFinalize() to destroy AmgXSolvers automatically
-PetscErrorCode preDestroyAmgXSolvers()
-{
-    PetscFunctionBeginUser;
-    PetscErrorCode ierr;
-    for(auto &it: solvers)
-    {
-        ierr = it->finalize(); CHKERRQ(ierr);
-    }
-    PetscFunctionReturn(0);
-} // preDestroyAmgXSolvers
-
 namespace petibm
 {
 namespace linsolver
@@ -88,9 +73,6 @@ PetscErrorCode LinSolverAmgX::init()
     }
 
     ierr = amgx.initialize(PETSC_COMM_WORLD, "dDDI", config); CHKERRQ(ierr);
-
-    solvers.push_back(&amgx);
-    ierr = PetscRegisterFinalize(&preDestroyAmgXSolvers); CHKERRQ(ierr);
 
     // remove temporary file if necessary
     if (config == "solversAmgXOptions-tmp.info")

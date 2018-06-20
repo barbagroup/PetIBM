@@ -13,7 +13,7 @@ xc, yc = 0.0, 0.0  # center's coordinates
 ds = 8.0 / 512  # mesh spacing
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+simu_dir = os.path.dirname(script_dir)
 
 # Generate coordinates of the circle.
 n = math.ceil(2.0 * numpy.pi * R / ds)

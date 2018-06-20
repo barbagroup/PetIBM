@@ -17,6 +17,32 @@
 
 ### Removed
 
+---
+
+## 0.3.1
+
+---
+
+JOSS revision.
+
+### Added
+
+* Add section in README and documentation on how to use the API.
+* Add simple Navier-Stokes solver using the PetIBM API in the folder `examples/api_examples`.
+
+### Changed
+
+* Rename application code `tairacolonius` into `ibpm` (Immersed Boundary Projection Method); binary program now named `petibm-ibpm`.
+* Make YAML converters and operator< private.
+* Move example of oscillating cylinder to folder `examples/api_examples`.
+* Update optional dependency `AmgXWrapper` with latest version (1.4).
+
+### Fixed
+
+* Remove MPI barrier in routine that creates a directory.
+* Fixed memory leaks in solver programs and utility programs.
+
+### Removed
 
 ---
 

@@ -88,8 +88,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = petibm-tairacolonius$(EXEEXT)
-subdir = applications/tairacolonius
+bin_PROGRAMS = petibm-ibpm$(EXEEXT)
+subdir = applications/ibpm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
@@ -112,11 +112,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_petibm_tairacolonius_OBJECTS = petibm_tairacolonius-main.$(OBJEXT) \
-	petibm_tairacolonius-tairacolonius.$(OBJEXT)
-petibm_tairacolonius_OBJECTS = $(am_petibm_tairacolonius_OBJECTS)
+am_petibm_ibpm_OBJECTS = petibm_ibpm-main.$(OBJEXT) \
+	petibm_ibpm-ibpm.$(OBJEXT)
+petibm_ibpm_OBJECTS = $(am_petibm_ibpm_OBJECTS)
 am__DEPENDENCIES_1 =
-petibm_tairacolonius_DEPENDENCIES = $(top_builddir)/applications/navierstokes/petibm_navierstokes-navierstokes.o \
+petibm_ibpm_DEPENDENCIES = $(top_builddir)/applications/navierstokes/petibm_navierstokes-navierstokes.o \
 	$(top_builddir)/src/libpetibm.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -157,8 +157,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(petibm_tairacolonius_SOURCES)
-DIST_SOURCES = $(petibm_tairacolonius_SOURCES)
+SOURCES = $(petibm_ibpm_SOURCES)
+DIST_SOURCES = $(petibm_ibpm_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -325,16 +325,16 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-petibm_tairacolonius_SOURCES = \
+petibm_ibpm_SOURCES = \
 	main.cpp \
-	tairacolonius.cpp
+	ibpm.cpp
 
-petibm_tairacolonius_CPPFLAGS = \
+petibm_ibpm_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	$(PETSC_CPPFLAGS) \
 	$(YAMLCPP_CPPFLAGS)
 
-petibm_tairacolonius_LDADD = \
+petibm_ibpm_LDADD = \
 	$(top_builddir)/applications/navierstokes/petibm_navierstokes-navierstokes.o \
 	$(top_builddir)/src/libpetibm.la \
 	$(PETSC_LDFLAGS) $(PETSC_LIBS) \
@@ -353,9 +353,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign applications/tairacolonius/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign applications/ibpm/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign applications/tairacolonius/Makefile
+	  $(AUTOMAKE) --foreign applications/ibpm/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -423,9 +423,9 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-petibm-tairacolonius$(EXEEXT): $(petibm_tairacolonius_OBJECTS) $(petibm_tairacolonius_DEPENDENCIES) $(EXTRA_petibm_tairacolonius_DEPENDENCIES) 
-	@rm -f petibm-tairacolonius$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(petibm_tairacolonius_OBJECTS) $(petibm_tairacolonius_LDADD) $(LIBS)
+petibm-ibpm$(EXEEXT): $(petibm_ibpm_OBJECTS) $(petibm_ibpm_DEPENDENCIES) $(EXTRA_petibm_ibpm_DEPENDENCIES) 
+	@rm -f petibm-ibpm$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(petibm_ibpm_OBJECTS) $(petibm_ibpm_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -433,8 +433,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm_tairacolonius-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm_tairacolonius-tairacolonius.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm_ibpm-ibpm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/petibm_ibpm-main.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -460,33 +460,33 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-petibm_tairacolonius-main.o: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_tairacolonius-main.o -MD -MP -MF $(DEPDIR)/petibm_tairacolonius-main.Tpo -c -o petibm_tairacolonius-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_tairacolonius-main.Tpo $(DEPDIR)/petibm_tairacolonius-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm_tairacolonius-main.o' libtool=no @AMDEPBACKSLASH@
+petibm_ibpm-main.o: main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_ibpm-main.o -MD -MP -MF $(DEPDIR)/petibm_ibpm-main.Tpo -c -o petibm_ibpm-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_ibpm-main.Tpo $(DEPDIR)/petibm_ibpm-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm_ibpm-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_tairacolonius-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_ibpm-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
 
-petibm_tairacolonius-main.obj: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_tairacolonius-main.obj -MD -MP -MF $(DEPDIR)/petibm_tairacolonius-main.Tpo -c -o petibm_tairacolonius-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_tairacolonius-main.Tpo $(DEPDIR)/petibm_tairacolonius-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm_tairacolonius-main.obj' libtool=no @AMDEPBACKSLASH@
+petibm_ibpm-main.obj: main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_ibpm-main.obj -MD -MP -MF $(DEPDIR)/petibm_ibpm-main.Tpo -c -o petibm_ibpm-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_ibpm-main.Tpo $(DEPDIR)/petibm_ibpm-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='petibm_ibpm-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_tairacolonius-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_ibpm-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
 
-petibm_tairacolonius-tairacolonius.o: tairacolonius.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_tairacolonius-tairacolonius.o -MD -MP -MF $(DEPDIR)/petibm_tairacolonius-tairacolonius.Tpo -c -o petibm_tairacolonius-tairacolonius.o `test -f 'tairacolonius.cpp' || echo '$(srcdir)/'`tairacolonius.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_tairacolonius-tairacolonius.Tpo $(DEPDIR)/petibm_tairacolonius-tairacolonius.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tairacolonius.cpp' object='petibm_tairacolonius-tairacolonius.o' libtool=no @AMDEPBACKSLASH@
+petibm_ibpm-ibpm.o: ibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_ibpm-ibpm.o -MD -MP -MF $(DEPDIR)/petibm_ibpm-ibpm.Tpo -c -o petibm_ibpm-ibpm.o `test -f 'ibpm.cpp' || echo '$(srcdir)/'`ibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_ibpm-ibpm.Tpo $(DEPDIR)/petibm_ibpm-ibpm.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ibpm.cpp' object='petibm_ibpm-ibpm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_tairacolonius-tairacolonius.o `test -f 'tairacolonius.cpp' || echo '$(srcdir)/'`tairacolonius.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_ibpm-ibpm.o `test -f 'ibpm.cpp' || echo '$(srcdir)/'`ibpm.cpp
 
-petibm_tairacolonius-tairacolonius.obj: tairacolonius.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_tairacolonius-tairacolonius.obj -MD -MP -MF $(DEPDIR)/petibm_tairacolonius-tairacolonius.Tpo -c -o petibm_tairacolonius-tairacolonius.obj `if test -f 'tairacolonius.cpp'; then $(CYGPATH_W) 'tairacolonius.cpp'; else $(CYGPATH_W) '$(srcdir)/tairacolonius.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_tairacolonius-tairacolonius.Tpo $(DEPDIR)/petibm_tairacolonius-tairacolonius.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tairacolonius.cpp' object='petibm_tairacolonius-tairacolonius.obj' libtool=no @AMDEPBACKSLASH@
+petibm_ibpm-ibpm.obj: ibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT petibm_ibpm-ibpm.obj -MD -MP -MF $(DEPDIR)/petibm_ibpm-ibpm.Tpo -c -o petibm_ibpm-ibpm.obj `if test -f 'ibpm.cpp'; then $(CYGPATH_W) 'ibpm.cpp'; else $(CYGPATH_W) '$(srcdir)/ibpm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/petibm_ibpm-ibpm.Tpo $(DEPDIR)/petibm_ibpm-ibpm.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ibpm.cpp' object='petibm_ibpm-ibpm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_tairacolonius_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_tairacolonius-tairacolonius.obj `if test -f 'tairacolonius.cpp'; then $(CYGPATH_W) 'tairacolonius.cpp'; else $(CYGPATH_W) '$(srcdir)/tairacolonius.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(petibm_ibpm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o petibm_ibpm-ibpm.obj `if test -f 'ibpm.cpp'; then $(CYGPATH_W) 'ibpm.cpp'; else $(CYGPATH_W) '$(srcdir)/ibpm.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -32,7 +32,7 @@ def restrict_field(field, grid, atol=1.0E-12):
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-root_dir = os.sep.join(script_dir.split(os.sep)[:-1])
+root_dir = os.path.dirname(script_dir)
 
 timestep = 500
 ncells = [30, 90, 270, 810]

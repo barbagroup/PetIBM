@@ -30,7 +30,7 @@ script:
   - cd $PETIBM_DIR
   - mkdir build
   - cd build
-  - $PETIBM_DIR/configure --prefix=$PETIBM_DIR/install CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -Wno-deprecated -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH --enable-yamlcpp --enable-boost --enable-gtest
+  - $PETIBM_DIR/configure --prefix=$PETIBM_DIR/install CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx CXXFLAGS="-g -O0 -Wno-deprecated -std=c++11" --with-petsc-dir=$PETSC_DIR --with-petsc-arch=$PETSC_ARCH --enable-yamlcpp --enable-gtest
   - make all -j2
   - make check
   - make install

@@ -91,7 +91,6 @@ subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
-	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_gtest.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
@@ -230,8 +229,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
-BOOST_DIR = @BOOST_DIR@
 BUILDDIR = @BUILDDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@

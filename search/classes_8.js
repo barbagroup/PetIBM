@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['navierstokessolver',['NavierStokesSolver',['../d4/de8/class_navier_stokes_solver.html',1,'']]]
+  ['meshbase',['MeshBase',['../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html',1,'petibm::mesh']]]
 ];

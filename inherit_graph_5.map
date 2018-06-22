@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html" title="The abstract (base) class for different iterative solvers. " alt="" coords="5,37,130,76"/>
-<area shape="rect" id="node2" href="$df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html" title="Iterative solver using wrapper of AmgX. " alt="" coords="178,5,303,44"/>
-<area shape="rect" id="node3" href="$d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html" title="Iterative solver using PETSc KSP. " alt="" coords="178,68,303,107"/>
+<area shape="rect" id="node1" href="$de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html" title="The abstract (base) class for different iterative solvers. " alt="" coords="5,39,131,80"/>
+<area shape="rect" id="node2" href="$df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html" title="Iterative solver using wrapper of AmgX. " alt="" coords="179,5,304,47"/>
+<area shape="rect" id="node3" href="$d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html" title="Iterative solver using PETSc KSP. " alt="" coords="179,71,304,112"/>
 </map>

@@ -8,6 +8,6 @@ var searchData=
   ['bl2str',['bl2str',['../dd/d8f/group__type.html#ga2902d569ef2c179f064d484a3e2296ef',1,'petibm::type']]],
   ['bng',['BNG',['../d4/de8/class_navier_stokes_solver.html#aebc660e83aaddd876dbd82dd2aadcc93',1,'NavierStokesSolver']]],
   ['bnh',['BNH',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#a21f524002128fb0cb05be94e109b581e',1,'DecoupledIBPMSolver']]],
-  ['bodies',['bodies',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#a30c279301a8f6702c35be0af8dad339d',1,'DecoupledIBPMSolver::bodies()'],['../d4/d0c/class_taira_colonius_solver.html#a00ccc3162bf282dc2e6f20c2842e72c0',1,'TairaColoniusSolver::bodies()'],['../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ac13d1d0c19fa0c51881d11545fb111f3',1,'petibm::body::BodyPackBase::bodies()']]],
+  ['bodies',['bodies',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#a30c279301a8f6702c35be0af8dad339d',1,'DecoupledIBPMSolver::bodies()'],['../d2/dec/class_i_b_p_m_solver.html#ad031f149d9bd36f0fc57e0b7e75b17c5',1,'IBPMSolver::bodies()'],['../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ac13d1d0c19fa0c51881d11545fb111f3',1,'petibm::body::BodyPackBase::bodies()']]],
   ['bt2str',['bt2str',['../dd/d8f/group__type.html#gab9b5288c273bd424c10da00593e580d0',1,'petibm::type']]]
 ];

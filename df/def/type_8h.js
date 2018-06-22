@@ -40,7 +40,6 @@ var type_8h =
       [ "p", "df/def/type_8h.html#gga20353232f86cf4c4087c3118519f2eadaa71bfcb768bafb823ac11a8a7186a73f", null ],
       [ "vertex", "df/def/type_8h.html#gga20353232f86cf4c4087c3118519f2eadaf1663bf81f8e4829d905e4e7bd226742", null ]
     ] ],
-    [ "operator<", "df/def/type_8h.html#ae3ddc6b67bfa79b75508009697674fe5", null ],
     [ "bl2str", "df/def/type_8h.html#ga2902d569ef2c179f064d484a3e2296ef", null ],
     [ "bt2str", "df/def/type_8h.html#gab9b5288c273bd424c10da00593e580d0", null ],
     [ "dir2str", "df/def/type_8h.html#gab43916db84e759fb6a5da061cd2c6796", null ],

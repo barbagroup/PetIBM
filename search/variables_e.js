@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['p',['P',['../d4/d0c/class_taira_colonius_solver.html#a5e339af84d892497c01d866d76cda042',1,'TairaColoniusSolver']]],
+  ['p',['P',['../d2/dec/class_i_b_p_m_solver.html#ad0a3e6953de1776b0d7c06e01f9a31d3',1,'IBPMSolver']]],
   ['periodic',['periodic',['../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ae0a277ae4c229177b7a08a10d36149db',1,'petibm::mesh::MeshBase']]],
   ['pglobal',['pGlobal',['../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ace2283c61781eca113f2df9551b69c6f',1,'petibm::solution::SolutionBase']]],
   ['pn',['pN',['../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ae4fe213811176b6603c762daa4fd87c5',1,'petibm::mesh::MeshBase']]],

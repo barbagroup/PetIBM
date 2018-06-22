@@ -4,11 +4,6 @@ var hierarchy =
     [ "petibm::boundary::BoundaryBase", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html", [
       [ "petibm::boundary::BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html", null ]
     ] ],
-    [ "YAML::convert< petibm::type::BCLoc >", "da/d96/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_b_c_loc_01_4.html", null ],
-    [ "YAML::convert< petibm::type::BCType >", "d9/db9/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_b_c_type_01_4.html", null ],
-    [ "YAML::convert< petibm::type::Dir >", "df/de9/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_dir_01_4.html", null ],
-    [ "YAML::convert< petibm::type::Field >", "d7/da3/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_field_01_4.html", null ],
-    [ "YAML::convert< PetscBool >", "dc/d85/struct_y_a_m_l_1_1convert_3_01_petsc_bool_01_4.html", null ],
     [ "petibm::type::GhostPointInfo", "d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html", null ],
     [ "petibm::linsolver::LinSolverBase", "de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html", [
       [ "petibm::linsolver::LinSolverAmgX", "df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html", null ],
@@ -20,7 +15,7 @@ var hierarchy =
     ] ],
     [ "NavierStokesSolver", "d4/de8/class_navier_stokes_solver.html", [
       [ "DecoupledIBPMSolver", "d4/d1d/class_decoupled_i_b_p_m_solver.html", null ],
-      [ "TairaColoniusSolver", "d4/d0c/class_taira_colonius_solver.html", null ]
+      [ "IBPMSolver", "d2/dec/class_i_b_p_m_solver.html", null ]
     ] ],
     [ "petibm::type::RowModifier", "d3/dd1/structpetibm_1_1type_1_1_row_modifier.html", null ],
     [ "petibm::body::SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html", [

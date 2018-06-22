@@ -1,43 +1,21 @@
-/*
-@ @licstart  The following is the entire license notice for the
-JavaScript code in this file.
-
-Copyright (C) 1997-2017 by Dimitri van Heesch
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-@licend  The above is the entire license notice
-for the JavaScript code in this file
-*/
 var NAVTREE =
 [
   [ "PetIBM", "index.html", [
     [ "PetIBM - toolbox and applications of the immersed-boundary method on distributed-memory architectures", "index.html", null ],
-    [ "Change Log", "d1/d5b/md__c_h_a_n_g_e_l_o_g.html", null ],
-    [ "Contributing", "d6/dcd/md__c_o_n_t_r_i_b_u_t_i_n_g.html", null ],
+    [ "Change Log", "md_CHANGELOG.html", null ],
+    [ "Contributing", "md_CONTRIBUTING.html", null ],
     [ "Quick Start", "usergroup0.html", [
-      [ "Installation", "dc/df1/md_doc_markdowns_installation.html", null ],
-      [ "Run PetIBM", "d2/d26/md_doc_markdowns_runpetibm.html", null ],
-      [ "Input files", "d1/dee/md_doc_markdowns_inputs.html", null ],
-      [ "Output files", "d5/db3/md_doc_markdowns_outputs.html", null ],
-      [ "2D Examples", "d5/dfb/md_doc_markdowns_examples2d.html", null ],
-      [ "3D Examples", "d4/d85/md_doc_markdowns_examples3d.html", null ]
+      [ "Installation", "md_doc_markdowns_installation.html", null ],
+      [ "Run PetIBM", "md_doc_markdowns_runpetibm.html", null ],
+      [ "Input files", "md_doc_markdowns_inputs.html", null ],
+      [ "Output files", "md_doc_markdowns_outputs.html", null ],
+      [ "2D Examples", "md_doc_markdowns_examples2d.html", null ],
+      [ "3D Examples", "md_doc_markdowns_examples3d.html", null ],
+      [ "Use PetIBM API", "md_doc_markdowns_usepetibmapi.html", null ]
     ] ],
     [ "Modules", "modules.html", "modules" ],
-    [ "Namespaces", "namespaces.html", [
-      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+    [ "Namespaces", null, [
+      [ "Namespace List", "namespaces.html", "namespaces" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
@@ -58,12 +36,11 @@ var NAVTREE =
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
-    [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ],
+    [ "Files", null, [
+      [ "File List", "files.html", "files" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ]
+        [ "Functions", "globals_func.html", null ]
       ] ]
     ] ]
   ] ]
@@ -72,11 +49,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d4/d54/namespacepetibm_1_1type.html",
-"d7/d1e/namespace_y_a_m_l.html",
-"da/df5/createdelta_8cpp_source.html",
-"dd/d3d/delta_8cpp.html",
-"functions_b.html"
+"d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a488c97417c0e7cc6ac3c213115dcc634",
+"d7/d5f/misc_8cpp.html#gae51df343993fcb388fdf63def6d859b2",
+"db/d33/decoupledibpm_8cpp_source.html",
+"dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daaa42544aec2d0e3db4d2d10481e02ddf2",
+"md_doc_markdowns_inputs.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

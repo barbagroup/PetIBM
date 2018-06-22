@@ -23,12 +23,5 @@ var dir_b00d6d3965a1c6f2dc1b5bbb5126d3e8 =
     [ "solution.h", "d7/dac/solution_8h.html", "d7/dac/solution_8h" ],
     [ "solutionsimple.h", "de/de9/solutionsimple_8h.html", null ],
     [ "timeintegration.h", "dd/d82/timeintegration_8h.html", "dd/d82/timeintegration_8h" ],
-    [ "type.h", "df/def/type_8h.html", "df/def/type_8h" ],
-    [ "yaml.h", "dc/dfe/yaml_8h.html", [
-      [ "convert< petibm::type::Dir >", "df/de9/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_dir_01_4.html", null ],
-      [ "convert< petibm::type::Field >", "d7/da3/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_field_01_4.html", null ],
-      [ "convert< petibm::type::BCType >", "d9/db9/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_b_c_type_01_4.html", null ],
-      [ "convert< petibm::type::BCLoc >", "da/d96/struct_y_a_m_l_1_1convert_3_01petibm_1_1type_1_1_b_c_loc_01_4.html", null ],
-      [ "convert< PetscBool >", "dc/d85/struct_y_a_m_l_1_1convert_3_01_petsc_bool_01_4.html", null ]
-    ] ]
+    [ "type.h", "df/def/type_8h.html", "df/def/type_8h" ]
 ];

@@ -9,6 +9,7 @@ var searchData=
   ['_7edecoupledibpmsolver',['~DecoupledIBPMSolver',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#accce6e007bd5f25d378dbf3793ced225',1,'DecoupledIBPMSolver']]],
   ['_7eeuler_5fexplicit',['~Euler_Explicit',['../d7/d33/classpetibm_1_1timeintegration_1_1_euler___explicit.html#ab2c2ab51e573a221fcd09ffab0dc1b0d',1,'petibm::timeintegration::Euler_Explicit']]],
   ['_7eeuler_5fimplicit',['~Euler_Implicit',['../da/d48/classpetibm_1_1timeintegration_1_1_euler___implicit.html#aded6e3c1a6093881afa3e2d566149439',1,'petibm::timeintegration::Euler_Implicit']]],
+  ['_7eibpmsolver',['~IBPMSolver',['../d2/dec/class_i_b_p_m_solver.html#a3b7e3e7b16caa051a1b082857ffc96bb',1,'IBPMSolver']]],
   ['_7elinsolveramgx',['~LinSolverAmgX',['../df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#a28ee0d886d9b978184a8e8d12a7db134',1,'petibm::linsolver::LinSolverAmgX']]],
   ['_7elinsolverbase',['~LinSolverBase',['../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a4199ac8ed31f333220aae906507421ca',1,'petibm::linsolver::LinSolverBase']]],
   ['_7elinsolverksp',['~LinSolverKSP',['../d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#a934227bac348eb2492d58338311bc107',1,'petibm::linsolver::LinSolverKSP']]],
@@ -23,6 +24,5 @@ var searchData=
   ['_7esingleboundaryperiodic',['~SingleBoundaryPeriodic',['../de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html#a7a4af15305981cf7043db7a7c47fd8eb',1,'petibm::boundary::SingleBoundaryPeriodic']]],
   ['_7esolutionbase',['~SolutionBase',['../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a7c1f1092bd3b3baa73a3e493fa2c868d',1,'petibm::solution::SolutionBase']]],
   ['_7esolutionsimple',['~SolutionSimple',['../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#ac84bf348bf175cc7abeb5e5aa853e33b',1,'petibm::solution::SolutionSimple']]],
-  ['_7etairacoloniussolver',['~TairaColoniusSolver',['../d4/d0c/class_taira_colonius_solver.html#a6510d33732282743aafb3e5e94724b88',1,'TairaColoniusSolver']]],
   ['_7etimeintegrationbase',['~TimeIntegrationBase',['../d8/d39/classpetibm_1_1timeintegration_1_1_time_integration_base.html#a80530efcf235d517b08a110adf4f24b0',1,'petibm::timeintegration::TimeIntegrationBase']]]
 ];

@@ -21,7 +21,7 @@ var group__boundary_module =
     [ "BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html", [
       [ "BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a27a61034126f63b301050f95bd64d2ea", null ],
       [ "~BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a893520af141dc8459bd18304e883033c", null ],
-      [ "copyValues2LocalVecs", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a7cc57c7b6af539e88aa9ef525743d94e", null ],
+      [ "copyValues2LocalVecs", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a1bac62caa90374ef1d43c1461f4a0afe", null ],
       [ "destroy", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a85cdbe497525880a647b6d85c405f882", null ],
       [ "init", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a8e7f8aca90c52b80f864173b0039abf1", null ],
       [ "setGhostICs", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#abee82f21a6a20dccac3dfe2a9ffcddbd", null ],

@@ -132,13 +132,6 @@ The PetIBM configuration script gives the possibility to a previously installed 
 
 ---
 
-## Boost
-
-yaml-cpp depends on the Boost library.
-When configuring PetIBM, you can either use a previously installed version of Boost and provide the path of the directory that contains the headers' folder `boost` with `--with-boost-dir=<directory>` or request to download Boost-1.65.1 with `--enable-boost`.
-
----
-
 ## gtest
 
 We use Google's C++ test framework [gtest](https://github.com/google/googletest) to run unit-tests after compiling PetIBM.
@@ -177,20 +170,18 @@ Configure and build PetIBM with PETSc in debugging mode:
         --with-petsc-dir=$PETSC_DIR \
         --with-petsc-arch=$PETSC_ARCH \
         --with-yamlcpp-dir=<directory> \
-        --with-boost-dir=<directory> \
         --with-gtest-dir=<directory>
     make all
     make check
     make install
 
-If yaml-cpp, Boost, and/or gtest are not available, you can request installation at configuration time using:
+If yaml-cpp and/or gtest are not available, you can request installation at configuration time using:
 
     $PETIBM_DIR/configure \
         --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
         CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
         CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
         --enable-yamlcpp \
-        --enable-boost \
         --enable-gtest
 
 For production runs, you may want to use the optimized build of PETSc:
@@ -207,7 +198,6 @@ You may also want to build a optimized version:
         --with-petsc-dir=$PETSC_DIR \
         --with-petsc-arch=$PETSC_ARCH \
         --with-yamlcpp-dir=<directory> \
-        --with-boost-dir=<directory> \
         --with-gtest-dir=<directory>
     make all
     make check
@@ -251,7 +241,6 @@ For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWr
         --with-petsc-dir=$PETSC_DIR \
         --with-petsc-arch=$PETSC_ARCH \
         --with-yamlcpp-dir=<directory> \
-        --with-boost-dir=<directory> \
         --with-gtest-dir=<directory> \
         --with-cuda-dir=<directory> \
         --with-amgx-dir=<directory> \

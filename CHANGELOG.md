@@ -11,11 +11,15 @@
 
 ### Changed
 
+* Upgrade to yaml-cpp-0.6.2 when downloading building yaml-cpp at PetIBM configuration time (configuration flag `--enable-yamlcpp`).
+
 
 ### Fixed
 
 
 ### Removed
+
+* Remove Boost dependency; configuration does not check for Boost anymore.
 
 ---
 

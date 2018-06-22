@@ -18623,7 +18623,7 @@ int
 main ()
 {
 
-#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 9, 0)) || PETSC_VERSION_RELEASE != 1)
+#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 10, 0)) || PETSC_VERSION_RELEASE != 1)
 #else
 asdf
 #endif
@@ -18642,7 +18642,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${PETSC_VERSION_VALID}" >&5
 $as_echo "${PETSC_VERSION_VALID}" >&6; }
 if test "$PETSC_VERSION_VALID" = no; then
-  as_fn_error $? "invalid PETSc version detected; please use PETSc 3.8" "$LINENO" 5
+  as_fn_error $? "invalid PETSc version detected; please use PETSc 3.8+" "$LINENO" 5
 fi
 
 

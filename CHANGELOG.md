@@ -8,6 +8,7 @@
 
 ### Added
 
+* Add possibility to use configuration arguments `--with-<package>-include=<path>` and `--with-<package>-lib=<path>` (instead of `--with-<package>-dir=<path>`) for yaml-cpp, gtest, AmgX, and AmgXWrapper. (`--with-<package>-dir=<path>` is still supported for those packages.)
 
 ### Changed
 

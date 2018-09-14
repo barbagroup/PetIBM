@@ -346,12 +346,12 @@ PetscErrorCode DecoupledIBPMSolver::writeRestartData(
     ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, (filePath+".h5").c_str()); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     
     // go to the root node first. Not necessary. Just in case.
     ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
     
-    // save Lagragian forces
+    // save Lagrangian forces
     ierr = PetscObjectSetName((PetscObject) f, "force"); CHKERRQ(ierr);
     ierr = VecView(f, viewer); CHKERRQ(ierr);
     
@@ -379,7 +379,7 @@ PetscErrorCode DecoupledIBPMSolver::readRestartData(
     ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, (filePath+".h5").c_str()); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     
     // go to the root node first. Not necessary. Just in case.
     ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);

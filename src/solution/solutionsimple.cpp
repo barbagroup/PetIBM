@@ -167,7 +167,7 @@ PetscErrorCode SolutionSimple::applyIC(const YAML::Node &node)
 } // applyIC
 
 
-PetscErrorCode SolutionSimple::write(const std::string &file) const
+PetscErrorCode SolutionSimple::write(const std::string &filePath) const
 {
     PetscFunctionBeginUser;
     
@@ -192,7 +192,7 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
     vecs.back() = pGlobal;
     
     // write to a HDF5 file
-    ierr = io::writeHDF5Vecs(comm, file, "/", names, vecs); CHKERRQ(ierr);
+    ierr = io::writeHDF5Vecs(comm, filePath, "/", names, vecs); CHKERRQ(ierr);
     
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;
@@ -205,7 +205,7 @@ PetscErrorCode SolutionSimple::write(const std::string &file) const
 } // write
 
 
-PetscErrorCode SolutionSimple::read(const std::string &file)
+PetscErrorCode SolutionSimple::read(const std::string &filePath)
 {
     PetscFunctionBeginUser;
     
@@ -230,7 +230,7 @@ PetscErrorCode SolutionSimple::read(const std::string &file)
     vecs.back() = pGlobal;
     
     // write to a HDF5 file
-    ierr = io::readHDF5Vecs(comm, file, "/", names, vecs); CHKERRQ(ierr);
+    ierr = io::readHDF5Vecs(comm, filePath, "/", names, vecs); CHKERRQ(ierr);
     
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;

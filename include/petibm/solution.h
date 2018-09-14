@@ -130,22 +130,22 @@ public:
      * 
      * Now only support HDF5 format.
      *
-     * \param file [in] the full path to the file, without extension.
+     * \param filePath [in] path of the file to write in.
      *
      * \return PetscErrorCode.
      */
-    virtual PetscErrorCode write(const std::string &file) const = 0;
+    virtual PetscErrorCode write(const std::string &filePath) const = 0;
     
     /**
      * \brief Read solution vectors from a given file.
      * 
      * Now only support HDF5 format.
      *
-     * \param file [in] the full path to the file, without extension.
+     * \param filePath [in] path of the file to read from.
      *
      * \return PetscErrorCode.
      */
-    virtual PetscErrorCode read(const std::string &file) = 0;
+    virtual PetscErrorCode read(const std::string &filePath) = 0;
 
 
 protected:

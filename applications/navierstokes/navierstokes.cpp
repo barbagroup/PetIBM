@@ -466,94 +466,78 @@ PetscErrorCode NavierStokesSolver::projectionStep()
 
 // output solutions to the user provided file
 PetscErrorCode NavierStokesSolver::write(
-  const PetscReal &t, const std::string &filePath)
+    const PetscReal &t, const std::string &filePath)
 {
-    PetscErrorCode ierr;
+  PetscErrorCode ierr;
 
-    PetscFunctionBeginUser;
+  PetscFunctionBeginUser;
 
-    ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
+  ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
 
-    ierr = solution->write(filePath); CHKERRQ(ierr);
-    ierr = writeTimeHDF5(t, filePath + ".h5"); CHKERRQ(ierr);
+  ierr = solution->write(filePath); CHKERRQ(ierr);
+  ierr = writeTimeHDF5(t, filePath); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
-    // output PETSc log view into file called "<time-step>.log"
-    // located in solution directory
-    {
-      PetscViewer viewerLog;
-      ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewerLog); CHKERRQ(ierr);
-      ierr = PetscViewerSetType(viewerLog, PETSCVIEWERASCII); CHKERRQ(ierr);
-      ierr = PetscViewerFileSetMode(viewerLog, FILE_MODE_WRITE); CHKERRQ(ierr);
-      ierr = PetscViewerFileSetName(
-        viewerLog, (filePath + ".log").c_str()); CHKERRQ(ierr);
-      ierr = PetscLogView(viewerLog); CHKERRQ(ierr);
-      ierr = PetscViewerDestroy(&viewerLog); CHKERRQ(ierr);
-    }
-
-    PetscFunctionReturn(0);
+  PetscFunctionReturn(0);
 } // write
 
 
 // output extra data required for restarting to the user provided file
 PetscErrorCode NavierStokesSolver::writeRestartData(
-  const PetscReal &t, const std::string &filePath)
+    const PetscReal &t, const std::string &filePath)
 {
-    PetscFunctionBeginUser;
-    
-    PetscErrorCode ierr;
-    
-    PetscBool   fileExist = PETSC_FALSE;
-    
-    PetscViewer     viewer;
+  PetscErrorCode ierr;
+  PetscViewer viewer;
+  PetscBool fileExist = PETSC_FALSE;
 
-    ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
-    
-    // test if file exist 
-    ierr = PetscTestFile((filePath+".h5").c_str(), 'w', &fileExist); CHKERRQ(ierr);
-    
-    if (! fileExist) // if not, create one and write u, v, w, and p into it
-    {
-        ierr = solution->write(filePath); CHKERRQ(ierr);
-        ierr = writeTimeHDF5(t, filePath + ".h5"); CHKERRQ(ierr);
-    }
-    // TODO: should we check if the file exist but data is not up-to-date?
-    
-    // create PetscViewer with append mode
-    ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
-    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, (filePath+".h5").c_str()); CHKERRQ(ierr);
-    
-    // go to the root node first. Not necessary. Just in case.
-    ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
-    
-    // write extra data to the end of the file
-    // save explicit convection terms first
-    ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<conv.size(); ++i)
-    {
-        ierr = PetscObjectSetName((PetscObject) conv[i],
-                std::to_string(i).c_str()); CHKERRQ(ierr);
-        ierr = VecView(conv[i], viewer); CHKERRQ(ierr);
-    }
-    
-    // then save explicit diffusion terms
-    ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<diff.size(); ++i)
-    {
-        ierr = PetscObjectSetName((PetscObject) diff[i],
-                std::to_string(i).c_str()); CHKERRQ(ierr);
-        ierr = VecView(diff[i], viewer); CHKERRQ(ierr);
-    }
-    
-    // destroy viewer
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  PetscFunctionBeginUser;
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
-    
-    PetscFunctionReturn(0);
+  ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
+  
+  // check if file exist 
+  ierr = PetscTestFile(filePath.c_str(), 'w', &fileExist); CHKERRQ(ierr);
+  
+  if (! fileExist) // if not, create one and write field solution into it
+  {
+    ierr = solution->write(filePath); CHKERRQ(ierr);
+    ierr = writeTimeHDF5(t, filePath); CHKERRQ(ierr);
+  }
+  // TODO: should we check if the file exist but data is not up-to-date?
+
+  // create PetscViewer with append mode
+  ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
+  ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+  
+  // go to the root node first. Not necessary. Just in case.
+  ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
+  
+  // write extra data to the end of the file
+  // save explicit convection terms
+  ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
+  for (unsigned int i=0; i<conv.size(); ++i)
+  {
+    ierr = PetscObjectSetName(
+        (PetscObject) conv[i], std::to_string(i).c_str()); CHKERRQ(ierr);
+    ierr = VecView(conv[i], viewer); CHKERRQ(ierr);
+  }
+  // save explicit diffusion terms
+  ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
+  for (unsigned int i=0; i<diff.size(); ++i)
+  {
+    ierr = PetscObjectSetName(
+        (PetscObject) diff[i], std::to_string(i).c_str()); CHKERRQ(ierr);
+    ierr = VecView(diff[i], viewer); CHKERRQ(ierr);
+  }
+  
+  // destroy viewer
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+  ierr = PetscLogStagePop(); CHKERRQ(ierr);
+  
+  PetscFunctionReturn(0);
 } // writeRestartData
 
 
@@ -561,61 +545,58 @@ PetscErrorCode NavierStokesSolver::writeRestartData(
 PetscErrorCode NavierStokesSolver::readRestartData(
   const std::string &filePath, PetscReal &t)
 {
-    PetscFunctionBeginUser;
-    
-    PetscErrorCode  ierr;
-    
-    PetscBool   fileExist = PETSC_FALSE;
-    
-    PetscViewer     viewer;
+  PetscErrorCode ierr;
+  PetscViewer viewer;
+  PetscBool fileExist = PETSC_FALSE;
 
-    // test if file exist 
-    ierr = PetscTestFile((filePath+".h5").c_str(), 'r', &fileExist); CHKERRQ(ierr);
-    
-    if (! fileExist) // if not, return error
-        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_READ,
-                "Could not find file \"%s\" for restarting.\n", 
-                (filePath + ".h5").c_str());
-    
-    // read primary fields
-    ierr = solution->read(filePath); CHKERRQ(ierr);
-    ierr = readTimeHDF5(filePath + ".h5", t); CHKERRQ(ierr);
-    
-    // create PetscViewer with append mode
-    ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
-    ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(viewer, (filePath+".h5").c_str()); CHKERRQ(ierr);
-    
-    // go to the root node first. Not necessary. Just in case.
-    ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
-    
-    // read explicit convection terms first
-    ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<conv.size(); ++i)
-    {
-        ierr = PetscObjectSetName((PetscObject) conv[i],
-                std::to_string(i).c_str()); CHKERRQ(ierr);
-        ierr = VecLoad(conv[i], viewer); CHKERRQ(ierr);
-    }
-    
-    // then read explicit diffusion terms
-    ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
-    for(unsigned int i=0; i<diff.size(); ++i)
-    {
-        ierr = PetscObjectSetName((PetscObject) diff[i],
-                std::to_string(i).c_str()); CHKERRQ(ierr);
-        ierr = VecLoad(diff[i], viewer); CHKERRQ(ierr);
-    }
-    
-    // destroy viewer
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
-    
-    // update values and Eqs of ghost points based on current solution
-    // TODO: for convective BCs, it's not totally correct
-    ierr = bc->setGhostICs(solution); CHKERRQ(ierr);
-    
-    PetscFunctionReturn(0);
+  PetscFunctionBeginUser;
+
+  // check if file exist 
+  ierr = PetscTestFile(filePath.c_str(), 'r', &fileExist); CHKERRQ(ierr);
+  
+  if (! fileExist) // if not, return error
+      SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_READ,
+               "Could not find file \"%s\" for restarting.\n", 
+               filePath.c_str());
+  
+  // read primary fields
+  ierr = solution->read(filePath); CHKERRQ(ierr);
+  ierr = readTimeHDF5(filePath, t); CHKERRQ(ierr);
+  
+  // create PetscViewer with append mode
+  ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
+  ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+  
+  // go to the root node first. Not necessary. Just in case.
+  ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
+  
+  // read explicit convection terms
+  ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
+  for (unsigned int i=0; i<conv.size(); ++i)
+  {
+    ierr = PetscObjectSetName(
+        (PetscObject) conv[i], std::to_string(i).c_str()); CHKERRQ(ierr);
+    ierr = VecLoad(conv[i], viewer); CHKERRQ(ierr);
+  }
+  // read explicit diffusion terms
+  ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
+  for (unsigned int i=0; i<diff.size(); ++i)
+  {
+    ierr = PetscObjectSetName(
+        (PetscObject) diff[i], std::to_string(i).c_str()); CHKERRQ(ierr);
+    ierr = VecLoad(diff[i], viewer); CHKERRQ(ierr);
+  }
+  
+  // destroy viewer
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  
+  // update values and Eqs of ghost points based on current solution
+  // TODO: for convective BCs, it's not totally correct
+  ierr = bc->setGhostICs(solution); CHKERRQ(ierr);
+  
+  PetscFunctionReturn(0);
 } // readRestartData
 
 
@@ -679,7 +660,7 @@ PetscErrorCode NavierStokesSolver::writeTimeHDF5(
 		viewer, filePath.c_str()); CHKERRQ(ierr);
 	// attribute has to belong to an existing dataset (choosing p)
 	ierr = PetscViewerHDF5WriteAttribute(
-		viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
+		  viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
 	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
 	PetscFunctionReturn(0);
@@ -688,22 +669,22 @@ PetscErrorCode NavierStokesSolver::writeTimeHDF5(
 
 // read the time value from a HDF5 file
 PetscErrorCode NavierStokesSolver::readTimeHDF5(
-	const std::string &filePath, PetscReal &t)
+    const std::string &filePath, PetscReal &t)
 {
-	PetscErrorCode ierr;
-	PetscViewer viewer;
+  PetscErrorCode ierr;
+  PetscViewer viewer;
 
-	PetscFunctionBeginUser;
+  PetscFunctionBeginUser;
 
-	ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
-	ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
-	ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
-	ierr = PetscViewerFileSetName(
-		viewer, filePath.c_str()); CHKERRQ(ierr);
-	// attribute has to belong to an existing dataset (choosing p)
-	ierr = PetscViewerHDF5ReadAttribute(
-		viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
-	ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+  ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+  ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
+  ierr = PetscViewerFileSetName(
+      viewer, filePath.c_str()); CHKERRQ(ierr);
+  // attribute has to belong to an existing dataset (choosing p)
+  ierr = PetscViewerHDF5ReadAttribute(
+      viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
+  ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-	PetscFunctionReturn(0);
+  PetscFunctionReturn(0);
 } // readTimeHDF5

@@ -45,10 +45,10 @@ public:
     virtual PetscErrorCode convert2Flux(const Mat &R);
     
     // doc is the same as solution::SolutionBase::write
-    virtual PetscErrorCode write(const std::string &file) const;
+    virtual PetscErrorCode write(const std::string &filePath) const;
     
     // doc is the same as solution::SolutionBase::read
-    virtual PetscErrorCode read(const std::string &file);
+    virtual PetscErrorCode read(const std::string &filePath);
 
 
 protected:

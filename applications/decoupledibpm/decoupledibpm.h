@@ -73,7 +73,7 @@ public:
      * be written in. Otherwise, solutions and extra data will all be written in.
      *
      * \param t [in] time
-     * \param filePath [in] path of the file to save (without extension)
+     * \param filePath [in] path of the file to write into
      */
     PetscErrorCode writeRestartData(
       const PetscReal &t, const std::string &filePath);
@@ -81,7 +81,7 @@ public:
     /**
      * \brief Read data that are required for restarting sessions.
      * 
-     * \param filePath [in] path of the file to save (without extension)
+     * \param filePath [in] path of the file to read from
      * \param t [out] time
      */
     PetscErrorCode readRestartData(const std::string &filePath, PetscReal &t);
@@ -91,7 +91,7 @@ public:
      *        step (to an ASCII file).
      *
      * \param timeIndex [in] Time-step index
-     * \param filePath [in] Path of the file to write in
+     * \param filePath [in] path of the file to write into
      */
     PetscErrorCode writeIterations(
             const int &timeIndex, const std::string &filePath);
@@ -100,7 +100,7 @@ public:
      * \brief Write the integrated forces acting on the bodies into a ASCII file.
      *
      * \param t [in] Time value
-     * \param filePath [in] Name of the file to save.
+     * \param filePath [in] path of the file to write into
      */
     PetscErrorCode writeIntegratedForces(
             const PetscReal &t, const std::string &filePath);

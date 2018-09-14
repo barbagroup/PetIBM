@@ -143,9 +143,9 @@ int main(int argc, char **argv)
         CHKERRQ(ierr);
 
         // read solution
-        std::stringstream   ss;
+        std::stringstream ss;
         ss << setting["solution"].as<std::string>() << "/" 
-            << std::setfill('0') << std::setw(7) << i;
+            << std::setfill('0') << std::setw(7) << i << ".h5";
         ierr = soln->read(ss.str());
         CHKERRQ(ierr);
 

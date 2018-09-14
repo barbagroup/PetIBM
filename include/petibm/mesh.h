@@ -181,7 +181,7 @@ public:
     /**
      * \brief Write grid/mesh data to a HDF5.
      *
-     * \param filePath [in] path to the file (without extension).
+     * \param filePath [in] path of the file to write in.
      *
      * \return PetscErrorCode.
      */

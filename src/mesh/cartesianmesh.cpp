@@ -130,9 +130,6 @@ PetscErrorCode CartesianMesh::init(const MPI_Comm &world, const YAML::Node &node
     // create PETSc DMs
     ierr = initDMDA(); CHKERRQ(ierr);
 
-    // setup the format of the file that the `write` function will use
-    //ierr = setOutputFormat(type); CHKERRQ(ierr);
-
     // create a std::string that can be used in `printInfo` and output stream
     ierr = createInfoString(); CHKERRQ(ierr);
 

@@ -50,7 +50,7 @@ PetscErrorCode print(const std::string &info);
 /**
  * \brief Write a vector of Vecs with names to a HDF5 file.
  * \param comm [in] MPI communicator (should be the same as the one in Vecs).
- * \param file [in] file path + file name (without extension).
+ * \param filePath [in] path of the file to write in.
  * \param loc [in] where in the HDF5 file that data will be written in.
  * \param names [in] a std::vector of std::string for the names of the Vecs.
  * \param vecs [in] a std::vector of Vecs.
@@ -60,15 +60,15 @@ PetscErrorCode print(const std::string &info);
  * 
  * Note: this function won't check the length of `vecs` and `names`.
  */
-PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file, 
-        const std::string &loc, const std::vector<std::string> &names, 
-        const std::vector<Vec> &vecs, const PetscFileMode mode=FILE_MODE_WRITE);
+PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &filePath,
+    const std::string &loc, const std::vector<std::string> &names,
+    const std::vector<Vec> &vecs, const PetscFileMode mode=FILE_MODE_WRITE);
 
 
 /**
  * \brief Write a vector of raw arrays with names to a HDF5 file.
  * \param comm [in] MPI communicator.
- * \param file [in] file path + file name (without extension).
+ * \param filePath [in] path of the file to write in.
  * \param loc [in] where in the HDF5 file that data will be written in.
  * \param names [in] a std::vector of std::string for the names of each array.
  * \param n [in] a std::vector of integer for the length of each array.
@@ -79,16 +79,16 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
  * 
  * Note: this function won't check the length of `vecs` and `names`.
  */
-PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
-        const std::string &loc, const std::vector<std::string> &names, 
-        const std::vector<PetscInt> &n, const std::vector<PetscReal*> &vecs, 
-        const PetscFileMode mode=FILE_MODE_WRITE);
+PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &filePath,
+    const std::string &loc, const std::vector<std::string> &names,
+    const std::vector<PetscInt> &n, const std::vector<PetscReal*> &vecs,
+    const PetscFileMode mode=FILE_MODE_WRITE);
 
 
 /**
  * \brief Write type::RealVec2D with names to a HDF5 file.
  * \param comm [in] MPI communicator.
- * \param file [in] file path + file name (without extension).
+ * \param filePath [in] path of the file to write in.
  * \param loc [in] where in the HDF5 file that data will be written in.
  * \param names [in] a std::vector of std::string for the names of each RealVec1D.
  * \param vecs [in] a type::RealVec2D, i.e., std::vector<type::RealVec1D>.
@@ -98,15 +98,15 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
  * 
  * Note: this function won't check the length of `vecs` and `names`.
  */
-PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
-        const std::string &loc, const std::vector<std::string> &names, 
-        const type::RealVec2D &vecs, const PetscFileMode mode=FILE_MODE_WRITE);
+PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &filePath,
+    const std::string &loc, const std::vector<std::string> &names,
+    const type::RealVec2D &vecs, const PetscFileMode mode=FILE_MODE_WRITE);
 
 
 /**
  * \brief read a vector of Vecs matching the provided names from a HDF5 file.
  * \param comm [in] MPI communicator (should be the same as the one in Vecs).
- * \param file [in] file path + file name (without extension).
+ * \param filePath [in] path of the file to read from.
  * \param loc [in] where in the HDF5 file that data will be read from.
  * \param names [in] a std::vector of std::string for the names of the Vecs.
  * \param vecs [out] a std::vector of Vecs.
@@ -115,9 +115,19 @@ PetscErrorCode writeHDF5Vecs(const MPI_Comm comm, const std::string &file,
  * 
  * Note: this function won't check the length of `vecs` and `names`.
  */
-PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &file,
-        const std::string &loc, const std::vector<std::string> &names, 
-        std::vector<Vec> &vecs);
+PetscErrorCode readHDF5Vecs(const MPI_Comm comm, const std::string &filePath,
+    const std::string &loc, const std::vector<std::string> &names,
+    std::vector<Vec> &vecs);
+
+
+/**
+ * \brief Write a summary of the PETSc logging into a ASCII file.
+ * \param comm [in] MPI communicator.
+ * \param filePath [in] Path of the file to write in.
+ * \return PetscErrorCode
+ * \ingroup miscModule
+ */
+PetscErrorCode writePetscLog(const MPI_Comm comm, const std::string &filePath);
 
 } // end of io
 } // end of petibm

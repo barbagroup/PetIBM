@@ -5,16 +5,14 @@
  * \license BSD 3-Clause License.
  */
 
-
-# pragma once
+#pragma once
 
 // PETSc
-# include <petscsys.h>
+#include <petscsys.h>
 
 // PetIBM
-# include <petibm/mesh.h>
-# include <petibm/solution.h>
-
+#include <petibm/mesh.h>
+#include <petibm/solution.h>
 
 namespace petibm
 {
@@ -28,7 +26,6 @@ namespace solution
 class SolutionSimple : public SolutionBase
 {
 public:
-
     /** \copydoc SolutionBase(const type::Mesh &) */
     SolutionSimple(const type::Mesh &mesh);
 
@@ -43,16 +40,14 @@ public:
 
     // doc is the same as solution::SolutionBase::convert2Flux
     virtual PetscErrorCode convert2Flux(const Mat &R);
-    
+
     // doc is the same as solution::SolutionBase::write
     virtual PetscErrorCode write(const std::string &filePath) const;
-    
+
     // doc is the same as solution::SolutionBase::read
     virtual PetscErrorCode read(const std::string &filePath);
 
-
 protected:
-
     // doc is the same as SolutionBase::init */
     virtual PetscErrorCode init(const type::Mesh &mesh);
 
@@ -62,6 +57,6 @@ protected:
      * \return PetscErrorCode.
      */
     PetscErrorCode createInfoString();
-}; // SolutionSimple
-} // end of namespace solution
-} // end of namespace petibm
+};  // SolutionSimple
+}  // end of namespace solution
+}  // end of namespace petibm

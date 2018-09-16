@@ -7,49 +7,47 @@
 
 #include <petibm/singleboundaryconvective.h>
 
-
-namespace // anonymous namespace for internal linkage
+namespace  // anonymous namespace for internal linkage
 {
-    PetscErrorCode kernelConvectiveDiffDir(
-            const PetscReal &targetValue, const PetscReal &dt,
-            const PetscReal &normal, const PetscReal &value,
-            petibm::type::GhostPointInfo &p)
-    {
-        PetscFunctionBeginUser;
+PetscErrorCode kernelConvectiveDiffDir(const PetscReal &targetValue,
+                                       const PetscReal &dt,
+                                       const PetscReal &normal,
+                                       const PetscReal &value,
+                                       petibm::type::GhostPointInfo &p)
+{
+    PetscFunctionBeginUser;
 
-        p.a0 = -1.0;
-        p.a1 = p.value + targetValue -
-            2.0 * normal * dt * value * (p.value - targetValue) / p.dL;
+    p.a0 = -1.0;
+    p.a1 = p.value + targetValue -
+           2.0 * normal * dt * value * (p.value - targetValue) / p.dL;
 
-        PetscFunctionReturn(0);
-    } // kernelConvectiveDiffDir
+    PetscFunctionReturn(0);
+}  // kernelConvectiveDiffDir
 
+PetscErrorCode kernelConvectiveSameDir(const PetscReal &targetValue,
+                                       const PetscReal &dt,
+                                       const PetscReal &normal,
+                                       const PetscReal &value,
+                                       petibm::type::GhostPointInfo &p)
+{
+    PetscFunctionBeginUser;
 
-    PetscErrorCode kernelConvectiveSameDir(
-            const PetscReal &targetValue, const PetscReal &dt,
-            const PetscReal &normal, const PetscReal &value,
-            petibm::type::GhostPointInfo &p)
-    {
-        PetscFunctionBeginUser;
+    p.a0 = 0.0;
+    p.a1 = p.value - normal * dt * value * (p.value - targetValue) / p.dL;
 
-        p.a0 = 0.0;
-        p.a1 = p.value - normal * dt * value * (p.value - targetValue) / p.dL;
-
-        PetscFunctionReturn(0);
-    } // kernelConvectiveSameDir
-} // end of anonymous namespace
-
+    PetscFunctionReturn(0);
+}  // kernelConvectiveSameDir
+}  // end of anonymous namespace
 
 namespace petibm
 {
 namespace boundary
 {
-
-
-SingleBoundaryConvective::SingleBoundaryConvective(
-        const type::Mesh &inMesh, const type::BCLoc &inLoc,
-        const type::Field &inField, const PetscReal &inValue):
-    SingleBoundaryBase(inMesh, inLoc, inField, type::CONVECTIVE, inValue)
+SingleBoundaryConvective::SingleBoundaryConvective(const type::Mesh &inMesh,
+                                                   const type::BCLoc &inLoc,
+                                                   const type::Field &inField,
+                                                   const PetscReal &inValue)
+    : SingleBoundaryBase(inMesh, inLoc, inField, type::CONVECTIVE, inValue)
 {
     PetscInt dir = int(loc) / 2;
 
@@ -57,8 +55,7 @@ SingleBoundaryConvective::SingleBoundaryConvective(
         kernel = &kernelConvectiveSameDir;
     else
         kernel = &kernelConvectiveDiffDir;
-} // SingleBoundaryConvective
-
+}  // SingleBoundaryConvective
 
 PetscErrorCode SingleBoundaryConvective::destroy()
 {
@@ -67,15 +64,14 @@ PetscErrorCode SingleBoundaryConvective::destroy()
     kernel = nullptr;
     ierr = SingleBoundaryBase::destroy(); CHKERRQ(ierr);
     PetscFunctionReturn(0);
-} // destroy
-
+}  // destroy
 
 PetscErrorCode SingleBoundaryConvective::setGhostICsKernel(
-        const PetscReal &targetValue, type::GhostPointInfo &p)
+    const PetscReal &targetValue, type::GhostPointInfo &p)
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode  ierr;
+    PetscErrorCode ierr;
 
     // at beginning (t=0), due to lack of information of previous solution,
     // we just assume the ghost point has the same value as target boundary
@@ -86,20 +82,19 @@ PetscErrorCode SingleBoundaryConvective::setGhostICsKernel(
     ierr = kernel(targetValue, 0.0, normal, value, p); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // setGhostICsKernel
+}  // setGhostICsKernel
 
-
-PetscErrorCode SingleBoundaryConvective::updateEqsKernel(const PetscReal &targetValue,
-            const PetscReal &dt, type::GhostPointInfo &p)
+PetscErrorCode SingleBoundaryConvective::updateEqsKernel(
+    const PetscReal &targetValue, const PetscReal &dt, type::GhostPointInfo &p)
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode  ierr;
+    PetscErrorCode ierr;
 
     ierr = kernel(targetValue, dt, normal, value, p); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // updateEqsKernel
+}  // updateEqsKernel
 
-} // end of namespace boundary
-} // end of namespace petibm
+}  // end of namespace boundary
+}  // end of namespace petibm

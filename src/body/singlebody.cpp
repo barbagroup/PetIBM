@@ -5,24 +5,22 @@
  * \license BSD 3-Clause License.
  */
 
-
 // PetIBM
-# include <petibm/singlebody.h>
-# include <petibm/singlebodypoints.h>
-# include <petibm/io.h>
-
+#include <petibm/io.h>
+#include <petibm/singlebody.h>
+#include <petibm/singlebodypoints.h>
 
 namespace petibm
 {
 namespace body
 {
-
 SingleBodyBase::SingleBodyBase(const type::Mesh &inMesh,
-        const std::string &inName, const std::string &inFile)
+                               const std::string &inName,
+                               const std::string &inFile)
 {
     // set up the name
     name = inName;
-    
+
     // store the path of input file
     file = inFile;
 
@@ -40,13 +38,12 @@ SingleBodyBase::SingleBodyBase(const type::Mesh &inMesh,
     // allocate vectors
     nLclAllProcs = type::IntVec1D(mpiSize, 0);
     offsetsAllProcs = type::IntVec1D(mpiSize, 0);
-} // SingleBodyBase
-
+}  // SingleBodyBase
 
 SingleBodyBase::~SingleBodyBase()
 {
     PetscFunctionBeginUser;
-    PetscErrorCode  ierr;
+    PetscErrorCode ierr;
     PetscBool finalized;
 
     ierr = PetscFinalized(&finalized); CHKERRV(ierr);
@@ -54,13 +51,12 @@ SingleBodyBase::~SingleBodyBase()
 
     ierr = DMDestroy(&da); CHKERRV(ierr);
     comm = MPI_COMM_NULL;
-} // ~SingleBodyBase
-
+}  // ~SingleBodyBase
 
 PetscErrorCode SingleBodyBase::destroy()
 {
     PetscFunctionBeginUser;
-    PetscErrorCode  ierr;
+    PetscErrorCode ierr;
 
     dim = -1;
     name = file = info = "";
@@ -75,33 +71,31 @@ PetscErrorCode SingleBodyBase::destroy()
     type::IntVec1D().swap(offsetsAllProcs);
 
     PetscFunctionReturn(0);
-} // destroy
-
+}  // destroy
 
 PetscErrorCode SingleBodyBase::printInfo() const
 {
     PetscFunctionBeginUser;
-    PetscErrorCode  ierr;
+    PetscErrorCode ierr;
     ierr = io::print(info); CHKERRQ(ierr);
     PetscFunctionReturn(0);
-} // printInfo
+}  // printInfo
 
-
-PetscErrorCode createSingleBody(
-            const type::Mesh &mesh, const std::string &type, 
-            const std::string &name, const std::string &file,
-            type::SingleBody &body)
+PetscErrorCode createSingleBody(const type::Mesh &mesh, const std::string &type,
+                                const std::string &name,
+                                const std::string &file, type::SingleBody &body)
 {
     PetscFunctionBeginUser;
-    
+
     if (type == "points")
-       body = std::make_shared<SingleBodyPoints>(mesh, name, file);
+        body = std::make_shared<SingleBodyPoints>(mesh, name, file);
     else
         SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,
-                "The type of mesh file \"%s\" is not recognized!\n", type.c_str());
-    
-    PetscFunctionReturn(0);
-} // createSingleBody
+                 "The type of mesh file \"%s\" is not recognized!\n",
+                 type.c_str());
 
-} // end of namespace body
-} // end of namespace petibm
+    PetscFunctionReturn(0);
+}  // createSingleBody
+
+}  // end of namespace body
+}  // end of namespace petibm

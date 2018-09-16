@@ -1,36 +1,32 @@
-/** 
+/**
  * \file linsolveramgx.cpp
  * \brief Implementation of LinSolverAmgX.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
  */
 
-
-#include <iostream>
-#include <fstream>
 #include <cstdio>
+#include <fstream>
+#include <iostream>
 
 // PetIBM
 #include <petibm/linsolveramgx.h>
-
 
 namespace petibm
 {
 namespace linsolver
 {
-
 // implement LinSolverAmgX::LinSolverAmgX
-LinSolverAmgX::LinSolverAmgX(
-        const std::string &solverName, const std::string &file):
-    LinSolverBase(solverName, file)
+LinSolverAmgX::LinSolverAmgX(const std::string &solverName,
+                             const std::string &file)
+    : LinSolverBase(solverName, file)
 {
-	init();
-} // LinSolverAmgX
-
+    init();
+}  // LinSolverAmgX
 
 // implement LinSolverAmgX::~LinSolverAmgX
 LinSolverAmgX::~LinSolverAmgX()
-{ 
+{
     PetscFunctionBeginUser;
     PetscErrorCode ierr;
     PetscBool finalized;
@@ -39,8 +35,7 @@ LinSolverAmgX::~LinSolverAmgX()
     if (finalized) return;
 
     ierr = amgx.finalize(); CHKERRV(ierr);
-} // ~LinSolverAmgX
-
+}  // ~LinSolverAmgX
 
 // implement LinSolverAmgX::destroy
 PetscErrorCode LinSolverAmgX::destroy()
@@ -53,34 +48,31 @@ PetscErrorCode LinSolverAmgX::destroy()
     ierr = LinSolverBase::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // destroy
-
+}  // destroy
 
 // implement LinSolverAmgX::init
 PetscErrorCode LinSolverAmgX::init()
 {
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-    
+    PetscErrorCode ierr;
+
     type = "NVIDIA AmgX";
 
     // create temporary empty file if no configuration file is provided
     if (config == "None")
     {
-      config = "solversAmgXOptions-tmp.info";
-      std::fstream file(config.c_str(), std::ios::out);
+        config = "solversAmgXOptions-tmp.info";
+        std::fstream file(config.c_str(), std::ios::out);
     }
 
     ierr = amgx.initialize(PETSC_COMM_WORLD, "dDDI", config); CHKERRQ(ierr);
 
     // remove temporary file if necessary
-    if (config == "solversAmgXOptions-tmp.info")
-      std::remove(config.c_str());
+    if (config == "solversAmgXOptions-tmp.info") std::remove(config.c_str());
 
     PetscFunctionReturn(0);
-} // init
-
+}  // init
 
 // implement LinSolverAmgX::setMatrix
 PetscErrorCode LinSolverAmgX::setMatrix(const Mat &A)
@@ -92,8 +84,7 @@ PetscErrorCode LinSolverAmgX::setMatrix(const Mat &A)
     ierr = amgx.setA(A); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // setMatrix
-
+}  // setMatrix
 
 // implement LinSolverAmgX::solve
 PetscErrorCode LinSolverAmgX::solve(Vec &x, Vec &b)
@@ -105,8 +96,7 @@ PetscErrorCode LinSolverAmgX::solve(Vec &x, Vec &b)
     ierr = amgx.solve(x, b); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // solve
-
+}  // solve
 
 // implement LinSolverAmgX::getIters
 PetscErrorCode LinSolverAmgX::getIters(PetscInt &iters)
@@ -118,8 +108,7 @@ PetscErrorCode LinSolverAmgX::getIters(PetscInt &iters)
     ierr = amgx.getIters(iters); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // getIters
-
+}  // getIters
 
 // implement LinSolverAmgX::getResidual
 PetscErrorCode LinSolverAmgX::getResidual(PetscReal &res)
@@ -127,14 +116,14 @@ PetscErrorCode LinSolverAmgX::getResidual(PetscReal &res)
     PetscFunctionBeginUser;
 
     PetscErrorCode ierr;
-    
+
     PetscInt iter;
-    
+
     ierr = amgx.getIters(iter); CHKERRQ(ierr);
-    ierr = amgx.getResidual(iter-1, res); CHKERRQ(ierr);
+    ierr = amgx.getResidual(iter - 1, res); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // getResidual
+}  // getResidual
 
-} // end of namespace linsolver
-} // end of namespace petibm
+}  // end of namespace linsolver
+}  // end of namespace petibm

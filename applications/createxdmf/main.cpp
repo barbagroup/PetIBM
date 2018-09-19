@@ -158,7 +158,8 @@ PetscErrorCode writeSingleXDMF(const std::string &directory,
     {
         ierr = PetscViewerASCIIPrintf(
             viewer, "\t<!ENTITY N%s \"%d\">\n",
-            petibm::type::dir2str[type::Dir(i)].c_str(), n[i]); CHKERRQ(ierr);
+            petibm::type::dir2str[petibm::type::Dir(i)].c_str(), n[i]);
+        CHKERRQ(ierr);
     }
 
     // topology
@@ -175,7 +176,7 @@ PetscErrorCode writeSingleXDMF(const std::string &directory,
 
     for (int i = 0; i < dim; ++i)
     {
-        std::string dir = petibm::type::dir2str[type::Dir(i)];
+        std::string dir = petibm::type::dir2str[petibm::type::Dir(i)];
         ierr = PetscViewerASCIIPrintf(
             viewer,
             "\t\t\t"

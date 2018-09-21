@@ -16,24 +16,24 @@ namespace petibm
 {
 namespace body
 {
-SingleBodyPoints::SingleBodyPoints(const type::Mesh &inMesh,
-                                   const std::string &inName,
-                                   const std::string &inFile)
-    : SingleBodyBase(inMesh, inName, inFile)
+SingleBodyPoints::SingleBodyPoints(const MPI_Comm &comm, const PetscInt &dim,
+                                   const std::string &name,
+                                   const std::string &filePath)
+    : SingleBodyBase(comm, dim, name, filePath)
 {
-    init(inMesh, inName, inFile);
+    init(comm, dim, name, filePath);
 }  // SingleBodyPoints
 
-PetscErrorCode SingleBodyPoints::init(const type::Mesh &inMesh,
-                                      const std::string &inName,
-                                      const std::string &inFile)
+PetscErrorCode SingleBodyPoints::init(const MPI_Comm &comm, const PetscInt &dim,
+                                      const std::string &name,
+                                      const std::string &filePath)
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
 
+    PetscFunctionBeginUser;
+
     // read coordinates from the given file; nPts and coords are set up here
-    ierr = io::readLagrangianPoints(file, nPts, coords); CHKERRQ(ierr);
+    ierr = io::readLagrangianPoints(filePath, nPts, coords); CHKERRQ(ierr);
 
     // check if the dimension of coordinates matches
     if ((unsigned)dim != coords[0].size())
@@ -49,10 +49,6 @@ PetscErrorCode SingleBodyPoints::init(const type::Mesh &inMesh,
     // Lagrangian points. The indices are defined by pressure cell.
     meshIdx = type::IntVec2D(nLclPts, type::IntVec1D(dim, 0));
 
-    // set up background mesh indices for Lagrangian points owned locally
-    // meshIdx is defined here.
-    ierr = updateMeshIdx(); CHKERRQ(ierr);
-
     // create info string
     ierr = createInfoString(); CHKERRQ(ierr);
 
@@ -61,15 +57,13 @@ PetscErrorCode SingleBodyPoints::init(const type::Mesh &inMesh,
 
 PetscErrorCode SingleBodyPoints::createDMDA()
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
-
     DMDALocalInfo lclInfo;
+
+    PetscFunctionBeginUser;
 
     ierr = DMDACreate1d(comm, DM_BOUNDARY_NONE, nPts, dim, 0, nullptr, &da);
     CHKERRQ(ierr);
-
     ierr = DMSetUp(da); CHKERRQ(ierr);
 
     ierr = DMDAGetLocalInfo(da, &lclInfo); CHKERRQ(ierr);
@@ -95,7 +89,7 @@ PetscErrorCode SingleBodyPoints::createDMDA()
     PetscFunctionReturn(0);
 }  // createDMDA
 
-PetscErrorCode SingleBodyPoints::updateMeshIdx()
+PetscErrorCode SingleBodyPoints::updateMeshIdx(const type::Mesh &mesh)
 {
     PetscFunctionBeginUser;
 
@@ -123,11 +117,10 @@ PetscErrorCode SingleBodyPoints::updateMeshIdx()
 
 PetscErrorCode SingleBodyPoints::createInfoString()
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
-
     std::stringstream ss;
+
+    PetscFunctionBeginUser;
 
     // only rank 0 prepares the header of info string
     if (mpiRank == 0)
@@ -135,18 +128,13 @@ PetscErrorCode SingleBodyPoints::createInfoString()
         ss << std::string(80, '=') << std::endl;
         ss << "Body " << name << ":" << std::endl;
         ss << std::string(80, '=') << std::endl;
-
-        ss << "\tInput mesh file: " << file << std::endl << std::endl;
-
+        ss << "\tInput mesh file: " << filePath << std::endl << std::endl;
         ss << "\tDimension: " << dim << std::endl << std::endl;
-
         ss << "\tTotal number of Lagrangian points: " << nPts << std::endl
            << std::endl;
-
         ss << "\tBody is distributed to " << mpiSize << " processes"
            << std::endl
            << std::endl;
-
         ss << "\tDistribution of Lagrangian points:" << std::endl << std::endl;
     }
 
@@ -204,9 +192,9 @@ PetscErrorCode SingleBodyPoints::getGlobalIndex(const PetscInt &i,
 PetscErrorCode SingleBodyPoints::getGlobalIndex(const MatStencil &s,
                                                 PetscInt &idx) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     ierr = getGlobalIndex(s.i, s.c, idx); CHKERRQ(ierr);
 
@@ -216,9 +204,9 @@ PetscErrorCode SingleBodyPoints::getGlobalIndex(const MatStencil &s,
 PetscErrorCode SingleBodyPoints::calculateAvgForces(const Vec &f,
                                                     type::RealVec1D &fAvg) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     PetscReal **fArry;
 
@@ -245,4 +233,5 @@ PetscErrorCode SingleBodyPoints::calculateAvgForces(const Vec &f,
 }  // calculateAvgForces
 
 }  // end of namespace body
+
 }  // end of namespace petibm

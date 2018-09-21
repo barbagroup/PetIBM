@@ -69,7 +69,9 @@ int main(int argc, char **argv)
     ierr = petibm::boundary::createBoundary(mesh, config, bd); CHKERRQ(ierr);
 
     // create body pack
-    ierr = petibm::body::createBodyPack(mesh, config, bodies); CHKERRQ(ierr);
+    ierr = petibm::body::createBodyPack(PETSC_COMM_WORLD, mesh->dim, config,
+                                        bodies); CHKERRQ(ierr);
+    ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
 
     // initialize the solver
     ierr = solver.initialize(mesh, bd, bodies, config); CHKERRQ(ierr);

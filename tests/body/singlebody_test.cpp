@@ -63,8 +63,8 @@ protected:
 
         // create 2D mesh and body
         petibm::mesh::createMesh(PETSC_COMM_WORLD, config, mesh2d);
-        petibm::body::createSingleBody(mesh2d, "points", "body2d01",
-                                       "body/body2d.txt", body2d);
+        petibm::body::createSingleBody(PETSC_COMM_WORLD, 2, "points",
+                                       "body2d01", "body/body2d.txt", body2d);
 
         // create 3D mesh and body
         config["mesh"][2]["direction"] = "z";
@@ -93,8 +93,8 @@ protected:
         config["bodies"][0]["file"] = "body3d.txt";
 
         petibm::mesh::createMesh(PETSC_COMM_WORLD, config, mesh3d);
-        petibm::body::createSingleBody(mesh3d, "points", "body3d01",
-                                       "body/body3d.txt", body3d);
+        petibm::body::createSingleBody(PETSC_COMM_WORLD, 3, "points",
+                                       "body3d01", "body/body3d.txt", body3d);
     };
 
     virtual void TearDown(){};

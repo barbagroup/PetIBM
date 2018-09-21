@@ -5,7 +5,6 @@
  * \license BSD 3-Clause License.
  */
 
-// PetIBM
 #include <petibm/bodypack.h>
 #include <petibm/io.h>
 
@@ -13,16 +12,18 @@ namespace petibm
 {
 namespace body
 {
-BodyPackBase::BodyPackBase(const type::Mesh &inMesh, const YAML::Node &node)
+BodyPackBase::BodyPackBase(const MPI_Comm &comm, const PetscInt &dim,
+                           const YAML::Node &node)
 {
-    init(inMesh, node);
+    init(comm, dim, node);
 }  // BodyPackBase
 
 BodyPackBase::~BodyPackBase()
 {
-    PetscFunctionBeginUser;
     PetscErrorCode ierr;
     PetscBool finalized;
+
+    PetscFunctionBeginUser;
 
     ierr = PetscFinalized(&finalized); CHKERRV(ierr);
     if (finalized) return;
@@ -33,8 +34,9 @@ BodyPackBase::~BodyPackBase()
 
 PetscErrorCode BodyPackBase::destroy()
 {
-    PetscFunctionBeginUser;
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     dim = -1;
     nBodies = nPts = nLclPts = 0;
@@ -42,7 +44,6 @@ PetscErrorCode BodyPackBase::destroy()
     ierr = DMDestroy(&dmPack); CHKERRQ(ierr);
     info = "";
 
-    mesh.reset();
     comm = MPI_COMM_NULL;
     mpiSize = mpiRank = 0;
     type::IntVec1D().swap(nLclAllProcs);
@@ -51,23 +52,20 @@ PetscErrorCode BodyPackBase::destroy()
     PetscFunctionReturn(0);
 }  // destroy
 
-PetscErrorCode BodyPackBase::init(const type::Mesh &inMesh,
+PetscErrorCode BodyPackBase::init(const MPI_Comm &inComm, const PetscInt &inDim,
                                   const YAML::Node &node)
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
 
-    // save the reference to background mesh
-    mesh = inMesh;
+    PetscFunctionBeginUser;
 
-    // save MPI information from the mesh
-    comm = mesh->comm;
-    mpiSize = mesh->mpiSize;
-    mpiRank = mesh->mpiRank;
+    // get info from MPI communicator
+    comm = inComm;
+    ierr = MPI_Comm_size(comm, &mpiSize); CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(comm, &mpiRank); CHKERRQ(ierr);
 
     // set the dimension
-    dim = mesh->dim;
+    dim = inDim;
 
     // get the number of bodies
     if (!node["bodies"].IsDefined())
@@ -91,7 +89,7 @@ PetscErrorCode BodyPackBase::init(const type::Mesh &inMesh,
     // loop through all bodies in the YAML node
     for (PetscInt i = 0; i < nBodies; ++i)
     {
-        std::string name, file, type;
+        std::string name, filePath, type;
 
         // if user didn't set the name of body, use the index in vector `bodies`
         name = node["bodies"][i]["name"].as<std::string>("body" +
@@ -108,14 +106,14 @@ PetscErrorCode BodyPackBase::init(const type::Mesh &inMesh,
                      "\"%s\".\n",
                      name.c_str());
 
-        file = node["bodies"][i]["file"].as<std::string>();
+        filePath = node["bodies"][i]["file"].as<std::string>();
 
         // check if file path is absolute; if not, prepend directory path
         // note: this only works on Unix-like OS
-        if (file[0] != '/')
-            file = node["directory"].as<std::string>() + "/" + file;
+        if (filePath[0] != '/')
+            filePath = node["directory"].as<std::string>() + "/" + filePath;
 
-        ierr = createSingleBody(mesh, type, name, file, bodies[i]);
+        ierr = createSingleBody(comm, dim, type, name, filePath, bodies[i]);
         CHKERRQ(ierr);
 
         for (PetscMPIInt r = 0; r < mpiSize; ++r)
@@ -134,7 +132,7 @@ PetscErrorCode BodyPackBase::init(const type::Mesh &inMesh,
     for (PetscMPIInt r = 1; r < mpiSize; r++)
         offsetsAllProcs[r] += offsetsAllProcs[r - 1];
 
-    // create dmPack
+    // create the DMComposite object (of 1D DMDA objects)
     ierr = createDmPack(); CHKERRQ(ierr);
 
     // create info
@@ -145,9 +143,9 @@ PetscErrorCode BodyPackBase::init(const type::Mesh &inMesh,
 
 PetscErrorCode BodyPackBase::createDmPack()
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     ierr = DMCompositeCreate(comm, &dmPack); CHKERRQ(ierr);
 
@@ -159,6 +157,20 @@ PetscErrorCode BodyPackBase::createDmPack()
     PetscFunctionReturn(0);
 }  // createDmPack
 
+PetscErrorCode BodyPackBase::updateMeshIdx(const type::Mesh &mesh)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    for (auto body : bodies)
+    {
+        ierr = body->updateMeshIdx(mesh); CHKERRQ(ierr);
+    }
+
+    PetscFunctionReturn(0);
+}  // updateMeshIdx
+
 PetscErrorCode BodyPackBase::createInfoString()
 {
     PetscFunctionBeginUser;
@@ -166,21 +178,14 @@ PetscErrorCode BodyPackBase::createInfoString()
     if (mpiRank == 0)
     {
         std::stringstream ss;
-
         ss << std::string(80, '=') << std::endl;
         ss << "Body Pack:" << std::endl;
         ss << std::string(80, '=') << std::endl;
-
         ss << "\tDimension: " << dim << std::endl << std::endl;
-
         ss << "\tNumber of bodies: " << nBodies << std::endl << std::endl;
-
         ss << "\tName of bodies: [";
-
         for (PetscInt i = 0; i < nBodies; ++i) ss << bodies[i]->name << ", ";
-
         ss << "]" << std::endl;
-
         info = ss.str();
     }
 
@@ -189,9 +194,9 @@ PetscErrorCode BodyPackBase::createInfoString()
 
 PetscErrorCode BodyPackBase::printInfo() const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     ierr = io::print(info); CHKERRQ(ierr);
 
@@ -207,9 +212,9 @@ PetscErrorCode BodyPackBase::findProc(const PetscInt &bIdx,
                                       const PetscInt &ptIdx,
                                       PetscMPIInt &proc) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     if ((bIdx < 0) || (bIdx >= nBodies))
         SETERRQ2(comm, PETSC_ERR_ARG_SIZ,
@@ -226,9 +231,9 @@ PetscErrorCode BodyPackBase::getGlobalIndex(const PetscInt &bIdx,
                                             const PetscInt &dof,
                                             PetscInt &idx) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     if ((bIdx < 0) || (bIdx >= nBodies))
         SETERRQ2(comm, PETSC_ERR_ARG_SIZ,
@@ -244,9 +249,9 @@ PetscErrorCode BodyPackBase::getGlobalIndex(const PetscInt &bIdx,
                                             const MatStencil &s,
                                             PetscInt &idx) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     ierr = getGlobalIndex(bIdx, s.i, s.c, idx); CHKERRQ(ierr);
 
@@ -258,12 +263,11 @@ PetscErrorCode BodyPackBase::getPackedGlobalIndex(const PetscInt &bIdx,
                                                   const PetscInt &dof,
                                                   PetscInt &idx) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
-
     PetscMPIInt p;
     PetscInt unPackedIdx;
+
+    PetscFunctionBeginUser;
 
     ierr = findProc(bIdx, ptIdx, p); CHKERRQ(ierr);
 
@@ -282,9 +286,9 @@ PetscErrorCode BodyPackBase::getPackedGlobalIndex(const PetscInt &bIdx,
                                                   const MatStencil &s,
                                                   PetscInt &idx) const
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     ierr = getPackedGlobalIndex(bIdx, s.i, s.c, idx); CHKERRQ(ierr);
 
@@ -294,9 +298,9 @@ PetscErrorCode BodyPackBase::getPackedGlobalIndex(const PetscInt &bIdx,
 PetscErrorCode BodyPackBase::calculateAvgForces(const Vec &f,
                                                 type::RealVec2D &fAvg)
 {
-    PetscFunctionBeginUser;
-
     PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
 
     std::vector<Vec> unPacked(nBodies);
 
@@ -319,14 +323,16 @@ PetscErrorCode BodyPackBase::calculateAvgForces(const Vec &f,
     PetscFunctionReturn(0);
 }  // calculateAvgForces
 
-PetscErrorCode createBodyPack(const type::Mesh &mesh, const YAML::Node &node,
-                              type::BodyPack &bodies)
+PetscErrorCode createBodyPack(const MPI_Comm &comm, const PetscInt &dim,
+                              const YAML::Node &node, type::BodyPack &bodies)
 {
     PetscFunctionBeginUser;
 
-    bodies = std::make_shared<BodyPackBase>(mesh, node);
+    bodies = std::make_shared<BodyPackBase>(comm, dim, node);
 
     PetscFunctionReturn(0);
 }  // createBodyPack
+
 }  // end of namespace body
+
 }  // end of namespace petibm

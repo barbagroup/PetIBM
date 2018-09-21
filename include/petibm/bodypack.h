@@ -82,33 +82,39 @@ public:
     /** \brief Total number of local Lagrangian points. */
     PetscInt nLclPts;
 
-    /** \brief A vector of SingleBody instances. */
+    /** \brief Vector of SingleBody objects. */
     std::vector<type::SingleBody> bodies;
 
-    /** \brief A DMComposite of DMs of all `SingleBody`s. */
+    /** \brief DMComposite of DMDA objects of all SingleBody objects. */
     DM dmPack;
 
-    /** \brief A string for printing information. */
+    /** \brief String used to print information. */
     std::string info;
 
     /** \brief Default constructor. */
     BodyPackBase() = default;
 
     /**
-     * \brief Constructor of using a type::Mesh and a YAML node.
+     * \brief Constructor. Initialize the pack of bodies.
      *
-     * \param mesh [in] Strctured Cartesian mesh object.
-     * \param node [in] YAML configurations.
+     * \param comm [in] MPI communicator.
+     * \param dim [in] Number of dimensions.
+     * \param node [in] YAML configuration node.
      */
-    BodyPackBase(const type::Mesh &mesh, const YAML::Node &node);
+    BodyPackBase(const MPI_Comm &comm, const PetscInt &dim,
+                 const YAML::Node &node);
 
     /** \brief Default destructor. */
     virtual ~BodyPackBase();
 
-    /** \brief Manually destroy data.  */
+    /** \brief Manually destroy data. */
     virtual PetscErrorCode destroy();
 
-    /** \brief Print information.  */
+    /**
+     * \brief Print information about the bodies.
+     *
+     * \return PetscErrorCode.
+     */
     PetscErrorCode printInfo() const;
 
     /**
@@ -118,6 +124,8 @@ public:
      * \param bIdx [in] Index of target body.
      * \param ptIdx [in] Index of target point.
      * \param proc [out] Process index.
+     *
+     * \return PetscErrorCode.
      */
     PetscErrorCode findProc(const PetscInt &bIdx, const PetscInt &ptIdx,
                             PetscMPIInt &proc) const;
@@ -129,6 +137,8 @@ public:
      * \param ptIdx [in] Index of target point.
      * \param dof [in] Index of target DoF.
      * \param idx [out] Unpacked global index.
+     *
+     * \return PetscErrorCode.
      */
     PetscErrorCode getGlobalIndex(const PetscInt &bIdx, const PetscInt &ptIdx,
                                   const PetscInt &dof, PetscInt &idx) const;
@@ -139,6 +149,8 @@ public:
      * \param bIdx [in] Index of target body.
      * \param s [in] PETSc MatStencil object of target point.
      * \param idx [out] Unpacked global index.
+     *
+     * \return PetscErrorCode.
      */
     PetscErrorCode getGlobalIndex(const PetscInt &bIdx, const MatStencil &s,
                                   PetscInt &idx) const;
@@ -150,6 +162,8 @@ public:
      * \param ptIdx [in] Index of target point.
      * \param dof [in] Index of target DoF.
      * \param idx [out] Packed global index.
+     *
+     * \return PetscErrorCode.
      */
     PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx,
                                         const PetscInt &ptIdx,
@@ -162,6 +176,8 @@ public:
      * \param bIdx [in] Index of target body.
      * \param s [in] PETSc MatStencil object of target point.
      * \param idx [in] Packed global index.
+     *
+     * \return PetscErrorCode.
      */
     PetscErrorCode getPackedGlobalIndex(const PetscInt &bIdx,
                                         const MatStencil &s,
@@ -173,33 +189,42 @@ public:
      * \param f [in] Packed force Vec of Lagrangian points.
      * \param fAvg [out] Averaged force for each body.
      *
+     * \return PetscErrorCode.
+     *
      * Note: if `fAvg` doesn't have the correct size, the function will resize
      * it.
      */
     PetscErrorCode calculateAvgForces(const Vec &f, type::RealVec2D &fAvg);
 
-    /** \brief Update the indices of background Pressure cells for all body. */
-    PetscErrorCode updateMeshIdx();
+    /** \brief Get the index of closest Eulerian mesh cell
+     *         for each local Lagrangian point.
+     *
+     * \param mesh [in] Structured Cartesian mesh.
+     *
+     * \return PetscErrorCode.
+     */
+    PetscErrorCode updateMeshIdx(const type::Mesh &mesh);
 
 protected:
     /**
-     * \brief Constructor of using a type::Mesh and a YAML node.
+     * \brief Initialize the pack of bodies.
      *
-     * \param mesh [in] Structured Cartesian mesh object.
-     * \param node [in] YAML configurations.
+     * \param comm [in] MPI communicator.
+     * \param dim [in] Number of dimensions.
+     * \param node [in] YAML configuration node.
+     *
+     * \return PetscErrorCode.
      */
-    PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
-
-    /** \brief Reference to background mesh. */
-    type::Mesh mesh;
+    PetscErrorCode init(const MPI_Comm &comm, const PetscInt &dim,
+                        const YAML::Node &node);
 
     /** \brief Reference to the MPI communicator. */
     MPI_Comm comm;
 
-    /** \brief The total number of processes. */
+    /** \brief Total number of processes. */
     PetscMPIInt mpiSize;
 
-    /** \brief The rank of this process. */
+    /** \brief Rank of the local process. */
     PetscMPIInt mpiRank;
 
     /** \brief Number of local packed variables of all processes. */
@@ -208,10 +233,18 @@ protected:
     /** \brief Offsets of packed variables of all processes. */
     type::IntVec1D offsetsAllProcs;
 
-    /** \brief Create DMComposite.  */
+    /**
+     * \brief Create DMComposite object for all bodies.
+     *
+     * \return PetscErrorCode.
+     */
     PetscErrorCode createDmPack();
 
-    /** \brief Create a string for printing information.  */
+    /**
+     * \brief Create a string used to print information.
+     *
+     * \return PetscErrorCode.
+     */
     PetscErrorCode createInfoString();
 
 };  // BodyPackBase
@@ -222,6 +255,7 @@ namespace type
 {
 /**
  * \brief Definition of type::BodyPack.
+ *
  * \see bodyModule, petibm::type::SingleBody, petibm::body::createBodyPack
  * \ingroup bodyModule
  */
@@ -232,17 +266,20 @@ typedef std::shared_ptr<body::BodyPackBase> BodyPack;
 namespace body
 {
 /**
- * \brief Factory function for creating type::BodyPack
+ * \brief Factory function to create a pack of bodies.
  *
- * \param mesh [in] Structured Cartesian mesh object.
- * \param node [in] YAML configurations.
- * \param bodies [out] Data object for the body pack.
+ * \param comm [in] MPI communicator.
+ * \param dim [in] Number of dimensions.
+ * \param node [in] YAML configuration node.
+ * \param bodies [out] Bodies data object.
+ *
+ * \return PetscErrorCode.
  *
  * \see bodyModule, petibm::type::BodyPack, petibm::type::SingleBody
  * \ingroup bodyModule
  */
-PetscErrorCode createBodyPack(const type::Mesh &mesh, const YAML::Node &node,
-                              type::BodyPack &bodies);
+PetscErrorCode createBodyPack(const MPI_Comm &comm, const PetscInt &dim,
+                              const YAML::Node &node, type::BodyPack &bodies);
 
 }  // end of namespace body
 

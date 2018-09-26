@@ -24,31 +24,45 @@ namespace petibm
 namespace parser
 {
 /**
- * \brief Get settings from command line arguments and read YAML files.
+ * \brief Get configuration settings.
  *
- * \param node [out] YAML configuration node.
+ * The function parses the command-line arguments and reads the
+ * various YAML files that contain simulation settings.
+ * If a non-empty YAML node is given, sub-nodes might be overwritten.
+ *
+ * \param node [out] YAML node with simulation settings.
+ *
+ * The function looks for the following optional command-line arguments:
+ *
+ * -# `-directory`: working directory (default: current working directory).
+ * -# `-output`: output directory
+ *    (default: folder `output` in the working directory).
+ * -# `-config`: YAML file path with all settings
+ *    (default: `config.yaml` file in the working directory).
+ * -# `-mesh`: YAML file path with mesh settings
+ *    (default: None, i.e., does nothing).
+ * -# `-flow`: YAML file path with flow settings
+ *    (default: None, i.e. does nothing).
+ * -# `-parameters`: YAML file path with simulation parameters
+ *    (default: None, i.e., does nothing).
+ * -# `-bodies`: YAML file path with settings for the immersed bodies
+ *    (default: None, i.e., does nothing).
  *
  * \ingroup miscModule
- *
- * The function will look for the following command-line arguments
- *
- * -# `-directory`: the working directory. Default is the current
- *    directory if not found.
- * -# `-config`: location of config.yaml. If not provided, the default is
- *    [working directory]/config.yaml.
- * -# `-mesh`: location of mesh.yaml. This provides a way to overwrite the
- *    mesh section inside config.yaml.
- * -# `-flow`: location of flow.yaml. This provides a way to overwrite the
- *    flow section inside config.yaml.
- * -# `-parameters`: location of parameters.yaml. This provides a way to
- *    overwrite the parameters section inside config.yaml.
- * -# `-bodies`: location of bodies.yaml. This provides a way to overwrite
- *    the bodies section inside config.yaml.
- *
- * If users provide non-empty YAML node as input, the data inside the node
- * will be discarded.
  */
 PetscErrorCode getSettings(YAML::Node &node);
+
+/**
+ * \brief Load the content of a YAML file into a YAML node.
+ *
+ * If a YAML node already exists, it will be overwritten.
+ *
+ * \param filePath [in] Path of the YAML file.
+ * \param node [out] YAML node.
+ *
+ * \ingroup miscModule
+ */
+PetscErrorCode readYAMLFile(const std::string &filePath, YAML::Node &node);
 
 /**
  * \brief Parse a YAML node of cartesianMesh.

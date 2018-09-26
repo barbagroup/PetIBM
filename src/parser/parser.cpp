@@ -15,73 +15,6 @@
 
 namespace  // anonymous namespace for internal linkage
 {
-// private function. Read a single YAML file overwriting part of config.yaml
-PetscErrorCode readSingleYAML(YAML::Node &node, const std::string &s)
-{
-    PetscFunctionBeginUser;
-
-    YAML::Node temp;
-
-    if (node[s + ".yaml"].IsDefined())
-    {
-        try
-        {
-            temp = YAML::LoadFile(node[s + ".yaml"].as<std::string>());
-        }
-        catch (YAML::BadFile &err)
-        {
-            SETERRQ2(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
-                     "Unable to open %s"
-                     "when reading settings from %s.yaml\n",
-                     node[s + ".yaml"].as<std::string>().c_str(), s.c_str());
-        }
-
-        if (!node[s].IsDefined()) node[s] = YAML::Node();
-        for (auto it : temp) node[s][it.first] = it.second;
-    }
-
-    PetscFunctionReturn(0);
-}  // readSingleYAML
-
-// private function. Read config.yaml and other files for overwriting
-PetscErrorCode readYAMLs(YAML::Node &node)
-{
-    PetscFunctionBeginUser;
-
-    PetscErrorCode ierr;
-    YAML::Node temp;
-
-    // open config.yaml. If failed, return error through PETSc and terminate.
-    try
-    {
-        temp = YAML::LoadFile(node["config.yaml"].as<std::string>());
-    }
-    catch (YAML::BadFile &err)
-    {
-        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN,
-                 "Unable to open %s "
-                 "when reading settings from config.yaml\n",
-                 node["config.yaml"].as<std::string>().c_str());
-    }
-
-    // copy what we read from config.yaml to the `node`
-    for (auto it : temp) node[it.first] = it.second;
-
-    // overwrite mesh section if mesh.yaml is provided
-    ierr = readSingleYAML(node, "mesh"); CHKERRQ(ierr);
-
-    // overwrite flow section if flow.yaml is provided
-    ierr = readSingleYAML(node, "flow"); CHKERRQ(ierr);
-
-    // overwrite parameters section if parameters.yaml is provided
-    ierr = readSingleYAML(node, "parameters"); CHKERRQ(ierr);
-
-    // overwrite bodies section if bodies.yaml is provided
-    ierr = readSingleYAML(node, "bodies"); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // readYAMLs
-
 // private function. Create a directory if not already existing.
 PetscErrorCode createDirectory(const std::string &dir)
 {
@@ -209,75 +142,81 @@ namespace petibm
 {
 namespace parser
 {
-// get all settings into a single YAML node
-PetscErrorCode getSettings(YAML::Node &node)
+// Load nodes from a given YAML file.
+PetscErrorCode readYAMLFile(const std::string &filePath, YAML::Node &node)
 {
+    YAML::Node tmp;
+
     PetscFunctionBeginUser;
 
+    // Load the content of the given YAML file.
+    try
+    {
+        tmp = YAML::LoadFile(filePath);
+    }
+    catch (YAML::BadFile &err)
+    {
+        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_OPEN, "Unable to open %s",
+                 filePath.c_str());
+    }
+    // Add new nodes, overwrite existing ones.
+    for (auto item : tmp) node[item.first.as<std::string>()] = item.second;
+
+    PetscFunctionReturn(0);
+}  // readYAMLFile
+
+// Get all settings into a single YAML node.
+PetscErrorCode getSettings(YAML::Node &node)
+{
     PetscErrorCode ierr;
-
-    // use whole new YAML node
-    node = YAML::Node();
-
     char s[PETSC_MAX_PATH_LEN];
-    PetscBool flg;
+    PetscBool flag;
+    std::string filePath;
 
-    // directory: the working directory. Default is the current directory
+    PetscFunctionBeginUser;
+
+    // Get the working directory; default is the current working directory.
     node["directory"] = "./";
-
     ierr = PetscOptionsGetString(nullptr, nullptr, "-directory", s, sizeof(s),
-                                 &flg); CHKERRQ(ierr);
+                                 &flag); CHKERRQ(ierr);
+    if (flag) node["directory"] = s;
 
-    if (flg) node["directory"] = s;
-
-    // config: location of config.yaml. Default is under working directory.
-    // TODO: what if users provide a relative path? Where should it relative to?
-    node["config.yaml"] = node["directory"].as<std::string>() + "/config.yaml";
-
+    // Get the output directory where to save field solutions;
+    // default is the `output` folder under the working directory.
+    // TODO: if user provides a relative path, where should it be relative to?
+    node["output"] = node["directory"].as<std::string>() + "/output";
     ierr =
-        PetscOptionsGetString(nullptr, nullptr, "-config", s, sizeof(s), &flg);
+        PetscOptionsGetString(nullptr, nullptr, "-output", s, sizeof(s), &flag);
     CHKERRQ(ierr);
+    if (flag) node["output"] = s;
+    ierr = createDirectory(node["output"].as<std::string>()); CHKERRQ(ierr);
 
-    if (flg) node["config.yaml"] = s;
-
-    // the following four arguments will overwrite corresponding sections in
-    // config.yaml, if users pass these argument through command line
-
-    // mesh: mesh.yaml. No default value.
-    // TODO: what if users provide a relative path? Where should it relative to?
-    ierr = PetscOptionsGetString(nullptr, nullptr, "-mesh", s, sizeof(s), &flg);
-    CHKERRQ(ierr);
-
-    if (flg) node["mesh.yaml"] = s;
-
-    // flow: flow.yaml. No default value.
-    // TODO: what if users provide a relative path? Where should it relative to?
-    ierr = PetscOptionsGetString(nullptr, nullptr, "-flow", s, sizeof(s), &flg);
-    CHKERRQ(ierr);
-
-    if (flg) node["flow.yaml"] = s;
-
-    // parameters: parameters.yaml. No default value.
-    // TODO: what if users provide a relative path? Where should it relative to?
-    ierr = PetscOptionsGetString(nullptr, nullptr, "-parameters", s, sizeof(s),
-                                 &flg); CHKERRQ(ierr);
-
-    if (flg) node["parameters.yaml"] = s;
-
-    // bodies: bodies.yaml. No default value.
-    // TODO: what if users provide a relative path? Where should it relative to?
+    // Get the path of the global YAML configuration file;
+    // default is the file `config.yaml` in the working directory.
+    // TODO: if user provides a relative path, where should it be relative to?
+    filePath = node["directory"].as<std::string>() + "/config.yaml";
     ierr =
-        PetscOptionsGetString(nullptr, nullptr, "-bodies", s, sizeof(s), &flg);
+        PetscOptionsGetString(nullptr, nullptr, "-config", s, sizeof(s), &flag);
     CHKERRQ(ierr);
+    if (flag) filePath = s;
+    // Load the settings into the YAML node.
+    ierr = readYAMLFile(filePath, node); CHKERRQ(ierr);
 
-    if (flg) node["bodies.yaml"] = s;
-
-    // solution: path to solution folder. Always under working directory.
-    node["solution"] = node["directory"].as<std::string>() + "/solution";
-    ierr = createDirectory(node["solution"].as<std::string>());
-
-    // read setting from YAML files
-    ierr = readYAMLs(node); CHKERRQ(ierr);
+    // Load YAML configuration files provided through the command-line.
+    std::vector<const char *> cliOpts = {"-mesh", "-flow", "-parameters",
+                                         "-bodies"};
+    for (auto cliOpt : cliOpts)
+    {
+        // Get the path of the YAML configuration file.
+        // TODO: if relative path, where should it be relative to?
+        ierr = PetscOptionsGetString(nullptr, nullptr, cliOpt, s, sizeof(s),
+                                     &flag); CHKERRQ(ierr);
+        if (flag)
+        {
+            // Load the YAML file and overwrite existing values into the node.
+            ierr = readYAMLFile(std::string(s), node); CHKERRQ(ierr);
+        }
+    }
 
     PetscFunctionReturn(0);
 }  // getSettings

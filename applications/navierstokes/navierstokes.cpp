@@ -149,7 +149,7 @@ PetscErrorCode NavierStokesSolver::initialize(
     CHKERRQ(ierr);
 
     // set initial values to solutions
-    ierr = solution->applyIC(settings); CHKERRQ(ierr);
+    ierr = solution->setInitialConditions(settings); CHKERRQ(ierr);
 
     // initialize ghost points values and Eqs; must before creating operators
     ierr = bc->setGhostICs(solution); CHKERRQ(ierr);

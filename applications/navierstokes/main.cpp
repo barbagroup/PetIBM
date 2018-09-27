@@ -99,7 +99,7 @@ int main(int argc, char **argv)
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(7) << 0;
         filePath =
-            config["solution"].as<std::string>() + "/" + ss.str() + ".h5";
+            config["output"].as<std::string>() + "/" + ss.str() + ".h5";
         ierr = solver.write(t, filePath); CHKERRQ(ierr);
 
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(7) << nstart;
         filePath =
-            config["solution"].as<std::string>() + "/" + ss.str() + ".h5";
+            config["output"].as<std::string>() + "/" + ss.str() + ".h5";
         ierr = solver.readRestartData(filePath, t); CHKERRQ(ierr);
 
         ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
             std::stringstream ss;
             ss << std::setfill('0') << std::setw(7) << ite;
             filePath =
-                config["solution"].as<std::string>() + "/" + ss.str() + ".h5";
+                config["output"].as<std::string>() + "/" + ss.str() + ".h5";
 
             ierr = PetscPrintf(PETSC_COMM_WORLD,
                                "[time-step %d] Writing solution... ", ite);
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 
             // write summary of PETSc logging into ASCII file
             filePath =
-                config["solution"].as<std::string>() + "/" + ss.str() + ".log";
+                config["output"].as<std::string>() + "/" + ss.str() + ".log";
             ierr = petibm::io::writePetscLog(PETSC_COMM_WORLD, filePath);
             CHKERRQ(ierr);
         }

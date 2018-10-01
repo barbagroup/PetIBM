@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         {
             ierr = petibm::io::writeHDF5Vecs(
                 PETSC_COMM_SELF,
-                setting["directory"].as<std::string>() + "/grid", wNames[i],
+                setting["directory"].as<std::string>() + "/grid.h5", wNames[i],
                 {"x", "y", "z"}, wCoord[i], FILE_MODE_APPEND); CHKERRQ(ierr);
         }
     }
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 
         // read solution
         std::stringstream ss;
-        ss << setting["solution"].as<std::string>() << "/" << std::setfill('0')
+        ss << setting["output"].as<std::string>() << "/" << std::setfill('0')
            << std::setw(7) << i << ".h5";
         ierr = soln->read(ss.str()); CHKERRQ(ierr);
 

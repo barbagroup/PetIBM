@@ -247,7 +247,7 @@ PetscErrorCode writeSingleXDMF(const std::string &directory,
         CHKERRQ(ierr);
         ierr = PetscViewerASCIIPrintf(viewer,
                                       "\t\t\t\t\t"
-                                      "&CaseDir;/output/%07d.h5:/%s\n",
+                                      "&CaseDir;/solution/%07d.h5:/%s\n",
                                       t, name.c_str()); CHKERRQ(ierr);
         ierr = PetscViewerASCIIPrintf(viewer,
                                       "\t\t\t\t"

@@ -24,6 +24,7 @@ class DecoupledIBPMSolver : protected NavierStokesSolver
 public:
     // public members that don't change
     using NavierStokesSolver::initializeASCIIFiles;
+    using NavierStokesSolver::monitorProbes;
     using NavierStokesSolver::readTimeHDF5;
     using NavierStokesSolver::write;
     using NavierStokesSolver::writeTimeHDF5;

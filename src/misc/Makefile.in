@@ -113,7 +113,7 @@ am__DEPENDENCIES_1 =
 libmisc_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am_libmisc_la_OBJECTS = libmisc_la-misc.lo libmisc_la-type.lo \
-	libmisc_la-delta.lo
+	libmisc_la-delta.lo libmisc_la-probes.lo
 libmisc_la_OBJECTS = $(am_libmisc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -322,7 +322,8 @@ noinst_LTLIBRARIES = libmisc.la
 libmisc_la_SOURCES = \
 	misc.cpp \
 	type.cpp \
-	delta.cpp
+	delta.cpp \
+	probes.cpp
 
 libmisc_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \
@@ -389,6 +390,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-delta.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-misc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-probes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-type.Plo@am__quote@
 
 .cpp.o:
@@ -435,6 +437,13 @@ libmisc_la-delta.lo: delta.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='delta.cpp' object='libmisc_la-delta.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmisc_la-delta.lo `test -f 'delta.cpp' || echo '$(srcdir)/'`delta.cpp
+
+libmisc_la-probes.lo: probes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmisc_la-probes.lo -MD -MP -MF $(DEPDIR)/libmisc_la-probes.Tpo -c -o libmisc_la-probes.lo `test -f 'probes.cpp' || echo '$(srcdir)/'`probes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmisc_la-probes.Tpo $(DEPDIR)/libmisc_la-probes.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='probes.cpp' object='libmisc_la-probes.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmisc_la-probes.lo `test -f 'probes.cpp' || echo '$(srcdir)/'`probes.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

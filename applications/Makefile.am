@@ -3,4 +3,5 @@ SUBDIRS = \
 	ibpm \
 	decoupledibpm \
 	vorticity \
-	createxdmf
+	createxdmf \
+	writemesh

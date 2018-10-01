@@ -49,5 +49,11 @@ std::map<BCLoc, std::string> bl2str{{XMINUS, "xMinus"}, {XPLUS, "xPlus"},
                                     {YMINUS, "yMinus"}, {YPLUS, "yPlus"},
                                     {ZMINUS, "zMinus"}, {ZPLUS, "zPlus"}};
 
+// default values of type::str2ProbeType
+std::map<std::string, ProbeType> str2ProbeType{
+    {"POINT", POINT}, {"LINE", LINE},
+    {"SURFACE", SURFACE}, {"VOLUME", VOLUME}};
+
 }  // end of namespace type
+
 }  // end of namespace petibm

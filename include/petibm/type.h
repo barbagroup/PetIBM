@@ -118,6 +118,17 @@ extern std::map<std::string, BCLoc> str2bl;
 /** \brief Mapping between \ref BCLoc and `std::string`. \ingroup type */
 extern std::map<BCLoc, std::string> bl2str;
 
+/** \brief Type of probe for monitoring solution. \ingroup type */
+enum ProbeType
+{
+    POINT = 0,
+    LINE,
+    SURFACE,
+    VOLUME
+};  // ProbeType
+/** \brief Mapping between `std::string` and \ref ProbeType. \ingroup type */
+extern std::map<std::string, ProbeType> str2ProbeType;
+
 /** \brief 1D std::vector holding PetscInt. \ingroup type */
 typedef std::vector<PetscInt> IntVec1D;
 /** \brief 2D std::vector holding PetscInt. \ingroup type */

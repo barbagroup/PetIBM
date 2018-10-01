@@ -331,7 +331,8 @@ SUBDIRS = \
 	ibpm \
 	decoupledibpm \
 	vorticity \
-	createxdmf
+	createxdmf \
+	writemesh
 
 all: all-recursive
 

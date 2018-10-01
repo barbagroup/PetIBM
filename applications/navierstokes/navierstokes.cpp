@@ -62,6 +62,11 @@ PetscErrorCode NavierStokesSolver::destroy()
 
     PetscFunctionBeginUser;
 
+    for (auto probe : probes)
+    {
+        ierr = probe->destroy(); CHKERRQ(ierr);
+    }
+
     ierr = VecDestroy(&dP); CHKERRQ(ierr);
     ierr = VecDestroy(&bc1); CHKERRQ(ierr);
     ierr = VecDestroy(&rhs1); CHKERRQ(ierr);
@@ -154,6 +159,14 @@ PetscErrorCode NavierStokesSolver::initialize(
     // initialize ghost points values and Eqs; must before creating operators
     ierr = bc->setGhostICs(solution); CHKERRQ(ierr);
 
+    // create the probes to monitor the solution
+    probes.resize(settings["probes"].size());
+    for (unsigned int i = 0; i < probes.size(); ++i)
+    {
+        ierr = petibm::misc::createProbe(mesh->comm, settings["probes"][i],
+                                         mesh, probes[i]); CHKERRQ(ierr);
+    }
+
     // create operators (PETSc Mat objects)
     ierr = createOperators(); CHKERRQ(ierr);
 
@@ -176,6 +189,7 @@ PetscErrorCode NavierStokesSolver::initialize(
     ierr = PetscLogStageRegister("projectionStep", &stageProjectionStep);
     CHKERRQ(ierr);
     ierr = PetscLogStageRegister("write", &stageWrite); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister("monitor", &stageMonitor); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
@@ -700,3 +714,27 @@ PetscErrorCode NavierStokesSolver::readTimeHDF5(const std::string &filePath,
 
     PetscFunctionReturn(0);
 }  // readTimeHDF5
+
+// monitor the solution at probes
+PetscErrorCode NavierStokesSolver::monitorProbes(const PetscReal &t,
+                                                 const PetscInt &ite)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = PetscLogStagePush(stageMonitor); CHKERRQ(ierr);
+
+    for (auto probe : probes)
+    {
+        if (ite % probe->nsave == 0)
+        {
+            ierr = probe->monitor(solution, mesh, t); CHKERRQ(ierr);
+        }
+    }
+
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}
+

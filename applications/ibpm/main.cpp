@@ -167,10 +167,11 @@ int main(int argc, char **argv)
 
             // write summary of PETSc logging into ASCII file
             filePath =
-                config["output"].as<std::string>() + "/" + ss.str() + ".log";
+                config["logs"].as<std::string>() + "/" + ss.str() + ".log";
             ierr = petibm::io::writePetscLog(PETSC_COMM_WORLD, filePath);
             CHKERRQ(ierr);
         }
+        ierr = solver.monitorProbes(t, ite); CHKERRQ(ierr);
     }
 
     // manually destroy PETSc objects before PetscFinalize

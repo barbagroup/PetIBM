@@ -25,6 +25,7 @@ public:
     // public methods that don't change
     using NavierStokesSolver::advance;
     using NavierStokesSolver::initializeASCIIFiles;
+    using NavierStokesSolver::monitorProbes;
     using NavierStokesSolver::readTimeHDF5;
     using NavierStokesSolver::writeIterations;
     using NavierStokesSolver::writeTimeHDF5;

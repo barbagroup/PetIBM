@@ -15,6 +15,7 @@
 #include <petibm/linsolver.h>
 #include <petibm/mesh.h>
 #include <petibm/operators.h>
+#include <petibm/probes.h>
 #include <petibm/solution.h>
 #include <petibm/timeintegration.h>
 
@@ -145,6 +146,15 @@ public:
      */
     PetscErrorCode readTimeHDF5(const std::string &filePath, PetscReal &t);
 
+    /**
+     * \brief Monitor the solutions at the probes.
+     *
+     * \param t [in] Time
+     * \param ite [in] Time-step index
+     * \return PetscErrorCode
+     */
+    PetscErrorCode monitorProbes(const PetscReal &t, const PetscInt &ite);
+
 protected:
     /** \brief A reference to the YAML::Node passed in. */
     YAML::Node settings;
@@ -169,6 +179,9 @@ protected:
 
     /** \brief Poisson linear solver. */
     petibm::type::LinSolver pSolver;
+
+    /** \brief Probes to monitor the solution. */
+    std::vector<petibm::type::Probe> probes;
 
     /** \brief A copy of time-step size. */
     PetscReal dt;
@@ -244,6 +257,9 @@ protected:
 
     /** \brief Log write phase. */
     PetscLogStage stageWrite;
+
+    /** \brief Log monitor phase. */
+    PetscLogStage stageMonitor;
 
     /** \brief A dictionary mapping file path to PetscViewer objects. */
     std::map<std::string, PetscViewer> asciiViewers;

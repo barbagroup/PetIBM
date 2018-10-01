@@ -182,14 +182,24 @@ PetscErrorCode getSettings(YAML::Node &node)
     if (flag) node["directory"] = s;
 
     // Get the output directory where to save field solutions;
-    // default is the `output` folder under the working directory.
+    // default is the `solution` folder under the working directory.
     // TODO: if user provides a relative path, where should it be relative to?
-    node["output"] = node["directory"].as<std::string>() + "/output";
+    node["output"] = node["directory"].as<std::string>() + "/solution";
     ierr =
         PetscOptionsGetString(nullptr, nullptr, "-output", s, sizeof(s), &flag);
     CHKERRQ(ierr);
     if (flag) node["output"] = s;
     ierr = createDirectory(node["output"].as<std::string>()); CHKERRQ(ierr);
+
+    // Get the directory where to save PETSc logging files;
+    // default is the `logs` folder under the working directory.
+    // TODO: if user provides a relative path, where should it be relative to?
+    node["logs"] = node["directory"].as<std::string>() + "/logs";
+    ierr =
+        PetscOptionsGetString(nullptr, nullptr, "-logs", s, sizeof(s), &flag);
+    CHKERRQ(ierr);
+    if (flag) node["logs"] = s;
+    ierr = createDirectory(node["logs"].as<std::string>()); CHKERRQ(ierr);
 
     // Get the path of the global YAML configuration file;
     // default is the file `config.yaml` in the working directory.
@@ -204,7 +214,7 @@ PetscErrorCode getSettings(YAML::Node &node)
 
     // Load YAML configuration files provided through the command-line.
     std::vector<const char *> cliOpts = {"-mesh", "-flow", "-parameters",
-                                         "-bodies"};
+                                         "-bodies", "-probes"};
     for (auto cliOpt : cliOpts)
     {
         // Get the path of the YAML configuration file.

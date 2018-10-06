@@ -7,66 +7,44 @@
  * \ingroup nssolver
  */
 
+#include <iomanip>
+
 #include <petscviewerhdf5.h>
+
+#include <petibm/io.h>
 
 #include "navierstokes.h"
 
-NavierStokesSolver::NavierStokesSolver(const petibm::type::Mesh &inMesh,
-                                       const petibm::type::Boundary &inBC,
+NavierStokesSolver::NavierStokesSolver(const MPI_Comm &world,
                                        const YAML::Node &node)
 {
-    initialize(inMesh, inBC, node);
+    init(world, node);
 }  // NavierStokesSolver
 
 NavierStokesSolver::~NavierStokesSolver()
 {
-    PetscFunctionBeginUser;
     PetscErrorCode ierr;
     PetscBool finalized;
+
+    PetscFunctionBeginUser;
 
     ierr = PetscFinalized(&finalized); CHKERRV(ierr);
     if (finalized) return;
 
-    ierr = VecDestroy(&dP); CHKERRV(ierr);
-    ierr = VecDestroy(&bc1); CHKERRV(ierr);
-    ierr = VecDestroy(&rhs1); CHKERRV(ierr);
-    ierr = VecDestroy(&rhs2); CHKERRV(ierr);
-    for (unsigned int i = 0; i < conv.size(); ++i)
-    {
-        ierr = VecDestroy(&conv[i]); CHKERRV(ierr);
-    }
-    for (unsigned int i = 0; i < diff.size(); ++i)
-    {
-        ierr = VecDestroy(&diff[i]); CHKERRV(ierr);
-    }
-
-    ierr = MatDestroy(&A); CHKERRV(ierr);
-    ierr = MatDestroy(&DBNG); CHKERRV(ierr);
-    ierr = MatDestroy(&BNG); CHKERRV(ierr);
-    ierr = MatDestroy(&N); CHKERRV(ierr);
-    ierr = MatDestroy(&G); CHKERRV(ierr);
-    ierr = MatDestroy(&D); CHKERRV(ierr);
-    ierr = MatDestroy(&DCorrection); CHKERRV(ierr);
-    ierr = MatDestroy(&L); CHKERRV(ierr);
-    ierr = MatDestroy(&LCorrection); CHKERRV(ierr);
-
-    for (auto &it : asciiViewers)
-    {
-        ierr = PetscViewerDestroy(&it.second); CHKERRV(ierr);
-    }
+    ierr = destroy(); CHKERRV(ierr);
 }  // ~NavierStokesSolver
 
+// destroy objects of the NavierStokesSolver class
 PetscErrorCode NavierStokesSolver::destroy()
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    for (auto probe : probes)
-    {
-        ierr = probe->destroy(); CHKERRQ(ierr);
-    }
+    comm = MPI_COMM_NULL;
+    commSize = commRank = 0;
 
+    // destroy vectors of the solver (PETSc Vec objects)
     ierr = VecDestroy(&dP); CHKERRQ(ierr);
     ierr = VecDestroy(&bc1); CHKERRQ(ierr);
     ierr = VecDestroy(&rhs1); CHKERRQ(ierr);
@@ -80,6 +58,7 @@ PetscErrorCode NavierStokesSolver::destroy()
         ierr = VecDestroy(&diff[i]); CHKERRQ(ierr);
     }
 
+    // destroy operators of the solver (PETSc Mat objects)
     ierr = MatDestroy(&A); CHKERRQ(ierr);
     ierr = MatDestroy(&DBNG); CHKERRQ(ierr);
     ierr = MatDestroy(&BNG); CHKERRQ(ierr);
@@ -90,82 +69,89 @@ PetscErrorCode NavierStokesSolver::destroy()
     ierr = MatDestroy(&L); CHKERRQ(ierr);
     ierr = MatDestroy(&LCorrection); CHKERRQ(ierr);
 
-    settings.reset();
-    bc.reset();          // decrease reference count or destroy
-    solution.reset();    // decrease reference count or destroy
-    mesh.reset();        // decrease reference count or destroy
-    convCoeffs.reset();  // decrease reference count or destroy
-    diffCoeffs.reset();  // decrease reference count or destroy
-    vSolver.reset();     // decrease reference count or destroy
-    pSolver.reset();     // decrease reference count or destroy
-
-    isRefP = PETSC_FALSE;
-    dt = 0.0;
-    nu = 0.0;
-
-    for (auto &it : asciiViewers)
+    // destroy the probes
+    for (auto probe : probes)
     {
-        ierr = PetscViewerDestroy(&it.second); CHKERRQ(ierr);
+        ierr = probe->destroy(); CHKERRQ(ierr);
     }
-    asciiViewers.clear();
+
+    // decrease reference count or destroy
+    vSolver.reset();
+    pSolver.reset();
+    config.reset();
+    convCoeffs.reset();
+    diffCoeffs.reset();
+    solution.reset();
+    bc.reset();
+    mesh.reset();
+
+    ierr = PetscViewerDestroy(&solversViewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // destroy
 
-PetscErrorCode NavierStokesSolver::initialize(
-    const petibm::type::Mesh &inMesh, const petibm::type::Boundary &inBC,
-    const YAML::Node &node)
+PetscErrorCode NavierStokesSolver::init(const MPI_Comm &world, const YAML::Node &node)
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    ierr = PetscLogStageRegister("initialize", &stageInitialize);
-    CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "initialize", &stageInitialize); CHKERRQ(ierr);
     ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
 
-    // save the reference to the YAML::Node
-    settings = node;
+    // record the MPI communicator, size, and process rank
+    comm = world;
+    ierr = MPI_Comm_size(comm, &commSize); CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(comm, &commRank); CHKERRQ(ierr);
 
-    // save the reference to mesh and boundary conditions
-    mesh = inMesh;
-    bc = inBC;
+    // record the YAML configuration settings
+    config = node;
 
-    // get dt and nu
-    // TODO: should we check the keys "parameters", "dt", "flow", and "nu"?
-    dt = settings["parameters"]["dt"].as<PetscReal>();
-    nu = settings["flow"]["nu"].as<PetscReal>();
+    // get the time-step size
+    dt = config["parameters"]["dt"].as<PetscReal>();
+    // get the starting time step and time value
+    nstart = config["parameters"]["startStep"].as<PetscInt>(0);
+    ite = nstart;
+    t = config["parameters"]["t"].as<PetscReal>(0.0);
+    // get the number of time steps to compute
+    nt = config["parameters"]["nt"].as<PetscInt>();
+    // get the saving frequencies
+    nsave = config["parameters"]["nsave"].as<PetscInt>();
+    nrestart = config["parameters"]["nrestart"].as<PetscInt>();
+    // get the viscous diffusion coefficient
+    nu = config["flow"]["nu"].as<PetscReal>();
 
-    // create solution object
+    // create the Cartesian mesh
+    ierr = petibm::mesh::createMesh(comm, config, mesh); CHKERRQ(ierr);
+    // write the grid points into a HDF5 file
+    std::string filePath = config["directory"].as<std::string>() + "/grid.h5";
+    ierr = mesh->write(filePath); CHKERRQ(ierr);
+
+    // create the data object for the boundary conditions
+    ierr = petibm::boundary::createBoundary(mesh, config, bc); CHKERRQ(ierr);
+
+    // create the solution object
     ierr = petibm::solution::createSolution(mesh, solution); CHKERRQ(ierr);
 
-    // create time schemes objects
-    ierr = petibm::timeintegration::createTimeIntegration("convection",
-                                                          settings, convCoeffs);
-    CHKERRQ(ierr);
-    ierr = petibm::timeintegration::createTimeIntegration("diffusion", settings,
-                                                          diffCoeffs);
-    CHKERRQ(ierr);
+    // set the initial conditions
+    ierr = solution->setInitialConditions(config); CHKERRQ(ierr);
 
-    // create linear solve objects
-    ierr = petibm::linsolver::createLinSolver("velocity", settings, vSolver);
-    CHKERRQ(ierr);
-    ierr = petibm::linsolver::createLinSolver("poisson", settings, pSolver);
-    CHKERRQ(ierr);
-
-    // set initial values to solutions
-    ierr = solution->setInitialConditions(settings); CHKERRQ(ierr);
-
-    // initialize ghost points values and Eqs; must before creating operators
+    // initialize ghost-point values and equations;
+    // must be done before creating the operators
     ierr = bc->setGhostICs(solution); CHKERRQ(ierr);
 
-    // create the probes to monitor the solution
-    probes.resize(settings["probes"].size());
-    for (unsigned int i = 0; i < probes.size(); ++i)
-    {
-        ierr = petibm::misc::createProbe(mesh->comm, settings["probes"][i],
-                                         mesh, probes[i]); CHKERRQ(ierr);
-    }
+    // create the time-scheme objects
+    ierr = petibm::timeintegration::createTimeIntegration(
+        "convection", config, convCoeffs); CHKERRQ(ierr);
+    ierr = petibm::timeintegration::createTimeIntegration(
+        "diffusion", config, diffCoeffs); CHKERRQ(ierr);
+
+    // create the linear solver objects
+    ierr = petibm::linsolver::createLinSolver(
+        "velocity", config, vSolver); CHKERRQ(ierr);
+    ierr = petibm::linsolver::createLinSolver(
+        "poisson", config, pSolver); CHKERRQ(ierr);
 
     // create operators (PETSc Mat objects)
     ierr = createOperators(); CHKERRQ(ierr);
@@ -173,30 +159,154 @@ PetscErrorCode NavierStokesSolver::initialize(
     // create PETSc Vec objects
     ierr = createVectors(); CHKERRQ(ierr);
 
-    // set coefficient matrix to linear solvers
+    // set coefficient matrix of the linear solvers
     ierr = vSolver->setMatrix(A); CHKERRQ(ierr);
     ierr = pSolver->setMatrix(DBNG); CHKERRQ(ierr);
 
-    // register events
-    ierr = PetscLogStageRegister("rhsVelocity", &stageRHSVelocity);
-    CHKERRQ(ierr);
-    ierr = PetscLogStageRegister("solveVelocity", &stageSolveVelocity);
-    CHKERRQ(ierr);
-    ierr = PetscLogStageRegister("rhsPoisson", &stageRHSPoisson);
-    CHKERRQ(ierr);
-    ierr = PetscLogStageRegister("solvePoisson", &stageSolvePoisson);
-    CHKERRQ(ierr);
-    ierr = PetscLogStageRegister("projectionStep", &stageProjectionStep);
-    CHKERRQ(ierr);
-    ierr = PetscLogStageRegister("write", &stageWrite); CHKERRQ(ierr);
-    ierr = PetscLogStageRegister("monitor", &stageMonitor); CHKERRQ(ierr);
+    // create probes to monitor the solution in some regions of the domain
+    probes.resize(config["probes"].size());
+    for (unsigned int i = 0; i < probes.size(); ++i)
+    {
+        ierr = petibm::misc::createProbe(mesh->comm, config["probes"][i],
+                                         mesh, probes[i]); CHKERRQ(ierr);
+    }
+
+    // create an ASCII PetscViewer to output linear solvers info
+    ierr = createPetscViewerASCII(
+        config["directory"].as<std::string>() +
+        "/iterations-" + std::to_string(ite) + ".txt",
+        FILE_MODE_WRITE, solversViewer); CHKERRQ(ierr);
+
+    // register logging stages
+    ierr = PetscLogStageRegister(
+        "rhsVelocity", &stageRHSVelocity); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "solveVelocity", &stageSolveVelocity); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "rhsPoisson", &stageRHSPoisson); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "solvePoisson", &stageSolvePoisson); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "projectionStep", &stageProjectionStep); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "write", &stageWrite); CHKERRQ(ierr);
+    ierr = PetscLogStageRegister(
+        "monitor", &stageMonitor); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // initialize
+}  // init
 
-// create operators, i.e., PETSc Mats
+// read or write initial data
+PetscErrorCode NavierStokesSolver::ioInitialData()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    if (ite == 0)  // write the initial solution fields to a HDF5 file
+    {
+        std::stringstream ss;
+        std::string filePath;
+        ss << std::setfill('0') << std::setw(7) << ite;
+        filePath = config["output"].as<std::string>() + "/" + ss.str() + ".h5";
+        ierr = PetscPrintf(comm, "[time step %d] Writing solution data... ",
+                            ite); CHKERRQ(ierr);
+        ierr = writeSolutionHDF5(filePath); CHKERRQ(ierr);
+        ierr = PetscPrintf(comm, "done\n"); CHKERRQ(ierr);
+    }
+    else  // read restart data from HDF5 file
+    {
+        std::stringstream ss;
+        std::string filePath;
+        ss << std::setfill('0') << std::setw(7) << ite;
+        filePath = config["output"].as<std::string>() + "/" + ss.str() + ".h5";
+        ierr = PetscPrintf(comm, "[time step %d] Reading restart data... ",
+                            ite); CHKERRQ(ierr);
+        ierr = readRestartDataHDF5(filePath); CHKERRQ(ierr);
+        ierr = PetscPrintf(comm, "done\n"); CHKERRQ(ierr);
+    }
+
+    PetscFunctionReturn(0);
+}  // ioInitialData
+
+// advance the flow solver by one time-step
+PetscErrorCode NavierStokesSolver::advance()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    t += dt;
+    ite++;
+
+    // prepare velocity system and solve it
+    ierr = assembleRHSVelocity(); CHKERRQ(ierr);
+    ierr = solveVelocity(); CHKERRQ(ierr);
+
+    // prepare Poisson system and solve it
+    ierr = assembleRHSPoisson(); CHKERRQ(ierr);
+    ierr = solvePoisson(); CHKERRQ(ierr);
+
+    // project the velocity field onto the divergence-free space
+    ierr = projectionStep(); CHKERRQ(ierr);
+
+    // update ghost-point values
+    ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // advance
+
+// write solutions fields and linear solvers info to files
+PetscErrorCode NavierStokesSolver::write()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    // write linear solvers info
+    ierr = writeLinSolversInfo(); CHKERRQ(ierr);
+
+    if (ite % nsave == 0)  // write solution fields
+    {
+        std::stringstream ss;
+        std::string filePath;
+        ss << std::setfill('0') << std::setw(7) << ite;
+        filePath = config["output"].as<std::string>() + "/" + ss.str() + ".h5";
+        ierr = PetscPrintf(comm, "[time step %d] Writing solution data... ",
+                           ite); CHKERRQ(ierr);
+        ierr = writeSolutionHDF5(filePath); CHKERRQ(ierr);
+        ierr = PetscPrintf(comm, "done\n"); CHKERRQ(ierr);
+        // output the PETSc log to an ASCII file
+        filePath = config["logs"].as<std::string>() + "/" + ss.str() + ".log";
+        ierr = petibm::io::writePetscLog(comm, filePath); CHKERRQ(ierr);
+    }
+    if (ite % nrestart == 0)  // write restart data
+    {
+        std::string filePath;
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(7) << ite;
+        filePath = config["output"].as<std::string>() + "/" + ss.str() + ".h5";
+        ierr = PetscPrintf(comm, "[time step %d] Writing restart data... ",
+                           ite); CHKERRQ(ierr);
+        ierr = writeRestartDataHDF5(filePath); CHKERRQ(ierr);
+        ierr = PetscPrintf(comm, "done\n"); CHKERRQ(ierr);
+    }
+
+    // monitor probes and write to files
+    ierr = monitorProbes(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // write
+
+// evaluate if the simulation is finished
+bool NavierStokesSolver::finished()
+{
+    return ite >= nstart + nt;
+}  // finished
+
+// create the linear operators of the solver (PETSc Mat objects)
 PetscErrorCode NavierStokesSolver::createOperators()
 {
     PetscErrorCode ierr;
@@ -205,39 +315,47 @@ PetscErrorCode NavierStokesSolver::createOperators()
 
     Mat BN;  // a temporary operator
 
-    // create basic operators
-    ierr = petibm::operators::createDivergence(mesh, bc, D, DCorrection,
-                                               PETSC_FALSE); CHKERRQ(ierr);
-    ierr = petibm::operators::createGradient(mesh, G, PETSC_FALSE);
-    CHKERRQ(ierr);
-    ierr = petibm::operators::createLaplacian(mesh, bc, L, LCorrection);
-    CHKERRQ(ierr);
-    ierr = petibm::operators::createConvection(mesh, bc, N); CHKERRQ(ierr);
+    // create the divergence operator: D
+    ierr = petibm::operators::createDivergence(
+        mesh, bc, D, DCorrection, PETSC_FALSE); CHKERRQ(ierr);
+    
+    // create the gradient operator: G
+    ierr = petibm::operators::createGradient(
+        mesh, G, PETSC_FALSE); CHKERRQ(ierr);
+    
+    // create the Laplacian operator: L
+    ierr = petibm::operators::createLaplacian(
+        mesh, bc, L, LCorrection); CHKERRQ(ierr);
+    
+    // create the operator for the convective terms: N
+    ierr = petibm::operators::createConvection(
+        mesh, bc, N); CHKERRQ(ierr);
 
-    // create combined operator: A
+    // create the implicit operator of the velocity system: A
     ierr = MatDuplicate(L, MAT_COPY_VALUES, &A); CHKERRQ(ierr);
     ierr = MatScale(A, -diffCoeffs->implicitCoeff * nu); CHKERRQ(ierr);
     ierr = MatShift(A, 1.0 / dt); CHKERRQ(ierr);
 
-    // create combined operator: BNG
+    // create the projection operator: BNG
     ierr = petibm::operators::createBnHead(
         L, dt, diffCoeffs->implicitCoeff * nu, 1, BN); CHKERRQ(ierr);
-    ierr = MatMatMult(BN, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &BNG);
-    CHKERRQ(ierr);
+    ierr = MatMatMult(
+        BN, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &BNG); CHKERRQ(ierr);
 
-    // create combined operator: DBNG
-    ierr = MatMatMult(D, BNG, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &DBNG);
-    CHKERRQ(ierr);
+    // create the Poisson operator: DBNG
+    ierr = MatMatMult(
+        D, BNG, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &DBNG); CHKERRQ(ierr);
 
-    // set null space to DBNG
+    // set the nullspace of the Poisson system
     ierr = setNullSpace(); CHKERRQ(ierr);
 
-    // destroy temporary operator
+    // destroy the temporary operator
     ierr = MatDestroy(&BN); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // createOperators
 
+// create the vectors of the solver (PETSc Vec objects)
 PetscErrorCode NavierStokesSolver::createVectors()
 {
     PetscErrorCode ierr;
@@ -264,6 +382,7 @@ PetscErrorCode NavierStokesSolver::createVectors()
     PetscFunctionReturn(0);
 }  // createVectors
 
+// set the nullspace of the Poisson system
 PetscErrorCode NavierStokesSolver::setNullSpace()
 {
     PetscErrorCode ierr;
@@ -271,14 +390,13 @@ PetscErrorCode NavierStokesSolver::setNullSpace()
     PetscFunctionBeginUser;
 
     std::string type;
-
     ierr = pSolver->getType(type); CHKERRQ(ierr);
 
     if (type == "PETSc KSP")
     {
         MatNullSpace nsp;
-        ierr = MatNullSpaceCreate(mesh->comm, PETSC_TRUE, 0, nullptr, &nsp);
-        CHKERRQ(ierr);
+        ierr = MatNullSpaceCreate(
+            comm, PETSC_TRUE, 0, nullptr, &nsp); CHKERRQ(ierr);
         ierr = MatSetNullSpace(DBNG, nsp); CHKERRQ(ierr);
         ierr = MatSetNearNullSpace(DBNG, nsp); CHKERRQ(ierr);
         ierr = MatNullSpaceDestroy(&nsp); CHKERRQ(ierr);
@@ -287,8 +405,8 @@ PetscErrorCode NavierStokesSolver::setNullSpace()
     else if (type == "NVIDIA AmgX")
     {
         PetscInt row[1] = {0};
-        ierr = MatZeroRowsColumns(DBNG, 1, row, 1.0, nullptr, nullptr);
-        CHKERRQ(ierr);
+        ierr = MatZeroRowsColumns(
+            DBNG, 1, row, 1.0, nullptr, nullptr); CHKERRQ(ierr);
         isRefP = PETSC_TRUE;
     }
     else
@@ -301,31 +419,7 @@ PetscErrorCode NavierStokesSolver::setNullSpace()
     PetscFunctionReturn(0);
 }  // setNullSpace
 
-// advance the flow solver by one time-step
-PetscErrorCode NavierStokesSolver::advance()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    // prepare velocity system and solve it
-    ierr = assembleRHSVelocity(); CHKERRQ(ierr);
-    ierr = solveVelocity(); CHKERRQ(ierr);
-
-    // prepare Poisson system and solve it
-    ierr = assembleRHSPoisson(); CHKERRQ(ierr);
-    ierr = solvePoisson(); CHKERRQ(ierr);
-
-    // correct solutions
-    ierr = projectionStep(); CHKERRQ(ierr);
-
-    // update values of ghost points
-    ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // advance
-
-// prepare right-hand-side vector for velocity solver
+// assemble the right-hand side vector of the velocity system
 PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
 {
     PetscErrorCode ierr;
@@ -334,16 +428,20 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
 
     ierr = PetscLogStagePush(stageRHSVelocity); CHKERRQ(ierr);
 
-    // initialize RHS with pressure gradient at time-step n
+    // initialize RHS vector with pressure gradient at time-step n
+    // $rhs_1 = - \frac{\partial p^n}{\partial x}$
     ierr = MatMult(G, solution->pGlobal, rhs1); CHKERRQ(ierr);
     ierr = VecScale(rhs1, -1.0); CHKERRQ(ierr);
 
-    // add explicit part of time derivative ($\frac{u^n}{\Delta t}$)
+    // add explicit part of time derivative to the RHS vector
+    // $rhs_1 += \frac{u^n}{\Delta t}$
     ierr = VecAXPY(rhs1, 1.0 / dt, solution->UGlobal); CHKERRQ(ierr);
 
-    // add convection terms from time index n, n-1, n-2, ... to rhs1
+    // add all explicit convective terms to the RHS vector
+    // $rhs_1 += \sum_{k=0}^s conv_{n - k}$
     {
-        // 1. discard the oldest-time-step term, and decrease the time-step by 1
+        // 1. discard the term at the oldest time-step
+        // and decrease the time-step by 1
         for (int i = conv.size() - 1; i > 0; i--)
         {
             ierr = VecSwap(conv[i], conv[i - 1]); CHKERRQ(ierr);
@@ -351,14 +449,15 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
 
         if (conv.size() > 0)
         {
-            // 2. get convection term at time-step n
+            // 2. compute and store the convective term from time-step n
             ierr = MatMult(N, solution->UGlobal, conv[0]); CHKERRQ(ierr);
 
-            // 3. move n-th time-step convection term to right-hand-side
+            // 3. scale the newest convective term by -1
+            // (to be added to the RHS vector)
             ierr = VecScale(conv[0], -1.0); CHKERRQ(ierr);
         }
 
-        // 4. add all explicit convective terms to rhs1
+        // 4. add all explicit convective terms to the RHS vector
         for (unsigned int i = 0; i < conv.size(); ++i)
         {
             ierr = VecAXPY(rhs1, convCoeffs->explicitCoeffs[i], conv[i]);
@@ -366,41 +465,44 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
         }
     }
 
-    // add diffusion terms from time index n, n-1, n-2, ... to rhs1
+    // add all explicit diffusion terms to the RHS vector
+    // $rhs_1 += \sum_{k=0}^s diff_{n - k}$
     {
-        // 1. discard the oldest-time-step term, and decrease the time-step by 1
+        // 1. discard the term at the oldest time-step
+        // and decrease the time-step by 1
         for (int i = diff.size() - 1; i > 0; i--)
         {
             ierr = VecSwap(diff[i], diff[i - 1]); CHKERRQ(ierr);
         }
 
-        // 2. get diffusion term at time-step n
+        // 2. compute and store the diffusion term from time-step n
         if (diff.size() > 0)
         {
             ierr = MatMult(L, solution->UGlobal, diff[0]); CHKERRQ(ierr);
-            ierr = MatMultAdd(LCorrection, solution->UGlobal, diff[0], diff[0]);
-            CHKERRQ(ierr);
+            ierr = MatMultAdd(
+                LCorrection, solution->UGlobal, diff[0], diff[0]); CHKERRQ(ierr);
             ierr = VecScale(diff[0], nu); CHKERRQ(ierr);
         }
 
-        // 3. add all explicit diffusive terms to rhs1
+        // 3. add all explicit diffusion terms to the RHS vector
         for (unsigned int i = 0; i < diff.size(); ++i)
         {
-            ierr = VecAXPY(rhs1, diffCoeffs->explicitCoeffs[i], diff[i]);
-            CHKERRQ(ierr);
+            ierr = VecAXPY(
+                rhs1, diffCoeffs->explicitCoeffs[i], diff[i]); CHKERRQ(ierr);
         }
     }
 
-    // add the diffusion BC correction from time index n+1 to rhs1
+    // add implicit BC correction terms arising from the diffusion term
+    // to the RHS vector
     {
-        // 1. update the Eq.s of ghost points to time index n+1
+        // 1. update the ghost-point equations
         ierr = bc->updateEqs(solution, dt); CHKERRQ(ierr);
 
-        // 2. get BC correction of Laplacian of time n+1
+        // 2. compute the implicit BC correction terms
         ierr = MatMult(LCorrection, solution->UGlobal, bc1); CHKERRQ(ierr);
         ierr = VecScale(bc1, nu); CHKERRQ(ierr);
 
-        // 3. add bc1 to rhs
+        // 3. add the correction terms to the RHS vector
         ierr = VecAXPY(rhs1, diffCoeffs->implicitCoeff, bc1); CHKERRQ(ierr);
     }
 
@@ -409,7 +511,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
     PetscFunctionReturn(0);
 }  // assembleRHSVelocity
 
-// solve velocity system
+// solve the linear system for the velocity
 PetscErrorCode NavierStokesSolver::solveVelocity()
 {
     PetscErrorCode ierr;
@@ -425,7 +527,7 @@ PetscErrorCode NavierStokesSolver::solveVelocity()
     PetscFunctionReturn(0);
 }  // solveVelocity
 
-// prepare tight-hand-side vector for Poisson system
+// assemble the right-hand side vector of the Poisson system
 PetscErrorCode NavierStokesSolver::assembleRHSPoisson()
 {
     PetscErrorCode ierr;
@@ -434,12 +536,12 @@ PetscErrorCode NavierStokesSolver::assembleRHSPoisson()
 
     ierr = PetscLogStagePush(stageRHSPoisson); CHKERRQ(ierr);
 
-    // get Du* (which is equal to (D_{interior} + D_{boundary})u*
+    // compute the divergence of the intermediate velocity field
     ierr = MatMult(D, solution->UGlobal, rhs2); CHKERRQ(ierr);
     ierr = MatMultAdd(DCorrection, solution->UGlobal, rhs2, rhs2);
     CHKERRQ(ierr);
 
-    if (isRefP)
+    if (isRefP)  // if the pressure is pinned at one point
     {
         ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
         ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
@@ -451,7 +553,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSPoisson()
     PetscFunctionReturn(0);
 }  // assembleRHSPoisson
 
-// solve Poisson system
+// solve the Poisson linear system for the pressure correction
 PetscErrorCode NavierStokesSolver::solvePoisson()
 {
     PetscErrorCode ierr;
@@ -468,7 +570,8 @@ PetscErrorCode NavierStokesSolver::solvePoisson()
     PetscFunctionReturn(0);
 }  // solvePoisson
 
-// projection
+// project the velocity field onto the divergence-free space
+// and update the pressure field
 PetscErrorCode NavierStokesSolver::projectionStep()
 {
     PetscErrorCode ierr;
@@ -477,11 +580,11 @@ PetscErrorCode NavierStokesSolver::projectionStep()
 
     ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
 
-    // project velocity field onto divergence-free space
+    // project the velocity field onto divergence-free space
     ierr = MatMult(BNG, dP, rhs1); CHKERRQ(ierr);
     ierr = VecAXPY(solution->UGlobal, -1.0, rhs1); CHKERRQ(ierr);
 
-    // add pressure increment
+    // update the pressure field
     ierr = VecAXPY(solution->pGlobal, 1.0, dP); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
@@ -489,9 +592,8 @@ PetscErrorCode NavierStokesSolver::projectionStep()
     PetscFunctionReturn(0);
 }  // projectionStep
 
-// output solutions to the user provided file
-PetscErrorCode NavierStokesSolver::write(const PetscReal &t,
-                                         const std::string &filePath)
+// write the solution fields into a HDF5 file
+PetscErrorCode NavierStokesSolver::writeSolutionHDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -499,17 +601,19 @@ PetscErrorCode NavierStokesSolver::write(const PetscReal &t,
 
     ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
 
+    // write the solution fields to a file
     ierr = solution->write(filePath); CHKERRQ(ierr);
+    // write the time value as an attribute of the pressure field dataset
     ierr = writeTimeHDF5(t, filePath); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // write
+}  // writeSolutionHDF5
 
-// output extra data required for restarting to the user provided file
-PetscErrorCode NavierStokesSolver::writeRestartData(const PetscReal &t,
-                                                    const std::string &filePath)
+// write all data required to restart a simulation into a HDF5 file
+PetscErrorCode NavierStokesSolver::writeRestartDataHDF5(
+    const std::string &filePath)
 {
     PetscErrorCode ierr;
     PetscViewer viewer;
@@ -524,37 +628,32 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const PetscReal &t,
 
     if (!fileExist)  // if not, create one and write field solution into it
     {
-        ierr = solution->write(filePath); CHKERRQ(ierr);
-        ierr = writeTimeHDF5(t, filePath); CHKERRQ(ierr);
+        ierr = writeSolutionHDF5(filePath); CHKERRQ(ierr);
     }
-    // TODO: should we check if the file exist but data is not up-to-date?
 
     // create PetscViewer object with append mode
-    ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
 
-    // go to the root node first. Not necessary. Just in case.
+    // go to the root node first (just in case, not necessary)
     ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
 
-    // write extra data to the end of the file
-    // save explicit convection terms
+    // write explicit convective terms
     ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
     for (unsigned int i = 0; i < conv.size(); ++i)
     {
-        ierr =
-            PetscObjectSetName((PetscObject)conv[i], std::to_string(i).c_str());
-        CHKERRQ(ierr);
+        ierr = PetscObjectSetName(
+            (PetscObject)conv[i], std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecView(conv[i], viewer); CHKERRQ(ierr);
     }
-    // save explicit diffusion terms
+    // write explicit diffusion terms
     ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
     for (unsigned int i = 0; i < diff.size(); ++i)
     {
-        ierr =
-            PetscObjectSetName((PetscObject)diff[i], std::to_string(i).c_str());
-        CHKERRQ(ierr);
+        ierr = PetscObjectSetName(
+            (PetscObject)diff[i], std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecView(diff[i], viewer); CHKERRQ(ierr);
     }
 
@@ -564,11 +663,11 @@ PetscErrorCode NavierStokesSolver::writeRestartData(const PetscReal &t,
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // writeRestartData
+}  // writeRestartDataHDF5
 
-// read data necessary for restarting
-PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath,
-                                                   PetscReal &t)
+// read all data required to restart a simulation into a HDF5 file
+PetscErrorCode NavierStokesSolver::readRestartDataHDF5(
+    const std::string &filePath)
 {
     PetscErrorCode ierr;
     PetscViewer viewer;
@@ -579,7 +678,7 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath,
     // check if file exist
     ierr = PetscTestFile(filePath.c_str(), 'r', &fileExist); CHKERRQ(ierr);
 
-    if (!fileExist)  // if not, return error
+    if (!fileExist)  // if the  not, return error
         SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_FILE_READ,
                  "Could not find file \"%s\" for restarting.\n",
                  filePath.c_str());
@@ -588,65 +687,61 @@ PetscErrorCode NavierStokesSolver::readRestartData(const std::string &filePath,
     ierr = solution->read(filePath); CHKERRQ(ierr);
     ierr = readTimeHDF5(filePath, t); CHKERRQ(ierr);
 
-    // create PetscViewer with append mode
-    ierr = PetscViewerCreate(mesh->comm, &viewer); CHKERRQ(ierr);
+    // create a PetscViewer object with append mode
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
 
-    // go to the root node first. Not necessary. Just in case.
+    // go to the root node first (just in case, not necessary)
     ierr = PetscViewerHDF5PushGroup(viewer, "/"); CHKERRQ(ierr);
 
-    // read explicit convection terms
+    // read explicit convective terms
     ierr = PetscViewerHDF5PushGroup(viewer, "/convection"); CHKERRQ(ierr);
     for (unsigned int i = 0; i < conv.size(); ++i)
     {
-        ierr =
-            PetscObjectSetName((PetscObject)conv[i], std::to_string(i).c_str());
-        CHKERRQ(ierr);
+        ierr = PetscObjectSetName(
+            (PetscObject)conv[i], std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecLoad(conv[i], viewer); CHKERRQ(ierr);
     }
     // read explicit diffusion terms
     ierr = PetscViewerHDF5PushGroup(viewer, "/diffusion"); CHKERRQ(ierr);
     for (unsigned int i = 0; i < diff.size(); ++i)
     {
-        ierr =
-            PetscObjectSetName((PetscObject)diff[i], std::to_string(i).c_str());
-        CHKERRQ(ierr);
+        ierr = PetscObjectSetName(
+            (PetscObject)diff[i], std::to_string(i).c_str()); CHKERRQ(ierr);
         ierr = VecLoad(diff[i], viewer); CHKERRQ(ierr);
     }
 
     // destroy viewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-    // update values and Eqs of ghost points based on current solution
+    // update ghost-point values and equations based on the current solutio
     // TODO: for convective BCs, it's not totally correct
     ierr = bc->setGhostICs(solution); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // readRestartData
+}  // readRestartDataHDF5
 
-PetscErrorCode NavierStokesSolver::initializeASCIIFiles(
-    const std::string &filePath, const PetscFileMode &mode)
+// initialize an ASCII PetscViewer object
+PetscErrorCode NavierStokesSolver::createPetscViewerASCII(
+    const std::string &filePath, const PetscFileMode &mode,
+    PetscViewer &viewer)
 {
-    PetscFunctionBeginUser;
     PetscErrorCode ierr;
 
-    // create ASCII viewer
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &asciiViewers[filePath]);
-    CHKERRQ(ierr);
-    ierr = PetscViewerSetType(asciiViewers[filePath], PETSCVIEWERASCII);
-    CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(asciiViewers[filePath], mode); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetName(asciiViewers[filePath], filePath.c_str());
-    CHKERRQ(ierr);
+    PetscFunctionBeginUser;
+
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, mode); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // initializeASCIIFiles
+} // createPetscViewerASCII
 
-// write numbers of iterations and residuals of linear solvers to a file
-PetscErrorCode NavierStokesSolver::writeIterations(const int &timeIndex,
-                                                   const std::string &filePath)
+// write numbers of iterations and residuals of linear solvers to an ASCII file
+PetscErrorCode NavierStokesSolver::writeLinSolversInfo()
 {
     PetscErrorCode ierr;
     PetscInt nIters;
@@ -654,23 +749,27 @@ PetscErrorCode NavierStokesSolver::writeIterations(const int &timeIndex,
 
     PetscFunctionBeginUser;
 
-    // write current time
-    ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "%d", timeIndex);
-    CHKERRQ(ierr);
+    ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
 
+    // write the time value
+    ierr = PetscViewerASCIIPrintf(solversViewer, "%d\t", ite); CHKERRQ(ierr);
+
+    // write iterations number and residual for the velocity solver
     ierr = vSolver->getIters(nIters); CHKERRQ(ierr);
     ierr = vSolver->getResidual(res); CHKERRQ(ierr);
-    ierr =
-        PetscViewerASCIIPrintf(asciiViewers[filePath], "\t%d\t%e", nIters, res);
-    CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+        solversViewer, "%d\t%e\t", nIters, res); CHKERRQ(ierr);
 
+    // write iterations number and residual for the Poisson solver
     ierr = pSolver->getIters(nIters); CHKERRQ(ierr);
     ierr = pSolver->getResidual(res); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "\t%d\t%e\n", nIters,
-                                  res); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(
+        solversViewer, "%d\t%e\n", nIters, res); CHKERRQ(ierr);
+
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // writeIterations
+}  // writeLinSolversInfo
 
 // write the time value into a HDF5 file
 PetscErrorCode NavierStokesSolver::writeTimeHDF5(const PetscReal &t,
@@ -681,14 +780,13 @@ PetscErrorCode NavierStokesSolver::writeTimeHDF5(const PetscReal &t,
 
     PetscFunctionBeginUser;
 
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     // attribute has to belong to an existing dataset (choosing p)
-    ierr =
-        PetscViewerHDF5WriteAttribute(viewer, "/p", "time", PETSC_DOUBLE, &t);
-    CHKERRQ(ierr);
+    ierr = PetscViewerHDF5WriteAttribute(
+        viewer, "/p", "time", PETSC_DOUBLE, &t); CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
@@ -716,8 +814,7 @@ PetscErrorCode NavierStokesSolver::readTimeHDF5(const std::string &filePath,
 }  // readTimeHDF5
 
 // monitor the solution at probes
-PetscErrorCode NavierStokesSolver::monitorProbes(const PetscReal &t,
-                                                 const PetscInt &ite)
+PetscErrorCode NavierStokesSolver::monitorProbes()
 {
     PetscErrorCode ierr;
 
@@ -736,5 +833,5 @@ PetscErrorCode NavierStokesSolver::monitorProbes(const PetscReal &t,
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}
+}  // monitorProbes
 

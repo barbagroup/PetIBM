@@ -13,12 +13,10 @@
 
 #include "ibpm.h"
 
-IBPMSolver::IBPMSolver(const petibm::type::Mesh &inMesh,
-                       const petibm::type::Boundary &inBC,
-                       const petibm::type::BodyPack &inBodies,
+IBPMSolver::IBPMSolver(const MPI_Comm &world,
                        const YAML::Node &node)
 {
-    initialize(inMesh, inBC, inBodies, node);
+    init(world, node);
 }  // IBPMSolver
 
 IBPMSolver::~IBPMSolver()
@@ -31,9 +29,7 @@ IBPMSolver::~IBPMSolver()
     ierr = PetscFinalized(&finalized); CHKERRV(ierr);
     if (finalized) return;
 
-    ierr = ISDestroy(&isDE[0]); CHKERRV(ierr);
-    ierr = ISDestroy(&isDE[1]); CHKERRV(ierr);
-    ierr = VecDestroy(&P); CHKERRV(ierr);
+    ierr = destroy(); CHKERRV(ierr);
 }  // ~IBPMSolver
 
 // manual destroy data
@@ -46,32 +42,60 @@ PetscErrorCode IBPMSolver::destroy()
     bodies.reset();
     ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
     ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
-    ierr = VecResetArray(P); CHKERRQ(ierr);
-    ierr = VecDestroy(&P); CHKERRQ(ierr);
+    ierr = VecResetArray(phi); CHKERRQ(ierr);
+    ierr = VecDestroy(&phi); CHKERRQ(ierr);
+    ierr = PetscViewerDestroy(&forcesViewer); CHKERRQ(ierr);
     ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // destroy
 
-PetscErrorCode IBPMSolver::initialize(const petibm::type::Mesh &inMesh,
-                                      const petibm::type::Boundary &inBC,
-                                      const petibm::type::BodyPack &inBodies,
-                                      const YAML::Node &node)
+PetscErrorCode IBPMSolver::init(const MPI_Comm &world, const YAML::Node &node)
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    bodies = inBodies;
-    ierr = PetscLogStageRegister("integrateForces", &stageIntegrateForces);
-    CHKERRQ(ierr);
+    ierr = NavierStokesSolver::init(world, node); CHKERRQ(ierr);
 
-    ierr = NavierStokesSolver::initialize(inMesh, inBC, node); CHKERRQ(ierr);
+    ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
+
+    // create a pack of immersed bodies
+    ierr = petibm::body::createBodyPack(
+        comm, mesh->dim, config, bodies); CHKERRQ(ierr);
+    ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
+
+    // create an ASCII PetscViewer to output the body forces
+    ierr = createPetscViewerASCII(
+        config["directory"].as<std::string>() +
+        "/forces-" + std::to_string(ite) + ".txt",
+        FILE_MODE_WRITE, forcesViewer); CHKERRQ(ierr);
+
+    // register additional logging stage
+    ierr = PetscLogStageRegister(
+        "integrateForces", &stageIntegrateForces); CHKERRQ(ierr);
+
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // initialize
+}  // init
 
-// create operators, i.e., PETSc Mats
+// write solution fields, linear solvers info, and body forces to files
+PetscErrorCode IBPMSolver::write()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = NavierStokesSolver::write(); CHKERRQ(ierr);
+
+    // write body forces
+    ierr = writeForcesASCII(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // write
+
+// create the linear operators of the solver (PETSc Mat objects)
 PetscErrorCode IBPMSolver::createOperators()
 {
     PetscErrorCode ierr;
@@ -80,38 +104,45 @@ PetscErrorCode IBPMSolver::createOperators()
 
     Mat R, MHat, BN, GH[2], DE[2];  // temporary operators
     Vec RDiag, MHatDiag;            // temporary vectors
-    IS is[2];
+    IS is[2];                       // temporary index sets
 
-    // create basic operators
-    ierr = petibm::operators::createDivergence(mesh, bc, DE[0], DCorrection,
-                                               PETSC_FALSE); CHKERRQ(ierr);
-    ierr = petibm::operators::createGradient(mesh, GH[0], PETSC_FALSE);
-    CHKERRQ(ierr);
-    ierr = petibm::operators::createLaplacian(mesh, bc, L, LCorrection);
-    CHKERRQ(ierr);
-    ierr = petibm::operators::createConvection(mesh, bc, N); CHKERRQ(ierr);
+    // create the divergence operator: D
+    ierr = petibm::operators::createDivergence(
+        mesh, bc, DE[0], DCorrection, PETSC_FALSE); CHKERRQ(ierr);
+    
+    // create the gradient operator: G
+    ierr = petibm::operators::createGradient(
+        mesh, GH[0], PETSC_FALSE); CHKERRQ(ierr);
+    
+    // create the Laplacian operator: L
+    ierr = petibm::operators::createLaplacian(
+        mesh, bc, L, LCorrection); CHKERRQ(ierr);
+    
+    // create the operator for the convective terms: N
+    ierr = petibm::operators::createConvection(
+        mesh, bc, N); CHKERRQ(ierr);
 
-    // create combined operator: A
+    // create the implicit operator for the velocity system: A
     ierr = MatDuplicate(L, MAT_COPY_VALUES, &A); CHKERRQ(ierr);
     ierr = MatScale(A, -diffCoeffs->implicitCoeff * nu); CHKERRQ(ierr);
     ierr = MatShift(A, 1.0 / dt); CHKERRQ(ierr);
 
-    // create diagonal matrix R and get a Vec holding the diagonal
+    // create diagonal matrix R and hold the diagonal in a PETSc Vec object
     ierr = petibm::operators::createR(mesh, R); CHKERRQ(ierr);
     ierr = MatCreateVecs(R, nullptr, &RDiag); CHKERRQ(ierr);
     ierr = MatGetDiagonal(R, RDiag); CHKERRQ(ierr);
 
-    // create diagonal matrix MHat and get a Vec holding the diagonal
+    // create diagonal matrix MHat and hold the diagonal in a PETSc Vec object
     ierr = petibm::operators::createMHead(mesh, MHat); CHKERRQ(ierr);
     ierr = MatCreateVecs(MHat, nullptr, &MHatDiag); CHKERRQ(ierr);
     ierr = MatGetDiagonal(MHat, MHatDiag); CHKERRQ(ierr);
 
     // create a Delta operator and its transpose (equal to H)
-    ierr = petibm::operators::createDelta(mesh, bc, bodies, DE[1]);
-    CHKERRQ(ierr);
+    ierr = petibm::operators::createDelta(
+        mesh, bc, bodies, DE[1]); CHKERRQ(ierr);
     ierr = MatTranspose(DE[1], MAT_INITIAL_MATRIX, &GH[1]); CHKERRQ(ierr);
 
-    // create operator E
+    // create the regularization operator: E
     ierr = MatDiagonalScale(DE[1], nullptr, RDiag); CHKERRQ(ierr);
     ierr = MatDiagonalScale(DE[1], nullptr, MHatDiag); CHKERRQ(ierr);
     ierr = VecDestroy(&RDiag); CHKERRQ(ierr);
@@ -119,20 +150,20 @@ PetscErrorCode IBPMSolver::createOperators()
     ierr = MatDestroy(&R); CHKERRQ(ierr);
     ierr = MatDestroy(&MHat); CHKERRQ(ierr);
 
-    // create -H (H operator in GH combination has a minus sign)
+    // create the opposite of the spreading operator: -H
     ierr = MatScale(GH[1], -1.0); CHKERRQ(ierr);
 
     // get combined operator G; R is used temporarily
-    ierr = MatCreateNest(mesh->comm, 1, nullptr, 2, nullptr, GH, &R);
-    CHKERRQ(ierr);
+    ierr = MatCreateNest(
+        comm, 1, nullptr, 2, nullptr, GH, &R); CHKERRQ(ierr);
     ierr = MatConvert(R, MATAIJ, MAT_INITIAL_MATRIX, &G); CHKERRQ(ierr);
     ierr = MatDestroy(&R); CHKERRQ(ierr);
     ierr = MatDestroy(&GH[0]); CHKERRQ(ierr);
     ierr = MatDestroy(&GH[1]); CHKERRQ(ierr);
 
     // get combined operator D; R is used temporarily; also get ISs
-    ierr = MatCreateNest(mesh->comm, 2, nullptr, 1, nullptr, DE, &R);
-    CHKERRQ(ierr);
+    ierr = MatCreateNest(
+        comm, 2, nullptr, 1, nullptr, DE, &R); CHKERRQ(ierr);
     ierr = MatConvert(R, MATAIJ, MAT_INITIAL_MATRIX, &D); CHKERRQ(ierr);
     ierr = MatNestGetISs(R, is, nullptr); CHKERRQ(ierr);
     ierr = ISDuplicate(is[0], &isDE[0]); CHKERRQ(ierr);
@@ -143,17 +174,17 @@ PetscErrorCode IBPMSolver::createOperators()
     ierr = MatDestroy(&DE[0]); CHKERRQ(ierr);
     ierr = MatDestroy(&DE[1]); CHKERRQ(ierr);
 
-    // create combined operator: BNG
+    // create the projection operator: BNG
     ierr = petibm::operators::createBnHead(
         L, dt, diffCoeffs->implicitCoeff * nu, 1, BN); CHKERRQ(ierr);
-    ierr = MatMatMult(BN, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &BNG);
-    CHKERRQ(ierr);
+    ierr = MatMatMult(
+        BN, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &BNG); CHKERRQ(ierr);
 
-    // create combined operator: DBNG
-    ierr = MatMatMult(D, BNG, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &DBNG);
-    CHKERRQ(ierr);
+    // create the modified Poisson operator
+    ierr = MatMatMult(
+        D, BNG, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &DBNG); CHKERRQ(ierr);
 
-    // set null space to DBNG
+    // set the nullspace of the modified Poisson system
     ierr = setNullSpace(); CHKERRQ(ierr);
 
     // destroy temporary operator
@@ -162,7 +193,7 @@ PetscErrorCode IBPMSolver::createOperators()
     PetscFunctionReturn(0);
 }  // createOperators
 
-// create vectors
+// create the vectors of the solver (PETSc Vec objects)
 PetscErrorCode IBPMSolver::createVectors()
 {
     PetscErrorCode ierr;
@@ -172,32 +203,33 @@ PetscErrorCode IBPMSolver::createVectors()
     Vec temp;
     const PetscReal *data;
 
-    // P; combination of pGlobal and forces
-    ierr = MatCreateVecs(G, &P, nullptr); CHKERRQ(ierr);
+    // create the vector of the couple (pressure field, Lagrangian forces)
+    ierr = MatCreateVecs(G, &phi, nullptr); CHKERRQ(ierr);
 
-    // swap pGlobal and P, so we can reuse functions from Navier-Stokes solver
+    // swap pGlobal and phi to reuse functions from the Navier-Stokes solver
     temp = solution->pGlobal;
-    solution->pGlobal = P;
-    P = temp;
+    solution->pGlobal = phi;
+    phi = temp;
     temp = PETSC_NULL;
 
-    // destroy P's underlying raw array but keep all other information
-    ierr = VecReplaceArray(P, nullptr); CHKERRQ(ierr);
+    // destroy phi's underlying raw array but keep all other information
+    ierr = VecReplaceArray(phi, nullptr); CHKERRQ(ierr);
 
-    // reset the underlying data of P to the pressure portion in pGlobal
+    // reset the underlying data of phi to the pressure portion in pGlobal
     ierr = VecGetSubVector(solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
     ierr = VecGetArrayRead(temp, &data); CHKERRQ(ierr);
-    ierr = VecPlaceArray(P, data); CHKERRQ(ierr);
+    ierr = VecPlaceArray(phi, data); CHKERRQ(ierr);
     ierr = VecRestoreArrayRead(temp, &data); CHKERRQ(ierr);
-    ierr = VecRestoreSubVector(solution->pGlobal, isDE[0], &temp);
-    CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(
+        solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
 
-    // other vectors follow the same routine in N-S solver
+    // create remaining vectors
     ierr = NavierStokesSolver::createVectors(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // createVectors
 
+// set the nullspace of the modified Poisson system
 PetscErrorCode IBPMSolver::setNullSpace()
 {
     PetscErrorCode ierr;
@@ -205,7 +237,6 @@ PetscErrorCode IBPMSolver::setNullSpace()
     PetscFunctionBeginUser;
 
     std::string type;
-
     ierr = pSolver->getType(type); CHKERRQ(ierr);
 
     if (type == "PETSc KSP")
@@ -217,8 +248,8 @@ PetscErrorCode IBPMSolver::setNullSpace()
         ierr = VecGetSubVector(n, isDE[0], &phiPortion); CHKERRQ(ierr);
         ierr = VecSet(phiPortion, 1.0 / std::sqrt(mesh->pN)); CHKERRQ(ierr);
         ierr = VecRestoreSubVector(n, isDE[0], &phiPortion); CHKERRQ(ierr);
-        ierr = MatNullSpaceCreate(mesh->comm, PETSC_FALSE, 1, &n, &nsp);
-        CHKERRQ(ierr);
+        ierr = MatNullSpaceCreate(
+            comm, PETSC_FALSE, 1, &n, &nsp); CHKERRQ(ierr);
         ierr = MatSetNullSpace(DBNG, nsp); CHKERRQ(ierr);
         ierr = MatSetNearNullSpace(DBNG, nsp); CHKERRQ(ierr);
         ierr = VecDestroy(&n); CHKERRQ(ierr);
@@ -228,8 +259,8 @@ PetscErrorCode IBPMSolver::setNullSpace()
     else if (type == "NVIDIA AmgX")
     {
         PetscInt row[1] = {0};
-        ierr = MatZeroRowsColumns(DBNG, 1, row, 1.0, nullptr, nullptr);
-        CHKERRQ(ierr);
+        ierr = MatZeroRowsColumns(
+            DBNG, 1, row, 1.0, nullptr, nullptr); CHKERRQ(ierr);
         isRefP = PETSC_TRUE;
     }
     else
@@ -242,7 +273,7 @@ PetscErrorCode IBPMSolver::setNullSpace()
     PetscFunctionReturn(0);
 }  // setNullSpace
 
-// prepare tight-hand-side vector for Poisson system
+// assemble the right-hand side vector of the modified Poisson system
 PetscErrorCode IBPMSolver::assembleRHSPoisson()
 {
     PetscErrorCode ierr;
@@ -251,7 +282,7 @@ PetscErrorCode IBPMSolver::assembleRHSPoisson()
 
     ierr = PetscLogStagePush(stageRHSPoisson); CHKERRQ(ierr);
 
-    // get Du* (which is equal to (D_{interior} + D_{boundary})u*
+    // compute the divergence of the intermediate velocity field
     ierr = MatMult(D, solution->UGlobal, rhs2); CHKERRQ(ierr);
 
     // note: bc2 is a subset of rhs2
@@ -260,8 +291,7 @@ PetscErrorCode IBPMSolver::assembleRHSPoisson()
     ierr = MatMultAdd(DCorrection, solution->UGlobal, bc2, bc2); CHKERRQ(ierr);
     ierr = VecRestoreSubVector(rhs2, isDE[0], &bc2); CHKERRQ(ierr);
 
-    // apply reference pressure
-    if (isRefP)
+    if (isRefP)  // if the pressure is pinned at one point
     {
         ierr = VecSetValue(rhs2, 0, 0.0, INSERT_VALUES); CHKERRQ(ierr);
         ierr = VecAssemblyBegin(rhs2); CHKERRQ(ierr);
@@ -273,9 +303,8 @@ PetscErrorCode IBPMSolver::assembleRHSPoisson()
     PetscFunctionReturn(0);
 }  // assembleRHSPoisson
 
-// output solutions to the user provided file
-PetscErrorCode IBPMSolver::write(const PetscReal &t,
-                                 const std::string &filePath)
+// write the solution fields into a HDF5 file
+PetscErrorCode IBPMSolver::writeSolutionHDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -283,42 +312,40 @@ PetscErrorCode IBPMSolver::write(const PetscReal &t,
 
     Vec temp = PETSC_NULL;
 
-    // let solution->pGlobal point to P, so that we can use solution->write
+    // let solution->pGlobal point to phi, so that we can use solution->write
     temp = solution->pGlobal;
-    solution->pGlobal = P;
+    solution->pGlobal = phi;
 
-    ierr = NavierStokesSolver::write(t, filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::writeSolutionHDF5(filePath); CHKERRQ(ierr);
 
     // restore pointers
     solution->pGlobal = temp;
     temp = PETSC_NULL;
 
     PetscFunctionReturn(0);
-}  // write
+}  // writeSolutionHDF5
 
-// output extra data required for restarting to the user provided file
-PetscErrorCode IBPMSolver::writeRestartData(const PetscReal &t,
-                                            const std::string &filePath)
+// write all data required to restart a simulation into a HDF5 file
+PetscErrorCode IBPMSolver::writeRestartDataHDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    ierr = NavierStokesSolver::writeRestartData(t, filePath); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::writeRestartDataHDF5(filePath); CHKERRQ(ierr);
 
     // write forces
     Vec f;
     ierr = VecGetSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
-    ierr = petibm::io::writeHDF5Vecs(mesh->comm, filePath, "/", {"force"}, {f},
-                                     FILE_MODE_APPEND); CHKERRQ(ierr);
+    ierr = petibm::io::writeHDF5Vecs(
+        comm, filePath, "/", {"force"}, {f}, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // writeRestartData
+}  // writeRestartDataHDF5
 
-// read data necessary for restarting
-PetscErrorCode IBPMSolver::readRestartData(const std::string &filePath,
-                                           PetscReal &t)
+// read all data required to restart a simulation into a HDF5 file
+PetscErrorCode IBPMSolver::readRestartDataHDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -326,11 +353,11 @@ PetscErrorCode IBPMSolver::readRestartData(const std::string &filePath,
 
     Vec temp = PETSC_NULL;
 
-    // let solution->pGlobal point to P, so that we can use solution->write
+    // let solution->pGlobal point to phi, so that we can use solution->write
     temp = solution->pGlobal;
-    solution->pGlobal = P;
+    solution->pGlobal = phi;
 
-    ierr = NavierStokesSolver::readRestartData(filePath, t); CHKERRQ(ierr);
+    ierr = NavierStokesSolver::readRestartDataHDF5(filePath); CHKERRQ(ierr);
 
     // restore pointers
     solution->pGlobal = temp;
@@ -339,17 +366,16 @@ PetscErrorCode IBPMSolver::readRestartData(const std::string &filePath,
     // write forces
     std::vector<Vec> f(1);
     ierr = VecGetSubVector(solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
-    ierr = petibm::io::readHDF5Vecs(mesh->comm, filePath, "/", {"force"}, f);
-    CHKERRQ(ierr);
-    ierr = VecRestoreSubVector(solution->pGlobal, isDE[1], &f[0]);
-    CHKERRQ(ierr);
+    ierr = petibm::io::readHDF5Vecs(
+        comm, filePath, "/", {"force"}, f); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(
+        solution->pGlobal, isDE[1], &f[0]); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // readRestartData
+}  // readRestartDataHDF5
 
-// write averaged forces
-PetscErrorCode IBPMSolver::writeIntegratedForces(const PetscReal &t,
-                                                 const std::string &filePath)
+// integrate the forces and output to ASCII file
+PetscErrorCode IBPMSolver::writeForcesASCII()
 {
     PetscErrorCode ierr;
     petibm::type::RealVec2D fAvg;
@@ -366,20 +392,23 @@ PetscErrorCode IBPMSolver::writeIntegratedForces(const PetscReal &t,
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
-    // write current time
-    ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "%10.8e", t);
-    CHKERRQ(ierr);
+    ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
 
-    // write forces body by body
+    // write the time value
+    ierr = PetscViewerASCIIPrintf(forcesViewer, "%10.8e\t", t); CHKERRQ(ierr);
+
+    // write forces for each immersed body
     for (int i = 0; i < bodies->nBodies; ++i)
     {
         for (int d = 0; d < mesh->dim; ++d)
         {
-            ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "\t%10.8e",
-                                          fAvg[i][d]); CHKERRQ(ierr);
+            ierr = PetscViewerASCIIPrintf(
+                forcesViewer, "%10.8e\t", fAvg[i][d]); CHKERRQ(ierr);
         }
     }
-    ierr = PetscViewerASCIIPrintf(asciiViewers[filePath], "\n"); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(forcesViewer, "\n"); CHKERRQ(ierr);
+
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // writeIntegratedForces
+}  // writeForcesASCII

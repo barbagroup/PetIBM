@@ -7,13 +7,9 @@
  * \ingroup decoupledibpm
  */
 
-#include <sys/stat.h>
-#include <iomanip>
-
 #include <petscsys.h>
 #include <yaml-cpp/yaml.h>
 
-#include <petibm/io.h>
 #include <petibm/parser.h>
 
 #include "decoupledibpm.h"
@@ -45,11 +41,7 @@ int main(int argc, char **argv)
 {
     PetscErrorCode ierr;
     YAML::Node config;
-    petibm::type::Mesh mesh;
-    petibm::type::Boundary bd;
-    petibm::type::BodyPack bodies;
     DecoupledIBPMSolver solver;
-    std::string filePath, iterationsFile, forcesFile;
 
     ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); CHKERRQ(ierr);
     ierr = PetscLogDefaultBegin(); CHKERRQ(ierr);
@@ -57,129 +49,23 @@ int main(int argc, char **argv)
     // parse configuration files; store info in YAML node
     ierr = petibm::parser::getSettings(config); CHKERRQ(ierr);
 
-    // create mesh
-    ierr = petibm::mesh::createMesh(PETSC_COMM_WORLD, config, mesh);
-    CHKERRQ(ierr);
+    // initialize the decoupled IBPM solver
+    ierr = solver.init(PETSC_COMM_WORLD, config); CHKERRQ(ierr);
+    ierr = solver.ioInitialData(); CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD,
+                       "Completed initialization stage\n"); CHKERRQ(ierr);
 
-    // write grid data into HDF5 file
-    filePath = config["directory"].as<std::string>() + "/grid.h5";
-    ierr = mesh->write(filePath); CHKERRQ(ierr);
-
-    // create bc
-    ierr = petibm::boundary::createBoundary(mesh, config, bd); CHKERRQ(ierr);
-
-    // create body pack
-    ierr = petibm::body::createBodyPack(PETSC_COMM_WORLD, mesh->dim, config,
-                                        bodies); CHKERRQ(ierr);
-    ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
-
-    // initialize the solver
-    ierr = solver.initialize(mesh, bd, bodies, config); CHKERRQ(ierr);
-
-    // store the value of some temporal parameters for readability
-    // starting time-step index
-    PetscInt nstart = config["parameters"]["startStep"].as<PetscInt>();
-    // number of time steps to compute
-    PetscInt nt = config["parameters"]["nt"].as<PetscInt>();
-    // frequency at which the flow solution is saved (in number of time steps)
-    PetscInt nsave = config["parameters"]["nsave"].as<PetscInt>();
-    // frequency at which necessary files to restart a run are saved
-    //(in number of time steps)
-    PetscInt nrestart = config["parameters"]["nrestart"].as<PetscInt>();
-    // time-step size
-    PetscReal dt = config["parameters"]["dt"].as<PetscReal>();
-    // current time set to initial time
-    PetscReal t = config["parameters"]["t"].as<PetscReal>(0.0);
-
-    if (nstart == 0)  // write initial solution into HDF5 file
+    // integrate the solution in time
+    while (!solver.finished())
     {
-        ierr =
-            PetscPrintf(PETSC_COMM_WORLD, "[time-step 0] Writing solution... ");
-        CHKERRQ(ierr);
-
-        std::stringstream ss;
-        ss << std::setfill('0') << std::setw(7) << 0;
-        filePath =
-            config["output"].as<std::string>() + "/" + ss.str() + ".h5";
-        ierr = solver.write(t, filePath); CHKERRQ(ierr);
-
-        ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
-
-        iterationsFile =
-            config["directory"].as<std::string>() + "/iterations.txt";
-        forcesFile = config["directory"].as<std::string>() + "/forces.txt";
-    }
-    else  // read solution and restart variables from HDF5 file
-    {
-        ierr = PetscPrintf(PETSC_COMM_WORLD, "[time-step %d] Read solution... ",
-                           nstart); CHKERRQ(ierr);
-
-        std::stringstream ss;
-        ss << std::setfill('0') << std::setw(7) << nstart;
-        filePath =
-            config["output"].as<std::string>() + "/" + ss.str() + ".h5";
-        ierr = solver.readRestartData(filePath, t); CHKERRQ(ierr);
-
-        ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
-
-        iterationsFile = config["directory"].as<std::string>() +
-                         "/iterations-" + std::to_string(nstart) + ".txt";
-        forcesFile = config["directory"].as<std::string>() + "/forces-" +
-                     std::to_string(nstart) + ".txt";
-    }
-
-    // initialize the PetscViewer objects for ASCII files
-    ierr = solver.initializeASCIIFiles(iterationsFile); CHKERRQ(ierr);
-    ierr = solver.initializeASCIIFiles(forcesFile); CHKERRQ(ierr);
-
-    // Time integration
-    for (int ite = nstart + 1; ite <= nstart + nt; ite++)
-    {
-        // advance solution
-        t += dt;
+        // compute the solution at the next time step
         ierr = solver.advance(); CHKERRQ(ierr);
-        // write solvers iterations into ASCII file
-        ierr = solver.writeIterations(ite, iterationsFile); CHKERRQ(ierr);
-        // write hydrodynamic forces into ASCII file
-        ierr = solver.writeIntegratedForces(t, forcesFile); CHKERRQ(ierr);
-
-        if (ite % nsave == 0)  // write flow solution into HDF5 file
-        {
-            std::stringstream ss;
-            ss << std::setfill('0') << std::setw(7) << ite;
-            filePath =
-                config["output"].as<std::string>() + "/" + ss.str() + ".h5";
-
-            ierr = PetscPrintf(PETSC_COMM_WORLD,
-                               "[time-step %d] Writing solution... ", ite);
-            CHKERRQ(ierr);
-            ierr = solver.write(t, filePath); CHKERRQ(ierr);
-            ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
-
-            if (ite % nrestart == 0)  // write restart data into HDF5 file
-            {
-                ierr =
-                    PetscPrintf(PETSC_COMM_WORLD,
-                                "[time-step %d] Writing restart data... ", ite);
-                CHKERRQ(ierr);
-                ierr = solver.writeRestartData(t, filePath); CHKERRQ(ierr);
-                ierr = PetscPrintf(PETSC_COMM_WORLD, "done\n"); CHKERRQ(ierr);
-            }
-
-            // write summary of PETSc logging into ASCII file
-            filePath =
-                config["logs"].as<std::string>() + "/" + ss.str() + ".log";
-            ierr = petibm::io::writePetscLog(PETSC_COMM_WORLD, filePath);
-            CHKERRQ(ierr);
-        }
-        ierr = solver.monitorProbes(t, ite); CHKERRQ(ierr);
+        // output data to files
+        ierr = solver.write(); CHKERRQ(ierr);
     }
 
-    // manually destroy PETSc objects before PetscFinalize
+    // destroy the decoupled IBPM solver
     ierr = solver.destroy(); CHKERRQ(ierr);
-    ierr = bodies->destroy(); CHKERRQ(ierr);
-    ierr = bd->destroy(); CHKERRQ(ierr);
-    ierr = mesh->destroy(); CHKERRQ(ierr);
 
     ierr = PetscFinalize(); CHKERRQ(ierr);
 

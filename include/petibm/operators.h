@@ -266,7 +266,7 @@ PetscErrorCode createConvection(const type::Mesh &mesh,
 /**
  * \brief Create non-normalized matrix of approximated \f$A^{-1}\f$, \f$B_n\f$.
  *
- * \param Op [in] Implicit operator \f$A$\f.
+ * \param Op [in] Implicit operator \f$A\f$.
  * \param dt [in] Time-step size.
  * \param coeff [in] Time-scheme coefficient for the implicit operator.
  * \param n [in] Truncation index of the Taylor series.
@@ -297,7 +297,7 @@ PetscErrorCode createBnHead(const Mat &Op, const PetscReal &dt,
 /**
  * \brief Create normalized matrix of approximated \f$A^{-1}\f$, \f$B_n\f$.
  *
- * \param Op [in] Implicit operator \f$A$\f.
+ * \param Op [in] Implicit operator \f$A\f$.
  * \param R [in] Matrix to define \f$M = \hat{M}R^{-1}\f$.
  * \param MHead [in] Matrix to define \f$M = \hat{M}R^{-1}\f$.
  * \param dt [in] Time-step size.
@@ -320,7 +320,7 @@ PetscErrorCode createBn(const Mat &Op, const Mat &R, const Mat &MHead,
 /**
  * \brief Create normalized matrix of approximated \f$A^{-1}\f$, \f$B_n\f$.
  *
- * \param Op [in] Implicit operator \f$A$\f.
+ * \param Op [in] Implicit operator \f$A\f$.
  * \param M [in] The \f$M\f$ matrix as defined in \f$A = M/dt - coeff * Op\f$.
  * \param dt [in] Time-step size.
  * \param coeff [in] Time-scheme coefficient for the implicit operator.

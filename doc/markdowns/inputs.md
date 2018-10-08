@@ -63,10 +63,21 @@ parameters:
 bodies:
   - type: points
     file: circle.body
+
+probes:
+  - name: probe-u1
+    viewer: ascii
+    field: u
+    nsave: 1
+    path: solution/probe-u1.dat
+    box:
+      x: [0.59, 0.61]
+      y: [-0.01, 0.01]
 ```
 
 The configuration contains three mandatory nodes: `mesh`, `flow`, `parameters`.
 The node `bodies` is required when running a simulation with at least one boundary immersed in the computational domain.
+The node `probes` can be used to monitor a specific scalar field variable (velocity components or pressure) in a specific subregion of the computational domain.
 
 ---
 
@@ -235,4 +246,44 @@ Example of a 2D boundary with 4 points:
 1.0    0.0
 1.0    1.0
 0.0    1.0
+```
+
+---
+
+## YAML node `probes`
+
+The YAML node `probes` contains a sequence of volume probes.
+A probe can be used to monitor a scalar field variable (e.g., a velocity component or the pressure) in a given subregion of the computational domain.
+
+Configuration of a probe:
+
+- `name`: name of the probe.
+- `field`: name of the scalar field variable (supported variables are `p` for the pressure, `u`, `v`, and `w` for the velocity components).
+- `box`: limits of the box in the `x`, `y`, and `z` directions.
+- `viewer`: type of the PETSc Viewer object to use (supported types are `ascii` and `hdf5`).
+- `path`: path of the file to write the data (relative to the simulation directory).
+- `nsave`: saving frequency (as a number of time steps).
+
+In the following example, the computational domain extends from -1 to +1 in the x and y directions and we monitor the solution of the pressure and x-component of the velocity every 10 time steps of the simulation.
+We monitor the pressure in the subregion `[-0.5, 0.0]x[-0.5, 0.0]` and the x-velocity in the subregion `[0.0, 0.5]x[0.0, 0.5]`.
+The ASCII files are located in the `solution` sub-folder of the simulation directory.
+
+```yaml
+probes:
+  - name: probe-p
+    viewer: ascii
+    field: p
+    nsave: 10
+    path: solution/probe-p.dat
+    box:
+      x: [-0.5, 0.0]
+      y: [-0.5, 0.0]
+  - name: probe-u
+    viewer: ascii
+    field: u
+    nsave: 10
+    path: solution/probe-u.dat
+    box:
+      x: [0.0, 0.5]
+      y: [0.0, 0.5]
 ```

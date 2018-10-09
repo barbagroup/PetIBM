@@ -41,18 +41,6 @@ public:
     /** \brief Frequency of saving (number of time steps). */
     PetscInt nsave;
 
-    /** \brief PETSc viewer to output the solution. */
-    PetscViewer viewer;
-
-    /** \brief Type of the PETSc viewer to use. */
-    PetscViewerType viewerType;
-
-    /** \brief Index set for the grid points to monitor. */
-    IS is;
-
-    /** \brief Sub-vector of the region to monitor. */
-    Vec vec;
-
     /** \brief MPI communicator. */
     MPI_Comm comm;
 
@@ -80,19 +68,29 @@ public:
     /** \brief Manually destroy data in the object. */
     virtual PetscErrorCode destroy();
 
+    /** \brief Setup the probe.
+     *
+     * Create a sub-mesh, write the sub-mesh coordinates,
+     * and create the index set.
+     *
+     * \param mesh [in] Cartesian mesh object
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode setUp(const type::Mesh &mesh);
+
     /** \brief Create the index set for the points to monitor.
      *
      * \param mesh [in] Cartesian mesh object
      * \return PetscErrorCode
      */
-    virtual PetscErrorCode createIS(const type::Mesh &mesh) = 0;
+    virtual PetscErrorCode createIS(const type::Mesh &mesh);
 
     /** \brief Get the sub-mesh area to monitor.
      * 
      * \param mesh [in] Cartesian mesh object
      * \return PetscErrorCode
      */
-    virtual PetscErrorCode createSubMesh(const type::Mesh &mesh) = 0;
+    virtual PetscErrorCode createSubMesh(const type::Mesh &mesh);
 
     /** \brief Write the sub mesh grid points into a file.
      *
@@ -118,64 +116,20 @@ public:
      */
     virtual PetscErrorCode monitor(const type::Solution &solution,
                                    const type::Mesh &mesh,
-                                   const PetscReal &t) = 0;
+                                   const PetscReal &t);
 
 protected:
-    /** \brief Initialize the probe.
-     * 
-     * \param comm [in] MPI communicator
-     * \param node [in] YAML configuration node
-     * \return PetscErrorCode
-     */
-    virtual PetscErrorCode init(const MPI_Comm &comm,
-                                const YAML::Node &node,
-                                const type::Mesh &mesh) = 0;
+    /** \brief PETSc viewer to output the solution. */
+    PetscViewer viewer;
 
-    /** \brief Write the sub mesh into an ASCII file.
-     *
-     * \param filePath [in] Path of the file to write in
-     * \return PetscErrorCode
-     */
-    virtual PetscErrorCode writeSubMeshASCII(const std::string &filePath) = 0;
+    /** \brief Type of the PETSc viewer to use. */
+    PetscViewerType viewerType;
 
-    /** \brief Write the sub mesh into a HDF5 file.
-     *
-     * \param filePath [in] Path of the file to write in
-     * \return PetscErrorCode
-     */
-    virtual PetscErrorCode writeSubMeshHDF5(const std::string &filePath) = 0;
+    /** \brief Index set for the grid points to monitor. */
+    IS is;
 
-    /** \brief Write the sub-vector data into an ASCII file.
-     * 
-     * \param fvec [in] Full-vector with field data
-     * \param t [in] Time
-     * \return PetscErrorCode
-     */
-    virtual PetscErrorCode writeSubVecASCII(const Vec &fvec,
-                                            const PetscReal &t) = 0;
-
-    /** \brief Write the sub-vector data into a HDF5 file.
-     * 
-     * \param fvec [in] Full-vector with field data
-     * \param t [in] Time
-     * \return PetscErrorCode
-     */
-    virtual PetscErrorCode writeSubVecHDF5(const Vec &fvec,
-                                           const PetscReal &t) = 0;
-
-};  // ProbeBase
-
-/**
- * \brief Probe class to monitor a volume region of the domain.
- *
- * \see miscModule, petibm::type::Probe, petibm::misc::createProbe
- * \ingroup miscModule
- */
-class ProbeVolume : public ProbeBase
-{
-public:
-    /** \brief Limits of the volume. */
-    type::RealVec2D box;
+    /** \brief Sub-vector of the region to monitor. */
+    Vec vec;
 
     /** \brief Grid point coordinates in the volume. */
     type::RealVec2D coord;
@@ -189,6 +143,69 @@ public:
     /** \brief Index of the first point in the volume in each direction. */
     type::IntVec1D startIdxDir;
 
+    /** \brief Absolute tolerance criterion when comparing values. */
+    PetscReal atol;
+
+    /** \brief Initialize the probe.
+     * 
+     * \param comm [in] MPI communicator
+     * \param node [in] YAML configuration node
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode init(const MPI_Comm &comm,
+                                const YAML::Node &node,
+                                const type::Mesh &mesh) = 0;
+
+    /** \brief Get information about the sub-mesh area to monitor.
+     *
+     * \param mesh [in] Cartesian mesh object
+     * \param box [in] Box area to monitor
+     * \return PetscErrorCode
+     */
+    PetscErrorCode getSubMeshInfo(const type::Mesh &mesh,
+                                  const type::RealVec2D &box);
+
+    /** \brief Write the sub mesh into an ASCII file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeSubMeshASCII(const std::string &filePath);
+
+    /** \brief Write the sub mesh into a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeSubMeshHDF5(const std::string &filePath);
+
+    /** \brief Write the sub-vector data into an ASCII file.
+     * 
+     * \param fvec [in] Full-vector with field data
+     * \param t [in] Time
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeSubVecASCII(const Vec &fvec, const PetscReal &t);
+
+    /** \brief Write the sub-vector data into a HDF5 file.
+     * 
+     * \param fvec [in] Full-vector with field data
+     * \param t [in] Time
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeSubVecHDF5(const Vec &fvec, const PetscReal &t);
+
+};  // ProbeBase
+
+/**
+ * \brief Probe class to monitor a volume region of the domain.
+ *
+ * \see miscModule, petibm::type::Probe, petibm::misc::createProbe
+ * \ingroup miscModule
+ */
+class ProbeVolume : public ProbeBase
+{
+public:
     /** \copydoc ProbeBase::ProbeBase() */
     ProbeVolume(const MPI_Comm &comm,
                 const YAML::Node &node,
@@ -197,43 +214,55 @@ public:
     /** \brief Default destructor. */
     virtual ~ProbeVolume() = default;
 
-    /** \copydoc ProbeBase::createIS() */
-    PetscErrorCode createIS(const type::Mesh &mesh);
-
-    /** \copydoc ProbeBase::createSubMesh() */
-    PetscErrorCode createSubMesh(const type::Mesh &mesh);
-
-    /** \copydoc ProbeBase::monitor */
-    PetscErrorCode monitor(const type::Solution &solution,
-                           const type::Mesh &mesh,
-                           const PetscReal &t);
-
 protected:
+    /** \brief Limits of the volume. */
+    type::RealVec2D box;
+
     /** \copydoc ProbeBase::init() */
     PetscErrorCode init(const MPI_Comm &comm,
                         const YAML::Node &node,
                         const type::Mesh &mesh);
 
-    /** \brief Get information about the sub-mesh area to monitor.
+};  // ProbeVolume
+
+/**
+ * \brief Probe class to monitor a minimal volume around a point.
+ *
+ * \see miscModule, petibm::type::Probe, petibm::misc::createProbe
+ * \ingroup miscModule
+ */
+class ProbePoint : public ProbeBase
+{
+public:
+    /** \copydoc ProbeBase::ProbeBase() */
+    ProbePoint(const MPI_Comm &comm,
+                const YAML::Node &node,
+                const type::Mesh &mesh);
+
+    /** \brief Default destructor. */
+    virtual ~ProbePoint() = default;
+
+protected:
+    /** \brief Coordinates of the point to monitor around. */
+    type::RealVec1D loc;
+
+    /** \copydoc ProbeBase::init() */
+    PetscErrorCode init(const MPI_Comm &comm,
+                        const YAML::Node &node,
+                        const type::Mesh &mesh);
+
+    /** \brief Get the box surrounding a given point.
      *
      * \param mesh [in] Cartesian mesh object
+     * \param loc [in] Coordinates of the point
+     * \param box [in] Box surrounding the point
      * \return PetscErrorCode
      */
-    PetscErrorCode getSubMeshInfo(const type::Mesh &mesh);
+    PetscErrorCode getBox(const type::Mesh &mesh,
+                          const type::RealVec1D &loc,
+                          type::RealVec2D &box);
 
-    /** \copydoc ProbeBase::writeSubMeshASCII() */
-    PetscErrorCode writeSubMeshASCII(const std::string &filePath);
-
-    /** \copydoc ProbeBase::writeSubMeshHDF5() */
-    PetscErrorCode writeSubMeshHDF5(const std::string &filePath);
-
-    /** \copydoc ProbeBase::writeSubVecASCII() */
-    PetscErrorCode writeSubVecASCII(const Vec &fvec, const PetscReal &t);
-
-    /** \copydoc ProbeBase::writeSubVecHDF5() */
-    PetscErrorCode writeSubVecHDF5(const Vec &fvec, const PetscReal &t);
-
-};  // ProbeVolume
+};  // ProbePoint
 
 }  // end of namespace misc
 

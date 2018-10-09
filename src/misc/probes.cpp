@@ -7,6 +7,7 @@
 
 #include <numeric>
 #include <cstring>
+#include <algorithm>
 
 #include <petscdmcomposite.h>
 #include <petscviewerhdf5.h>
@@ -24,6 +25,7 @@ PetscErrorCode createProbe(const MPI_Comm &comm,
                            const type::Mesh &mesh,
                            type::Probe &probe)
 {
+    PetscErrorCode ierr;
     type::ProbeType probeType;
 
     PetscFunctionBeginUser;
@@ -34,11 +36,16 @@ PetscErrorCode createProbe(const MPI_Comm &comm,
     {
         case type::ProbeType::VOLUME:
             probe = std::make_shared<ProbeVolume>(comm, node, mesh);
+            ierr = probe->setUp(mesh); CHKERRQ(ierr);
+            break;
+        case type::ProbeType::POINT:
+            probe = std::make_shared<ProbePoint>(comm, node, mesh);
+            ierr = probe->setUp(mesh); CHKERRQ(ierr);
             break;
         default:
             SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
-                    "Unknown type of probe. Accepted values are:\n"
-                    "\t VOLUME");
+                    "Unknown type of probe. Accepted values are: "
+                    "VOLUME and POINT");
     }
 
     PetscFunctionReturn(0);
@@ -98,22 +105,143 @@ PetscErrorCode ProbeBase::init(const MPI_Comm &inComm,
         viewerType = PETSCVIEWERASCII;
     else if (vtype_str == "hdf5")
         viewerType = PETSCVIEWERHDF5;
+    atol = node["atol"].as<PetscReal>(1e-6);
 
     is = PETSC_NULL;
     vec = PETSC_NULL;
 
-    ierr = createSubMesh(mesh); CHKERRQ(ierr);
-    ierr = writeSubMesh(path); CHKERRQ(ierr);
-
-    ierr = createIS(mesh); CHKERRQ(ierr);
-
+    // create a PETSc Viewer to output the data
     ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, path.c_str()); CHKERRQ(ierr);
 
+    nPtsDir.resize(3, 1);
+    startIdxDir.resize(3, 0);
+
     PetscFunctionReturn(0);
 }  // ProbeBase::init
+
+// Setup probe sub-mesh, write sub-mesh, and create index set.
+PetscErrorCode ProbeBase::setUp(const type::Mesh &mesh)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = createSubMesh(mesh); CHKERRQ(ierr);
+    ierr = writeSubMesh(path); CHKERRQ(ierr);
+    ierr = createIS(mesh); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // setUp
+
+// Get information about the sub-mesh area to monitor.
+PetscErrorCode ProbeBase::getSubMeshInfo(const type::Mesh &mesh,
+                                         const type::RealVec2D &box)
+{
+    std::vector<PetscReal>::iterator low, up;
+
+    PetscFunctionBeginUser;
+
+    for (PetscInt d = 0; d < mesh->dim; ++d)
+    {
+        type::RealVec1D line(mesh->coord[field][d],
+                             mesh->coord[field][d] + mesh->n[field][d]);
+        low = std::lower_bound(line.begin(), line.end(), box[d][0] - atol);
+        up = std::upper_bound(line.begin(), line.end(), box[d][1] + atol);
+        startIdxDir[d] = low - line.begin();
+        nPtsDir[d] = up - line.begin() - startIdxDir[d];
+    }
+
+    // get the number of points in the volume
+    nPts = std::accumulate(nPtsDir.begin(), nPtsDir.end(),
+                           1, std::multiplies<PetscInt>());
+
+    PetscFunctionReturn(0);
+}  // ProbeBase::getSubMeshInfo
+
+// Create the index set for the points to monitor.
+PetscErrorCode ProbeBase::createIS(const type::Mesh &mesh)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    DMDALocalInfo info;
+    ierr = DMDAGetLocalInfo(mesh->da[field], &info); CHKERRQ(ierr);
+    
+    std::vector<PetscInt> indices(nPts);
+    PetscInt count = 0;
+    for (PetscInt k = info.zs; k < info.zs + info.zm; ++k)
+    {
+        for (PetscInt j = info.ys; j < info.ys + info.ym; ++j)
+        {
+            for (PetscInt i = info.xs; i < info.xs + info.xm; ++i)
+            {
+                if (i >= startIdxDir[0] && i < startIdxDir[0] + nPtsDir[0] &&
+                    j >= startIdxDir[1] && j < startIdxDir[1] + nPtsDir[1] &&
+                    k >= startIdxDir[2] && k < startIdxDir[2] + nPtsDir[2])
+                {
+                    indices[count] = k * (info.my * info.mx) + j * info.mx + i;
+                    count++;
+                }
+            }
+        }
+    }
+    indices.resize(count);
+
+    ierr = ISCreateGeneral(comm, count, &indices[0],
+                           PETSC_COPY_VALUES, &is); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbeBase::createIS
+
+// Get the sub-mesh area to monitor.
+PetscErrorCode ProbeBase::createSubMesh(const type::Mesh &mesh)
+{
+    PetscFunctionBeginUser;
+
+    coord = type::RealVec2D(mesh->dim, type::RealVec1D());
+    for (PetscInt d = 0; d < mesh->dim; ++d)
+    {
+        coord[d].reserve(nPtsDir[d]);
+        PetscInt first = startIdxDir[d];
+        PetscInt last = first + nPtsDir[d];
+        for (PetscInt i = first; i < last; ++i)
+            coord[d].push_back(mesh->coord[field][d][i]);
+    }
+
+    PetscFunctionReturn(0);
+}  // ProbeBase::createSubMesh
+
+// Monitor the field solution at points in the index set.
+PetscErrorCode ProbeBase::monitor(const type::Solution &solution,
+                                  const type::Mesh &mesh,
+                                  const PetscReal &t)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    if (field < mesh->dim)
+    {
+        std::vector<Vec> vel(mesh->dim);
+        ierr = DMCompositeGetAccessArray(mesh->UPack, solution->UGlobal,
+                                         mesh->dim, nullptr,
+                                         vel.data()); CHKERRQ(ierr);
+        ierr = writeSubVec(vel[field], t); CHKERRQ(ierr);
+        ierr = DMCompositeRestoreAccessArray(mesh->UPack, solution->UGlobal,
+                                             mesh->dim, nullptr,
+                                             vel.data()); CHKERRQ(ierr);
+    }
+    else
+    {
+        ierr = writeSubVec(solution->pGlobal, t); CHKERRQ(ierr);
+    }
+
+    PetscFunctionReturn(0);
+}  // ProbeBase::monitor
 
 // Write the sub mesh grid points into a file.
 PetscErrorCode ProbeBase::writeSubMesh(const std::string &filePath)
@@ -161,174 +289,8 @@ PetscErrorCode ProbeBase::writeSubVec(const Vec &fvec, const PetscReal &t)
     PetscFunctionReturn(0);
 }  // ProbeBase::writeSubVec
 
-// Constructor. Initialize the probe.
-ProbeVolume::ProbeVolume(const MPI_Comm &comm,
-                         const YAML::Node &node,
-                         const type::Mesh &mesh)
-{
-    init(comm, node, mesh);
-}  // ProbeVolume::ProbeVolume
-
-// Initialize the probe.
-PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
-                                 const YAML::Node &node,
-                                 const type::Mesh &mesh)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    box = type::RealVec2D(3, type::RealVec1D(2, 0.0));
-    for (auto item : node["box"])
-    {
-        type::Dir dir = type::str2dir[item.first.as<std::string>()];
-        for (int i = 0; i < 2; ++i)
-            box[dir][i] = item.second[i].as<PetscReal>();
-    }
-
-    ierr = ProbeBase::init(comm, node, mesh); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::init
-
-// Monitor the field solution at points in the index set.
-PetscErrorCode ProbeVolume::monitor(const type::Solution &solution,
-                                    const type::Mesh &mesh,
-                                    const PetscReal &t)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    if (field < mesh->dim)
-    {
-        Vec vel;
-        std::vector<PetscInt> flg(mesh->dim, 0);
-        flg[field] = 1;
-        ierr = DMCompositeGetAccessArray(mesh->UPack, solution->UGlobal,
-                                         1, &flg[0],
-                                         &vel); CHKERRQ(ierr);
-        ierr = writeSubVec(vel, t); CHKERRQ(ierr);
-        ierr = DMCompositeRestoreAccessArray(mesh->UPack, solution->UGlobal,
-                                             1, &flg[0],
-                                             &vel); CHKERRQ(ierr);
-    }
-    else
-    {
-        ierr = writeSubVec(solution->pGlobal, t); CHKERRQ(ierr);
-    }
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::monitor
-
-// Get information about the sub-mesh area to monitor.
-PetscErrorCode ProbeVolume::getSubMeshInfo(const type::Mesh &mesh)
-{
-    PetscFunctionBeginUser;
-
-    nPtsDir.resize(mesh->dim);
-    std::fill(nPtsDir.begin(), nPtsDir.end(), 0);
-    startIdxDir.resize(mesh->dim);
-    std::fill(startIdxDir.begin(), startIdxDir.end(), -1);
-
-    for (PetscInt d = 0; d < mesh->dim; ++d)
-    {
-        for (PetscInt i = 0; i < mesh->n[field][d]; ++i)
-        {
-            if (mesh->coord[field][d][i] >= box[d][0] &&
-                mesh->coord[field][d][i] <= box[d][1])
-            {
-                if (startIdxDir[d] == -1) startIdxDir[d] = i;
-                nPtsDir[d]++;
-            }
-        }
-    }
-
-    // get the number of points in the volume
-    nPts = std::accumulate(nPtsDir.begin(), nPtsDir.end(),
-                           1, std::multiplies<PetscInt>());
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::getSubMeshInfo
-
-// Get the sub-mesh area to monitor.
-PetscErrorCode ProbeVolume::createSubMesh(const type::Mesh &mesh)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = getSubMeshInfo(mesh); CHKERRQ(ierr);
-
-    coord = type::RealVec2D(mesh->dim, type::RealVec1D());
-    for (PetscInt d = 0; d < mesh->dim; ++d)
-    {
-        coord[d].reserve(nPtsDir[d]);
-        PetscInt first = startIdxDir[d];
-        PetscInt last = first + nPtsDir[d];
-        for (PetscInt i = first; i < last; ++i)
-            coord[d].push_back(mesh->coord[field][d][i]);
-    }
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::createSubMesh
-
-// Create the index set for the points to monitor.
-PetscErrorCode ProbeVolume::createIS(const type::Mesh &mesh)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = getSubMeshInfo(mesh); CHKERRQ(ierr);
-
-    DMDALocalInfo info;
-    ierr = DMDAGetLocalInfo(mesh->da[field], &info); CHKERRQ(ierr);
-    std::vector<PetscInt> indices(nPts);
-    PetscInt count = 0;
-    if (mesh->dim == 2)
-    {
-        for (PetscInt j = info.ys; j < info.ys + info.ym; ++j)
-        {
-            for (PetscInt i = info.xs; i < info.xs + info.xm; ++i)
-            {
-                if (i >= startIdxDir[0] && i < startIdxDir[0] + nPtsDir[0] &&
-                    j >= startIdxDir[1] && j < startIdxDir[1] + nPtsDir[1])
-                {
-                    indices[count] = j * info.mx + i;
-                    count++;
-                }
-            }
-        }
-    }
-    else if (mesh->dim == 3)
-    {
-        for (PetscInt k = info.zs; k < info.zs + info.zm; ++k)
-        {
-            for (PetscInt j = info.ys; j < info.ys + info.ym; ++j)
-            {
-                for (PetscInt i = info.xs; i < info.xs + info.xm; ++i)
-                {
-                    if (i >= startIdxDir[0] && i < startIdxDir[0] + nPtsDir[0] &&
-                        j >= startIdxDir[1] && j < startIdxDir[1] + nPtsDir[1] &&
-                        k >= startIdxDir[2] && k < startIdxDir[2] + nPtsDir[2])
-                    {
-                        indices[count] = k * (info.my * info.mx) + j * info.mx + i;
-                        count++;
-                    }
-                }
-            }
-        }
-    }
-    indices.resize(count);
-    ierr = ISCreateGeneral(comm, count, &indices[0],
-                           PETSC_COPY_VALUES, &is); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::createIS
-
 // Write the sub mesh into a HDF5 file.
-PetscErrorCode ProbeVolume::writeSubMeshHDF5(const std::string &filePath)
+PetscErrorCode ProbeBase::writeSubMeshHDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -359,10 +321,10 @@ PetscErrorCode ProbeVolume::writeSubMeshHDF5(const std::string &filePath)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubMeshHDF5
+}  // ProbeBase::writeSubMeshHDF5
 
 // Write the sub mesh into an ASCII file.
-PetscErrorCode ProbeVolume::writeSubMeshASCII(const std::string &filePath)
+PetscErrorCode ProbeBase::writeSubMeshASCII(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -395,10 +357,10 @@ PetscErrorCode ProbeVolume::writeSubMeshASCII(const std::string &filePath)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubMeshASCII
+}  // ProbeBase::writeSubMeshASCII
 
 // Write the sub-vector data into a HDF5 file.
-PetscErrorCode ProbeVolume::writeSubVecHDF5(const Vec &fvec, const PetscReal &t)
+PetscErrorCode ProbeBase::writeSubVecHDF5(const Vec &fvec, const PetscReal &t)
 {
     PetscErrorCode ierr;
 
@@ -413,10 +375,10 @@ PetscErrorCode ProbeVolume::writeSubVecHDF5(const Vec &fvec, const PetscReal &t)
     ierr = VecRestoreSubVector(fvec, is, &vec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubVecHDF5
+}  // ProbeBase::writeSubVecHDF5
 
 // Write the sub-vector data into a ASCII file.
-PetscErrorCode ProbeVolume::writeSubVecASCII(const Vec &fvec, const PetscReal &t)
+PetscErrorCode ProbeBase::writeSubVecASCII(const Vec &fvec, const PetscReal &t)
 {
     PetscErrorCode ierr;
 
@@ -430,7 +392,92 @@ PetscErrorCode ProbeVolume::writeSubVecASCII(const Vec &fvec, const PetscReal &t
     ierr = VecRestoreSubVector(fvec, is, &vec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubVecASCII
+}  // ProbeBase::writeSubVecASCII
+
+// Constructor. Initialize the probe.
+ProbeVolume::ProbeVolume(const MPI_Comm &comm,
+                         const YAML::Node &node,
+                         const type::Mesh &mesh)
+{
+    init(comm, node, mesh);
+}  // ProbeVolume::ProbeVolume
+
+// Initialize the probe.
+PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
+                                 const YAML::Node &node,
+                                 const type::Mesh &mesh)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = ProbeBase::init(comm, node, mesh); CHKERRQ(ierr);
+
+    box = type::RealVec2D(3, type::RealVec1D(2, 0.0));
+    for (auto item : node["box"])
+    {
+        type::Dir dir = type::str2dir[item.first.as<std::string>()];
+        box[dir][0] = item.second[0].as<PetscReal>();
+        box[dir][1] = item.second[1].as<PetscReal>();
+    }
+
+    ierr = getSubMeshInfo(mesh, box); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::init
+
+// Constructor. Initialize the probe.
+ProbePoint::ProbePoint(const MPI_Comm &comm,
+                       const YAML::Node &node,
+                       const type::Mesh &mesh)
+{
+    init(comm, node, mesh);
+}  // ProbePoint::ProbePoint
+
+// Initialize the probe.
+PetscErrorCode ProbePoint::init(const MPI_Comm &comm,
+                                const YAML::Node &node,
+                                const type::Mesh &mesh)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = ProbeBase::init(comm, node, mesh); CHKERRQ(ierr);
+
+    loc = type::RealVec1D(3, 0.0);
+    for (PetscInt d = 0; d < mesh->dim; ++d)
+        loc[d] = node["loc"][d].as<PetscReal>();
+
+    type::RealVec2D box = type::RealVec2D(3, type::RealVec1D(2, 0.0));
+    ierr = getBox(mesh, loc, box); CHKERRQ(ierr);
+
+    ierr = getSubMeshInfo(mesh, box); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::init
+
+// Get the box around a given point.
+PetscErrorCode ProbePoint::getBox(const type::Mesh &mesh,
+                                  const type::RealVec1D &loc,
+                                  type::RealVec2D &box)
+{
+    std::vector<PetscReal>::iterator low;
+
+    PetscFunctionBeginUser;
+
+    for (PetscInt d = 0; d < mesh->dim; ++d)
+    {
+        type::RealVec1D line(mesh->coord[field][d],
+                             mesh->coord[field][d] + mesh->n[field][d]);
+        low = std::lower_bound(line.begin(), line.end(), loc[d] - atol);
+        PetscInt idx = low - line.begin() - 1;
+        box[d][0] = line[idx] - 0.5 * (line[idx] - line[idx - 1]);
+        box[d][1] = line[idx + 1] + 0.5 * (line[idx + 2] - line[idx + 1]);
+    }
+
+    PetscFunctionReturn(0);
+}  // ProbePoint::getBox
 
 }  // end of namespace misc
 

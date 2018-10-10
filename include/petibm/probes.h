@@ -41,6 +41,12 @@ public:
     /** \brief Frequency of saving (number of time steps). */
     PetscInt nsave;
 
+    /** \brief Monitoring starting time. */
+    PetscReal tstart;
+
+    /** \brief Monitoring ending time. */
+    PetscReal tend;
+
     /** \brief MPI communicator. */
     MPI_Comm comm;
 

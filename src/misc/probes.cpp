@@ -100,6 +100,8 @@ PetscErrorCode ProbeBase::init(const MPI_Comm &inComm,
     field = type::str2fd[node["field"].as<std::string>()];
     path = node["path"].as<std::string>();
     nsave = node["nsave"].as<PetscInt>();
+    tstart = node["tstart"].as<PetscReal>(0.0);
+    tend = node["tend"].as<PetscReal>(1e12);
     std::string vtype_str = node["viewer"].as<std::string>("ascii");
     if (vtype_str == "ascii")
         viewerType = PETSCVIEWERASCII;

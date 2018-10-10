@@ -824,7 +824,7 @@ PetscErrorCode NavierStokesSolver::monitorProbes()
 
     for (auto probe : probes)
     {
-        if (ite % probe->nsave == 0)
+        if (ite % probe->nsave == 0 && t >= probe->tstart && t <= probe->tend)
         {
             ierr = probe->monitor(solution, mesh, t); CHKERRQ(ierr);
         }

@@ -263,6 +263,8 @@ Configuration of a probe:
 - `viewer`: type of the PETSc Viewer object to use (supported types are `ascii` and `hdf5`).
 - `path`: path of the file to write the data (relative to the simulation directory).
 - `nsave`: saving frequency (as a number of time steps).
+- `tstart`: time value to start monitoring the variable.
+- `tend`: time value to finish monitoring the variable.
 
 In the following example, the computational domain extends from -1 to +1 in the x and y directions and we monitor the solution of the pressure and x-component of the velocity every 10 time steps of the simulation.
 We monitor the pressure in the subregion `[-0.5, 0.0]x[-0.5, 0.0]` and the x-velocity in the subregion `[0.0, 0.5]x[0.0, 0.5]`.

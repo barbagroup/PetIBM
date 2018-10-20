@@ -40,6 +40,9 @@ public:
     // doc is the same as MeshBase::destroy
     virtual PetscErrorCode destroy();
 
+    virtual PetscBool isPointOnLocalProc(const type::RealVec1D &point,
+                                         const type::Field &field);
+
     // doc is the same as MeshBase::write
     virtual PetscErrorCode write(const std::string &filePath) const;
 

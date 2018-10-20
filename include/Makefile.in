@@ -321,6 +321,7 @@ nobase_include_HEADERS = \
 	petibm/boundarysimple.h \
 	petibm/cartesianmesh.h \
 	petibm/delta.h \
+	petibm/interp.h \
 	petibm/io.h \
 	petibm/linsolveramgx.h \
 	petibm/linsolver.h \

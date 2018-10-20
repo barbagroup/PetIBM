@@ -828,5 +828,23 @@ PetscErrorCode CartesianMesh::write(const std::string &filePath) const
     PetscFunctionReturn(0);
 }  // write
 
+PetscBool CartesianMesh::isPointOnLocalProc(const type::RealVec1D &point,
+                                            const type::Field &field)
+{
+    PetscFunctionBeginUser;
+
+    for (PetscInt d = 0; d < dim; ++d)
+    {
+        PetscInt start = bg[field][d], end = ed[field][d];
+        if (point[d] < coord[field][d][start] ||
+            point[d] >= coord[field][d][end])
+        {
+            return PETSC_FALSE;
+        }
+    }
+
+    return PETSC_TRUE;
+}  // isPointOnLocalProc
+
 }  // end of namespace mesh
 }  // end of namespace petibm

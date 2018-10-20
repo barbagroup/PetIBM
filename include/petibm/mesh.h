@@ -165,6 +165,9 @@ public:
      */
     virtual PetscErrorCode write(const std::string &filePath) const = 0;
 
+    virtual PetscBool isPointOnLocalProc(const type::RealVec1D &point,
+                                         const type::Field &field) = 0;
+
     /**
      * \brief Get the local index of a point by providing MatStencil.
      *

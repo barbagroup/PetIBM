@@ -25,7 +25,6 @@ PetscErrorCode createProbe(const MPI_Comm &comm,
                            const type::Mesh &mesh,
                            type::Probe &probe)
 {
-    PetscErrorCode ierr;
     type::ProbeType probeType;
 
     PetscFunctionBeginUser;
@@ -36,11 +35,9 @@ PetscErrorCode createProbe(const MPI_Comm &comm,
     {
         case type::ProbeType::VOLUME:
             probe = std::make_shared<ProbeVolume>(comm, node, mesh);
-            ierr = probe->setUp(mesh); CHKERRQ(ierr);
             break;
         case type::ProbeType::POINT:
             probe = std::make_shared<ProbePoint>(comm, node, mesh);
-            ierr = probe->setUp(mesh); CHKERRQ(ierr);
             break;
         default:
             SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
@@ -50,6 +47,10 @@ PetscErrorCode createProbe(const MPI_Comm &comm,
 
     PetscFunctionReturn(0);
 }  // createProbe
+
+//***************************************************************************//
+//*************************        ProbeBase        *************************//
+//***************************************************************************//
 
 // Destructor.
 ProbeBase::~ProbeBase()
@@ -74,14 +75,40 @@ PetscErrorCode ProbeBase::destroy()
 
     name = "";
     path = "";
-    if (vec != PETSC_NULL) {ierr = VecDestroy(&vec); CHKERRQ(ierr);}
-    if (is != PETSC_NULL) {ierr = ISDestroy(&is); CHKERRQ(ierr);}
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
     comm = MPI_COMM_NULL;
     commSize = commRank = 0;
 
     PetscFunctionReturn(0);
 }  // ProbeBase::destroy
+
+// Monitor the field solution at points in the index set.
+PetscErrorCode ProbeBase::monitor(const type::Solution &solution,
+                                  const type::Mesh &mesh,
+                                  const PetscReal &t)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    if (field < mesh->dim)
+    {
+        std::vector<Vec> vel(mesh->dim);
+        ierr = DMCompositeGetAccessArray(mesh->UPack, solution->UGlobal,
+                                         mesh->dim, nullptr,
+                                         vel.data()); CHKERRQ(ierr);
+        ierr = writeData(mesh, vel[field], t); CHKERRQ(ierr);
+        ierr = DMCompositeRestoreAccessArray(mesh->UPack, solution->UGlobal,
+                                             mesh->dim, nullptr,
+                                             vel.data()); CHKERRQ(ierr);
+    }
+    else
+    {
+        ierr = writeData(mesh, solution->pGlobal, t); CHKERRQ(ierr);
+    }
+
+    PetscFunctionReturn(0);
+}  // ProbeBase::monitor
 
 // Initialize the probe.
 PetscErrorCode ProbeBase::init(const MPI_Comm &inComm,
@@ -102,6 +129,47 @@ PetscErrorCode ProbeBase::init(const MPI_Comm &inComm,
     nsave = node["nsave"].as<PetscInt>();
     tstart = node["tstart"].as<PetscReal>(0.0);
     tend = node["tend"].as<PetscReal>(1e12);
+
+    PetscFunctionReturn(0);
+}  // ProbeBase::init
+
+//***************************************************************************//
+//*************************       ProbeVolume       *************************//
+//***************************************************************************//
+
+// Constructor. Initialize the probe.
+ProbeVolume::ProbeVolume(const MPI_Comm &comm,
+                         const YAML::Node &node,
+                         const type::Mesh &mesh)
+{
+    init(comm, node, mesh);
+}  // ProbeVolume::ProbeVolume
+
+// Manually destroy data in the object.
+PetscErrorCode ProbeVolume::destroy()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = ProbeBase::destroy(); CHKERRQ(ierr);
+    if (vec != PETSC_NULL) {ierr = VecDestroy(&vec); CHKERRQ(ierr);}
+    if (is != PETSC_NULL) {ierr = ISDestroy(&is); CHKERRQ(ierr);}
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::destroy
+
+// Initialize the probe.
+PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
+                                 const YAML::Node &node,
+                                 const type::Mesh &mesh)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = ProbeBase::init(comm, node, mesh); CHKERRQ(ierr);
+
     std::string vtype_str = node["viewer"].as<std::string>("ascii");
     if (vtype_str == "ascii")
         viewerType = PETSCVIEWERASCII;
@@ -118,29 +186,29 @@ PetscErrorCode ProbeBase::init(const MPI_Comm &inComm,
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, path.c_str()); CHKERRQ(ierr);
 
+    box = type::RealVec2D(3, type::RealVec1D(2, 0.0));
+    for (auto item : node["box"])
+    {
+        type::Dir dir = type::str2dir[item.first.as<std::string>()];
+        box[dir][0] = item.second[0].as<PetscReal>();
+        box[dir][1] = item.second[1].as<PetscReal>();
+    }
+
     nPtsDir.resize(3, 1);
     startIdxDir.resize(3, 0);
 
-    PetscFunctionReturn(0);
-}  // ProbeBase::init
-
-// Setup probe sub-mesh, write sub-mesh, and create index set.
-PetscErrorCode ProbeBase::setUp(const type::Mesh &mesh)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
+    ierr = getSubMeshInfo(mesh, box); CHKERRQ(ierr);
 
     ierr = createSubMesh(mesh); CHKERRQ(ierr);
     ierr = writeSubMesh(path); CHKERRQ(ierr);
     ierr = createIS(mesh); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // setUp
+}  // ProbeVolume::init
 
 // Get information about the sub-mesh area to monitor.
-PetscErrorCode ProbeBase::getSubMeshInfo(const type::Mesh &mesh,
-                                         const type::RealVec2D &box)
+PetscErrorCode ProbeVolume::getSubMeshInfo(const type::Mesh &mesh,
+                                           const type::RealVec2D &box)
 {
     std::vector<PetscReal>::iterator low, up;
 
@@ -161,10 +229,10 @@ PetscErrorCode ProbeBase::getSubMeshInfo(const type::Mesh &mesh,
                            1, std::multiplies<PetscInt>());
 
     PetscFunctionReturn(0);
-}  // ProbeBase::getSubMeshInfo
+}  // ProbeVolume::getSubMeshInfo
 
 // Create the index set for the points to monitor.
-PetscErrorCode ProbeBase::createIS(const type::Mesh &mesh)
+PetscErrorCode ProbeVolume::createIS(const type::Mesh &mesh)
 {
     PetscErrorCode ierr;
 
@@ -197,10 +265,10 @@ PetscErrorCode ProbeBase::createIS(const type::Mesh &mesh)
                            PETSC_COPY_VALUES, &is); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeBase::createIS
+}  // ProbeVolume::createIS
 
 // Get the sub-mesh area to monitor.
-PetscErrorCode ProbeBase::createSubMesh(const type::Mesh &mesh)
+PetscErrorCode ProbeVolume::createSubMesh(const type::Mesh &mesh)
 {
     PetscFunctionBeginUser;
 
@@ -215,38 +283,10 @@ PetscErrorCode ProbeBase::createSubMesh(const type::Mesh &mesh)
     }
 
     PetscFunctionReturn(0);
-}  // ProbeBase::createSubMesh
-
-// Monitor the field solution at points in the index set.
-PetscErrorCode ProbeBase::monitor(const type::Solution &solution,
-                                  const type::Mesh &mesh,
-                                  const PetscReal &t)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    if (field < mesh->dim)
-    {
-        std::vector<Vec> vel(mesh->dim);
-        ierr = DMCompositeGetAccessArray(mesh->UPack, solution->UGlobal,
-                                         mesh->dim, nullptr,
-                                         vel.data()); CHKERRQ(ierr);
-        ierr = writeSubVec(vel[field], t); CHKERRQ(ierr);
-        ierr = DMCompositeRestoreAccessArray(mesh->UPack, solution->UGlobal,
-                                             mesh->dim, nullptr,
-                                             vel.data()); CHKERRQ(ierr);
-    }
-    else
-    {
-        ierr = writeSubVec(solution->pGlobal, t); CHKERRQ(ierr);
-    }
-
-    PetscFunctionReturn(0);
-}  // ProbeBase::monitor
+}  // ProbeVolume::createSubMesh
 
 // Write the sub mesh grid points into a file.
-PetscErrorCode ProbeBase::writeSubMesh(const std::string &filePath)
+PetscErrorCode ProbeVolume::writeSubMesh(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -266,33 +306,10 @@ PetscErrorCode ProbeBase::writeSubMesh(const std::string &filePath)
                 "\t PETSCVIEWERASCII and PETSCVIEWERHDF5");
 
     PetscFunctionReturn(0);
-}  // ProbeBase::writeSubMesh
-
-// Write the sub vector data into a file.
-PetscErrorCode ProbeBase::writeSubVec(const Vec &fvec, const PetscReal &t)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    if (std::strcmp(viewerType, "ascii") == 0)
-    {
-        ierr = writeSubVecASCII(fvec, t); CHKERRQ(ierr);
-    }
-    else if (std::strcmp(viewerType, "hdf5") == 0)
-    {
-        ierr = writeSubVecHDF5(fvec, t); CHKERRQ(ierr);
-    }
-    else
-        SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
-                "Unsupported PetscViewerType. Supported types are:\n"
-                "\t PETSCVIEWERASCII and PETSCVIEWERHDF5");
-
-    PetscFunctionReturn(0);
-}  // ProbeBase::writeSubVec
+}  // ProbeVolume::writeSubMesh
 
 // Write the sub mesh into a HDF5 file.
-PetscErrorCode ProbeBase::writeSubMeshHDF5(const std::string &filePath)
+PetscErrorCode ProbeVolume::writeSubMeshHDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -323,10 +340,10 @@ PetscErrorCode ProbeBase::writeSubMeshHDF5(const std::string &filePath)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeBase::writeSubMeshHDF5
+}  // ProbeVolume::writeSubMeshHDF5
 
 // Write the sub mesh into an ASCII file.
-PetscErrorCode ProbeBase::writeSubMeshASCII(const std::string &filePath)
+PetscErrorCode ProbeVolume::writeSubMeshASCII(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -359,74 +376,80 @@ PetscErrorCode ProbeBase::writeSubMeshASCII(const std::string &filePath)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeBase::writeSubMeshASCII
+}  // ProbeVolume::writeSubMeshASCII
 
-// Write the sub-vector data into a HDF5 file.
-PetscErrorCode ProbeBase::writeSubVecHDF5(const Vec &fvec, const PetscReal &t)
+PetscErrorCode ProbeVolume::writeData(const type::Mesh &mesh,
+                                      const Vec &fvec,
+                                      const PetscReal &t)
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
     ierr = VecGetSubVector(fvec, is, &vec); CHKERRQ(ierr);
+    ierr = writeSubVec(t); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(fvec, is, &vec); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::writeData
+
+// Write the vector data into a file.
+PetscErrorCode ProbeVolume::writeSubVec(const PetscReal &t)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    if (std::strcmp(viewerType, "ascii") == 0)
+    {
+        ierr = writeSubVecASCII(t); CHKERRQ(ierr);
+    }
+    else if (std::strcmp(viewerType, "hdf5") == 0)
+    {
+        ierr = writeSubVecHDF5(t); CHKERRQ(ierr);
+    }
+    else
+        SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
+                "Unsupported PetscViewerType. Supported types are:\n"
+                "\t PETSCVIEWERASCII and PETSCVIEWERHDF5");
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::writeSubVec
+
+// Write the sub-vector data into a HDF5 file.
+PetscErrorCode ProbeVolume::writeSubVecHDF5(const PetscReal &t)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
     std::string field_str = type::fd2str[field];
     ierr = PetscViewerHDF5PushGroup(viewer, field_str.c_str()); CHKERRQ(ierr);
     ierr = PetscObjectSetName((PetscObject) vec,
                               std::to_string(t).c_str()); CHKERRQ(ierr);
     ierr = VecView(vec, viewer); CHKERRQ(ierr);
-    ierr = VecRestoreSubVector(fvec, is, &vec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeBase::writeSubVecHDF5
+}  // ProbeVolume::writeSubVecHDF5
 
 // Write the sub-vector data into a ASCII file.
-PetscErrorCode ProbeBase::writeSubVecASCII(const Vec &fvec, const PetscReal &t)
+PetscErrorCode ProbeVolume::writeSubVecASCII(const PetscReal &t)
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    ierr = VecGetSubVector(fvec, is, &vec); CHKERRQ(ierr);
     ierr = PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_SYMMODU); CHKERRQ(ierr);
     ierr = PetscViewerASCIIPrintf(viewer, "\nt = %e\n", t); CHKERRQ(ierr);
     ierr = VecView(vec, viewer); CHKERRQ(ierr);
     ierr = PetscViewerPopFormat(viewer); CHKERRQ(ierr);
-    ierr = VecRestoreSubVector(fvec, is, &vec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeBase::writeSubVecASCII
+}  // ProbeVolume::writeSubVecASCII
 
-// Constructor. Initialize the probe.
-ProbeVolume::ProbeVolume(const MPI_Comm &comm,
-                         const YAML::Node &node,
-                         const type::Mesh &mesh)
-{
-    init(comm, node, mesh);
-}  // ProbeVolume::ProbeVolume
-
-// Initialize the probe.
-PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
-                                 const YAML::Node &node,
-                                 const type::Mesh &mesh)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = ProbeBase::init(comm, node, mesh); CHKERRQ(ierr);
-
-    box = type::RealVec2D(3, type::RealVec1D(2, 0.0));
-    for (auto item : node["box"])
-    {
-        type::Dir dir = type::str2dir[item.first.as<std::string>()];
-        box[dir][0] = item.second[0].as<PetscReal>();
-        box[dir][1] = item.second[1].as<PetscReal>();
-    }
-
-    ierr = getSubMeshInfo(mesh, box); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::init
+//***************************************************************************//
+//*************************       ProbePoint        *************************//
+//***************************************************************************//
 
 // Constructor. Initialize the probe.
 ProbePoint::ProbePoint(const MPI_Comm &comm,
@@ -435,6 +458,19 @@ ProbePoint::ProbePoint(const MPI_Comm &comm,
 {
     init(comm, node, mesh);
 }  // ProbePoint::ProbePoint
+
+// Manually destroy data in the object.
+PetscErrorCode ProbePoint::destroy()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = ProbeBase::destroy(); CHKERRQ(ierr);
+    ierr = interp->destroy(); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbePoint::destroy
 
 // Initialize the probe.
 PetscErrorCode ProbePoint::init(const MPI_Comm &comm,
@@ -447,39 +483,41 @@ PetscErrorCode ProbePoint::init(const MPI_Comm &comm,
 
     ierr = ProbeBase::init(comm, node, mesh); CHKERRQ(ierr);
 
+    viewerType = PETSCVIEWERASCII;
+
     loc = type::RealVec1D(3, 0.0);
     for (PetscInt d = 0; d < mesh->dim; ++d)
         loc[d] = node["loc"][d].as<PetscReal>();
 
-    type::RealVec2D box = type::RealVec2D(3, type::RealVec1D(2, 0.0));
-    ierr = getBox(mesh, loc, box); CHKERRQ(ierr);
-
-    ierr = getSubMeshInfo(mesh, box); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // ProbeVolume::init
-
-// Get the box around a given point.
-PetscErrorCode ProbePoint::getBox(const type::Mesh &mesh,
-                                  const type::RealVec1D &loc,
-                                  type::RealVec2D &box)
-{
-    std::vector<PetscReal>::iterator low;
-
-    PetscFunctionBeginUser;
-
-    for (PetscInt d = 0; d < mesh->dim; ++d)
+    if (mesh->isPointOnLocalProc(loc, field))
     {
-        type::RealVec1D line(mesh->coord[field][d],
-                             mesh->coord[field][d] + mesh->n[field][d]);
-        low = std::lower_bound(line.begin(), line.end(), loc[d] - atol);
-        PetscInt idx = low - line.begin() - 1;
-        box[d][0] = line[idx] - 0.5 * (line[idx] - line[idx - 1]);
-        box[d][1] = line[idx + 1] + 0.5 * (line[idx + 2] - line[idx + 1]);
+        // create a PETSc Viewer to output the data
+        ierr = PetscViewerCreate(PETSC_COMM_SELF, &viewer); CHKERRQ(ierr);
+        ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+        ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+        ierr = PetscViewerFileSetName(viewer, path.c_str()); CHKERRQ(ierr);
+
+        ierr = createLinInterp(PETSC_COMM_SELF,
+                               loc, mesh, field, interp); CHKERRQ(ierr);
     }
 
     PetscFunctionReturn(0);
-}  // ProbePoint::getBox
+}  // ProbePoint::init
+
+PetscErrorCode ProbePoint::writeData(const type::Mesh &mesh,
+                                     const Vec &fvec,
+                                     const PetscReal &t)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = interp->getValue(mesh->da[field], fvec, value); CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "%e\t%e\n", t, value); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbePoint::writeData
 
 }  // end of namespace misc
 

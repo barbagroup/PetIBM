@@ -12,7 +12,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <petibm/interp.h>
+#include <petibm/lininterp.h>
 #include <petibm/mesh.h>
 #include <petibm/type.h>
 #include <petibm/solution.h>

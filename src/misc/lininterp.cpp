@@ -1,11 +1,11 @@
 /**
- * \file interp.cpp
+ * \file lininterp.cpp
  * \brief Implementations of the interpolation classes and factory function.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
  */
 
-#include <petibm/interp.h>
+#include <petibm/lininterp.h>
 
 namespace petibm
 {

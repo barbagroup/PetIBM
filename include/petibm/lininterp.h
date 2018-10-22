@@ -1,5 +1,5 @@
 /**
- * \file interp.h
+ * \file lininterp.h
  * \brief Prototype of the linear interpolation classes,
  *        definition of type::LinInterp, and factory function.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
@@ -50,7 +50,7 @@ protected:
     type::RealVec1D target;
 
     /** \brief Coordinates of the front-bottom-left neighbor. */
-    type::RealVec1D bl
+    type::RealVec1D bl;
 
     /** \brief Coordinates of the back-top-right neighbor. */
     type::RealVec1D tr;

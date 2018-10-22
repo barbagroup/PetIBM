@@ -1,7 +1,7 @@
 noinst_LTLIBRARIES = libmisc.la
 
 libmisc_la_SOURCES = \
-	interp.cpp \
+	lininterp.cpp \
 	misc.cpp \
 	type.cpp \
 	delta.cpp \

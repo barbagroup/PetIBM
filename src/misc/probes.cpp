@@ -75,7 +75,7 @@ PetscErrorCode ProbeBase::destroy()
 
     name = "";
     path = "";
-    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+    if (viewer != PETSC_NULL) {ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);}
     comm = MPI_COMM_NULL;
     commSize = commRank = 0;
 
@@ -129,6 +129,8 @@ PetscErrorCode ProbeBase::init(const MPI_Comm &inComm,
     nsave = node["nsave"].as<PetscInt>();
     tstart = node["tstart"].as<PetscReal>(0.0);
     tend = node["tend"].as<PetscReal>(1e12);
+
+    viewer = PETSC_NULL;
 
     PetscFunctionReturn(0);
 }  // ProbeBase::init
@@ -337,7 +339,6 @@ PetscErrorCode ProbeVolume::writeSubMeshHDF5(const std::string &filePath)
         }
         ierr = PetscViewerDestroy(&viewer2); CHKERRQ(ierr);
     }
-    ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::writeSubMeshHDF5
@@ -467,7 +468,11 @@ PetscErrorCode ProbePoint::destroy()
     PetscFunctionBeginUser;
 
     ierr = ProbeBase::destroy(); CHKERRQ(ierr);
-    ierr = interp->destroy(); CHKERRQ(ierr);
+    if (pointOnLocalProc)
+    {
+        ierr = interp->destroy(); CHKERRQ(ierr);
+    }
+    ierr = VecDestroy(&svec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbePoint::destroy
@@ -489,17 +494,18 @@ PetscErrorCode ProbePoint::init(const MPI_Comm &comm,
     for (PetscInt d = 0; d < mesh->dim; ++d)
         loc[d] = node["loc"][d].as<PetscReal>();
 
-    if (mesh->isPointOnLocalProc(loc, field))
-    {
-        // create a PETSc Viewer to output the data
-        ierr = PetscViewerCreate(PETSC_COMM_SELF, &viewer); CHKERRQ(ierr);
-        ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
-        ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
-        ierr = PetscViewerFileSetName(viewer, path.c_str()); CHKERRQ(ierr);
+    pointOnLocalProc = mesh->isPointOnLocalProc(loc, field);
 
+    ierr = PetscViewerCreate(PETSC_COMM_SELF, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, viewerType); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, path.c_str()); CHKERRQ(ierr);
+    if (pointOnLocalProc)
+    {
         ierr = createLinInterp(PETSC_COMM_SELF,
                                loc, mesh, field, interp); CHKERRQ(ierr);
     }
+    ierr = DMCreateLocalVector(mesh->da[field], &svec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbePoint::init
@@ -512,9 +518,15 @@ PetscErrorCode ProbePoint::writeData(const type::Mesh &mesh,
 
     PetscFunctionBeginUser;
 
-    ierr = interp->getValue(mesh->da[field], fvec, value); CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "%e\t%e\n", t, value); CHKERRQ(ierr);
-    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+    ierr = DMGlobalToLocalBegin(mesh->da[field], fvec, INSERT_VALUES, svec); CHKERRQ(ierr);
+    ierr = DMGlobalToLocalEnd(mesh->da[field], fvec, INSERT_VALUES, svec); CHKERRQ(ierr);
+
+    if (pointOnLocalProc)
+    {
+        ierr = interp->getValue(mesh->da[field], svec, value); CHKERRQ(ierr);
+        ierr = PetscViewerASCIIPrintf(viewer, "%10.8e\t%10.8e\n", t, value); CHKERRQ(ierr);
+        ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+    }
 
     PetscFunctionReturn(0);
 }  // ProbePoint::writeData

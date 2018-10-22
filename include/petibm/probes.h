@@ -254,6 +254,12 @@ protected:
     /** \brief Coordinates of the point to monitor around. */
     type::RealVec1D loc;
 
+    /** \brief True if target point located on local sub-domain. */
+    PetscBool pointOnLocalProc;
+
+    /** \brief Local (ghosted) PETSc Vec object with neighboring values. */
+    Vec svec;
+
     /** \brief Interpolated value. */
     PetscReal value;
 
@@ -305,6 +311,7 @@ namespace misc
  *
  * \param comm [in] MPI communicator
  * \param node [in] YAML configuration node
+ * \param mesh [in] Cartesian mesh object
  * \param probe [out] Probe
  * \return PetscErrorCode
  *

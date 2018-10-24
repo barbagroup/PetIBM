@@ -523,7 +523,7 @@ PetscErrorCode ProbePoint::writeData(const type::Mesh &mesh,
 
     if (pointOnLocalProc)
     {
-        ierr = interp->getValue(mesh->da[field], svec, value); CHKERRQ(ierr);
+        ierr = interp->interpolate(mesh->da[field], svec, value); CHKERRQ(ierr);
         ierr = PetscViewerASCIIPrintf(viewer, "%10.8e\t%10.8e\n", t, value); CHKERRQ(ierr);
         ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     }

@@ -36,14 +36,14 @@ public:
     /** \brief Manually destroy data in the object. */
     PetscErrorCode destroy();
 
-    /** \brief Return the linearly interpolated value.
+    /** \brief Interpolate the value at the target point.
      *
      * \param da [in] Parallel layout of the field to interpolate
      * \param vec [in] Vector with the field data
      * \param val [out] Interpolated value
      * \return PetscErrorCode
      */
-    PetscErrorCode getValue(const DM &da, const Vec &vec, PetscReal &val);
+    virtual PetscErrorCode interpolate(const DM &da, const Vec &vec, PetscReal &v) = 0;
 
 protected:
     /** \brief Coordinates of the point to interpolate. */
@@ -57,27 +57,6 @@ protected:
 
     /** \brief Gridline indices of the front-bottom-left neighbor. */
     type::IntVec1D idxDirs;
-
-    /** \brief Container to hold the linear base for the target. */
-    type::RealVec1D base_a;
-
-    /** \brief Container to hold the elements of the interpolation matrix. */
-    type::RealVec1D Op_a;
-
-    /** \brief PETSc Vec object with neighbor values. */
-    Vec sub;
-
-    /** \brief PETSc Vec object with the linear base. */
-    Vec base;
-
-    /** \brief PETSc Vec object with interpolation coefficients. */
-    Vec coeffs;
-
-    /** \brief PETSc Mat object for the interpolation operator. */
-    Mat Op;
-
-    /** \brief PETSc KSP object used as a direct solver. */
-    KSP ksp;
 
     /** \brief MPI communicator. */
     MPI_Comm comm;
@@ -96,10 +75,10 @@ protected:
      * \param field [in] Index of the field to monitor
      * \return PetscErrorCode
      */
-    virtual PetscErrorCode init(const MPI_Comm &comm,
-                                const type::RealVec1D &point,
-                                const type::Mesh &mesh,
-                                const type::Field &field) = 0;
+    PetscErrorCode init(const MPI_Comm &comm,
+                        const type::RealVec1D &point,
+                        const type::Mesh &mesh,
+                        const type::Field &field);
 
     /** \brief Get the gridline indices of the front-bottom-left neighbor.
      *
@@ -118,25 +97,6 @@ protected:
      */
     PetscErrorCode getBoxCoords(const type::Mesh &mesh,
                                 const type::Field &field);
-
-    /** \brief Set up the linear base. */
-    virtual PetscErrorCode setUpBase() = 0;
-
-    /** \brief Set up the linear interpolation operator. */
-    virtual PetscErrorCode setUpOp() = 0;
-
-    /** \brief Set up the direct solver
-     *         to find the interpolation coefficients.
-     */
-    PetscErrorCode setUpKSP();
-
-    /** \brief Set up the vector holding the neighbor values.
-     *
-     * \param da [in] PETSc DMDA object of the field to monitor
-     * \param vec [in] PETSc Vec object with full-domain data
-     * \return PetscErrorCode
-     */
-    virtual PetscErrorCode setSubVec(const DM &da, const Vec &vec) = 0;
 
 };  // LinInterpBase
 
@@ -164,21 +124,8 @@ public:
     /** \brief Default destructor. */
     ~TriLinInterp() = default;
 
-protected:
-    /** copydoc LinInterpBase::LinInterpBase() */
-    PetscErrorCode init(const MPI_Comm &comm,
-                        const type::RealVec1D &point,
-                        const type::Mesh &mesh,
-                        const type::Field &field);
-
-    /** copydoc LinInterpBase::setUpBase() */
-    PetscErrorCode setUpBase();
-
-    /** copydoc LinInterpBase::setUpOp() */
-    PetscErrorCode setUpOp();
-
-    /** copydoc LinInterpBase::setSubVec() */
-    PetscErrorCode setSubVec(const DM &da, const Vec &vec);
+    /** copydoc LinInterpBase::interpolate() */
+    PetscErrorCode interpolate(const DM &da, const Vec &vec, PetscReal &v);
 
 };  // TriLinInterp
 
@@ -206,21 +153,8 @@ public:
     /** \brief Default destructor. */
     ~BiLinInterp() = default;
 
-protected:
-    /** copydoc LinInterpBase::LinInterpBase() */
-    PetscErrorCode init(const MPI_Comm &comm,
-                        const type::RealVec1D &point,
-                        const type::Mesh &mesh,
-                        const type::Field &field);
-
-    /** copydoc LinInterpBase::setUpBase() */
-    PetscErrorCode setUpBase();
-
-    /** copydoc LinInterpBase::setUpOp() */
-    PetscErrorCode setUpOp();
-
-    /** copydoc LinInterpBase::setSubVec() */
-    PetscErrorCode setSubVec(const DM &da, const Vec &vec);
+    /** copydoc LinInterpBase::interpolate() */
+    PetscErrorCode interpolate(const DM &da, const Vec &vec, PetscReal &v);
 
 };  // BiLinInterp
 

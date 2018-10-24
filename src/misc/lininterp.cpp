@@ -58,21 +58,37 @@ LinInterpBase::~LinInterpBase()
 // Manually destroy the data of the object.
 PetscErrorCode LinInterpBase::destroy()
 {
-    PetscErrorCode ierr;
-
     PetscFunctionBeginUser;
 
     comm = MPI_COMM_NULL;
     commSize = commRank = 0;
 
-    ierr = VecDestroy(&coeffs); CHKERRQ(ierr);
-    ierr = VecDestroy(&base); CHKERRQ(ierr);
-    ierr = KSPDestroy(&ksp); CHKERRQ(ierr);
-    ierr = MatDestroy(&Op); CHKERRQ(ierr);
-    ierr = VecDestroy(&sub); CHKERRQ(ierr);
-
     PetscFunctionReturn(0);
 }  // LinInterpBase::destroy
+
+// Initialize the interpolation object.
+PetscErrorCode LinInterpBase::init(const MPI_Comm &inComm,
+                                   const type::RealVec1D &point,
+                                   const type::Mesh &mesh,
+                                   const type::Field &field)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    comm = inComm;
+    ierr = MPI_Comm_size(comm, &commSize); CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(comm, &commRank); CHKERRQ(ierr);
+
+    target = point;
+    idxDirs = type::IntVec1D(mesh->dim, 0);
+    bl = type::RealVec1D(mesh->dim, 0.0);
+    tr = type::RealVec1D(mesh->dim, 0.0);
+
+    ierr = getBoxCoords(mesh, field); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // LinInterpBase::init
 
 // Get the gridline indices of the front-bottom-left neighbor.
 PetscErrorCode LinInterpBase::getBLGridlineIndices(const type::Mesh &mesh,
@@ -111,38 +127,6 @@ PetscErrorCode LinInterpBase::getBoxCoords(const type::Mesh &mesh,
     PetscFunctionReturn(0);
 }  // LinInterpBase::getBoxCoords
 
-// Set up the direct solver to find the interpolation coefficients.
-PetscErrorCode LinInterpBase::setUpKSP()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = KSPCreate(comm, &ksp); CHKERRQ(ierr);
-    ierr = KSPSetType(ksp, KSPPREONLY); CHKERRQ(ierr);
-    ierr = KSPSetOperators(ksp, Op, Op); CHKERRQ(ierr);
-    PC pc;
-    ierr = KSPGetPC(ksp, &pc); CHKERRQ(ierr);
-    ierr = PCSetType(pc, PCLU); CHKERRQ(ierr);
-    ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // LinInterpBase::setUpKSP
-
-// Interpolate the field solution.
-PetscErrorCode LinInterpBase::getValue(const DM &da, const Vec &vec, PetscReal &val)
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    ierr = setSubVec(da, vec); CHKERRQ(ierr);
-    ierr = KSPSolve(ksp, sub, coeffs); CHKERRQ(ierr);
-    ierr = VecDot(coeffs, base, &val); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // LinInterpBase::getValue
-
 //***************************************************************************//
 //*************************      TriLinInterp       *************************//
 //***************************************************************************//
@@ -156,105 +140,35 @@ TriLinInterp::TriLinInterp(const MPI_Comm &comm,
     init(comm, point, mesh, field);
 }  // TriLinInterp::TriLinInterp
 
-// Initialize the tri-linear interpolation object.
-PetscErrorCode TriLinInterp::init(const MPI_Comm &inComm,
-                                  const type::RealVec1D &point,
-                                  const type::Mesh &mesh,
-                                  const type::Field &field)
+// Perform tri-linear interpolation.
+PetscErrorCode TriLinInterp::interpolate(const DM &da, const Vec &vec, PetscReal &v)
 {
     PetscErrorCode ierr;
+    PetscReal ***a;
+    PetscReal c00, c01, c10, c11, c0, c1;
+    PetscInt &io = idxDirs[0], &jo = idxDirs[1], &ko = idxDirs[2];
+    PetscReal &x = target[0], &y = target[1], &z = target[2];
+    PetscReal &x0 = bl[0], &y0 = bl[1], &z0 = bl[2],
+              &x1 = tr[0], &y1 = tr[1], &z1 = tr[2];
+    PetscReal xd, yd, zd;
 
     PetscFunctionBeginUser;
 
-    comm = inComm;
-    ierr = MPI_Comm_size(comm, &commSize); CHKERRQ(ierr);
-    ierr = MPI_Comm_rank(comm, &commRank); CHKERRQ(ierr);
-
-    target = point;
-    idxDirs = type::IntVec1D(3, 0);
-    bl = type::RealVec1D(3, 0.0);
-    tr = type::RealVec1D(3, 0.0);
-    base_a = type::RealVec1D(8, 0.0);
-    Op_a = type::RealVec1D(64, 0.0);
-
-    ierr = VecCreateSeq(comm, 8, &sub); CHKERRQ(ierr);
-    ierr = VecDuplicate(sub, &base); CHKERRQ(ierr);
-    ierr = VecDuplicate(sub, &coeffs);
-
-    ierr = getBoxCoords(mesh, field); CHKERRQ(ierr);
-
-    ierr = setUpBase(); CHKERRQ(ierr);
-    ierr = setUpOp(); CHKERRQ(ierr);
-    ierr = setUpKSP(); CHKERRQ(ierr);
+    ierr = DMDAVecGetArrayRead(da, vec, &a); CHKERRQ(ierr);
+    xd = (x - x0) / (x1 - x0);
+    yd = (y - y0) / (y1 - y0);
+    zd = (z - z0) / (z1 - z0);
+    c00 = (1 - xd) * a[ko][jo][io] + xd * a[ko][jo][io+1];
+    c01 = (1 - xd) * a[ko][jo+1][io] + xd * a[ko][jo+1][io+1];
+    c10 = (1 - xd) * a[ko+1][jo][io] + xd * a[ko+1][jo][io+1];
+    c11 = (1 - xd) * a[ko+1][jo+1][io] + xd * a[ko+1][jo+1][io+1];
+    c0 = (1 - yd) * c00 + yd * c01;
+    c1 = (1 - yd) * c10 + yd * c11;
+    v = (1 - zd) * c0 + zd * c1;
+    ierr = DMDAVecRestoreArrayRead(da, vec, &a); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // TriLinInterp::init
-
-// Set up the tri-linear base.
-PetscErrorCode TriLinInterp::setUpBase()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    PetscReal x = target[0], y = target[1], z = target[2];
-    base_a[0] = 1.0; base_a[1] = x; base_a[2] = y; base_a[3] = z;
-    base_a[4] = x*y; base_a[5] = x*z; base_a[6] = y*z; base_a[7] = z*y*z;
-    ierr = VecPlaceArray(base, &base_a[0]); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // TriLinInterp::setUpBase
-
-// Set up the operator for a tri-linear interpolation.
-PetscErrorCode TriLinInterp::setUpOp()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    PetscReal x0 = bl[0], y0 = bl[1], z0 = bl[2],
-              x1 = tr[0], y1 = tr[1], z1 = tr[2];
-    type::RealVec1D data = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                            x0, x1, x0, x1, x0, x1, x0, x1,
-                            y0, y0, y1, y1, y0, y0, y1, y1,
-                            z0, z0, z0, z0, z1, z1, z1, z1,
-                            x0*y0, x1*y0, x0*y1, x1*y1, x0*y0, x1*y0, x0*y1, x1*y1,
-                            x0*z0, x1*z0, x0*z0, x1*z0, x0*z1, x1*z1, x0*z1, x1*z1,
-                            y0*z0, y0*z0, y1*z0, y1*z0, y0*z1, y0*z1, y1*z1, y1*z1,
-                            x0*y0*z0, x1*y0*z0, x0*y1*z0, x1*y1*z0, x0*y0*z1, x1*y0*z1, x0*y1*z1, x1*y1*z1};
-    Op_a = data;
-    ierr = MatCreateSeqDense(comm, 8, 8, &Op_a[0], &Op); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // TriLinInterp::setUpOp
-
-// Get the neighbor values.
-PetscErrorCode TriLinInterp::setSubVec(const DM &da, const Vec &vec)
-{
-    PetscErrorCode ierr;
-    PetscReal ***arr;
-    PetscInt num = 0;
-
-    PetscFunctionBeginUser;
-
-    ierr = DMDAVecGetArrayRead(da, vec, &arr); CHKERRQ(ierr);
-    PetscInt io = idxDirs[0], jo = idxDirs[1], ko = idxDirs[2];
-    for (PetscInt k = 0; k < 2; ++k)
-    {
-        for (PetscInt j = 0; j < 2; ++j)
-        {
-            for (PetscInt i = 0; i < 2; ++i)
-            {
-                ierr = VecSetValue(sub, num, arr[ko + k][jo + j][io + i],
-                                   INSERT_VALUES); CHKERRQ(ierr);
-                num++;
-            }
-        }
-    }
-    ierr = DMDAVecRestoreArrayRead(da, vec, &arr); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // TriLinInterp::setSubVec
+}  // TriLinInterp::interpolate
 
 //***************************************************************************//
 //*************************       BiLinInterp       *************************//
@@ -269,97 +183,30 @@ BiLinInterp::BiLinInterp(const MPI_Comm &comm,
     init(comm, point, mesh, field);
 }  // BiLinInterp::BiLinInterp
 
-// Initialize the bi-linear interpolation object.
-PetscErrorCode BiLinInterp::init(const MPI_Comm &inComm,
-                                 const type::RealVec1D &point,
-                                 const type::Mesh &mesh,
-                                 const type::Field &field)
+// Perform bi-linear interpolation.
+PetscErrorCode BiLinInterp::interpolate(const DM &da, const Vec &vec, PetscReal &v)
 {
     PetscErrorCode ierr;
+    PetscReal **a;
+    PetscReal c0, c1;
+    PetscInt &io = idxDirs[0], &jo = idxDirs[1];
+    PetscReal &x = target[0], &y = target[1];
+    PetscReal &x0 = bl[0], &y0 = bl[1],
+              &x1 = tr[0], &y1 = tr[1];
+    PetscReal xd, yd;
 
     PetscFunctionBeginUser;
 
-    comm = inComm;
-    ierr = MPI_Comm_size(comm, &commSize); CHKERRQ(ierr);
-    ierr = MPI_Comm_rank(comm, &commRank); CHKERRQ(ierr);
-
-    target = point;
-    idxDirs = type::IntVec1D(2, 0);
-    bl = type::RealVec1D(2, 0.0);
-    tr = type::RealVec1D(2, 0.0);
-    base_a = type::RealVec1D(4, 0.0);
-    Op_a = type::RealVec1D(16, 0.0);
-
-    ierr = VecCreateSeq(comm, 4, &sub); CHKERRQ(ierr);
-    ierr = VecDuplicate(sub, &base); CHKERRQ(ierr);
-    ierr = VecDuplicate(sub, &coeffs);
-
-    ierr = getBoxCoords(mesh, field); CHKERRQ(ierr);
-
-    ierr = setUpBase(); CHKERRQ(ierr);
-    ierr = setUpOp(); CHKERRQ(ierr);
-    ierr = setUpKSP(); CHKERRQ(ierr);
+    ierr = DMDAVecGetArrayRead(da, vec, &a); CHKERRQ(ierr);
+    xd = (x - x0) / (x1 - x0);
+    yd = (y - y0) / (y1 - y0);
+    c0 = (1 - xd) * a[jo][io] + xd * a[jo][io + 1];
+    c1 = (1 - xd) * a[jo + 1][io] + xd * a[jo + 1][io + 1];
+    v = (1 - yd) * c0 + yd * c1;
+    ierr = DMDAVecRestoreArrayRead(da, vec, &a); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // BiLinInterp::init
-
-// Set up the bi-linear base.
-PetscErrorCode BiLinInterp::setUpBase()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    PetscReal x = target[0], y = target[1];
-    base_a[0] = 1.0; base_a[1] = x; base_a[2] = y; base_a[3] = x*y;
-    ierr = VecPlaceArray(base, &base_a[0]); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // BiLinInterp::setUpBase
-
-// Set up the operator for a bi-linear interpolation.
-PetscErrorCode BiLinInterp::setUpOp()
-{
-    PetscErrorCode ierr;
-
-    PetscFunctionBeginUser;
-
-    PetscReal x0 = bl[0], y0 = bl[1],
-              x1 = tr[0], y1 = tr[1];
-    type::RealVec1D data = {1.0, 1.0, 1.0, 1.0,
-                            x0, x1, x0, x1,
-                            y0, y0, y1, y1,
-                            x0*y0, x1*y0, x1*y0, x1*y1};
-    Op_a = data;
-    ierr = MatCreateSeqDense(comm, 4, 4, &Op_a[0], &Op); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // BiLinInterp::setUpOp
-
-// Get the neighbor values.
-PetscErrorCode BiLinInterp::setSubVec(const DM &da, const Vec &vec)
-{
-    PetscErrorCode ierr;
-    PetscReal **arr;
-    PetscInt num = 0;
-
-    PetscFunctionBeginUser;
-
-    ierr = DMDAVecGetArrayRead(da, vec, &arr); CHKERRQ(ierr);
-    PetscInt io = idxDirs[0], jo = idxDirs[1];
-    for (PetscInt j = 0; j < 2; ++j)
-    {
-        for (PetscInt i = 0; i < 2; ++i)
-        {
-            ierr = VecSetValue(sub, num, arr[jo + j][io + i],
-                               INSERT_VALUES); CHKERRQ(ierr);
-            num++;
-        }
-    }
-    ierr = DMDAVecRestoreArrayRead(da, vec, &arr); CHKERRQ(ierr);
-
-    PetscFunctionReturn(0);
-}  // BiLinInterp::setSubVec
+}  // BiLinInterp::interpolate
 
 }  // end of namespace misc
 

@@ -252,40 +252,50 @@ Example of a 2D boundary with 4 points:
 
 ## YAML node `probes`
 
-The YAML node `probes` contains a sequence of volume probes.
-A probe can be used to monitor a scalar field variable (e.g., a velocity component or the pressure) in a given subregion of the computational domain.
+The YAML node `probes` contains a sequence of probes.
+A probe can be used to monitor a scalar field variable (e.g., a velocity component or the pressure) either in a sub-volume of the domain or at a single point.
 
-Configuration of a probe:
+General configuration of a probe:
 
-- `name`: name of the probe.
-- `field`: name of the scalar field variable (supported variables are `p` for the pressure, `u`, `v`, and `w` for the velocity components).
-- `box`: limits of the box in the `x`, `y`, and `z` directions.
-- `viewer`: type of the PETSc Viewer object to use (supported types are `ascii` and `hdf5`).
-- `path`: path of the file to write the data (relative to the simulation directory).
-- `nsave`: saving frequency (as a number of time steps).
-- `tstart`: time value to start monitoring the variable.
-- `tend`: time value to finish monitoring the variable.
+- `name`: (optional) name of the probe; default name is `unnamed`.
+- `type`: (required) type of the probe (`VOLUME` for to monitor a sub-volume, `POINT` to interpolate the value a single point).
+- `field`: (required) name of the scalar field variable (supported variables are `p` for the pressure, `u`, `v`, and `w` for the velocity components).
+- `path`: (required) path of the file to write the data (relative to the simulation directory) into (parent folder needs to exist).
+- `n_monitor`: (optional) monitoring frequency (as a number of time steps); default value is `1`.
+- `t_start`: (optional) time value to start monitoring the variable; default is `0.0`.
+- `t_end`: (optional) time value to finish monitoring the variable; default is `1e12`.
 
-In the following example, the computational domain extends from -1 to +1 in the x and y directions and we monitor the solution of the pressure and x-component of the velocity every 10 time steps of the simulation.
-We monitor the pressure in the subregion `[-0.5, 0.0]x[-0.5, 0.0]` and the x-velocity in the subregion `[0.0, 0.5]x[0.0, 0.5]`.
-The ASCII files are located in the `solution` sub-folder of the simulation directory.
+Additional configuration for a volume probe:
+
+- `box`: (required) limits of the box in the `x`, `y`, and `z` directions.
+- `viewer`: (optional) type of the PETSc Viewer object to use to output the data (choices are `ascii` and `hdf5`); default value is `ascii`.
+- `n_sum`: (optional) number of time-steps over which the data at accumulated; after `n_sum` time-steps, the accumulated data are averaged in time and output to file; default is `0` (i.e., does not accumulate).
+
+Additional configuration for a point probe:
+
+- `loc`: (required) location of the point to monitor (a linear interpolation is performed at that point; bi-linear for two-dimensional runs, tri-linear for three-dimensional runs).
+
+In the following example, the computational domain extends from -1 to +1 in the x and y directions and we monitor the solution of the pressure in a sub-volume and the x-component of the velocity at a single point.
+We monitor the pressure every time step in the subregion `[-0.5, 0.0]x[-0.5, 0.0]` but accumulate (sum) the data over a period of 100 time steps; the time-averaged data is output to file every 100 time steps into HDF5 format.
+We monitor the x-component of the velocity every 20 time-steps at the point `[0.25, 0.25]`; the time-step value is output to an ASCII file every 20 time-steps.
+In this example, output files for the probes are saved in the `solution` sub-folder of the simulation directory.
 
 ```yaml
 probes:
   - name: probe-p
-    viewer: ascii
+    type: VOLUME
     field: p
-    nsave: 10
+    viewer: hdf5
     path: solution/probe-p.dat
+    n_monitor: 1
+    n_sum: 100
     box:
       x: [-0.5, 0.0]
       y: [-0.5, 0.0]
   - name: probe-u
-    viewer: ascii
+    type: POINT
     field: u
-    nsave: 10
     path: solution/probe-u.dat
-    box:
-      x: [0.0, 0.5]
-      y: [0.0, 0.5]
+    n_monitor: 20
+    loc: [0.25, 0.25]
 ```

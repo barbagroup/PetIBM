@@ -30,24 +30,6 @@ namespace misc
 class ProbeBase
 {
 public:
-    /** \brief Name of the probe as a string. */
-    std::string name;
-
-    /** \brief Path of the file to output the solution. */
-    std::string path;
-
-    /** \brief Type of the field to monitor. */
-    type::Field field;
-
-    /** \brief Frequency of saving (number of time steps). */
-    PetscInt nsave;
-
-    /** \brief Monitoring starting time. */
-    PetscReal tstart;
-
-    /** \brief Monitoring ending time. */
-    PetscReal tend;
-
     /** \brief Default constructor. */
     ProbeBase() = default;
 
@@ -70,14 +52,34 @@ public:
      *
      * \param solution [in] Data object with the field solutions
      * \param mesh [in] Cartesian mesh object
+     * \param n [in] Time-step index
      * \param t [in] Time
      * \return PetscErrorCode
      */
-    virtual PetscErrorCode monitor(const type::Solution &solution,
-                                   const type::Mesh &mesh,
-                                   const PetscReal &t);
+    PetscErrorCode monitor(const type::Solution &solution,
+                           const type::Mesh &mesh,
+                           const PetscInt &n,
+                           const PetscReal &t);
 
 protected:
+    /** \brief Name of the probe as a string. */
+    std::string name;
+
+    /** \brief Path of the file to output the solution. */
+    std::string path;
+
+    /** \brief Type of the field to monitor. */
+    type::Field field;
+
+    /** \brief Frequency of monitoring the solution (number of time steps). */
+    PetscInt n_monitor;
+
+    /** \brief Monitoring starting time. */
+    PetscReal t_start;
+
+    /** \brief Monitoring ending time. */
+    PetscReal t_end;
+
     /** \brief PETSc viewer to output the solution. */
     PetscViewer viewer;
 
@@ -103,9 +105,18 @@ protected:
                                 const YAML::Node &node,
                                 const type::Mesh &mesh) = 0;
     
-    virtual PetscErrorCode writeData(const type::Mesh &mesh,
-                                     const Vec &fvec,
-                                     const PetscReal &t) = 0;
+    /** \brief Monitor a sub-region of a vector
+     *         and possibly output data to file.
+     *
+     * \param da [in] Parallel layout of the full-domain vector
+     * \param fvec [in] Full-domain PETSc Vec object to monitor
+     * \param n [in] Time-step index
+     * \param t [in] Time
+     */
+    virtual PetscErrorCode monitorVec(const DM &da,
+                                      const Vec &fvec,
+                                      const PetscInt &n,
+                                      const PetscReal &t) = 0;
 
 };  // ProbeBase
 
@@ -137,7 +148,7 @@ protected:
     IS is;
 
     /** \brief Sub-vector of the region to monitor. */
-    Vec vec;
+    Vec dvec;
 
     /** \brief Grid point coordinates in the volume. */
     type::RealVec2D coord;
@@ -153,6 +164,12 @@ protected:
 
     /** \brief Absolute tolerance criterion when comparing values. */
     PetscReal atol;
+
+    /** \brief Frequency of saving the data to file. */
+    PetscInt n_sum;
+
+    /** \brief Counter to know when to flush to the data to file. */
+    PetscInt count = 0;
 
     /** \copydoc ProbeBase::init() */
     PetscErrorCode init(const MPI_Comm &comm,
@@ -203,30 +220,37 @@ protected:
      */
     PetscErrorCode writeSubMeshHDF5(const std::string &filePath);
 
-    PetscErrorCode writeData(const type::Mesh &mesh,
-                             const Vec &fvec,
-                             const PetscReal &t);
+    /** \copydoc ProbeBase::monitorVec() */
+    PetscErrorCode monitorVec(const DM &da,
+                              const Vec &fvec,
+                              const PetscInt &n,
+                              const PetscReal &t);
 
-    /** \brief Write the sub vector data into a file.
+    /** \brief Output a PETSc Vec object to file.
      *
+     * Supported formats are HDF5 and ASCII.
+     *
+     * \param vec [in] PETSc Vec object to output
      * \param t [in] Time
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSubVec(const PetscReal &t);
+    PetscErrorCode writeVec(const Vec &vec, const PetscReal &t);
 
-    /** \brief Write the sub-vector data into an ASCII file.
-     * 
+    /** \brief Output a PETSc Vec object to an ASCII file.
+     *
+     * \param vec [in] PETSc Vec object to output
      * \param t [in] Time
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSubVecASCII(const PetscReal &t);
+    PetscErrorCode writeVecASCII(const Vec &vec, const PetscReal &t);
 
-    /** \brief Write the sub-vector data into a HDF5 file.
-     * 
+    /** \brief Output a PETSc Vec object to a HDF5 file.
+     *
+     * \param vec [in] PETSc Vec object to output
      * \param t [in] Time
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSubVecHDF5(const PetscReal &t);
+    PetscErrorCode writeVecHDF5(const Vec &vec, const PetscReal &t);
 
 };  // ProbeVolume
 
@@ -241,8 +265,8 @@ class ProbePoint : public ProbeBase
 public:
     /** \copydoc ProbeBase::ProbeBase() */
     ProbePoint(const MPI_Comm &comm,
-                const YAML::Node &node,
-                const type::Mesh &mesh);
+               const YAML::Node &node,
+               const type::Mesh &mesh);
 
     /** \brief Default destructor. */
     virtual ~ProbePoint() = default;
@@ -271,9 +295,11 @@ protected:
                         const YAML::Node &node,
                         const type::Mesh &mesh);
 
-    PetscErrorCode writeData(const type::Mesh &mesh,
-                             const Vec &fvec,
-                             const PetscReal &t);
+    /** \copydoc ProbeBase::monitorVec() */
+    PetscErrorCode monitorVec(const DM &da,
+                              const Vec &fvec,
+                              const PetscInt &n,
+                              const PetscReal &t);
 
 };  // ProbePoint
 

@@ -41,7 +41,7 @@ PetscErrorCode DecoupledIBPMSolver::destroy()
     bodies.reset();
     ierr = VecDestroy(&df); CHKERRQ(ierr);
     ierr = VecDestroy(&f); CHKERRQ(ierr);
-    ierr = VecDestroy(&Eu); CHKERRQ(ierr);
+    ierr = VecDestroy(&rhsf); CHKERRQ(ierr);
     ierr = MatDestroy(&H); CHKERRQ(ierr);
     ierr = MatDestroy(&E); CHKERRQ(ierr);
     ierr = MatDestroy(&EBNH); CHKERRQ(ierr);
@@ -214,11 +214,9 @@ PetscErrorCode DecoupledIBPMSolver::createExtraVectors()
 
     PetscFunctionBeginUser;
 
-    // create f and Eu
-    ierr = MatCreateVecs(EBNH, &f, &Eu); CHKERRQ(ierr);
-
-    // create df
+    ierr = DMCreateGlobalVector(bodies->dmPack, &f); CHKERRQ(ierr);
     ierr = VecDuplicate(f, &df); CHKERRQ(ierr);
+    ierr = VecDuplicate(f, &rhsf); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // createExtraVectors
@@ -252,9 +250,9 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSForces()
 
     ierr = PetscLogStagePush(stageRHSForces); CHKERRQ(ierr);
 
-    // right-hand-side is -Eu^{**}
-    ierr = MatMult(E, solution->UGlobal, Eu); CHKERRQ(ierr);
-    ierr = VecScale(Eu, -1.0); CHKERRQ(ierr);
+    // rhsf is -E u^{**}
+    ierr = MatMult(E, solution->UGlobal, rhsf); CHKERRQ(ierr);
+    ierr = VecScale(rhsf, -1.0); CHKERRQ(ierr);
 
     // we choose to set the PETSc Vec object df with zeros
     ierr = VecSet(df, 0.0); CHKERRQ(ierr);
@@ -274,7 +272,7 @@ PetscErrorCode DecoupledIBPMSolver::solveForces()
     ierr = PetscLogStagePush(stageSolveForces); CHKERRQ(ierr);
 
     // solve for the increment in the Lagrangian forces
-    ierr = fSolver->solve(df, Eu); CHKERRQ(ierr);
+    ierr = fSolver->solve(df, rhsf); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 

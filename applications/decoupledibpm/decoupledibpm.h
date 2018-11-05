@@ -74,14 +74,14 @@ protected:
     /** \brief Projection operator for the forces. */
     Mat BNH;
 
-    /** \brief Right-hand-side vector of the system for the forces. */
-    Vec Eu;
-
     /** \brief Vector to hold the forces at time step n. */
     Vec f;
 
     /** \brief Force-increment vector. */
     Vec df;
+
+    /** \brief Right-hand side of the forces system. */
+    Vec rhsf;
 
     /** \brief Log stage for assembling the RHS of the forces system. */
     PetscLogStage stageRHSForces;

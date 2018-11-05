@@ -95,11 +95,11 @@ protected:
     /** \brief ASCII PetscViewer object to output the forces. */
     PetscViewer forcesViewer;
 
+    PetscInt maxIters;
+    PetscReal atol;
+
     /** \brief Assemble the RHS vector of the velocity system. */
     virtual PetscErrorCode assembleRHSVelocity();
-
-    /** \brief Assemble the RHS vector of the Poisson system. */
-    virtual PetscErrorCode assembleRHSPoisson();
 
     /** \brief Assemble the RHS vector of the system for the Lagrangian forces. */
     virtual PetscErrorCode assembleRHSForces();
@@ -107,8 +107,9 @@ protected:
     /** \brief Solve the system for the boundary forces. */
     virtual PetscErrorCode solveForces();
 
-    /** \brief Project the velocity field, update pressure and forces. */
-    virtual PetscErrorCode projectionStep();
+    virtual PetscErrorCode applyNoSlip();
+
+    virtual PetscErrorCode updateForces();
 
     /** \brief Assemble additional operators. */
     PetscErrorCode createExtraOperators();

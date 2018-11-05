@@ -2,12 +2,12 @@
 
 #include "../decoupledibpm/decoupledibpm.h"
 
-class RigidKinematics : protected DecoupledIBPMSolver
+class RigidKinematicsSolver : protected DecoupledIBPMSolver
 {
 public:
-    RigidKinematics() = default;
-    RigidKinematics(const MPI_Comm &world, const YAML::Node &node);
-    ~RigidKinematics();
+    RigidKinematicsSolver() = default;
+    RigidKinematicsSolver(const MPI_Comm &world, const YAML::Node &node);
+    ~RigidKinematicsSolver();
     PetscErrorCode destroy();
     PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
     PetscErrorCode advance();
@@ -19,10 +19,10 @@ protected:
     Vec UB;
     PetscLogStage stageMoveIB;
     virtual PetscErrorCode moveIB(
-        const PetscReal &time){PetscFunctionReturn(0);};
+        const PetscReal &ti){PetscFunctionReturn(0);};
     PetscErrorCode assembleRHSForces();
-    PetscErrorCode writeBodiesCoordinates();
-    PetscErrorCode writeBodyCoordinates(const std::string filepath,
-                                        const petibm::type::SingleBody body);
+    PetscErrorCode writeBodiesPoint3D();
+    PetscErrorCode writeBodyPoint3D(const std::string filepath,
+                                    const petibm::type::SingleBody body);
 
-};  // RigidKinematics
+};  // RigidKinematicsSolver

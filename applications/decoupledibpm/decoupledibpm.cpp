@@ -81,6 +81,15 @@ PetscErrorCode DecoupledIBPMSolver::init(const MPI_Comm &world,
     // set coefficient matrix to the linear solver for the forces
     ierr = fSolver->setMatrix(EBNH); CHKERRQ(ierr);
 
+    maxIters = 1;
+    atol = 1e-3;
+    if (node["parameters"]["decoupling"])
+    {
+        const YAML::Node &decoupling = node["parameters"]["decoupling"];
+        maxIters = decoupling["maxIters"].as<PetscInt>(1);
+        atol = decoupling["atol"].as<PetscReal>(1e-3);
+    }
+
     // create an ASCII PetscViewer to output the body forces
     ierr = createPetscViewerASCII(
         config["directory"].as<std::string>() +
@@ -109,22 +118,31 @@ PetscErrorCode DecoupledIBPMSolver::advance()
     t += dt;
     ite++;
 
-    // prepare velocity system and solve it
+    ierr = VecSet(f, 0.0); CHKERRQ(ierr);
     ierr = assembleRHSVelocity(); CHKERRQ(ierr);
     ierr = solveVelocity(); CHKERRQ(ierr);
 
-    // prepare force system and solve it
-    ierr = assembleRHSForces(); CHKERRQ(ierr);
-    ierr = solveForces(); CHKERRQ(ierr);
+    PetscInt innerIte = 0;
+    PetscReal norm = atol + 1.0;
 
-    // prepare Poisson system and solve it
-    ierr = assembleRHSPoisson(); CHKERRQ(ierr);
-    ierr = solvePoisson(); CHKERRQ(ierr);
+    while (norm > atol && innerIte < maxIters)
+    {
+        innerIte++;
 
-    // project solution to divergence free field
-    ierr = projectionStep(); CHKERRQ(ierr);
+        ierr = assembleRHSForces(); CHKERRQ(ierr);
+        ierr = solveForces(); CHKERRQ(ierr);
+        ierr = applyNoSlip(); CHKERRQ(ierr);
 
-    // update values of ghost points
+        ierr = assembleRHSPoisson(); CHKERRQ(ierr);
+        ierr = solvePoisson(); CHKERRQ(ierr);
+        ierr = applyDivergenceFreeVelocity(); CHKERRQ(ierr);
+
+        ierr = updatePressure(); CHKERRQ(ierr);
+        ierr = updateForces(); CHKERRQ(ierr);
+
+        ierr = VecNorm(df, NORM_INFINITY, &norm); CHKERRQ(ierr);
+    }
+
     ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
@@ -158,7 +176,7 @@ PetscErrorCode DecoupledIBPMSolver::createExtraOperators()
     Vec RDiag;
     Vec MHatDiag;
 
-     // create diagonal matrix R and hold the diagonal in a PETSc Vec object
+    // create diagonal matrix R and hold the diagonal in a PETSc Vec object
     ierr = petibm::operators::createR(mesh, R); CHKERRQ(ierr);
     ierr = MatCreateVecs(R, nullptr, &RDiag); CHKERRQ(ierr);
     ierr = MatGetDiagonal(R, RDiag); CHKERRQ(ierr);
@@ -254,9 +272,6 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSForces()
     ierr = MatMult(E, solution->UGlobal, rhsf); CHKERRQ(ierr);
     ierr = VecScale(rhsf, -1.0); CHKERRQ(ierr);
 
-    // we choose to set the PETSc Vec object df with zeros
-    ierr = VecSet(df, 0.0); CHKERRQ(ierr);
-
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
@@ -279,46 +294,35 @@ PetscErrorCode DecoupledIBPMSolver::solveForces()
     PetscFunctionReturn(0);
 }  // solveForces
 
-// assemble the RHS vector for the Poisson system
-PetscErrorCode DecoupledIBPMSolver::assembleRHSPoisson()
+PetscErrorCode DecoupledIBPMSolver::applyNoSlip()
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    ierr = PetscLogStagePush(stageRHSPoisson); CHKERRQ(ierr);
-
-    // correct the intermediate velocity with forcing term
+    // u = u + BN H df
     ierr = MatMultAdd(
         BNH, df, solution->UGlobal, solution->UGlobal); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
-
-    // assemble the RHS using the method from the Navier-Stokes solver
-    ierr = NavierStokesSolver::assembleRHSPoisson(); CHKERRQ(ierr);
-
     PetscFunctionReturn(0);
-}  // assembleRHSPoisson
+}  // applyNoSlip
 
-// project the velocity field, update the pressure and the Lagrangian forces
-PetscErrorCode DecoupledIBPMSolver::projectionStep()
+// update the vector forces
+PetscErrorCode DecoupledIBPMSolver::updateForces()
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    // project the velocity field and update the pressure field
-    ierr = NavierStokesSolver::projectionStep(); CHKERRQ(ierr);
+    ierr = PetscLogStagePush(stageUpdate); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
-
-    // update the Lagrangian forces
+    // f = f + df
     ierr = VecAXPY(f, 1.0, df); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageUpdate
 
     PetscFunctionReturn(0);
-}  // projectionStep
+}  // updateForces
 
 // write data required to restart a simulation into a HDF5 file
 PetscErrorCode DecoupledIBPMSolver::writeRestartDataHDF5(

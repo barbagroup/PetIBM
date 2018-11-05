@@ -2,13 +2,13 @@
 
 #include "rigidkinematics.h"
 
-RigidKinematics::RigidKinematics(const MPI_Comm &world,
-                                 const YAML::Node &node)
+RigidKinematicsSolver::RigidKinematicsSolver(const MPI_Comm &world,
+                                             const YAML::Node &node)
 {
     init(world, node);
-}  // RigidKinematics
+}  // RigidKinematicsSolver::RigidKinematicsSolver
 
-RigidKinematics::~RigidKinematics()
+RigidKinematicsSolver::~RigidKinematicsSolver()
 {
     PetscErrorCode ierr;
     PetscBool finalized;
@@ -19,9 +19,9 @@ RigidKinematics::~RigidKinematics()
     if (finalized) return;
 
     ierr = destroy(); CHKERRV(ierr);
-}  // ~RigidKinematics
+}  // ~RigidKinematicsSolver::RigidKinematicsSolver
 
-PetscErrorCode RigidKinematics::destroy()
+PetscErrorCode RigidKinematicsSolver::destroy()
 {
     PetscErrorCode ierr;
 
@@ -31,10 +31,10 @@ PetscErrorCode RigidKinematics::destroy()
     ierr = VecDestroy(&UB); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematics::destroy
+}  // RigidKinematicsSolver::destroy
 
-PetscErrorCode RigidKinematics::init(const MPI_Comm &world,
-                                     const YAML::Node &node)
+PetscErrorCode RigidKinematicsSolver::init(const MPI_Comm &world,
+                                           const YAML::Node &node)
 {
     PetscErrorCode ierr;
 
@@ -48,29 +48,36 @@ PetscErrorCode RigidKinematics::init(const MPI_Comm &world,
 
     ierr = VecDuplicate(f, &UB); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageInitialize
 
     PetscFunctionReturn(0);
-}  // RigidKinematics::init
+}  // RigidKinematicsSolver::init
 
-PetscErrorCode RigidKinematics::advance()
+PetscErrorCode RigidKinematicsSolver::advance()
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
     ierr = PetscLogStagePush(stageMoveIB); CHKERRQ(ierr);
+
     ierr = moveIB(t + dt); CHKERRQ(ierr);
+    ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
+    if (E != PETSC_NULL) {ierr = MatDestroy(&E); CHKERRQ(ierr);}
+    if (H != PETSC_NULL) {ierr = MatDestroy(&H); CHKERRQ(ierr);}
+    if (BNH != PETSC_NULL) {ierr = MatDestroy(&BNH); CHKERRQ(ierr);}
+    if (EBNH != PETSC_NULL) {ierr = MatDestroy(&EBNH); CHKERRQ(ierr);}
     ierr = createExtraOperators(); CHKERRQ(ierr);
     ierr = fSolver->setMatrix(EBNH); CHKERRQ(ierr);
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageMoveIB
 
     ierr = DecoupledIBPMSolver::advance(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematics::advance
+}  // RigidKinematicsSolver::advance
 
-PetscErrorCode RigidKinematics::write()
+PetscErrorCode RigidKinematicsSolver::write()
 {
     PetscErrorCode ierr;
 
@@ -78,14 +85,19 @@ PetscErrorCode RigidKinematics::write()
 
     ierr = DecoupledIBPMSolver::write(); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
-    ierr = writeBodiesCoordinates(); CHKERRQ(ierr);
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    if (ite % nsave == 0)
+    {
+        ierr = PetscLogStagePush(stageWrite); CHKERRQ(ierr);
+
+        ierr = writeBodiesPoint3D(); CHKERRQ(ierr);
+
+        ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageWrite
+    }
 
     PetscFunctionReturn(0);
-}  // write
+}  // RigidKinematicsSolver::write
 
-PetscErrorCode RigidKinematics::assembleRHSForces()
+PetscErrorCode RigidKinematicsSolver::assembleRHSForces()
 {
     PetscErrorCode ierr;
 
@@ -98,15 +110,12 @@ PetscErrorCode RigidKinematics::assembleRHSForces()
     ierr = VecScale(rhsf, -1.0); CHKERRQ(ierr);
     ierr = VecAYPX(rhsf, 1.0, UB); CHKERRQ(ierr);
 
-    // we choose to set the PETSc Vec object df with zeros
-    ierr = VecSet(df, 0.0); CHKERRQ(ierr);
-
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematics::assembleRHSForces
+}  // RigidKinematicsSolver::assembleRHSForces
 
-PetscErrorCode RigidKinematics::writeBodiesCoordinates()
+PetscErrorCode RigidKinematicsSolver::writeBodiesPoint3D()
 {
     PetscErrorCode ierr;
 
@@ -114,19 +123,19 @@ PetscErrorCode RigidKinematics::writeBodiesCoordinates()
 
     std::string directory = config["output"].as<std::string>(".");
     std::stringstream ss;
-    ss << "/" << std::setfill('0') << std::setw(7) << ite << ".3D";
+    ss << std::setfill('0') << std::setw(7) << ite << ".3D";
     std::string filepath;
     for (PetscInt i = 0; i < bodies->nBodies; ++i)
     {
-        filepath = directory + "/body" + std::to_string(i) + ss.str();
-        ierr = writeBodyCoordinates(
-            filepath, (bodies->bodies)[0]); CHKERRQ(ierr);
+        petibm::type::SingleBody &body = bodies->bodies[i];
+        filepath = directory + "/" + body->name + "_" + ss.str();
+        ierr = writeBodyPoint3D(filepath, body); CHKERRQ(ierr);
     }
 
     PetscFunctionReturn(0);
-}  // RigidKinematics::writeBodiesCoordinates
+}  // RigidKinematicsSolver::writeBodiesPoint3D
 
-PetscErrorCode RigidKinematics::writeBodyCoordinates(
+PetscErrorCode RigidKinematicsSolver::writeBodyPoint3D(
     const std::string filepath, const petibm::type::SingleBody body)
 {
     PetscErrorCode ierr;
@@ -134,18 +143,18 @@ PetscErrorCode RigidKinematics::writeBodyCoordinates(
     PetscFunctionBeginUser;
 
     PetscViewer viewer;
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filepath.c_str()); CHKERRQ(ierr);
     for (PetscInt k=0; k<body->nPts; k++)
     {
         ierr = PetscViewerASCIIPrintf(viewer, "%10.8e\t%10.8e\t%10.8e\n",
-                                        body->coords[k][0],
-                                        body->coords[k][1],
-                                        body->coords[k][2]); CHKERRQ(ierr);
+                                      body->coords[k][0],
+                                      body->coords[k][1],
+                                      body->coords[k][2]); CHKERRQ(ierr);
     }
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // RigidKinematics::writeBodyCoordinates
+} // RigidKinematicsSolver::writeBodyPoint3D

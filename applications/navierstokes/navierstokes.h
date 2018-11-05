@@ -196,8 +196,8 @@ protected:
     /** \brief Log stage for solving the Poisson system. */
     PetscLogStage stageSolvePoisson;
 
-    /** \brief Log stage for projecting the velocity field. */
-    PetscLogStage stageProjectionStep;
+    /** \brief Log stage for updating field variables. */
+    PetscLogStage stageUpdate;
 
     /** \brief Log stage when write the solution fields. */
     PetscLogStage stageWrite;
@@ -220,9 +220,9 @@ protected:
     /** \brief Solve the Poisson system. */
     virtual PetscErrorCode solvePoisson();
 
-    /** \brief Project the velocity field onto the divergence-free space and
-     * update the pressure field. */
-    virtual PetscErrorCode projectionStep();
+    virtual PetscErrorCode applyDivergenceFreeVelocity();
+
+    virtual PetscErrorCode updatePressure();
 
     /** \brief Create operators. */
     virtual PetscErrorCode createOperators();

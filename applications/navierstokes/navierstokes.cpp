@@ -187,7 +187,7 @@ PetscErrorCode NavierStokesSolver::init(const MPI_Comm &world, const YAML::Node 
     ierr = PetscLogStageRegister(
         "solvePoisson", &stageSolvePoisson); CHKERRQ(ierr);
     ierr = PetscLogStageRegister(
-        "projectionStep", &stageProjectionStep); CHKERRQ(ierr);
+        "update", &stageUpdate); CHKERRQ(ierr);
     ierr = PetscLogStageRegister(
         "write", &stageWrite); CHKERRQ(ierr);
     ierr = PetscLogStageRegister(
@@ -249,8 +249,10 @@ PetscErrorCode NavierStokesSolver::advance()
     ierr = assembleRHSPoisson(); CHKERRQ(ierr);
     ierr = solvePoisson(); CHKERRQ(ierr);
 
-    // project the velocity field onto the divergence-free space
-    ierr = projectionStep(); CHKERRQ(ierr);
+    // project velocity field onto divergence-free space
+    ierr = applyDivergenceFreeVelocity(); CHKERRQ(ierr);
+    // update pressure field
+    ierr = updatePressure(); CHKERRQ(ierr);
 
     // update ghost-point values
     ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
@@ -571,26 +573,42 @@ PetscErrorCode NavierStokesSolver::solvePoisson()
 }  // solvePoisson
 
 // project the velocity field onto the divergence-free space
-// and update the pressure field
-PetscErrorCode NavierStokesSolver::projectionStep()
+PetscErrorCode NavierStokesSolver::applyDivergenceFreeVelocity()
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
-    ierr = PetscLogStagePush(stageProjectionStep); CHKERRQ(ierr);
+    ierr = PetscLogStagePush(stageUpdate); CHKERRQ(ierr);
 
-    // project the velocity field onto divergence-free space
+    // u = u - BN G dp
     ierr = MatMult(BNG, dP, rhs1); CHKERRQ(ierr);
     ierr = VecAXPY(solution->UGlobal, -1.0, rhs1); CHKERRQ(ierr);
 
     // update the pressure field
     ierr = VecAXPY(solution->pGlobal, 1.0, dP); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageUpdate
 
     PetscFunctionReturn(0);
-}  // projectionStep
+}  // applyDivergenceFreeVelocity
+
+// update pressure field variable
+PetscErrorCode NavierStokesSolver::updatePressure()
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = PetscLogStagePush(stageUpdate); CHKERRQ(ierr);
+
+    // p = p + dp
+    ierr = VecAXPY(solution->pGlobal, 1.0, dP); CHKERRQ(ierr);
+
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageUpdate
+
+    PetscFunctionReturn(0);
+}  // updatePressure
 
 // write the solution fields into a HDF5 file
 PetscErrorCode NavierStokesSolver::writeSolutionHDF5(const std::string &filePath)

@@ -49,6 +49,9 @@ public:
     /** \brief Coordinates of ALL Lagrangian points. */
     type::RealVec2D coords;
 
+    /** \brief Initial coordinates of ALL Lagrangian points. */
+    type::RealVec2D coords0;
+
     /** \brief Local number of Lagrangian points. */
     PetscInt nLclPts;
 
@@ -166,6 +169,11 @@ public:
      * \return PetscErrorCode.
      */
     virtual PetscErrorCode updateMeshIdx(const type::Mesh &mesh) = 0;
+
+    virtual PetscErrorCode readBody(const std::string &filepath) = 0;
+
+    virtual PetscErrorCode writeBody(const std::string &filepath) = 0;
+
 
 protected:
     /** \brief MPI communicator. */

@@ -12,17 +12,18 @@ public:
     PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
     PetscErrorCode advance();
     PetscErrorCode write();
-    using DecoupledIBPMSolver::ioInitialData;
+    PetscErrorCode ioInitialData();
     using DecoupledIBPMSolver::finished;
 
 protected:
     Vec UB;
     PetscLogStage stageMoveIB;
-    virtual PetscErrorCode moveIB(
+    PetscErrorCode moveBodies(const PetscReal &ti);
+    virtual PetscErrorCode setCoordinatesBodies(
+        const PetscReal &ti){PetscFunctionReturn(0);};
+    virtual PetscErrorCode setVelocityBodies(
         const PetscReal &ti){PetscFunctionReturn(0);};
     PetscErrorCode assembleRHSForces();
-    PetscErrorCode writeBodiesPoint3D();
-    PetscErrorCode writeBodyPoint3D(const std::string filepath,
-                                    const petibm::type::SingleBody body);
+    PetscErrorCode writeBodies();
 
 };  // RigidKinematicsSolver

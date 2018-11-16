@@ -95,9 +95,6 @@ protected:
     /** \brief ASCII PetscViewer object to output the forces. */
     PetscViewer forcesViewer;
 
-    PetscInt maxIters;
-    PetscReal atol;
-
     /** \brief Assemble the RHS vector of the velocity system. */
     virtual PetscErrorCode assembleRHSVelocity();
 
@@ -135,6 +132,6 @@ protected:
     PetscErrorCode writeLinSolversInfo();
 
     /** \brief Write the forces acting on the bodies into an ASCII file. */
-    PetscErrorCode writeForcesASCII();
+    virtual PetscErrorCode writeForcesASCII();
 
 };  // DecoupledIBPMSolver

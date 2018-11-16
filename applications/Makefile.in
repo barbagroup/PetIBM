@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -104,7 +105,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(decoupledibpminclude_HEADERS) \
+	$(ibpminclude_HEADERS) $(navierstokesinclude_HEADERS) \
+	$(rigidkinematicsinclude_HEADERS) $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
@@ -136,7 +139,11 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)"
+am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(decoupledibpmincludedir)" \
+	"$(DESTDIR)$(ibpmincludedir)" \
+	"$(DESTDIR)$(navierstokesincludedir)" \
+	"$(DESTDIR)$(rigidkinematicsincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 @WITH_AMGX_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
@@ -204,6 +211,9 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+HEADERS = $(decoupledibpminclude_HEADERS) $(ibpminclude_HEADERS) \
+	$(navierstokesinclude_HEADERS) \
+	$(rigidkinematicsinclude_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -423,6 +433,14 @@ libpetibmapps_la_CPPFLAGS = \
 libpetibmapps_la_LIBADD = $(top_builddir)/src/libpetibm.la \
 	$(PETSC_LDFLAGS) $(PETSC_LIBS) $(YAMLCPP_LDFLAGS) \
 	$(YAMLCPP_LIBS) $(am__append_1)
+navierstokesincludedir = $(includedir)/petibm/navierstokes
+navierstokesinclude_HEADERS = navierstokes/navierstokes.h
+ibpmincludedir = $(includedir)/petibm/ibpm
+ibpminclude_HEADERS = ibpm/ibpm.h
+decoupledibpmincludedir = $(includedir)/petibm/decoupledibpm
+decoupledibpminclude_HEADERS = decoupledibpm/decoupledibpm.h
+rigidkinematicsincludedir = $(includedir)/petibm/rigidkinematics
+rigidkinematicsinclude_HEADERS = rigidkinematics/rigidkinematics.h
 all: all-recursive
 
 .SUFFIXES:
@@ -610,6 +628,90 @@ clean-libtool:
 	-rm -rf ibpm/.libs ibpm/_libs
 	-rm -rf navierstokes/.libs navierstokes/_libs
 	-rm -rf rigidkinematics/.libs rigidkinematics/_libs
+install-decoupledibpmincludeHEADERS: $(decoupledibpminclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(decoupledibpminclude_HEADERS)'; test -n "$(decoupledibpmincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(decoupledibpmincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(decoupledibpmincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(decoupledibpmincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(decoupledibpmincludedir)" || exit $$?; \
+	done
+
+uninstall-decoupledibpmincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(decoupledibpminclude_HEADERS)'; test -n "$(decoupledibpmincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(decoupledibpmincludedir)'; $(am__uninstall_files_from_dir)
+install-ibpmincludeHEADERS: $(ibpminclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(ibpminclude_HEADERS)'; test -n "$(ibpmincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(ibpmincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(ibpmincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(ibpmincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(ibpmincludedir)" || exit $$?; \
+	done
+
+uninstall-ibpmincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(ibpminclude_HEADERS)'; test -n "$(ibpmincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(ibpmincludedir)'; $(am__uninstall_files_from_dir)
+install-navierstokesincludeHEADERS: $(navierstokesinclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(navierstokesinclude_HEADERS)'; test -n "$(navierstokesincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(navierstokesincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(navierstokesincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(navierstokesincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(navierstokesincludedir)" || exit $$?; \
+	done
+
+uninstall-navierstokesincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(navierstokesinclude_HEADERS)'; test -n "$(navierstokesincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(navierstokesincludedir)'; $(am__uninstall_files_from_dir)
+install-rigidkinematicsincludeHEADERS: $(rigidkinematicsinclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(rigidkinematicsinclude_HEADERS)'; test -n "$(rigidkinematicsincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(rigidkinematicsincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(rigidkinematicsincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(rigidkinematicsincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(rigidkinematicsincludedir)" || exit $$?; \
+	done
+
+uninstall-rigidkinematicsincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(rigidkinematicsinclude_HEADERS)'; test -n "$(rigidkinematicsincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(rigidkinematicsincludedir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -767,10 +869,10 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(libdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(decoupledibpmincludedir)" "$(DESTDIR)$(ibpmincludedir)" "$(DESTDIR)$(navierstokesincludedir)" "$(DESTDIR)$(rigidkinematicsincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -834,7 +936,9 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-decoupledibpmincludeHEADERS \
+	install-ibpmincludeHEADERS install-navierstokesincludeHEADERS \
+	install-rigidkinematicsincludeHEADERS
 
 install-dvi: install-dvi-recursive
 
@@ -880,7 +984,10 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-decoupledibpmincludeHEADERS \
+	uninstall-ibpmincludeHEADERS uninstall-libLTLIBRARIES \
+	uninstall-navierstokesincludeHEADERS \
+	uninstall-rigidkinematicsincludeHEADERS
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
@@ -889,15 +996,21 @@ uninstall-am: uninstall-libLTLIBRARIES
 	clean-libtool cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES
+	install install-am install-data install-data-am \
+	install-decoupledibpmincludeHEADERS install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-ibpmincludeHEADERS install-info install-info-am \
+	install-libLTLIBRARIES install-man \
+	install-navierstokesincludeHEADERS install-pdf install-pdf-am \
+	install-ps install-ps-am install-rigidkinematicsincludeHEADERS \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-decoupledibpmincludeHEADERS \
+	uninstall-ibpmincludeHEADERS uninstall-libLTLIBRARIES \
+	uninstall-navierstokesincludeHEADERS \
+	uninstall-rigidkinematicsincludeHEADERS
 
 .PRECIOUS: Makefile
 

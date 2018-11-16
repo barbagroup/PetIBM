@@ -81,15 +81,6 @@ PetscErrorCode DecoupledIBPMSolver::init(const MPI_Comm &world,
     // set coefficient matrix to the linear solver for the forces
     ierr = fSolver->setMatrix(EBNH); CHKERRQ(ierr);
 
-    maxIters = 1;
-    atol = 1e-3;
-    if (node["parameters"]["decoupling"])
-    {
-        const YAML::Node &decoupling = node["parameters"]["decoupling"];
-        maxIters = decoupling["maxIters"].as<PetscInt>(1);
-        atol = decoupling["atol"].as<PetscReal>(1e-3);
-    }
-
     // create an ASCII PetscViewer to output the body forces
     ierr = createPetscViewerASCII(
         config["directory"].as<std::string>() +
@@ -119,29 +110,20 @@ PetscErrorCode DecoupledIBPMSolver::advance()
     ite++;
 
     ierr = VecSet(f, 0.0); CHKERRQ(ierr);
+    
     ierr = assembleRHSVelocity(); CHKERRQ(ierr);
     ierr = solveVelocity(); CHKERRQ(ierr);
+    
+    ierr = assembleRHSForces(); CHKERRQ(ierr);
+    ierr = solveForces(); CHKERRQ(ierr);
+    ierr = applyNoSlip(); CHKERRQ(ierr);
 
-    PetscInt innerIte = 0;
-    PetscReal norm = atol + 1.0;
+    ierr = assembleRHSPoisson(); CHKERRQ(ierr);
+    ierr = solvePoisson(); CHKERRQ(ierr);
+    ierr = applyDivergenceFreeVelocity(); CHKERRQ(ierr);
 
-    while (norm > atol && innerIte < maxIters)
-    {
-        innerIte++;
-
-        ierr = assembleRHSForces(); CHKERRQ(ierr);
-        ierr = solveForces(); CHKERRQ(ierr);
-        ierr = applyNoSlip(); CHKERRQ(ierr);
-
-        ierr = assembleRHSPoisson(); CHKERRQ(ierr);
-        ierr = solvePoisson(); CHKERRQ(ierr);
-        ierr = applyDivergenceFreeVelocity(); CHKERRQ(ierr);
-
-        ierr = updatePressure(); CHKERRQ(ierr);
-        ierr = updateForces(); CHKERRQ(ierr);
-
-        ierr = VecNorm(df, NORM_INFINITY, &norm); CHKERRQ(ierr);
-    }
+    ierr = updatePressure(); CHKERRQ(ierr);
+    ierr = updateForces(); CHKERRQ(ierr);
 
     ierr = bc->updateGhostValues(solution); CHKERRQ(ierr);
 

@@ -64,6 +64,10 @@ public:
     // implementation of SingleBodyBase::updateMeshIdx
     virtual PetscErrorCode updateMeshIdx(const type::Mesh &mesh);
 
+    virtual PetscErrorCode readBody(const std::string &filepath);
+
+    virtual PetscErrorCode writeBody(const std::string &filepath);
+
 protected:
     /**
      * \brief Initialize the body, reading coordinates from given file.

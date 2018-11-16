@@ -32,14 +32,17 @@ PetscErrorCode SingleBodyPoints::init(const MPI_Comm &comm, const PetscInt &dim,
 
     PetscFunctionBeginUser;
 
-    // read coordinates from the given file; nPts and coords are set up here
-    ierr = io::readLagrangianPoints(filePath, nPts, coords); CHKERRQ(ierr);
+    // read the body coordinates from the given file
+    ierr = readBody(filePath); CHKERRQ(ierr);
 
     // check if the dimension of coordinates matches
     if ((unsigned)dim != coords[0].size())
         SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_FILE_READ,
                 "The dimension of Lagrangian points are different than that "
                 "of the background mesh!\n");
+
+    // record the initial body coordinates
+    coords0 = coords;
 
     // create a distributed 1D DMDA with DoF equal to dim; nLclPts, bgPt, edPt,
     // da, nLclAllProcs, and offsetsAllProcs are set up here
@@ -231,6 +234,42 @@ PetscErrorCode SingleBodyPoints::calculateAvgForces(const Vec &f,
 
     PetscFunctionReturn(0);
 }  // calculateAvgForces
+
+PetscErrorCode SingleBodyPoints::readBody(const std::string &filepath)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    // read the body coordinates from the given file;
+    // attributes `nPts` and `coords` are set up here
+    ierr = io::readLagrangianPoints(filePath, nPts, coords); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // readBody
+
+PetscErrorCode SingleBodyPoints::writeBody(const std::string &filepath)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    PetscViewer viewer;
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filepath.c_str()); CHKERRQ(ierr);
+    for (PetscInt k = 0; k < nPts; k++)
+    {
+        ierr = PetscViewerASCIIPrintf(viewer, "%10.8e\t%10.8e\t%10.8e\n",
+                                      coords[k][0],
+                                      coords[k][1],
+                                      coords[k][2]); CHKERRQ(ierr);
+    }
+    ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // writeBody
 
 }  // end of namespace body
 

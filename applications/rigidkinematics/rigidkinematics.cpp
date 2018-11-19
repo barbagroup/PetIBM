@@ -1,3 +1,12 @@
+/**
+ * \file rigidkinematics.cpp
+ * \brief Implementation of the class \c RigidKinematicsSolver.
+ * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
+ * \license BSD 3-Clause License.
+ * \see decoupledibpm
+ * \ingroup decoupledibpm
+ */
+
 #include <iomanip>
 
 #include "rigidkinematics.h"
@@ -6,7 +15,7 @@ RigidKinematicsSolver::RigidKinematicsSolver(const MPI_Comm &world,
                                              const YAML::Node &node)
 {
     init(world, node);
-}  // RigidKinematicsSolver::RigidKinematicsSolver
+}  // RigidKinematicsSolver
 
 RigidKinematicsSolver::~RigidKinematicsSolver()
 {
@@ -19,8 +28,10 @@ RigidKinematicsSolver::~RigidKinematicsSolver()
     if (finalized) return;
 
     ierr = destroy(); CHKERRV(ierr);
-}  // ~RigidKinematicsSolver::RigidKinematicsSolver
+}  // ~RigidKinematicsSolver
 
+
+// destroy data
 PetscErrorCode RigidKinematicsSolver::destroy()
 {
     PetscErrorCode ierr;
@@ -31,8 +42,9 @@ PetscErrorCode RigidKinematicsSolver::destroy()
     ierr = VecDestroy(&UB); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::destroy
+}  // destroy
 
+// initialize the decoupled IBPM solver for moving rigid bodies
 PetscErrorCode RigidKinematicsSolver::init(const MPI_Comm &world,
                                            const YAML::Node &node)
 {
@@ -52,21 +64,24 @@ PetscErrorCode RigidKinematicsSolver::init(const MPI_Comm &world,
     ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageInitialize
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::init
+}  // init
 
+// advance the solution by one time step
 PetscErrorCode RigidKinematicsSolver::advance()
 {
     PetscErrorCode ierr;
 
     PetscFunctionBeginUser;
 
+    // note: use of `t + dt` because `t` is update in the Navier-Stokes method
     ierr = moveBodies(t + dt); CHKERRQ(ierr);
 
     ierr = DecoupledIBPMSolver::advance(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::advance
+}  // advance
 
+// write the solution, solver info, and body points to files
 PetscErrorCode RigidKinematicsSolver::write()
 {
     PetscErrorCode ierr;
@@ -85,8 +100,9 @@ PetscErrorCode RigidKinematicsSolver::write()
     }
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::write
+}  // write
 
+// read of write initial data
 PetscErrorCode RigidKinematicsSolver::ioInitialData()
 {
     PetscErrorCode ierr;
@@ -98,8 +114,9 @@ PetscErrorCode RigidKinematicsSolver::ioInitialData()
     ierr = writeBodies(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver
+}  // ioInitialData
 
+// update Lagrangian points, boundary velocity, and operators
 PetscErrorCode RigidKinematicsSolver::moveBodies(const PetscReal &ti)
 {
     PetscErrorCode ierr;
@@ -121,8 +138,9 @@ PetscErrorCode RigidKinematicsSolver::moveBodies(const PetscReal &ti)
     ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageMoveIB
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::moveBodies
+}  // moveBodies
 
+// assemble the right-hand side of the system for the Lagrangian forces
 PetscErrorCode RigidKinematicsSolver::assembleRHSForces()
 {
     PetscErrorCode ierr;
@@ -139,8 +157,9 @@ PetscErrorCode RigidKinematicsSolver::assembleRHSForces()
     ierr = PetscLogStagePop(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::assembleRHSForces
+}  // assembleRHSForces
 
+// write the coordinates of the Lagrangian points into files
 PetscErrorCode RigidKinematicsSolver::writeBodies()
 {
     PetscErrorCode ierr;
@@ -159,4 +178,4 @@ PetscErrorCode RigidKinematicsSolver::writeBodies()
     }
 
     PetscFunctionReturn(0);
-}  // RigidKinematicsSolver::writeBodies
+}  // writeBodies

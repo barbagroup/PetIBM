@@ -240,16 +240,16 @@ protected:
      * \param viewer [out] PetscViewer object
      * \return PetscErrorCode
      */
-    PetscErrorCode createPetscViewerASCII(const std::string &filePath,
-                                          const PetscFileMode &mode,
-                                          PetscViewer &viewer);
+    virtual PetscErrorCode createPetscViewerASCII(const std::string &filePath,
+                                                  const PetscFileMode &mode,
+                                                  PetscViewer &viewer);
 
     /** \brief Write the solution fields into a HDF5 file.
      *
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSolutionHDF5(const std::string &filePath);
+    virtual PetscErrorCode writeSolutionHDF5(const std::string &filePath);
 
     /** \brief Write data required to restart a simulation into a HDF5 file.
      *
@@ -274,8 +274,8 @@ protected:
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeTimeHDF5(const PetscReal &t,
-                                 const std::string &filePath);
+    virtual PetscErrorCode writeTimeHDF5(const PetscReal &t,
+                                         const std::string &filePath);
 
     /** \brief Read the time value from a HDF5 file.
      *
@@ -283,10 +283,10 @@ protected:
      * \param t [out] Time
      * \return PetscErrorCode
      */
-    PetscErrorCode readTimeHDF5(const std::string &filePath,
-                                PetscReal &t);
+    virtual PetscErrorCode readTimeHDF5(const std::string &filePath,
+                                        PetscReal &t);
 
     /** \brief Monitor the solution at probes. */
-    PetscErrorCode monitorProbes();
+    virtual PetscErrorCode monitorProbes();
 
 };  // NavierStokesSolver

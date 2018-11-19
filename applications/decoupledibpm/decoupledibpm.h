@@ -35,7 +35,7 @@ public:
     /** \brief Default destructor. */
     ~DecoupledIBPMSolver();
 
-    /** \brief manually destroy data. */
+    /** \brief Manually destroy data. */
     PetscErrorCode destroy();
 
     /** \brief Initialize the decoupled IBPM solver.
@@ -104,32 +104,34 @@ protected:
     /** \brief Solve the system for the boundary forces. */
     virtual PetscErrorCode solveForces();
 
+    /** \brief Update the velocity to satisfy the no-slip condition. */
     virtual PetscErrorCode applyNoSlip();
 
+    /** \brief Update the Lagrangian forces. */
     virtual PetscErrorCode updateForces();
 
     /** \brief Assemble additional operators. */
-    PetscErrorCode createExtraOperators();
+    virtual PetscErrorCode createExtraOperators();
 
     /** \brief Create additional vectors. */
-    PetscErrorCode createExtraVectors();
+    virtual PetscErrorCode createExtraVectors();
 
     /** \brief Write data required to restart a simulation into a HDF5 file.
      *
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeRestartDataHDF5(const std::string &filePath);
+    virtual PetscErrorCode writeRestartDataHDF5(const std::string &filePath);
 
     /** \brief Read data required to restart a simulation from a HDF5 file.
      *
      * \param filePath [in] Path of the file to read from
      * \return PetscErrorCode
      */
-    PetscErrorCode readRestartDataHDF5(const std::string &filePath);
+    virtual PetscErrorCode readRestartDataHDF5(const std::string &filePath);
 
     /** \brief Write numbers of iterations and residuals of solvers to file. */
-    PetscErrorCode writeLinSolversInfo();
+    virtual PetscErrorCode writeLinSolversInfo();
 
     /** \brief Write the forces acting on the bodies into an ASCII file. */
     virtual PetscErrorCode writeForcesASCII();

@@ -94,7 +94,7 @@ PetscErrorCode DecoupledIBPMSolver::init(const MPI_Comm &world,
     ierr = PetscLogStageRegister(
         "integrateForces", &stageIntegrateForces); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageInitialize
 
     PetscFunctionReturn(0);
 }  // init
@@ -108,8 +108,6 @@ PetscErrorCode DecoupledIBPMSolver::advance()
     
     t += dt;
     ite++;
-
-    ierr = VecSet(f, 0.0); CHKERRQ(ierr);
     
     ierr = assembleRHSVelocity(); CHKERRQ(ierr);
     ierr = solveVelocity(); CHKERRQ(ierr);
@@ -236,7 +234,7 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSVelocity()
     // add the Lagrangian forces spread to the Eulerian grid
     ierr = MatMultAdd(H, f, rhs1, rhs1); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageRHSVelocity
 
     PetscFunctionReturn(0);
 }  // assembleRHSVelocity
@@ -254,7 +252,7 @@ PetscErrorCode DecoupledIBPMSolver::assembleRHSForces()
     ierr = MatMult(E, solution->UGlobal, rhsf); CHKERRQ(ierr);
     ierr = VecScale(rhsf, -1.0); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageRHSForces
 
     PetscFunctionReturn(0);
 }  // assembleRHSForces
@@ -271,11 +269,12 @@ PetscErrorCode DecoupledIBPMSolver::solveForces()
     // solve for the increment in the Lagrangian forces
     ierr = fSolver->solve(df, rhsf); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageSolveForces
 
     PetscFunctionReturn(0);
 }  // solveForces
 
+// update the velocity field to satisfy the no-slip condition on the body interfaces
 PetscErrorCode DecoupledIBPMSolver::applyNoSlip()
 {
     PetscErrorCode ierr;
@@ -335,7 +334,7 @@ PetscErrorCode DecoupledIBPMSolver::writeRestartDataHDF5(
     // destroy viewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageWrite
 
     PetscFunctionReturn(0);
 }  // writeRestartDataHDF5
@@ -402,7 +401,7 @@ PetscErrorCode DecoupledIBPMSolver::writeLinSolversInfo()
     ierr = PetscViewerASCIIPrintf(
         solversViewer, "%d\t%e\n", nIters, res); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageWrite
 
     PetscFunctionReturn(0);
 }  // writeLinSolversInfo
@@ -438,7 +437,7 @@ PetscErrorCode DecoupledIBPMSolver::writeForcesASCII()
     }
     ierr = PetscViewerASCIIPrintf(forcesViewer, "\n"); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageIntegrateForces
 
     PetscFunctionReturn(0);
 }  // writeForcesASCII

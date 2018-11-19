@@ -42,8 +42,8 @@ PetscErrorCode IBPMSolver::destroy()
     bodies.reset();
     ierr = ISDestroy(&isDE[0]); CHKERRQ(ierr);
     ierr = ISDestroy(&isDE[1]); CHKERRQ(ierr);
-    ierr = VecResetArray(phi); CHKERRQ(ierr);
-    ierr = VecDestroy(&phi); CHKERRQ(ierr);
+    ierr = VecResetArray(P); CHKERRQ(ierr);
+    ierr = VecDestroy(&P); CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&forcesViewer); CHKERRQ(ierr);
     ierr = NavierStokesSolver::destroy(); CHKERRQ(ierr);
 
@@ -56,14 +56,14 @@ PetscErrorCode IBPMSolver::init(const MPI_Comm &world, const YAML::Node &node)
 
     PetscFunctionBeginUser;
 
+    // create a pack of immersed bodies
+    PetscInt dim = node["mesh"].size();
+    ierr = petibm::body::createBodyPack(
+        world, dim, node, bodies); CHKERRQ(ierr);
+
     ierr = NavierStokesSolver::init(world, node); CHKERRQ(ierr);
 
     ierr = PetscLogStagePush(stageInitialize); CHKERRQ(ierr);
-
-    // create a pack of immersed bodies
-    ierr = petibm::body::createBodyPack(
-        comm, mesh->dim, config, bodies); CHKERRQ(ierr);
-    ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
 
     // create an ASCII PetscViewer to output the body forces
     ierr = createPetscViewerASCII(
@@ -138,6 +138,7 @@ PetscErrorCode IBPMSolver::createOperators()
     ierr = MatGetDiagonal(MHat, MHatDiag); CHKERRQ(ierr);
 
     // create a Delta operator and its transpose (equal to H)
+    ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
     ierr = petibm::operators::createDelta(
         mesh, bc, bodies, DE[1]); CHKERRQ(ierr);
     ierr = MatTranspose(DE[1], MAT_INITIAL_MATRIX, &GH[1]); CHKERRQ(ierr);
@@ -204,21 +205,21 @@ PetscErrorCode IBPMSolver::createVectors()
     const PetscReal *data;
 
     // create the vector of the couple (pressure field, Lagrangian forces)
-    ierr = MatCreateVecs(G, &phi, nullptr); CHKERRQ(ierr);
+    ierr = MatCreateVecs(G, &P, nullptr); CHKERRQ(ierr);
 
-    // swap pGlobal and phi to reuse functions from the Navier-Stokes solver
+    // swap pGlobal and P to reuse functions from the Navier-Stokes solver
     temp = solution->pGlobal;
-    solution->pGlobal = phi;
-    phi = temp;
+    solution->pGlobal = P;
+    P = temp;
     temp = PETSC_NULL;
 
-    // destroy phi's underlying raw array but keep all other information
-    ierr = VecReplaceArray(phi, nullptr); CHKERRQ(ierr);
+    // destroy P's underlying raw array but keep all other information
+    ierr = VecReplaceArray(P, nullptr); CHKERRQ(ierr);
 
-    // reset the underlying data of phi to the pressure portion in pGlobal
+    // reset the underlying data of P to the pressure portion in pGlobal
     ierr = VecGetSubVector(solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
     ierr = VecGetArrayRead(temp, &data); CHKERRQ(ierr);
-    ierr = VecPlaceArray(phi, data); CHKERRQ(ierr);
+    ierr = VecPlaceArray(P, data); CHKERRQ(ierr);
     ierr = VecRestoreArrayRead(temp, &data); CHKERRQ(ierr);
     ierr = VecRestoreSubVector(
         solution->pGlobal, isDE[0], &temp); CHKERRQ(ierr);
@@ -312,9 +313,9 @@ PetscErrorCode IBPMSolver::writeSolutionHDF5(const std::string &filePath)
 
     Vec temp = PETSC_NULL;
 
-    // let solution->pGlobal point to phi, so that we can use solution->write
+    // let solution->pGlobal point to P, so that we can use solution->write
     temp = solution->pGlobal;
-    solution->pGlobal = phi;
+    solution->pGlobal = P;
 
     ierr = NavierStokesSolver::writeSolutionHDF5(filePath); CHKERRQ(ierr);
 
@@ -353,9 +354,9 @@ PetscErrorCode IBPMSolver::readRestartDataHDF5(const std::string &filePath)
 
     Vec temp = PETSC_NULL;
 
-    // let solution->pGlobal point to phi, so that we can use solution->write
+    // let solution->pGlobal point to P, so that we can use solution->write
     temp = solution->pGlobal;
-    solution->pGlobal = phi;
+    solution->pGlobal = P;
 
     ierr = NavierStokesSolver::readRestartDataHDF5(filePath); CHKERRQ(ierr);
 

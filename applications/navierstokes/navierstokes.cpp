@@ -193,7 +193,7 @@ PetscErrorCode NavierStokesSolver::init(const MPI_Comm &world, const YAML::Node 
     ierr = PetscLogStageRegister(
         "monitor", &stageMonitor); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageInitialize
 
     PetscFunctionReturn(0);
 }  // init
@@ -508,7 +508,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSVelocity()
         ierr = VecAXPY(rhs1, diffCoeffs->implicitCoeff, bc1); CHKERRQ(ierr);
     }
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageRHSVelocity
 
     PetscFunctionReturn(0);
 }  // assembleRHSVelocity
@@ -524,7 +524,7 @@ PetscErrorCode NavierStokesSolver::solveVelocity()
 
     ierr = vSolver->solve(solution->UGlobal, rhs1); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageSolveVelocity
 
     PetscFunctionReturn(0);
 }  // solveVelocity
@@ -550,7 +550,7 @@ PetscErrorCode NavierStokesSolver::assembleRHSPoisson()
         ierr = VecAssemblyEnd(rhs2); CHKERRQ(ierr);
     }
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageRHSPoisson
 
     PetscFunctionReturn(0);
 }  // assembleRHSPoisson
@@ -567,7 +567,7 @@ PetscErrorCode NavierStokesSolver::solvePoisson()
     // solve for the pressure correction
     ierr = pSolver->solve(dP, rhs2); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageSolvePoisson
 
     PetscFunctionReturn(0);
 }  // solvePoisson
@@ -584,9 +584,6 @@ PetscErrorCode NavierStokesSolver::applyDivergenceFreeVelocity()
     // u = u - BN G dp
     ierr = MatMult(BNG, dP, rhs1); CHKERRQ(ierr);
     ierr = VecAXPY(solution->UGlobal, -1.0, rhs1); CHKERRQ(ierr);
-
-    // update the pressure field
-    ierr = VecAXPY(solution->pGlobal, 1.0, dP); CHKERRQ(ierr);
 
     ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageUpdate
 
@@ -624,7 +621,7 @@ PetscErrorCode NavierStokesSolver::writeSolutionHDF5(const std::string &filePath
     // write the time value as an attribute of the pressure field dataset
     ierr = writeTimeHDF5(t, filePath); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageWrite
 
     PetscFunctionReturn(0);
 }  // writeSolutionHDF5
@@ -678,7 +675,7 @@ PetscErrorCode NavierStokesSolver::writeRestartDataHDF5(
     // destroy viewer
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageWrite
 
     PetscFunctionReturn(0);
 }  // writeRestartDataHDF5
@@ -784,7 +781,7 @@ PetscErrorCode NavierStokesSolver::writeLinSolversInfo()
     ierr = PetscViewerASCIIPrintf(
         solversViewer, "%d\t%e\n", nIters, res); CHKERRQ(ierr);
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageWrite
 
     PetscFunctionReturn(0);
 }  // writeLinSolversInfo
@@ -819,7 +816,7 @@ PetscErrorCode NavierStokesSolver::readTimeHDF5(const std::string &filePath,
 
     PetscFunctionBeginUser;
 
-    ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer); CHKERRQ(ierr);
+    ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
     ierr = PetscViewerSetType(viewer, PETSCVIEWERHDF5); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
@@ -845,7 +842,7 @@ PetscErrorCode NavierStokesSolver::monitorProbes()
         ierr = probe->monitor(solution, mesh, ite, t); CHKERRQ(ierr);
     }
 
-    ierr = PetscLogStagePop(); CHKERRQ(ierr);
+    ierr = PetscLogStagePop(); CHKERRQ(ierr);  // end of stageMonitor
 
     PetscFunctionReturn(0);
 }  // monitorProbes

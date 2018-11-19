@@ -61,7 +61,7 @@ protected:
     petibm::type::BodyPack bodies;
 
     /** \brief PETSc Vec object with pressure field and Lagrangian forces. */
-    Vec phi;
+    Vec P;
 
     /** \brief Global index sets for pressure field and Lagrangian forces. */
     IS isDE[2];
@@ -89,23 +89,23 @@ protected:
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSolutionHDF5(const std::string &filePath);
+    virtual PetscErrorCode writeSolutionHDF5(const std::string &filePath);
 
     /** \brief Write data required to restart a simulation into a HDF5 file.
      *
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeRestartDataHDF5(const std::string &filePath);
+    virtual PetscErrorCode writeRestartDataHDF5(const std::string &filePath);
 
     /** \brief Read data required to restart a simulation from a HDF5 file.
      *
      * \param filePath [in] Path of the file to read from
      * \return PetscErrorCode
      */
-    PetscErrorCode readRestartDataHDF5(const std::string &filePath);
+    virtual PetscErrorCode readRestartDataHDF5(const std::string &filePath);
 
     /** \brief Write the forces acting on the bodies into an ASCII file. */
-    PetscErrorCode writeForcesASCII();
+    virtual PetscErrorCode writeForcesASCII();
 
 };  // IBPMSolver

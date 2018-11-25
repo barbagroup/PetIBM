@@ -248,6 +248,7 @@ PetscErrorCode SingleBodyPoints::readBody(const std::string &filepath)
     PetscFunctionReturn(0);
 }  // readBody
 
+// write coordinates of the Lagrangian points into ASCII file
 PetscErrorCode SingleBodyPoints::writeBody(const std::string &filepath)
 {
     PetscErrorCode ierr;
@@ -259,13 +260,27 @@ PetscErrorCode SingleBodyPoints::writeBody(const std::string &filepath)
     ierr = PetscViewerSetType(viewer, PETSCVIEWERASCII); CHKERRQ(ierr);
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_WRITE); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filepath.c_str()); CHKERRQ(ierr);
-    for (PetscInt k = 0; k < nPts; k++)
+    if (dim == 3)
     {
-        ierr = PetscViewerASCIIPrintf(viewer, "%10.8e\t%10.8e\t%10.8e\n",
-                                      coords[k][0],
-                                      coords[k][1],
-                                      coords[k][2]); CHKERRQ(ierr);
+        for (PetscInt k = 0; k < nPts; ++k)
+        {
+            ierr = PetscViewerASCIIPrintf(
+                viewer, "%10.8e\t%10.8e\t%10.8e\n",
+                coords[k][0], coords[k][1], coords[k][2]); CHKERRQ(ierr);
+        }
     }
+    else if (dim == 2)
+    {
+        for (PetscInt k = 0; k < nPts; ++k)
+        {
+            ierr = PetscViewerASCIIPrintf(
+                viewer, "%10.8e\t%10.8e\n",
+                coords[k][0], coords[k][1]); CHKERRQ(ierr);
+        }
+    }
+    else
+         SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_FILE_WRITE,
+                "Function only supports 2D and 3D bodies.\n");
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);

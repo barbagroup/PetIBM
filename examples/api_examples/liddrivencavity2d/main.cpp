@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 
     // Write out the coordinates of grid points to a HDF file (grid.h5) under
     // the current directory.
-    ierr = mesh->write("./grid"); CHKERRQ(ierr);
+    ierr = mesh->write("./grid.h5"); CHKERRQ(ierr);
 
     /*
      * Step 3: create an object to hold solutions according the mesh.
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 
     // Set the solution to be the initial conditions at this point. The initial
     // condition should exist in the simulation configurations.
-    ierr = soln->applyIC(config); CHKERRQ(ierr);
+    ierr = soln->setInitialConditions(config); CHKERRQ(ierr);
 
     /*
      * Step 4: create a boundary object to hold all boundary conditions and
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
     /*
      * Step 9: output solution to a HDF5 file (./solution/0002000.h5).
      */
-    ierr = soln->write("./solution/0002000"); CHKERRQ(ierr);
+    ierr = soln->write("./solution/0002000.h5"); CHKERRQ(ierr);
 
     /*
      * Step 10: clean up objects to avoid memory leak.

@@ -9,6 +9,8 @@
 
 #include <petscviewerhdf5.h>
 
+#include <petibm/delta.h>
+
 #include "decoupledibpm.h"
 
 DecoupledIBPMSolver::DecoupledIBPMSolver(const MPI_Comm &world,
@@ -167,7 +169,13 @@ PetscErrorCode DecoupledIBPMSolver::createExtraOperators()
     ierr = MatGetDiagonal(MHat, MHatDiag); CHKERRQ(ierr);
 
     // create a Delta operator and its transpose
-    ierr = petibm::operators::createDelta(mesh, bc, bodies, E); CHKERRQ(ierr);
+    const YAML::Node &node = config["parameters"];
+    std::string name = node["delta"].as<std::string>("ROMA_ET_AL_1999");
+    petibm::delta::DeltaKernel kernel;
+    PetscInt kernelSize;
+    ierr = petibm::delta::getKernel(name, kernel, kernelSize); CHKERRQ(ierr);
+    ierr = petibm::operators::createDelta(
+        mesh, bc, bodies, kernel, kernelSize, E); CHKERRQ(ierr);
     ierr = MatTranspose(E, MAT_INITIAL_MATRIX, &H); CHKERRQ(ierr);
 
     // create the regularization operator: E

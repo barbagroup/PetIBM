@@ -9,6 +9,7 @@
 
 #include <petibm/bodypack.h>
 #include <petibm/boundary.h>
+#include <petibm/delta.h>
 #include <petibm/mesh.h>
 #include <petibm/type.h>
 
@@ -341,7 +342,9 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
  * \param mesh [in] Structured Cartesian mesh object.
  * \param bc [in] Data object with boundary conditions.
  * \param bodies [in] Data object with the immersed boundaries.
- * \param Delta [out] Matrix \f$Delta\f$.
+ * \param kernel [in] Regularized delta kernel to use.
+ * \param kernelSize [in] Size of the kernel.
+ * \param Op [out] Matrix \f$Delta\f$.
  *
  * In \f$Delta\f$, rows represent Lagrangian points, while columns represent
  * velocity mesh points.
@@ -356,7 +359,10 @@ PetscErrorCode createBn(const Mat &Op, const Mat &M, const PetscReal &dt,
  * \ingroup operatorModule
  */
 PetscErrorCode createDelta(const type::Mesh &mesh, const type::Boundary &bc,
-                           const type::BodyPack &bodies, Mat &Delta);
+                           const type::BodyPack &bodies,
+                           const delta::DeltaKernel &kernel,
+                           const PetscInt &kernelSize,
+                           Mat &Op);
 
 }  // end of namespace operators
 

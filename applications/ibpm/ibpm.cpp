@@ -9,6 +9,7 @@
 
 #include <petscviewerhdf5.h>
 
+#include <petibm/delta.h>
 #include <petibm/io.h>
 
 #include "ibpm.h"
@@ -139,8 +140,13 @@ PetscErrorCode IBPMSolver::createOperators()
 
     // create a Delta operator and its transpose (equal to H)
     ierr = bodies->updateMeshIdx(mesh); CHKERRQ(ierr);
+    const YAML::Node &node = config["parameters"];
+    std::string name = node["delta"].as<std::string>("ROMA_ET_AL_1999");
+    petibm::delta::DeltaKernel kernel;
+    PetscInt kernelSize;
+    ierr = petibm::delta::getKernel(name, kernel, kernelSize); CHKERRQ(ierr);
     ierr = petibm::operators::createDelta(
-        mesh, bc, bodies, DE[1]); CHKERRQ(ierr);
+        mesh, bc, bodies, kernel, kernelSize, DE[1]); CHKERRQ(ierr);
     ierr = MatTranspose(DE[1], MAT_INITIAL_MATRIX, &GH[1]); CHKERRQ(ierr);
 
     // create the regularization operator: E

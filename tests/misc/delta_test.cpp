@@ -21,15 +21,15 @@ using namespace petibm::delta;
 TEST(deltaRomaEtAlTest, zeroOutside)
 {
     const PetscReal h = 1.0;
-    EXPECT_EQ(0.0, Roma_et_al(1.5, h));
-    EXPECT_EQ(0.0, Roma_et_al(2.0, h));
+    EXPECT_EQ(0.0, Roma_et_al_1999(1.5, h));
+    EXPECT_EQ(0.0, Roma_et_al_1999(2.0, h));
 }
 
 // check maximum value at 0
 TEST(deltaRomaEtAlTest, maximumValue)
 {
     const PetscReal h = 1.0;
-    EXPECT_EQ(2.0 / 3.0, Roma_et_al(0.0, h));
+    EXPECT_EQ(2.0 / 3.0, Roma_et_al_1999(0.0, h));
 }
 
 // check delta function is monotonically decreasing
@@ -44,7 +44,7 @@ TEST(deltaRomaEtAlTest, decreasingInfluence)
     std::sort(vals.begin(), vals.end());
     // assert decreasing influence as the distance increases
     for (unsigned int i = 0; i < vals.size() - 1; i++)
-        ASSERT_GT(Roma_et_al(vals[i], h), Roma_et_al(vals[i + 1], h));
+        ASSERT_GT(Roma_et_al_1999(vals[i], h), Roma_et_al_1999(vals[i + 1], h));
 }
 
 // Run all tests

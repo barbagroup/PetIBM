@@ -5,10 +5,10 @@
  * \license BSD 3-Clause License.
  */
 
-// here goes PETSc headers
+#include <cmath>
+
 #include <petscmat.h>
 
-// here goes headers from our PetIBM
 #include <petibm/bodypack.h>
 #include <petibm/boundary.h>
 #include <petibm/delta.h>
@@ -25,196 +25,187 @@ namespace operators
 // TODO: no pre-allocation for D matrix, this may be inefficient, though it
 // works
 
-PetscErrorCode getWindowAndDistance(
-    const PetscInt &dim, const type::IntVec1D &n,
-    const type::GhostedVec2D &coords, const std::vector<bool> &periodic,
-    const type::RealVec1D &L, const type::IntVec1D &IJK,
-    const type::RealVec1D &XYZ, type::IntVec2D &targets,
-    type::RealVec2D &targetdLs);
+PetscErrorCode getEulerianNeighbors(
+    const type::Mesh &mesh, const PetscInt &dof, const type::IntVec1D &IJK,
+    const std::vector<bool> &periodic, const PetscInt &window,
+    type::IntVec2D &ijk, type::RealVec2D &xyz);
 
 // implementation of petibm::operators::createDelta
 PetscErrorCode createDelta(const type::Mesh &mesh, const type::Boundary &bc,
-                           const type::BodyPack &bodies, Mat &D)
+                           const type::BodyPack &bodies,
+                           const delta::DeltaKernel &kernel,
+                           const PetscInt &kernelSize,
+                           Mat &Op)
 {
     PetscFunctionBeginUser;
 
     PetscErrorCode ierr;
 
-    // flags to see if BC is periodic
-    std::vector<bool> periodic(mesh->dim);
-
-    // domain sizes for periodic cases
-    type::RealVec1D L(mesh->dim);
-
     // get periodic flags and domain sizes
+    std::vector<bool> periodic(mesh->dim);  // flags to check periodicity
     for (PetscInt d = 0; d < mesh->dim; ++d)
     {
-        // if u-velocity at a direction is periodic, so are other velocity
-        // fields
+        // the the x-component of the velocity is periodic in a direction,
+        // so are the other components of the velocity
         periodic[d] = (bc->bds[0][d]->type == type::BCType::PERIODIC);
-
-        L[d] = mesh->max[d] - mesh->min[d];
     }
 
-    ierr = MatCreate(mesh->comm, &D); CHKERRQ(ierr);
-    ierr = MatSetSizes(D, bodies->nLclPts * bodies->dim, mesh->UNLocal,
+    ierr = MatCreate(mesh->comm, &Op); CHKERRQ(ierr);
+    ierr = MatSetSizes(Op, bodies->nLclPts * bodies->dim, mesh->UNLocal,
                        bodies->nPts * bodies->dim, mesh->UN); CHKERRQ(ierr);
-    ierr = MatSetFromOptions(D); CHKERRQ(ierr);
-    ierr = MatSetUp(D); CHKERRQ(ierr);
-    ierr = MatSetOption(D, MAT_KEEP_NONZERO_PATTERN, PETSC_FALSE);
-    CHKERRQ(ierr);
-    ierr = MatSetOption(D, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
+    ierr = MatSetFromOptions(Op); CHKERRQ(ierr);
+    ierr = MatSetUp(Op); CHKERRQ(ierr);
+    ierr = MatSetOption(
+        Op, MAT_KEEP_NONZERO_PATTERN, PETSC_FALSE); CHKERRQ(ierr);
+    ierr = MatSetOption(
+        Op, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); CHKERRQ(ierr);
 
     // loop through all bodies
     for (PetscInt bIdx = 0; bIdx < bodies->nBodies; ++bIdx)
     {
-        // get an alias of current body for code simplicity
-        const type::SingleBody bd = bodies->bodies[bIdx];
+        // get an alias of the current body (for code readability)
+        const type::SingleBody &body = bodies->bodies[bIdx];
+
+        // get the cell widths of the background mesh
+        // (the regularized delta functions work for uniform meshes)
+        std::vector<PetscReal> widths(mesh->dim);
+        for (PetscInt d = 0; d < mesh->dim; ++d)
+        {
+            // get the directional width of the Eulerian cell
+            // closest to the first Lagrangian point
+            widths[d] = mesh->dL[0][d][body->meshIdx[0][d]];
+        }
 
         // loop through all local points of this body
-        for (PetscInt iLcl = 0, iGlb = bd->bgPt; iLcl < bd->nLclPts;
+        for (PetscInt iLcl = 0, iGlb = body->bgPt; iLcl < body->nLclPts;
              iLcl++, iGlb++)
         {
             // get alias of coordinates and background index of current point
-            const type::IntVec1D &IJK = bd->meshIdx[iLcl];
-            const type::RealVec1D &XYZ = bd->coords[iGlb];
+            const type::IntVec1D &IJK = body->meshIdx[iLcl];
+            const type::RealVec1D &XYZ = body->coords[iGlb];
 
-            // loop through all degree of freedom
-            for (PetscInt dof = 0; dof < bd->dim; ++dof)
+            // loop through all directions
+            for (PetscInt dof = 0; dof < body->dim; ++dof)
             {
-                PetscInt row;               // row in packed matrix
-                type::IntVec2D targets;     // index of valid velocity points
-                type::RealVec2D targetdLs;  // distance to velocity points
                 type::IntVec1D cols;
-                type::RealVec1D values;
+                type::RealVec1D vals;
 
                 // get packed row index
-                ierr = bodies->getPackedGlobalIndex(bIdx, iGlb, dof, row);
-                CHKERRQ(ierr);
+                PetscInt row;
+                ierr = bodies->getPackedGlobalIndex(
+                    bIdx, iGlb, dof, row); CHKERRQ(ierr);
 
-                // get indices and distances of valid velocity points
-                // valid means the ones that may interact with Lagrangian point
-                ierr = getWindowAndDistance(mesh->dim, mesh->n[dof],
-                                            mesh->coord[dof], periodic, L, IJK,
-                                            XYZ, targets, targetdLs);
-                CHKERRQ(ierr);
+                type::IntVec2D ijk;
+                type::RealVec2D coords;
+                ierr = getEulerianNeighbors(
+                    mesh, dof, IJK, periodic, kernelSize, ijk, coords); CHKERRQ(ierr);
 
+                type::RealVec1D xyz(mesh->dim, 0.0);
                 if (mesh->dim == 3)
                 {
-                    for (unsigned int k = 0; k < targets[2].size(); ++k)
+                    for (unsigned int k = 0; k < ijk[2].size(); ++k)
                     {
-                        const PetscReal &hz = mesh->dL[dof][2][targets[2][k]];
-
-                        for (unsigned int j = 0; j < targets[1].size(); ++j)
+                        xyz[2] = coords[2][k];
+                        for (unsigned int j = 0; j < ijk[1].size(); ++j)
                         {
-                            const PetscReal &hy =
-                                mesh->dL[dof][1][targets[1][j]];
-
-                            for (unsigned int i = 0; i < targets[0].size(); ++i)
+                            xyz[1] = coords[1][j];
+                            for (unsigned int i = 0; i < ijk[0].size(); ++i)
                             {
-                                const PetscReal &hx =
-                                    mesh->dL[dof][0][targets[0][i]];
-
+                                xyz[0] = coords[0][i];
+                                // get packed column index
                                 PetscInt col;
-                                PetscReal value;
-
                                 ierr = mesh->getPackedGlobalIndex(
-                                    dof, targets[0][i], targets[1][j],
-                                    targets[2][k], col); CHKERRQ(ierr);
-
-                                value = delta::Roma_et_al(targetdLs[0][i], hx,
-                                                          targetdLs[1][j], hy,
-                                                          targetdLs[2][k], hz);
-
+                                    dof, ijk[0][i], ijk[1][j], ijk[2][k],
+                                    col); CHKERRQ(ierr);
+                                
+                                PetscReal val;
+                                val = delta::delta(
+                                    XYZ, xyz, widths, kernel); CHKERRQ(ierr);
+                                
                                 cols.push_back(col);
-                                values.push_back(value);
+                                vals.push_back(val);
                             }
                         }
                     }
                 }
-                else
+                else if (mesh->dim == 2)
                 {
-                    for (unsigned int j = 0; j < targets[1].size(); ++j)
+                    for (unsigned int j = 0; j < ijk[1].size(); ++j)
                     {
-                        const PetscReal &hy = mesh->dL[dof][1][targets[1][j]];
-
-                        for (unsigned int i = 0; i < targets[0].size(); ++i)
+                        xyz[1] = coords[1][j];
+                        for (unsigned int i = 0; i < ijk[0].size(); ++i)
                         {
-                            const PetscReal &hx =
-                                mesh->dL[dof][0][targets[0][i]];
-
+                            xyz[0] = coords[0][i];
+                            // get packed column index
                             PetscInt col;
-                            PetscReal value;
-
                             ierr = mesh->getPackedGlobalIndex(
-                                dof, targets[0][i], targets[1][j], 0, col);
-                            CHKERRQ(ierr);
-
-                            value = delta::Roma_et_al(targetdLs[0][i], hx,
-                                                      targetdLs[1][j], hy);
-
+                                dof, ijk[0][i], ijk[1][j], 0,
+                                col); CHKERRQ(ierr);
+                            
+                            PetscReal val;
+                            val = delta::delta(
+                                XYZ, xyz, widths, kernel); CHKERRQ(ierr);
+                            
                             cols.push_back(col);
-                            values.push_back(value);
+                            vals.push_back(val);
                         }
                     }
                 }
+                else
+                    SETERRQ(mesh->comm, PETSC_ERR_ARG_WRONG,
+                            "Only 2D and 3D configurations are supported.\n");
 
-                ierr = MatSetValues(D, 1, &row, cols.size(), cols.data(),
-                                    values.data(), INSERT_VALUES);
-                CHKERRQ(ierr);
+                ierr = MatSetValues(Op, 1, &row,
+                                    cols.size(), cols.data(), vals.data(),
+                                    INSERT_VALUES); CHKERRQ(ierr);
             }
         }
     }
 
-    ierr = MatAssemblyBegin(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-    ierr = MatAssemblyEnd(D, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+    ierr = MatAssemblyBegin(Op, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+    ierr = MatAssemblyEnd(Op, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // createDelta
 
-PetscErrorCode getWindowAndDistance(
-    const PetscInt &dim, const type::IntVec1D &n,
-    const type::GhostedVec2D &coords, const std::vector<bool> &periodic,
-    const type::RealVec1D &L, const type::IntVec1D &IJK,
-    const type::RealVec1D &XYZ, type::IntVec2D &targets,
-    type::RealVec2D &targetdLs)
+PetscErrorCode getEulerianNeighbors(
+    const type::Mesh &mesh, const PetscInt &dof, const type::IntVec1D &IJK,
+    const std::vector<bool> &periodic, const PetscInt &window,
+    type::IntVec2D &ijk, type::RealVec2D &xyz)
 {
     PetscFunctionBeginUser;
 
-    targets.resize(dim);
-    targetdLs.resize(dim);
+    xyz.resize(mesh->dim);
+    ijk.resize(mesh->dim);
 
-    // loop through all direction
-    for (PetscInt dir = 0; dir < dim; ++dir)
+    for (PetscInt d = 0; d < mesh->dim; ++d)
     {
-        // loop through all possible index in this direction (+-2)
-        for (PetscInt ijk = IJK[dir] - 2; ijk <= IJK[dir] + 2; ++ijk)
+        for (PetscInt s = IJK[d] - window; s <= IJK[d] + window; ++s)
         {
-            if ((ijk >= 0) && (ijk < n[dir]))
+            if (s >= 0 && s < mesh->n[dof][d])
             {
-                targets[dir].push_back(ijk);
-                targetdLs[dir].push_back(XYZ[dir] - coords[dir][ijk]);
+                ijk[d].push_back(s);
+                xyz[d].push_back(mesh->coord[dof][d][s]);
             }
-            else if (periodic[dir])  // only when periodic, we do something
+            else if (periodic[d])
             {
-                if (ijk < 0)
+                PetscReal L = mesh->max[d] - mesh->min[d];
+                if (s < 0)
                 {
-                    targets[dir].push_back(n[dir] + ijk);
-                    targetdLs[dir].push_back(XYZ[dir] + L[dir] -
-                                             coords[dir][targets[dir].back()]);
+                    ijk[d].push_back(s + mesh->n[dof][d]);
+                    xyz[d].push_back(mesh->coord[dof][d][s] - L);
                 }
-                else  // imply ijk > # of velocity points
+                else
                 {
-                    targets[dir].push_back(ijk - n[dir]);
-                    targetdLs[dir].push_back(XYZ[dir] - L[dir] -
-                                             coords[dir][targets[dir].back()]);
+                    ijk[d].push_back(s - mesh->n[dof][d]);
+                    xyz[d].push_back(mesh->coord[dof][d][s] + L);
                 }
             }
         }
     }
 
     PetscFunctionReturn(0);
-}  // getWindowAndDistance
+}  // getEulerianNeighbors
 
 }  // end of namespace operators
 }  // end of namespace petibm

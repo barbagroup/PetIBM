@@ -7,61 +7,68 @@
 
 #pragma once
 
+#include <functional>
+#include <vector>
+
 #include <petscsys.h>
 
 namespace petibm
 {
-/**
- * \brief A namespace of all kinds of discretized delta functions.
+/** \brief A namespace of all kinds of discretized delta functions.
  *
  * \ingroup miscModule
  */
 namespace delta
 {
-/**
- * \brief One-dimensional discrete delta function from Roma et al. (1999).
+/** \brief Regularized delta function from Roma et al. (1999).
  *
- * \param rx [in] Distance between target and source.
- * \param drx [in] Window size.
+ * \param r [in] Distance between target and source
+ * \param dr [in] Window size
  *
- * \returns The value of the discrete delta function.
+ * \returns The value of the regularized delta function.
  *
  * \ingroup miscModule
  */
-PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx);
+PetscReal Roma_et_al_1999(const PetscReal &r, const PetscReal &dr);
 
-/**
- * \brief Two-dimensional discrete delta function from Roma et al. (1999).
+/** \brief Regularized delta function from Peskin (2002).
  *
- * \param rx [in] Distance of the 1st component between target and source.
- * \param drx [in] Window size of the 1st component.
- * \param ry [in] Distance of the 2nd component between target and source.
- * \param dry [in] Window size of the 2nd component.
+ * \param r [in] Distance between target and source
+ * \param dr [in] Window size
  *
- * \returns The value of the discrete delta function.
+ * \returns The value of the regularized delta function.
  *
  * \ingroup miscModule
  */
-PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx,
-                     const PetscReal &ry, const PetscReal &dry);
+PetscReal Peskin_2002(const PetscReal &r, const PetscReal &dr);
 
-/**
- * \brief Three-dimensional discrete delta function from Roma et al. (1999).
+/** \brief Typedef to choose the regularized delta kernel to use. */
+typedef std::function<PetscReal(const PetscReal &r,
+                                const PetscReal &dr)> DeltaKernel;
+
+/** \brief Get the delta kernel and size providing the name.
  *
- * \param rx [in] Distance of the 1st component between target and source.
- * \param drx [in] Window size of the 1st component.
- * \param ry [in] Distance of the 2nd component between target and source.
- * \param dry [in] Window size of the 2nd component.
- * \param rz [in] Distance of the 3rd component between target and source.
- * \param drz [in] Window size of the 3rd component.
+ * \param name [in] Name of the delta kernel
+ * \param kernel [out] The regularized delta kernel
+ * \param size [out] Size of the delta kernel
+*/
+PetscErrorCode getKernel(const std::string &name,
+                         DeltaKernel &kernel, PetscInt &size);
+
+/** \brief Discrete delta function.
+ *
+ * \param source [in] Coordinates of the source point
+ * \param target [in] Coordinates of the target point
+ * \param h [in] Cell width
  *
  * \returns The value of the discrete delta function.
  *
  * \ingroup miscModule
  */
-PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx,
-                     const PetscReal &ry, const PetscReal &dry,
-                     const PetscReal &rz, const PetscReal &drz);
+PetscReal delta(const std::vector<PetscReal> &source,
+                const std::vector<PetscReal> &target,
+                const std::vector<PetscReal> &widths,
+                const DeltaKernel &kernel);
 
 }  // end of namespace delta
 

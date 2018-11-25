@@ -491,8 +491,6 @@ PetscErrorCode CartesianMesh::initDMDA()
 // implementation of CartesianMesh::createSingleDMDA
 PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 {
-    using namespace std;
-
     PetscFunctionBeginUser;
 
     PetscErrorCode ierr;
@@ -542,8 +540,6 @@ PetscErrorCode CartesianMesh::createSingleDMDA(const PetscInt &i)
 // implementation of CartesianMesh::createPressureDMDA
 PetscErrorCode CartesianMesh::createPressureDMDA()
 {
-    using namespace std;
-
     PetscFunctionBeginUser;
 
     PetscErrorCode ierr;
@@ -562,8 +558,6 @@ PetscErrorCode CartesianMesh::createPressureDMDA()
 // implementation of CartesianMesh::createVelocityPack
 PetscErrorCode CartesianMesh::createVelocityPack()
 {
-    using namespace std;
-
     PetscFunctionBeginUser;
 
     PetscErrorCode ierr;

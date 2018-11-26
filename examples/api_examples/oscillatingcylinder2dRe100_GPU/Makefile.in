@@ -109,7 +109,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_oscillatingcylinder_OBJECTS = oscillatingcylinder-main.$(OBJEXT)
+am_oscillatingcylinder_OBJECTS = oscillatingcylinder-main.$(OBJEXT) \
+	oscillatingcylinder-oscillatingcylinder.$(OBJEXT)
 oscillatingcylinder_OBJECTS = $(am_oscillatingcylinder_OBJECTS)
 am__DEPENDENCIES_1 =
 @WITH_AMGX_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
@@ -317,15 +318,20 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-oscillatingcylinder_SOURCES = main.cpp
+oscillatingcylinder_SOURCES = \
+	main.cpp \
+	oscillatingcylinder.cpp
+
 oscillatingcylinder_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	$(PETSC_CPPFLAGS) \
 	$(YAMLCPP_CPPFLAGS)
 
-oscillatingcylinder_LDADD = $(top_builddir)/src/libpetibm.la \
-	$(PETSC_LDFLAGS) $(PETSC_LIBS) $(YAMLCPP_LDFLAGS) \
-	$(YAMLCPP_LIBS) $(am__append_1)
+oscillatingcylinder_LDADD =  \
+	$(top_builddir)/applications/libpetibmapps.la \
+	$(top_builddir)/src/libpetibm.la $(PETSC_LDFLAGS) \
+	$(PETSC_LIBS) $(YAMLCPP_LDFLAGS) $(YAMLCPP_LIBS) \
+	$(am__append_1)
 oscillatingcylinder_DEPENDENCIES = input_data
 all: all-am
 
@@ -372,6 +378,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oscillatingcylinder-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -410,6 +417,20 @@ oscillatingcylinder-main.obj: main.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='oscillatingcylinder-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(oscillatingcylinder_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o oscillatingcylinder-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+
+oscillatingcylinder-oscillatingcylinder.o: oscillatingcylinder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(oscillatingcylinder_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT oscillatingcylinder-oscillatingcylinder.o -MD -MP -MF $(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Tpo -c -o oscillatingcylinder-oscillatingcylinder.o `test -f 'oscillatingcylinder.cpp' || echo '$(srcdir)/'`oscillatingcylinder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Tpo $(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='oscillatingcylinder.cpp' object='oscillatingcylinder-oscillatingcylinder.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(oscillatingcylinder_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o oscillatingcylinder-oscillatingcylinder.o `test -f 'oscillatingcylinder.cpp' || echo '$(srcdir)/'`oscillatingcylinder.cpp
+
+oscillatingcylinder-oscillatingcylinder.obj: oscillatingcylinder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(oscillatingcylinder_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT oscillatingcylinder-oscillatingcylinder.obj -MD -MP -MF $(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Tpo -c -o oscillatingcylinder-oscillatingcylinder.obj `if test -f 'oscillatingcylinder.cpp'; then $(CYGPATH_W) 'oscillatingcylinder.cpp'; else $(CYGPATH_W) '$(srcdir)/oscillatingcylinder.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Tpo $(DEPDIR)/oscillatingcylinder-oscillatingcylinder.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='oscillatingcylinder.cpp' object='oscillatingcylinder-oscillatingcylinder.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(oscillatingcylinder_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o oscillatingcylinder-oscillatingcylinder.obj `if test -f 'oscillatingcylinder.cpp'; then $(CYGPATH_W) 'oscillatingcylinder.cpp'; else $(CYGPATH_W) '$(srcdir)/oscillatingcylinder.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -625,7 +646,7 @@ input_data:
 	if test "$(top_srcdir)" != "$(top_builddir)" ; then \
 		cp -f $(srcdir)/README.md $(PWD) ; \
 		cp -f $(srcdir)/config.yaml $(PWD) ; \
-		cp -rf $(srcdir)/configs $(PWD) ; \
+		cp -rf $(srcdir)/config $(PWD) ; \
 		cp -f $(srcdir)/circle.body $(PWD) ; \
 		cp -rf $(srcdir)/scripts $(PWD) ; \
 	fi ;

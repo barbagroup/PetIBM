@@ -10,7 +10,7 @@ import numpy
 # Circle's parameters.
 R = 0.5  # radius
 xc, yc = 0.0, 0.0  # center's coordinates
-ds = 8.0 / 512  # mesh spacing
+ds = 8.0 / 512  # distance between two consecutive points
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 simu_dir = os.path.dirname(script_dir)

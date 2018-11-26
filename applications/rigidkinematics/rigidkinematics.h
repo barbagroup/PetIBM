@@ -67,7 +67,7 @@ protected:
      * Set the velocity of the Lagrangian points.
      * Assemble the operators that depends on the location of the Lagrangian points.
      *
-     * \params ti [in] Time
+     * \param ti [in] Time
      */
     virtual PetscErrorCode moveBodies(const PetscReal &ti);
 
@@ -76,7 +76,7 @@ protected:
      * The present implementation does nothing.
      * The method should be implemented by the user in a child class.
      *
-     * \params ti [in] Time
+     * \param ti [in] Time
      */
     virtual PetscErrorCode setCoordinatesBodies(
         const PetscReal &ti){PetscFunctionReturn(0);};
@@ -86,7 +86,7 @@ protected:
      * The present implementation does nothing.
      * The method should be implemented by the user in a child class.
      *
-     * \params ti [in] Time
+     * \param ti [in] Time
      */
     virtual PetscErrorCode setVelocityBodies(
         const PetscReal &ti){PetscFunctionReturn(0);};

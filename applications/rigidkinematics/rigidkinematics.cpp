@@ -30,7 +30,6 @@ RigidKinematicsSolver::~RigidKinematicsSolver()
     ierr = destroy(); CHKERRV(ierr);
 }  // ~RigidKinematicsSolver
 
-
 // destroy data
 PetscErrorCode RigidKinematicsSolver::destroy()
 {

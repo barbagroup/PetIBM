@@ -1,13 +1,3 @@
-# solversPetscOptions.info
-
-# Velocity solver: prefix `-velocity_`
--velocity_ksp_type bcgs
--velocity_ksp_atol 1.0E-06
--velocity_ksp_rtol 0.0
--velocity_ksp_max_it 1000
--velocity_pc_type jacobi
--velocity_pc_jacobi_type diagonal
-
 # Poisson solver: prefix `-poisson_`
 -poisson_ksp_type cg
 -poisson_ksp_atol 1.0E-06

@@ -1,6 +1,4 @@
-# solversPetscOptions.info
-
-# Velocity solver: prefix `-velocity_`
+# velocity solver: prefix `-velocity_`
 -velocity_ksp_type bcgs
 -velocity_ksp_atol 1.0E-06
 -velocity_ksp_rtol 0.0

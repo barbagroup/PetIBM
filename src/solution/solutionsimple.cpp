@@ -1,44 +1,39 @@
 /**
  * \file solutionsimple.cpp
- * \brief Implementations of the members of SolutionSimple.
+ * \brief Implementation of the members of the class
+ *        petibm::solution::SolutionSimple.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
  */
 
-
-// PetIBM
-# include <petibm/solutionsimple.h>
-# include <petibm/parser.h>
-# include <petibm/io.h>
-
+#include <petibm/io.h>
+#include <petibm/parser.h>
+#include <petibm/solutionsimple.h>
 
 namespace petibm
 {
 namespace solution
 {
-
 using namespace type;
 
-// default destructor
+// Default destructor.
 SolutionSimple::~SolutionSimple() = default;
 
-
-// constructor
+// Constructor; initialize the solution object.
 SolutionSimple::SolutionSimple(const Mesh &inMesh)
 {
     init(inMesh);
-} // SolutionSimple
+}  // SolutionSimple
 
-
-// underlying initialization function
+// Create the flow field solutions.
 PetscErrorCode SolutionSimple::init(const Mesh &inMesh)
 {
+    PetscErrorCode ierr;
+
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
-    // make a shared pointer pointing to associated mesh
-    mesh = inMesh; 
+    // make a shared pointer pointing to underlying mesh
+    mesh = inMesh;
 
     // obtain MPI information from CartesianMesh object
     comm = mesh->comm;
@@ -58,34 +53,28 @@ PetscErrorCode SolutionSimple::init(const Mesh &inMesh)
     ierr = createInfoString(); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // init
+}  // init
 
-
-// create a std::string for information
+// Create a string with information about the solution.
 PetscErrorCode SolutionSimple::createInfoString()
 {
+    PetscErrorCode ierr;
+    std::stringstream ss;
+
     PetscFunctionBeginUser;
-
-    PetscErrorCode      ierr;
-    PetscInt            size;
-
-    ierr = VecGetSize(UGlobal, &size); CHKERRQ(ierr);
-
-    std::stringstream   ss;
 
     if (mpiRank == 0)
     {
+        PetscInt size;
         ss << std::string(80, '=') << std::endl;
         ss << "Solution Vectors:" << std::endl;
         ss << std::string(80, '=') << std::endl;
-
         ss << "\tDimension: " << dim << std::endl;
         ss << std::endl;
-
         ierr = VecGetSize(UGlobal, &size); CHKERRQ(ierr);
-        ss << "\tLength of Global Packed Velocity Vector: " << size << std::endl;
+        ss << "\tLength of Global Packed Velocity Vector: " << size
+           << std::endl;
         ss << std::endl;
-
         ierr = VecGetSize(pGlobal, &size); CHKERRQ(ierr);
         ss << "\tLength of Global Pressure Vector: " << size << std::endl;
         ss << std::endl;
@@ -94,153 +83,136 @@ PetscErrorCode SolutionSimple::createInfoString()
     info = ss.str();
 
     PetscFunctionReturn(0);
-} // createInfoString
+}  // createInfoString
 
-
-// convert flux to velocity
+// Convert velocity fluxes to velocity components.
 PetscErrorCode SolutionSimple::convert2Velocity(const Mat &RInv)
 {
+    PetscErrorCode ierr;
+
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
-    Vec                 U;
-
+    Vec U;  // temporary Vec for the velocity components
     ierr = VecDuplicate(UGlobal, &U); CHKERRQ(ierr);
-
     ierr = MatMult(RInv, UGlobal, U); CHKERRQ(ierr);
-
     ierr = VecSwap(UGlobal, U); CHKERRQ(ierr);
-
     ierr = VecDestroy(&U); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // convert2Velocity
+}  // convert2Velocity
 
-
-// convert velocity to flux
+// Convert velocity components to velocity fluxes.
 PetscErrorCode SolutionSimple::convert2Flux(const Mat &R)
 {
+    PetscErrorCode ierr;
+
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-
-    Vec                 F;
-
+    Vec F;  // temporary Vec for the fluxes
     ierr = VecDuplicate(UGlobal, &F); CHKERRQ(ierr);
-
     ierr = MatMult(R, UGlobal, F); CHKERRQ(ierr);
-
     ierr = VecSwap(UGlobal, F); CHKERRQ(ierr);
-
     ierr = VecDestroy(&F); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // convert2Flux
+}  // convert2Flux
 
-
-// apply initial conditions
-PetscErrorCode SolutionSimple::applyIC(const YAML::Node &node)
+// Set initial conditions of the flow fields.
+PetscErrorCode SolutionSimple::setInitialConditions(const YAML::Node &node)
 {
+    PetscErrorCode ierr;
+    type::RealVec1D ICs;
+    std::vector<Vec> UGlobalUnpacked(dim);
+
     PetscFunctionBeginUser;
 
-    PetscErrorCode      ierr;
-    type::RealVec1D     values;
-    std::vector<Vec>    UGlobalUnPacked(dim);
-    
-    ierr = parser::parseICs(node, values); CHKERRQ(ierr);
+    // parse initial conditions for the velocity vector field
+    ierr = parser::parseICs(node, ICs); CHKERRQ(ierr);
 
-    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim,
-            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
+    // get individual velocity components from the packed Vec object
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, nullptr,
+                                     UGlobalUnpacked.data()); CHKERRQ(ierr);
 
-    for(PetscInt comp=0; comp<dim; ++comp)
+    for (PetscInt i = 0; i < dim; ++i)
     {
-        ierr = VecSet(UGlobalUnPacked[comp], values[comp]); CHKERRQ(ierr);
+        ierr = VecSet(UGlobalUnpacked[i], ICs[i]); CHKERRQ(ierr);
     }
 
-    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim,
-            nullptr, UGlobalUnPacked.data()); CHKERRQ(ierr);
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, nullptr,
+                                         UGlobalUnpacked.data());
+    CHKERRQ(ierr);
 
+    // pressure scalar field initialized with zeros
     ierr = VecSet(pGlobal, 0.0); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // applyIC
+}  // setInitialConditions
 
-
-PetscErrorCode SolutionSimple::write(const std::string &file) const
+// Write flow field solutions to a file.
+PetscErrorCode SolutionSimple::write(const std::string &filePath) const
 {
+    PetscErrorCode ierr;
+
     PetscFunctionBeginUser;
-    
-    PetscErrorCode  ierr;
-    
-    std::vector<Vec>            vecs(dim+1);
-    std::vector<std::string>    names(dim+1);
-    
-    
+
+    std::vector<Vec> vecs(dim + 1);
+    std::vector<std::string> names(dim + 1);
+
     // set names for u, v, and/or w
-    for(int f=0; f<dim; ++f)
-        names[f] = type::fd2str[type::Field(f)];
-    
+    for (int f = 0; f < dim; ++f) names[f] = type::fd2str[type::Field(f)];
     // set name for pressure
     names.back() = "p";
-    
-    // get unpacked global Vecs from packed global Vec
-    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
-            nullptr, vecs.data()); CHKERRQ(ierr);
-    
+
+    // get individual velocity components from the packed Vec object
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, nullptr,
+                                     vecs.data()); CHKERRQ(ierr);
     // get a reference to pressure Vec
     vecs.back() = pGlobal;
-    
+
     // write to a HDF5 file
-    ierr = io::writeHDF5Vecs(comm, file, "/", names, vecs); CHKERRQ(ierr);
-    
+    ierr = io::writeHDF5Vecs(comm, filePath, "/", names, vecs); CHKERRQ(ierr);
+
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;
-    
-    // return unpacked global Vecs to packed global Vec
-    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, 
-            nullptr, vecs.data()); CHKERRQ(ierr);
-    
+    // return individual Vec objects to the packed Vec object
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, nullptr,
+                                         vecs.data()); CHKERRQ(ierr);
+
     PetscFunctionReturn(0);
-} // write
+}  // write
 
-
-PetscErrorCode SolutionSimple::read(const std::string &file)
+// Read the flow field solutions from a file.
+PetscErrorCode SolutionSimple::read(const std::string &filePath)
 {
+    PetscErrorCode ierr;
+
     PetscFunctionBeginUser;
-    
-    PetscErrorCode  ierr;
-    
-    std::vector<Vec>           vecs(dim+1);
-    std::vector<std::string>    names(dim+1);
-    
-    
+
+    std::vector<Vec> vecs(dim + 1);
+    std::vector<std::string> names(dim + 1);
+
     // set names for u, v, and/or w
-    for(int f=0; f<dim; ++f)
-        names[f] = type::fd2str[type::Field(f)];
-    
+    for (int f = 0; f < dim; ++f) names[f] = type::fd2str[type::Field(f)];
     // set name for pressure
     names.back() = "p";
-    
-    // get unpacked global Vecs from packed global Vec
-    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, 
-            nullptr, vecs.data()); CHKERRQ(ierr);
-    
+
+    // get individual velocity components from the packed Vec object
+    ierr = DMCompositeGetAccessArray(mesh->UPack, UGlobal, dim, nullptr,
+                                     vecs.data()); CHKERRQ(ierr);
     // get a reference to pressure Vec
     vecs.back() = pGlobal;
-    
-    // write to a HDF5 file
-    ierr = io::readHDF5Vecs(comm, file, "/", names, vecs); CHKERRQ(ierr);
-    
+
+    // read Vec objects from a HDF5 file
+    ierr = io::readHDF5Vecs(comm, filePath, "/", names, vecs); CHKERRQ(ierr);
+
     // nullify the reference to pressure Vec
     vecs.back() = PETSC_NULL;
-    
-    // return unpacked global Vecs to packed global Vec
-    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, 
-            nullptr, vecs.data()); CHKERRQ(ierr);
-    
-    PetscFunctionReturn(0);
-} // read
+    // return individual Vec objects to the packed Vec object
+    ierr = DMCompositeRestoreAccessArray(mesh->UPack, UGlobal, dim, nullptr,
+                                         vecs.data()); CHKERRQ(ierr);
 
-} // end of namespace solution
-} // end of namespace petibm
+    PetscFunctionReturn(0);
+}  // read
+
+}  // end of namespace solution
+}  // end of namespace petibm

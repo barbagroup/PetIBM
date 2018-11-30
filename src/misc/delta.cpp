@@ -5,52 +5,78 @@
  * \license BSD 3-Clause License.
  */
 
-// STL
-# include <cmath>
+#include <cmath>
 
-// PetIBM
 #include <petibm/delta.h>
-
 
 namespace petibm
 {
 namespace delta
 {
-
-// 1D delta::Roma_et_al
-PetscReal Roma_et_al(const PetscReal &rx, const PetscReal &drx)
+// Regularized delta function from Roma et al. (1999).
+PetscReal Roma_et_al_1999(const PetscReal &r, const PetscReal &dr)
 {
-    PetscReal r = std::abs(rx) / drx;
+    PetscReal x = std::abs(r) / dr;
 
-    if (r > 1.5)
+    if (x > 1.5) return 0.0;
+
+    if (x > 0.5 && x <= 1.5)
+        return (5 - 3 * x - std::sqrt(-3 * (1 - x) * (1 - x) + 1)) / (6 * dr);
+
+    return (1 + std::sqrt(-3 * x * x + 1)) / (3 * dr);
+}  // Roma_et_al_1999
+
+// Regularized delta function Peskin (2002).
+PetscReal Peskin_2002(const PetscReal &r, const PetscReal &dr)
+{
+    PetscReal x = r / dr;
+
+    if (x >= -2.0 && x <= -1.0)
+        return (5 + 2 * x - std::sqrt(-7 - 12 * x - 4 * x * x)) / (8 * dr);
+    else if (x >= -1.0 && x <= 0.0)
+        return (3 + 2 * x + std::sqrt(1 - 4 * x - 4 * x * x)) / (8 * dr);
+    else if (x >= 0.0 && x <= 1.0)
+        return (3 - 2 * x + std::sqrt(1 + 4 * x - 4 * x * x)) / (8 * dr);
+    else if (x >= 1.0 && x <= 2.0)
+        return (5 - 2 * x - std::sqrt(-7 + 12 * x - 4 * x * x)) / (8 * dr);
+    else
         return 0.0;
+}  // Peskin_2002
 
-    if (r > 0.5 && r <= 1.5)
-        return (5.0 - 3.0 * r - 
-                std::sqrt(-3.0 * (1.0 - r) * (1.0 - r) + 1.0)) / (6.0 * drx);
-
-    return (1.0 + std::sqrt(-3.0 * r * r + 1.0)) / (3.0 * drx);
-} // Roma_et_al
-
-
-// 2D delta::Roma_et_al
-PetscReal Roma_et_al(
-        const PetscReal &rx, const PetscReal &drx,
-        const PetscReal &ry, const PetscReal &dry)
+// Get the delta kernel and size to use
+PetscErrorCode getKernel(const std::string &name,
+                         DeltaKernel &kernel, PetscInt &size)
 {
-    return delta::Roma_et_al(rx, drx) * delta::Roma_et_al(ry, dry);
-} // Roma_et_al
+    PetscFunctionBeginUser;
 
+    if (name == "ROMA_ET_AL_1999")
+    {
+        kernel = Roma_et_al_1999;
+        size = 2;
+    }
+    else if (name == "PESKIN_2002")
+    {
+        kernel = Peskin_2002;
+        size = 3;
+    }
+    else
+        SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_UNKNOWN_TYPE,
+                 "No support for delta kernel `%s`.\n", name.c_str());
 
-// 3D delta::Roma_et_al(const PetscReal &, const PetscReal &, 
-PetscReal Roma_et_al(
-        const PetscReal &rx, const PetscReal &drx,
-        const PetscReal &ry, const PetscReal &dry,
-        const PetscReal &rz, const PetscReal &drz)
+    PetscFunctionReturn(0);
+}  // getKernel
+
+// Discrete delta function.
+PetscReal delta(const std::vector<PetscReal> &source,
+                const std::vector<PetscReal> &target,
+                const std::vector<PetscReal> &widths,
+                const DeltaKernel &kernel)
 {
-    return delta::Roma_et_al(rx, drx) * delta::Roma_et_al(ry, dry) * 
-        delta::Roma_et_al(rz, drz);
-} // Roma_et_al
+    PetscReal phi = 1.0;
+    for (unsigned int d = 0; d < widths.size(); ++d)
+        phi *= kernel(source[d] - target[d], widths[d]);
+    return phi;
+}  // delta
 
-} // end of namespace delta
-} // end of namespace petibm
+}  // end of namespace delta
+}  // end of namespace petibm

@@ -5,158 +5,147 @@
  * \license BSD 3-Clause License.
  */
 
+#pragma once
 
-# pragma once
+#include <memory>
 
-// STL
-# include <memory>
+#include <petscdm.h>
+#include <petscsys.h>
 
-// PETSc
-# include <petscsys.h>
-# include <petscdm.h>
-
-// PetIBM
-# include <petibm/type.h>
-# include <petibm/mesh.h>
-
+#include <petibm/mesh.h>
+#include <petibm/type.h>
 
 namespace petibm
 {
 namespace body
 {
-
-// TODO: the way we store coords and meshIdx is different from CartesianMesh. 
+// TODO: the way we store coords and meshIdx is different from CartesianMesh.
 //       Will this cause confusion?
 /**
  * \brief Base (abstract) class for a single body.
  * \see bodyModule, petibm::type::SingleBody, petibm::body::createSingleBody
- * \ingroup bodyModule 
- * 
- * There is currently only one implementation for this abstract class: body::SingleBodyPoints.
+ * \ingroup bodyModule
+ *
+ * There is currently only one implementation for this abstract class:
+ * body::SingleBodyPoints.
  */
 class SingleBodyBase
 {
     friend class BodyPackBase;
-    
+
 public:
+    /** \brief Number of dimensions. */
+    PetscInt dim;
 
-    /** \brief Dimension. */
-    PetscInt            dim;
+    /** \brief Name of the body. */
+    std::string name;
 
-    /** \brief The name of this body. */
-    std::string         name;
-    
-    /** \brief The path/name of the mesh file. */
-    std::string         file;
+    /** \brief Path of the file with the body coordinates. */
+    std::string filePath;
 
-    /** \brief The total number of Lagrangian points. */
-    PetscInt            nPts;
+    /** \brief Total number of Lagrangian points. */
+    PetscInt nPts;
 
     /** \brief Coordinates of ALL Lagrangian points. */
-    type::RealVec2D     coords;
+    type::RealVec2D coords;
 
-    /** \brief Number of Lagrangian points owned locally. */
-    PetscInt            nLclPts;
+    /** \brief Initial coordinates of ALL Lagrangian points. */
+    type::RealVec2D coords0;
+
+    /** \brief Local number of Lagrangian points. */
+    PetscInt nLclPts;
 
     /**
-     * \brief Indices of the background pressure cells that own LOCAL 
-     *        Lagrangian points.
+     * \brief Index of the closest Eulerian mesh cell
+     *        for each local Lagrangian point.
      */
-    type::IntVec2D      meshIdx;
+    type::IntVec2D meshIdx;
 
-    /** \brief The beginning index of local Lagrangian points in all points. */
-    PetscInt            bgPt;
+    /** \brief Global index of the first local Lagrangian point. */
+    PetscInt bgPt;
 
-    /** \brief The ending index of local Lagrangian points in all points. */
-    PetscInt            edPt;
+    /** \brief Global index of the last local Lagrangian point. */
+    PetscInt edPt;
 
-    /** \brief The underlying parallel 1D DMDA object. */
-    DM                  da;
+    /** \brief Parallel layout of the body (as a 1D DMDA object). */
+    DM da;
 
-    /** \brief A string for printing information. */
-    std::string         info;
-
+    /** \brief String with information about the body. */
+    std::string info;
 
     /**
-     * \brief Constructor using CartesainMesh and input file.
+     * \brief Constructor. Initialize the body.
      *
-     * \param mesh [in] an instance of type::Mesh.
-     * \param name [in] the name of this body.
-     * \param file [in] the input file containing necessary information for this body.
-     * 
-     * The information carried by `file` will be different according to different
-     * implementations. For example, the `file` of the current only one 
-     * implementation, body::SingleBodyPoints, is a file containing the 
-     * coordinates of all Lagrangian points for this body.
+     * \param comm [in] MPI communicator.
+     * \param dim [in] Number of dimensions.
+     * \param name [in] Name of body.
+     * \param filePath [in] Path of the file with data of the body.
+     *
+     * Data in `filePath` depend on the class used.
+     * For example, with the class `body::SingleBodyPoints`, the `filePath`
+     * should contain the number of Lagrangian points followed by the list of
+     * coordinates (placed in columns, the first column being the x coordinate).
+     * Note: `body::SingleBodyPoints` is currently the only sub-class
+     * implemented.
      */
-    SingleBodyBase(const type::Mesh &mesh,
-            const std::string &name, const std::string &file);
+    SingleBodyBase(const MPI_Comm &comm, const PetscInt &dim,
+                   const std::string &name, const std::string &filePath);
 
-
-    /** \brief The default constructor. */
+    /** \brief Default constructor. */
     SingleBodyBase() = default;
-
 
     /** \brief Default destructor. */
     virtual ~SingleBodyBase();
 
+    /** \brief Manually destroy data. */
+    virtual PetscErrorCode destroy();
 
     /**
-     * \brief Manually destroy data.
-     *
-     * \return PetscErrorCode.
-     */
-    virtual PetscErrorCode destroy();
-    
-    
-    /**
-     * \brief Print information of this body to standard output.
+     * \brief Print information about the body.
      *
      * \return PetscErrorCode.
      */
     PetscErrorCode printInfo() const;
 
+    /**
+     * \brief Get the process id owning a given Lagrangian point.
+     *
+     * \param i [in] Index of the Lagrangian point.
+     * \param p [out] Process id.
+     *
+     * \return PetscErrorCode.
+     *
+     * Note: there is no need to provide which degree of freedom is requested
+     * as all degrees for a Lagrangian point are on the same process.
+     */
+    virtual PetscErrorCode findProc(const PetscInt &i,
+                                    PetscMPIInt &p) const = 0;
 
     /**
-     * \brief Find which process owns the Lagrangian point with index i.
+     * \brief Get the global index of a Lagrangian point in a DMDA object
+     *        given its degree of freedom.
      *
-     * \param i [in] index of target Lagrangian point of this body.
-     * \param p [out] returned process id.
-     *
-     * Note: all degree of freedoms of a Lagrangian point are on the same 
-     * process, so we don't need to know which degree of freedom users is asking.
+     * \param i [in] Index of the Lagrangian point.
+     * \param dof [in] Degree of freedom.
+     * \param idx [out] Global index of the Lagrangian point.
      *
      * \return PetscErrorCode.
      */
-    virtual PetscErrorCode findProc(const PetscInt &i, PetscMPIInt &p) const = 0;
-
+    virtual PetscErrorCode getGlobalIndex(const PetscInt &i,
+                                          const PetscInt &dof,
+                                          PetscInt &idx) const = 0;
 
     /**
-     * \brief Find the global index in unpacked DM of a specified DoF of a 
-     *        Lagrangian point.
+     * \brief Get the global index of a Lagrangian point in a DMDA object
+     *        given a MatStencil.
      *
-     * \param i [in] index of target Lagrangian point of this body.
-     * \param dof [in] target degree of freedom.
-     * \param idx [out] returned index.
+     * \param s [in] MatStencil of the Lagrangian point.
+     * \param idx [out] Global index of the Lagrangian point.
      *
      * \return PetscErrorCode.
      */
-    virtual PetscErrorCode getGlobalIndex(const PetscInt &i, 
-            const PetscInt &dof, PetscInt &idx) const = 0;
-
-
-    /**
-     * \brief Find the global index in unpacked DM of specified DoF of a 
-     *        Lagrangian point.
-     *
-     * \param s [in] MatStencil of target point and DoF.
-     * \param idx [out] returned index.
-     *
-     * \return PetscErrorCode.
-     */
-    virtual PetscErrorCode getGlobalIndex(
-            const MatStencil &s, PetscInt &idx) const = 0;
-
+    virtual PetscErrorCode getGlobalIndex(const MatStencil &s,
+                                          PetscInt &idx) const = 0;
 
     /**
      * \brief Calculate the averaged force of this body.
@@ -164,80 +153,82 @@ public:
      * \param f [in] Vec of forces on each Lagrangian point of this body.
      * \param fAvg [out] return averaged force with length equal to dimension.
      *
-     * Note: fAvg should have correct size. This function won't check if fAvg
-     * has been allocated correctly.
+     * \return PetscErrorCode.
+     *
+     * Note: fAvg should have the correct size.
+     * This function does not check if fAvg has been allocated correctly.
+     */
+    virtual PetscErrorCode calculateAvgForces(const Vec &f,
+                                              type::RealVec1D &fAvg) const = 0;
+
+    /** \brief Get the index of closest Eulerian mesh cell
+     *         for each local Lagrangian point.
+     *
+     * \param mesh [in] Structured Cartesian mesh.
      *
      * \return PetscErrorCode.
      */
-    virtual PetscErrorCode calculateAvgForces(
-            const Vec &f, type::RealVec1D &fAvg) const = 0;
-    
-    
-    /**
-     * \brief Update the indices of background Pressure cells.
-     *
-     * \return PetscErrorCode.
-     */
-    virtual PetscErrorCode updateMeshIdx() = 0;
-    
+    virtual PetscErrorCode updateMeshIdx(const type::Mesh &mesh) = 0;
+
+    virtual PetscErrorCode readBody(const std::string &filepath) = 0;
+
+    virtual PetscErrorCode writeBody(const std::string &filepath) = 0;
+
 
 protected:
-
-
     /** \brief MPI communicator. */
-    MPI_Comm            comm;
+    MPI_Comm comm;
 
-    /** \brief The total number of processes. */
-    PetscMPIInt         mpiSize;
+    /** \brief Total number of processes. */
+    PetscMPIInt mpiSize;
 
-    /** \brief The rank of this process. */
-    PetscMPIInt         mpiRank;
-    
+    /** \brief Rank of the local process. */
+    PetscMPIInt mpiRank;
 
-    /** \brief Reference to background mesh. */
-    type::Mesh          mesh;
-
-
-    /** \brief Number of variables (nLcLPts x dim) on each process. */
-    type::IntVec1D      nLclAllProcs;
-
+    /** \brief Vector with the number of local unknowns on each process. */
+    type::IntVec1D nLclAllProcs;
 
     /** \brief Offset on each process. */
-    type::IntVec1D      offsetsAllProcs;
-}; // SingleBodyBase
+    type::IntVec1D offsetsAllProcs;
 
-} // end of namespace body
+};  // SingleBodyBase
 
+}  // end of namespace body
 
 namespace type
 {
-    /**
-     * \brief Definition of type::SingleBody.
-     * \see bodyModule, petibm::body::SingleBodyBase, petibm::body::createSingleBody
-     * \ingroup bodyModule
-     */
-    typedef std::shared_ptr<body::SingleBodyBase> SingleBody;
-} // end of namespace type
-
+/**
+ * \brief Definition of type::SingleBody.
+ *
+ * \see bodyModule, petibm::body::SingleBodyBase, petibm::body::createSingleBody
+ * \ingroup bodyModule
+ */
+typedef std::shared_ptr<body::SingleBodyBase> SingleBody;
+}  // end of namespace type
 
 namespace body
 {
-    /**
-     * \brief factory for creating a SingleBody object.
-     *
-     * \param mesh [in] the background Eulerian mesh.
-     * \param type [in] the type of mesh file (currently only accept "point").
-     * \param name [in] the name of this body.
-     * \param file [in] the path to the mesh file.
-     * \param body [out] returned type::SingleBody instance.
-     *
-     * \return PetscErrorCode.
-     * \see bodyModule, petibm::type::SingleBody
-     * \ingroup bodyModule
-     */
-    PetscErrorCode createSingleBody(
-            const type::Mesh &mesh, const std::string &type, 
-            const std::string &name, const std::string &file,
-            type::SingleBody &body);
-} // end of namespace body
-} // end of namespace petibm
+/**
+ * \brief Factory function to create a single body.
+ *
+ * \param comm [in] MPI communicator.
+ * \param dim [in] Number of dimensions.
+ * \param type [in] Type of file (currently only accept "point").
+ * \param name [in] Name of the body.
+ * \param filePath [in] Path of the file with the coordinates.
+ * \param bodies [out] SingleBody data object.
+ *
+ * \return PetscErrorCode.
+ *
+ * \see bodyModule, petibm::type::SingleBody
+ * \ingroup bodyModule
+ */
+PetscErrorCode createSingleBody(const MPI_Comm &comm, const PetscInt &dim,
+                                const std::string &type,
+                                const std::string &name,
+                                const std::string &filePath,
+                                type::SingleBody &body);
+
+}  // end of namespace body
+
+}  // end of namespace petibm

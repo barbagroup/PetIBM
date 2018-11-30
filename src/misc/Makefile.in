@@ -92,7 +92,6 @@ subdir = src/misc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
-	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_gtest.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
@@ -113,8 +112,8 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libmisc_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am_libmisc_la_OBJECTS = libmisc_la-misc.lo libmisc_la-type.lo \
-	libmisc_la-delta.lo
+am_libmisc_la_OBJECTS = libmisc_la-lininterp.lo libmisc_la-misc.lo \
+	libmisc_la-type.lo libmisc_la-delta.lo libmisc_la-probes.lo
 libmisc_la_OBJECTS = $(am_libmisc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -184,10 +183,10 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMGXWRAPPER_CPPFLAGS = @AMGXWRAPPER_CPPFLAGS@
-AMGXWRAPPER_DIR = @AMGXWRAPPER_DIR@
 AMGXWRAPPER_LDFLAGS = @AMGXWRAPPER_LDFLAGS@
 AMGXWRAPPER_LIBS = @AMGXWRAPPER_LIBS@
-AMGX_DIR = @AMGX_DIR@
+AMGX_CPPFLAGS = @AMGX_CPPFLAGS@
+AMGX_LDFLAGS = @AMGX_LDFLAGS@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -195,15 +194,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
-BOOST_DIR = @BOOST_DIR@
 BUILDDIR = @BUILDDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
-CUDA_DIR = @CUDA_DIR@
+CUDA_CPPFLAGS = @CUDA_CPPFLAGS@
+CUDA_LDFLAGS = @CUDA_LDFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -222,7 +220,6 @@ EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_CPPFLAGS = @GTEST_CPPFLAGS@
-GTEST_DIR = @GTEST_DIR@
 GTEST_LDFLAGS = @GTEST_LDFLAGS@
 GTEST_LIBS = @GTEST_LIBS@
 INSTALL = @INSTALL@
@@ -265,7 +262,6 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YAMLCPP_CPPFLAGS = @YAMLCPP_CPPFLAGS@
-YAMLCPP_DIR = @YAMLCPP_DIR@
 YAMLCPP_LDFLAGS = @YAMLCPP_LDFLAGS@
 YAMLCPP_LIBS = @YAMLCPP_LIBS@
 abs_builddir = @abs_builddir@
@@ -324,9 +320,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libmisc.la
 libmisc_la_SOURCES = \
+	lininterp.cpp \
 	misc.cpp \
 	type.cpp \
-	delta.cpp
+	delta.cpp \
+	probes.cpp
 
 libmisc_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \
@@ -392,7 +390,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-delta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-lininterp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-misc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-probes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmisc_la-type.Plo@am__quote@
 
 .cpp.o:
@@ -419,6 +419,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
+libmisc_la-lininterp.lo: lininterp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmisc_la-lininterp.lo -MD -MP -MF $(DEPDIR)/libmisc_la-lininterp.Tpo -c -o libmisc_la-lininterp.lo `test -f 'lininterp.cpp' || echo '$(srcdir)/'`lininterp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmisc_la-lininterp.Tpo $(DEPDIR)/libmisc_la-lininterp.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='lininterp.cpp' object='libmisc_la-lininterp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmisc_la-lininterp.lo `test -f 'lininterp.cpp' || echo '$(srcdir)/'`lininterp.cpp
+
 libmisc_la-misc.lo: misc.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmisc_la-misc.lo -MD -MP -MF $(DEPDIR)/libmisc_la-misc.Tpo -c -o libmisc_la-misc.lo `test -f 'misc.cpp' || echo '$(srcdir)/'`misc.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmisc_la-misc.Tpo $(DEPDIR)/libmisc_la-misc.Plo
@@ -439,6 +446,13 @@ libmisc_la-delta.lo: delta.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='delta.cpp' object='libmisc_la-delta.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmisc_la-delta.lo `test -f 'delta.cpp' || echo '$(srcdir)/'`delta.cpp
+
+libmisc_la-probes.lo: probes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmisc_la-probes.lo -MD -MP -MF $(DEPDIR)/libmisc_la-probes.Tpo -c -o libmisc_la-probes.lo `test -f 'probes.cpp' || echo '$(srcdir)/'`probes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmisc_la-probes.Tpo $(DEPDIR)/libmisc_la-probes.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='probes.cpp' object='libmisc_la-probes.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmisc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmisc_la-probes.lo `test -f 'probes.cpp' || echo '$(srcdir)/'`probes.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

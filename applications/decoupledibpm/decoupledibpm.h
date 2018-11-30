@@ -9,12 +9,9 @@
 
 #pragma once
 
-// Navier-Stokes solver
-# include "../navierstokes/navierstokes.h"
+#include <petibm/bodypack.h>
 
-// additional PetIBM headers
-# include <petibm/bodypack.h>
-
+#include "../navierstokes/navierstokes.h"
 
 /**
  * \class DecoupledIBPMSolver
@@ -25,148 +22,118 @@
 class DecoupledIBPMSolver : protected NavierStokesSolver
 {
 public:
-
-    // public members that don't change
-    using NavierStokesSolver::write;
-    using NavierStokesSolver::initializeASCIIFiles;
-    using NavierStokesSolver::writeTimeHDF5;
-    using NavierStokesSolver::readTimeHDF5;
-    
     /** \brief Default constructor. */
     DecoupledIBPMSolver() = default;
-    
-    /**
-     * \brief Constructor; Set references to the mesh, boundary conditions, and
-     *        immersed bodies.
+
+    /** \brief Constructor; Initialize the decoupled IBPM solver.
      *
-     * \param mesh [in] a type::Mesh object.
-     * \param bc [in] a type::Boundary object.
-     * \param bodies [in] a type::BodyPack object.
-     * \param node [in] YAML::Node containing settings.
+     * \param world [in] MPI communicator
+     * \param node [in] YAML configuration settings
      */
-    DecoupledIBPMSolver(
-            const petibm::type::Mesh &mesh,
-            const petibm::type::Boundary &bc,
-            const petibm::type::BodyPack &bodies,
-            const YAML::Node &node);
+    DecoupledIBPMSolver(const MPI_Comm &world, const YAML::Node &node);
 
     /** \brief Default destructor. */
     ~DecoupledIBPMSolver();
 
-    /** \brief manually destroy data. */
+    /** \brief Manually destroy data. */
     PetscErrorCode destroy();
 
-    /** \brief Initialize vectors, operators, and linear solvers. */
-    PetscErrorCode initialize(
-            const petibm::type::Mesh &mesh,
-            const petibm::type::Boundary &bc,
-            const petibm::type::BodyPack &bodies,
-            const YAML::Node &node);
+    /** \brief Initialize the decoupled IBPM solver.
+     *
+     * \param world [in] MPI communicator
+     * \param node [in] YAML configuration settings
+     */
+    PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
 
-    /** \brief Advance in time. */
+    using NavierStokesSolver::ioInitialData;
+
+    /** \brief Advance the solution by one time step. */
     PetscErrorCode advance();
-    
-    /**
-     * \brief Write the extra data that are required for restarting sessions.
-     * 
-     * If file already exists, only extra necessary data will
-     * be written in. Otherwise, solutions and extra data will all be written in.
-     *
-     * \param t [in] time
-     * \param filePath [in] path of the file to save (without extension)
-     */
-    PetscErrorCode writeRestartData(
-      const PetscReal &t, const std::string &filePath);
-    
-    /**
-     * \brief Read data that are required for restarting sessions.
-     * 
-     * \param filePath [in] path of the file to save (without extension)
-     * \param t [out] time
-     */
-    PetscErrorCode readRestartData(const std::string &filePath, PetscReal &t);
 
-    /**
-     * \brief Write number of iterations executed by each solver at current time
-     *        step (to an ASCII file).
-     *
-     * \param timeIndex [in] Time-step index
-     * \param filePath [in] Path of the file to write in
-     */
-    PetscErrorCode writeIterations(
-            const int &timeIndex, const std::string &filePath);
+    /** \brief Write solution and solver info to files. */
+    PetscErrorCode write();
 
-    /**
-     * \brief Write the integrated forces acting on the bodies into a ASCII file.
-     *
-     * \param t [in] Time value
-     * \param filePath [in] Name of the file to save.
-     */
-    PetscErrorCode writeIntegratedForces(
-            const PetscReal &t, const std::string &filePath);
+    using NavierStokesSolver::finished;
 
 protected:
-    
-    /** \brief A reference to immersed bodies. */
-    petibm::type::BodyPack      bodies;
-    
-    /** \brief Linear solver object for force solver. */
-    petibm::type::LinSolver     fSolver;
-    
+    /** \brief Pack of immersed bodies. */
+    petibm::type::BodyPack bodies;
 
-    /** \brief Operator interpolating Lagrangian forces to Eulerian forces. */
+    /** \brief Linear solver for the Lagrangian forces. */
+    petibm::type::LinSolver fSolver;
+
+    /** \brief Spreading operator. */
     Mat H;
-    
-    /** \brief Operator interpolating Eulerian forces to Lagrangian forces. */
-    Mat E;
-    
-    /** \brief Coefficient matrix of the force system. */
-    Mat EBNH;
-    
-    /** \brief Operator projecting force to intermediate velocity field. */
-    Mat BNH;
-    
 
-    /** \brief Right-hand-side of force system. */
-    Vec Eu;
-    
-    /** \brief Solution of Lagrangian force at time-step n. */
+    /** \brief Regularization operator. */
+    Mat E;
+
+    /** \brief Left-hand side operator of the system for the forces. */
+    Mat EBNH;
+
+    /** \brief Projection operator for the forces. */
+    Mat BNH;
+
+    /** \brief Vector to hold the forces at time step n. */
     Vec f;
-    
-    /** \brief Increment of force from time-step n to n+1. */
+
+    /** \brief Force-increment vector. */
     Vec df;
 
+    /** \brief Right-hand side of the forces system. */
+    Vec rhsf;
 
-    /** \brief Log RHS of forces system. */
-    PetscLogStage stageRHSForces; 
-    
-    /** \brief Log forces solver. */
-    PetscLogStage stageSolveForces; 
-    
-    /** \brief Log force integration. */
-    PetscLogStage stageIntegrateForces; 
-    
+    /** \brief Log stage for assembling the RHS of the forces system. */
+    PetscLogStage stageRHSForces;
 
-    /** \brief Assemble the RHS vector of the velocity system.  */
+    /** \brief Log stage for solving the forces system. */
+    PetscLogStage stageSolveForces;
+
+    /** \brief Log stage for integrating the Lagrangian forces. */
+    PetscLogStage stageIntegrateForces;
+
+    /** \brief ASCII PetscViewer object to output the forces. */
+    PetscViewer forcesViewer;
+
+    /** \brief Assemble the RHS vector of the velocity system. */
     virtual PetscErrorCode assembleRHSVelocity();
 
-    /** \brief Assemble the RHS vector of the Poisson system. */
-    virtual PetscErrorCode assembleRHSPoisson();
-
-    /** \brief Assemble the RHS vector of the system for the boundary forces. */
+    /** \brief Assemble the RHS vector of the system for the Lagrangian forces. */
     virtual PetscErrorCode assembleRHSForces();
 
     /** \brief Solve the system for the boundary forces. */
     virtual PetscErrorCode solveForces();
 
-    /** \brief Project the velocity to divergence-free space, update
-     *         pressure field, and update force.  */
-    virtual PetscErrorCode projectionStep();
+    /** \brief Update the velocity to satisfy the no-slip condition. */
+    virtual PetscErrorCode applyNoSlip();
 
-    /** \brief Assembles operators and matrices. */
-    PetscErrorCode createExtraOperators();
+    /** \brief Update the Lagrangian forces. */
+    virtual PetscErrorCode updateForces();
 
-    /** \brief Create vectors. */
-    PetscErrorCode createExtraVectors();
+    /** \brief Assemble additional operators. */
+    virtual PetscErrorCode createExtraOperators();
 
-}; // DecoupledIBPMSolver
+    /** \brief Create additional vectors. */
+    virtual PetscErrorCode createExtraVectors();
+
+    /** \brief Write data required to restart a simulation into a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode writeRestartDataHDF5(const std::string &filePath);
+
+    /** \brief Read data required to restart a simulation from a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to read from
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode readRestartDataHDF5(const std::string &filePath);
+
+    /** \brief Write numbers of iterations and residuals of solvers to file. */
+    virtual PetscErrorCode writeLinSolversInfo();
+
+    /** \brief Write the forces acting on the bodies into an ASCII file. */
+    virtual PetscErrorCode writeForcesASCII();
+
+};  // DecoupledIBPMSolver

@@ -8,14 +8,19 @@
 
 ### Added
 
+* Add possibility to use configuration arguments `--with-<package>-include=<path>` and `--with-<package>-lib=<path>` (instead of `--with-<package>-dir=<path>`) for yaml-cpp, gtest, AmgX, and AmgXWrapper. (`--with-<package>-dir=<path>` is still supported for those packages.)
 
 ### Changed
+
+* Upgrade to yaml-cpp-0.6.2 when downloading building yaml-cpp at PetIBM configuration time (configuration flag `--enable-yamlcpp`).
 
 
 ### Fixed
 
 
 ### Removed
+
+* Remove Boost dependency; configuration does not check for Boost anymore.
 
 ---
 

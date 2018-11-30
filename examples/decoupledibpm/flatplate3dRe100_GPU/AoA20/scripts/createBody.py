@@ -5,7 +5,8 @@ The plate is discretized with spacing 0.04 in the x-y plane and with spacing
 0.04 along the z-direction.
 """
 
-import os
+import math
+import pathlib
 import numpy
 
 
@@ -13,26 +14,25 @@ import numpy
 L = 1.0  # chord length
 AR = 2.0  # aspect ratio
 xc, yc, zc = 0.0, 0.0, 0.0  # center's coordinates
-aoa = 20  # angle of inclination in degrees
+aoa = 20.0  # angle of inclination in degrees
 ds = 0.04  # mesh spacing
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.path.dirname(script_dir)
+simu_dir = pathlib.Path(__file__).absolute().parents[1]
 
 # Generate coordinates of the flat plate.
-n = int(L / ds)
-section = numpy.linspace(xc - L / 2, xc + L / 2, n)
+n = math.ceil(L / ds)
+s = numpy.linspace(xc - L / 2, xc + L / 2, num=n + 1)
 
-x = xc + numpy.cos(numpy.radians(-aoa)) * section
-y = yc + numpy.sin(numpy.radians(-aoa)) * section
+x = xc + numpy.cos(numpy.radians(-aoa)) * s
+y = yc + numpy.sin(numpy.radians(-aoa)) * s
 
-nz = int(L * AR / ds)
-z = numpy.linspace(zc - L * AR / 2, zc + L * AR / 2, nz)
+nz = math.ceil(L * AR / ds)
+z = numpy.linspace(zc - L * AR / 2, zc + L * AR / 2, num=nz + 1)
 
 # Write coordinates into file.
-filepath = os.path.join(simu_dir, 'flatplateAoA{}.body'.format(aoa))
+filepath = simu_dir / 'flatplateAoA{}.body'.format(aoa)
 with open(filepath, 'w') as outfile:
-  outfile.write('{}\n'.format(n * nz))
+    outfile.write('{}\n'.format(x.size * z.size))
 for zi in z:
-  with open(filepath, 'ab') as outfile:
-    numpy.savetxt(outfile, numpy.c_[x, y, zi * numpy.ones(n)])
+    with open(filepath, 'ab') as outfile:
+        numpy.savetxt(outfile, numpy.c_[x, y, zi * numpy.ones(x.size)])

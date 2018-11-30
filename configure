@@ -641,21 +641,18 @@ WITH_AMGX_TRUE
 AMGXWRAPPER_LIBS
 AMGXWRAPPER_LDFLAGS
 AMGXWRAPPER_CPPFLAGS
-AMGXWRAPPER_DIR
-AMGX_DIR
-CUDA_DIR
+AMGX_LDFLAGS
+AMGX_CPPFLAGS
+CUDA_LDFLAGS
+CUDA_CPPFLAGS
 PETSC_LDFLAGS
 PETSC_CPPFLAGS
 GTEST_LIBS
 GTEST_LDFLAGS
 GTEST_CPPFLAGS
-GTEST_DIR
 YAMLCPP_LIBS
 YAMLCPP_LDFLAGS
 YAMLCPP_CPPFLAGS
-YAMLCPP_DIR
-BOOST_CPPFLAGS
-BOOST_DIR
 BUILDDIR
 LIBOBJS
 CXXCPP
@@ -794,19 +791,24 @@ enable_dependency_tracking
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
-with_boost_dir
-enable_boost
 with_yamlcpp_dir
+with_yamlcpp_include
+with_yamlcpp_lib
 enable_yamlcpp
 with_gtest_dir
+with_gtest_include
+with_gtest_lib
 enable_gtest
 with_petsc_dir
 with_petsc_arch
-with_amgx_dir
-enable_amgx
-with_cuda_dir
 with_amgxwrapper_dir
+with_amgxwrapper_include
+with_amgxwrapper_lib
 enable_amgxwrapper
+with_cuda_dir
+with_amgx_dir
+with_amgx_include
+with_amgx_lib
 '
       ac_precious_vars='build_alias
 host_alias
@@ -820,13 +822,7 @@ CXX
 CXXFLAGS
 CCC
 CPP
-CXXCPP
-BOOST_DIR
-YAMLCPP_DIR
-GTEST_DIR
-CUDA_DIR
-AMGX_DIR
-AMGXWRAPPER_DIR'
+CXXCPP'
 
 
 # Initialize some variables set by options.
@@ -1470,11 +1466,10 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-boost          download and install Boost-1.65.1
-  --enable-yamlcpp        download and install yaml-cpp-0.5.1
+  --enable-yamlcpp        download and install yaml-cpp-0.6.2
   --enable-gtest          download and install gtest-1.7.0
-  --enable-amgx           build with AmgX
-  --enable-amgxwrapper    download and install AmgXWrapper-1.3
+
+  --enable-amgxwrapper    download and install AmgXWrapper-1.4
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1484,16 +1479,28 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
-  --with-boost-dir=PATH   set Boost include directory
   --with-yamlcpp-dir=PATH set yaml-cpp directory
+  --with-yamlcpp-include=PATH
+                          set yaml-cpp include directory
+  --with-yamlcpp-lib=PATH set yaml-cpp lib directory
   --with-gtest-dir=PATH   set gtest directory
+  --with-gtest-include=PATH
+                          set gtest include directory
+  --with-gtest-lib=PATH   set gtest lib directory
   --with-petsc-dir=PATH   set PETSc directory
   --with-petsc-arch=PATH  set PETSc arch folder
 
   --with-cuda-dir=PATH    set CUDA directory
   --with-amgx-dir=PATH    set AmgX directory
+  --with-amgx-include=PATH
+                          set AmgX include directory
+  --with-amgx-lib=PATH    set AmgX lib directory
   --with-amgxwrapper-dir=PATH
                           set AmgXWrapper directory
+  --with-amgxwrapper-include=PATH
+                          set AmgXWrapper include directory
+  --with-amgxwrapper-lib=PATH
+                          set AmgXWrapper lib directory
 
 Some influential environment variables:
   CC          C compiler command
@@ -1507,13 +1514,6 @@ Some influential environment variables:
   CXXFLAGS    C++ compiler flags
   CPP         C preprocessor
   CXXCPP      C++ preprocessor
-  BOOST_DIR   Boost directory
-  YAMLCPP_DIR yaml-cpp directory
-  GTEST_DIR   gtest directory
-  CUDA_DIR    CUDA directory
-  AMGX_DIR    AmgX directory
-  AMGXWRAPPER_DIR
-              AmgXWrapper directory
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -18078,185 +18078,6 @@ LDFLAGS="$LDFLAGS_ $LDFLAGS"
 # check for optional and required third-party libraries
 
 
-
-
-echo
-echo "========================="
-echo "Configuring Boost library"
-echo "========================="
-
-
-ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
-PACKAGE_CFLAGS=""
-PACKAGE_CPPFLAGS=""
-PACKAGE_CXXFLAGS=""
-PACKAGE_FCFLAGS=""
-PACKAGE_LDFLAGS=""
-PACKAGE_LIBS=""
-PACKAGE_FCLIBS=""
-PACKAGE_CONTRIB_LIBS=""
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_LIBS=$LIBS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-
-
-
-
-# Check whether --with-boost-dir was given.
-if test "${with_boost_dir+set}" = set; then :
-  withval=$with_boost_dir; BOOST_DIR=$withval
-fi
-
-
-# Check whether --enable-boost was given.
-if test "${enable_boost+set}" = set; then :
-  enableval=$enable_boost; IS_INSTALL_BOOST=yes
-else
-  IS_INSTALL_BOOST=no
-fi
-
-
-if test "x$BOOST_DIR" != "x"; then
-  if test -d "$BOOST_DIR"; then
-
-
-BOOST_DIR=$BOOST_DIR
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: using Boost: $BOOST_DIR" >&5
-$as_echo "$as_me: using Boost: $BOOST_DIR" >&6;}
-BOOST_CPPFLAGS="-I$BOOST_DIR"
-BOOST_CPPFLAGS=$BOOST_CPPFLAGS
-
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-
-
-
-  else
-    as_fn_error $? "
-$BOOST_DIR is not a valid directory;
-please use '--with-boost-dir=PATH' to provide the directory of the package" "$LINENO" 5
-  fi
-else
-  if test "x$IS_INSTALL_BOOST" = "xyes"; then
-
-
-
-ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
-PACKAGE_CFLAGS=""
-PACKAGE_CPPFLAGS=""
-PACKAGE_CXXFLAGS=""
-PACKAGE_FCFLAGS=""
-PACKAGE_LDFLAGS=""
-PACKAGE_LIBS=""
-PACKAGE_FCLIBS=""
-PACKAGE_CONTRIB_LIBS=""
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_LIBS=$LIBS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}:
-
- ****************************************
- *             Downloading              *
- *            Boost-1.65.1              *
- ****************************************
-" >&5
-$as_echo "$as_me:
-
- ****************************************
- *             Downloading              *
- *            Boost-1.65.1              *
- ****************************************
-" >&6;}
-echo "*** INFO *** Downloading Boost-1.65.1... "
-VERSION=1.65.1
-TARBALL=boost_1_65_1.tar.gz
-URL=https://dl.bintray.com/boostorg/release/1.65.1/source/$TARBALL
-wget $URL -P /tmp
-BOOST_DIR=$BUILDDIR/externalpackages/boost-$VERSION
-BOOST_DIR=$BOOST_DIR
-
-mkdir -p $BOOST_DIR
-tar -xzf /tmp/$TARBALL -C $BOOST_DIR --strip-components=1
-rm -f /tmp/$TARBALL
-echo "*** INFO *** Installing Boost-1.65.1 headers... "
-mkdir -p $prefix/include
-cp -r $BOOST_DIR/boost $prefix/include/.
-
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
-
-echo
-
-
-  fi
-fi
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/shared_ptr.hpp" "ac_cv_header_boost_shared_ptr_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_shared_ptr_hpp" = xyes; then :
-
-else
-  as_fn_error $? "Couldn't find boost/shared_ptr.hpp...
-Please use '--with-boost-dir=PATH' to provide the directory of the package
-or '--enable-boost' to download and use Boost-1.65.1.
-" "$LINENO" 5
-fi
-
-
-
-
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
-
-echo
-
-
-
 echo
 echo "====================================="
 echo "Configuring required package yaml-cpp"
@@ -18293,11 +18114,23 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 
-
-
 # Check whether --with-yamlcpp-dir was given.
 if test "${with_yamlcpp_dir+set}" = set; then :
   withval=$with_yamlcpp_dir; YAMLCPP_DIR=$withval
+fi
+
+
+
+# Check whether --with-yamlcpp-include was given.
+if test "${with_yamlcpp_include+set}" = set; then :
+  withval=$with_yamlcpp_include; YAMLCPP_INCLUDE_DIR=$withval
+fi
+
+
+
+# Check whether --with-yamlcpp-lib was given.
+if test "${with_yamlcpp_lib+set}" = set; then :
+  withval=$with_yamlcpp_lib; YAMLCPP_LIB_DIR=$withval
 fi
 
 
@@ -18310,140 +18143,153 @@ fi
 
 
 if test "x$YAMLCPP_DIR" != "x"; then
-  if test -d "$YAMLCPP_DIR"; then
 
 
 YAMLCPP_DIR=$YAMLCPP_DIR
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: using yaml-cpp: $YAMLCPP_DIR" >&5
 $as_echo "$as_me: using yaml-cpp: $YAMLCPP_DIR" >&6;}
-YAMLCPP_CPPFLAGS="-I$YAMLCPP_DIR/include $BOOST_CPPFLAGS"
-YAMLCPP_CPPFLAGS=$YAMLCPP_CPPFLAGS
 
-CPPFLAGS="$CPPFLAGS $YAMLCPP_CPPFLAGS"
-
-if test -d "$YAMLCPP_DIR/lib"; then
-  YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib -Wl,-rpath,$YAMLCPP_DIR/lib"
-elif test -d "$YAMLCPP_DIR/lib64"; then
-  YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib64 -Wl,-rpath,$YAMLCPP_DIR/lib64"
+if test ! -d "$YAMLCPP_DIR"; then
+  as_fn_error $? "$YAMLCPP_DIR is not a valid directory...
+Use '--with-yamlcpp-dir=PATH' to provide the directory of the package." "$LINENO" 5
 fi
-YAMLCPP_LDFLAGS=$YAMLCPP_LDFLAGS
-
-LDFLAGS="$LDFLAGS $YAMLCPP_LDFLAGS"
 
 
+YAMLCPP_INCLUDE_DIR=$YAMLCPP_DIR/include
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using yaml-cpp include directory: $YAMLCPP_INCLUDE_DIR" >&5
+$as_echo "$as_me: using yaml-cpp include directory: $YAMLCPP_INCLUDE_DIR" >&6;}
 
-  else
-    as_fn_error $? "
-$YAMLCPP_DIR is not a valid directory;
-please use '--with-yamlcpp-dir=PATH' to provide the directory of the package" "$LINENO" 5
-  fi
+if test -d "$YAMLCPP_INCLUDE_DIR"; then
+      YAMLCPP_CPPFLAGS="-I$YAMLCPP_INCLUDE_DIR"
+      YAMLCPP_CPPFLAGS=$YAMLCPP_CPPFLAGS
+
+      CPPFLAGS="$CPPFLAGS $YAMLCPP_CPPFLAGS"
+
 else
+  as_fn_error $? "$YAMLCPP_INCLUDE_DIR is not a valid directory...
+please use '--with-yamlcpp-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+if test -d "$YAMLCPP_DIR/lib64"; then
+
+
+YAMLCPP_LIB_DIR=$YAMLCPP_DIR/lib64
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using yaml-cpp lib directory: $YAMLCPP_LIB_DIR" >&5
+$as_echo "$as_me: using yaml-cpp lib directory: $YAMLCPP_LIB_DIR" >&6;}
+
+if test -d "$YAMLCPP_LIB_DIR"; then
+      YAMLCPP_LDFLAGS="-L$YAMLCPP_LIB_DIR -Wl,-rpath,$YAMLCPP_LIB_DIR"
+      YAMLCPP_LDFLAGS=$YAMLCPP_LDFLAGS
+
+      LDFLAGS="$LDFLAGS $YAMLCPP_LDFLAGS"
+
+else
+  as_fn_error $? "$YAMLCPP_LIB_DIR is not a valid directory...
+Use '--with-yamlcpp-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+else
+
+
+YAMLCPP_LIB_DIR=$YAMLCPP_DIR/lib
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using yaml-cpp lib directory: $YAMLCPP_LIB_DIR" >&5
+$as_echo "$as_me: using yaml-cpp lib directory: $YAMLCPP_LIB_DIR" >&6;}
+
+if test -d "$YAMLCPP_LIB_DIR"; then
+      YAMLCPP_LDFLAGS="-L$YAMLCPP_LIB_DIR -Wl,-rpath,$YAMLCPP_LIB_DIR"
+      YAMLCPP_LDFLAGS=$YAMLCPP_LDFLAGS
+
+      LDFLAGS="$LDFLAGS $YAMLCPP_LDFLAGS"
+
+else
+  as_fn_error $? "$YAMLCPP_LIB_DIR is not a valid directory...
+Use '--with-yamlcpp-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+fi
+
+
+else
+  if test "x$YAMLCPP_INCLUDE_DIR" != "x"; then
+
+
+YAMLCPP_INCLUDE_DIR=$YAMLCPP_INCLUDE_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using yaml-cpp include directory: $YAMLCPP_INCLUDE_DIR" >&5
+$as_echo "$as_me: using yaml-cpp include directory: $YAMLCPP_INCLUDE_DIR" >&6;}
+
+if test -d "$YAMLCPP_INCLUDE_DIR"; then
+      YAMLCPP_CPPFLAGS="-I$YAMLCPP_INCLUDE_DIR"
+      YAMLCPP_CPPFLAGS=$YAMLCPP_CPPFLAGS
+
+      CPPFLAGS="$CPPFLAGS $YAMLCPP_CPPFLAGS"
+
+else
+  as_fn_error $? "$YAMLCPP_INCLUDE_DIR is not a valid directory...
+please use '--with-yamlcpp-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+  fi
+  if test "x$YAMLCPP_LIB_DIR" != "x"; then
+
+
+YAMLCPP_LIB_DIR=$YAMLCPP_LIB_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using yaml-cpp lib directory: $YAMLCPP_LIB_DIR" >&5
+$as_echo "$as_me: using yaml-cpp lib directory: $YAMLCPP_LIB_DIR" >&6;}
+
+if test -d "$YAMLCPP_LIB_DIR"; then
+      YAMLCPP_LDFLAGS="-L$YAMLCPP_LIB_DIR -Wl,-rpath,$YAMLCPP_LIB_DIR"
+      YAMLCPP_LDFLAGS=$YAMLCPP_LDFLAGS
+
+      LDFLAGS="$LDFLAGS $YAMLCPP_LDFLAGS"
+
+else
+  as_fn_error $? "$YAMLCPP_LIB_DIR is not a valid directory...
+Use '--with-yamlcpp-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+  fi
   if test "x$IS_INSTALL_YAMLCPP" = "xyes"; then
 
 
-
-ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
-PACKAGE_CFLAGS=""
-PACKAGE_CPPFLAGS=""
-PACKAGE_CXXFLAGS=""
-PACKAGE_FCFLAGS=""
-PACKAGE_LDFLAGS=""
-PACKAGE_LIBS=""
-PACKAGE_FCLIBS=""
-PACKAGE_CONTRIB_LIBS=""
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_LIBS=$LIBS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}:
-
- ****************************************
- *      Downloading and installing      *
- *           yaml-cpp-0.5.1             *
- ****************************************
-" >&5
-$as_echo "$as_me:
-
- ****************************************
- *      Downloading and installing      *
- *           yaml-cpp-0.5.1             *
- ****************************************
-" >&6;}
-echo "*** INFO *** Downloading yaml-cpp-0.5.1... "
-VERSION=0.5.1
-TARBALL=release-$VERSION.tar.gz
-URL=https://github.com/jbeder/yaml-cpp/archive/$TARBALL
-wget $URL -P /tmp
-YAMLCPP_DIR=$BUILDDIR/externalpackages/yaml-cpp-$VERSION
-YAMLCPP_DIR=$YAMLCPP_DIR
-
-mkdir -p $YAMLCPP_DIR/build
-tar -xzf /tmp/$TARBALL -C $YAMLCPP_DIR --strip-components=1
-rm -f /tmp/$TARBALL
-echo "*** INFO *** Building yaml-cpp-0.5.1... "
+version=0.6.2
+tarball=yaml-cpp-$version.tar.gz
+url=https://github.com/jbeder/yaml-cpp/archive/$tarball
+YAMLCPP_DIR=$BUILDDIR/externalpackages/yaml-cpp-$version
+if test ! -d "$YAMLCPP_DIR"; then
+  echo "downloading yaml-cpp-$version... "
+  wget -q $url -P /tmp
+  mkdir -p $YAMLCPP_DIR/build
+  tar -xzf /tmp/$tarball -C $YAMLCPP_DIR --strip-components=1
+  rm -f /tmp/$tarball
+fi
+echo "building and installing yaml-cpp-$version... "
 cd $YAMLCPP_DIR/build
 if test "x$enable_shared" = "xyes"; then
-  if test ! "x$BOOST_DIR" = "x"; then
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBoost_INCLUDE_DIR=$BOOST_DIR \
-      -DBUILD_SHARED_LIBS=ON \
-      -DCMAKE_MACOSX_RPATH=1
-  else
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBUILD_SHARED_LIBS=ON \
-      -DCMAKE_MACOSX_RPATH=1
-  fi
-  make all -j4
+  cmake $YAMLCPP_DIR \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_INSTALL_PREFIX=$prefix \
+    -DBUILD_SHARED_LIBS=ON \
+    -DYAML_CPP_BUILD_TESTS=OFF \
+    -DCMAKE_MACOSX_RPATH=1
+  make all
   make install
 fi
 if test "x$enable_static" = "xyes"; then
-  if test ! "x$BOOST_DIR" = "x"; then
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBoost_INCLUDE_DIR=$BOOST_DIR \
-      -DBUILD_SHARED_LIBS=OFF \
-      -DCMAKE_MACOSX_RPATH=1
-  else
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBUILD_SHARED_LIBS=OFF \
-      -DCMAKE_MACOSX_RPATH=1
-  fi
-  make all -j4
+  cmake $YAMLCPP_DIR \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_INSTALL_PREFIX=$prefix \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DYAML_CPP_BUILD_TESTS=OFF \
+    -DCMAKE_MACOSX_RPATH=1
+  make all
   make install
 fi
 cd $BUILDDIR
-YAMLCPP_CPPFLAGS=$BOOST_CPPFLAGS
-YAMLCPP_CPPFLAGS=$YAMLCPP_CPPFLAGS
-
-
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
 
 echo
 
@@ -18451,16 +18297,14 @@ echo
   fi
 fi
 
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-
 ac_fn_cxx_check_header_mongrel "$LINENO" "yaml-cpp/yaml.h" "ac_cv_header_yaml_cpp_yaml_h" "$ac_includes_default"
 if test "x$ac_cv_header_yaml_cpp_yaml_h" = xyes; then :
 
 else
-  as_fn_error $? "Couldn't find yaml-cpp/yaml.h...
-Please use '--with-yamlcpp-dir=PATH' to provide the directory of the package
-or '--enable-yamlcpp' to download and install yaml-cpp-0.5.1.
-" "$LINENO" 5
+  as_fn_error $? "could not find yaml-cpp/yaml.h...
+Use '--with-yamlcpp-dir=PATH' to provide the directory of the package or
+Use '--with-yamlcpp-include=PATH' and '--with-yamlcpp-lib=PATH' or
+Use '--enable-yamlcpp' to download, build, and install yaml-cpp-0.6.2." "$LINENO" 5
 fi
 
 
@@ -18520,11 +18364,23 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 
-
-
 # Check whether --with-gtest-dir was given.
 if test "${with_gtest_dir+set}" = set; then :
   withval=$with_gtest_dir; GTEST_DIR=$withval
+fi
+
+
+
+# Check whether --with-gtest-include was given.
+if test "${with_gtest_include+set}" = set; then :
+  withval=$with_gtest_include; GTEST_INCLUDE_DIR=$withval
+fi
+
+
+
+# Check whether --with-gtest-lib was given.
+if test "${with_gtest_lib+set}" = set; then :
+  withval=$with_gtest_lib; GTEST_LIB_DIR=$withval
 fi
 
 
@@ -18537,98 +18393,135 @@ fi
 
 
 if test "x$GTEST_DIR" != "x"; then
-  if test -d "$GTEST_DIR"; then
 
 
 GTEST_DIR=$GTEST_DIR
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: using gtest: $GTEST_DIR" >&5
 $as_echo "$as_me: using gtest: $GTEST_DIR" >&6;}
-if test -d "$GTEST_DIR/include"; then
-  GTEST_CPPFLAGS="-I$GTEST_DIR/include"
-fi
-GTEST_CPPFLAGS=$GTEST_CPPFLAGS
 
-CPPFLAGS="$CPPFLAGS $GTEST_CPPFLAGS"
+if test ! -d "$GTEST_DIR"; then
+  as_fn_error $? "$GTEST_DIR is not a valid directory...
+Use '--with-gtest-dir=PATH' to provide the directory of the package." "$LINENO" 5
+fi
+
+
+GTEST_INCLUDE_DIR=$GTEST_DIR/include
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using gtest include directory: $GTEST_INCLUDE_DIR" >&5
+$as_echo "$as_me: using gtest include directory: $GTEST_INCLUDE_DIR" >&6;}
+
+if test -d "$GTEST_INCLUDE_DIR"; then
+      GTEST_CPPFLAGS="-I$GTEST_INCLUDE_DIR"
+      GTEST_CPPFLAGS=$GTEST_CPPFLAGS
+
+      CPPFLAGS="$CPPFLAGS $GTEST_CPPFLAGS"
+
+else
+  as_fn_error $? "$GTEST_INCLUDE_DIR is not a valid directory...
+Use '--with-gtest-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
 
 if test -d "$GTEST_DIR/lib64"; then
-  GTEST_LDFLAGS="-L$GTEST_DIR/lib64 -Wl,-rpath,$GTEST_DIR/lib64"
-elif test -d "$GTEST_DIR/lib"; then
-  GTEST_LDFLAGS="-L$GTEST_DIR/lib -Wl,-rpath,$GTEST_DIR/lib"
-fi
-GTEST_LDFLAGS=$GTEST_LDFLAGS
-
-LDFLAGS="$LDFLAGS $GTEST_LDFLAGS"
 
 
+GTEST_LIB_DIR=$GTEST_DIR/lib64
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using gtest lib directory: $GTEST_LIB_DIR" >&5
+$as_echo "$as_me: using gtest lib directory: $GTEST_LIB_DIR" >&6;}
 
-  else
-    as_fn_error $? "
-$GTEST_DIR is not a valid directory;
-please use '--with-gtest-dir=PATH' to provide the directory of the package" "$LINENO" 5
-  fi
+if test -d "$GTEST_LIB_DIR"; then
+      GTEST_LDFLAGS="-L$GTEST_LIB_DIR -Wl,-rpath,$GTEST_LIB_DIR"
+      GTEST_LDFLAGS=$GTEST_LDFLAGS
+
+      LDFLAGS="$LDFLAGS $GTEST_LDFLAGS"
+
 else
+  as_fn_error $? "$GTEST_LIB_DIR is not a valid directory...
+Use '--with-gtest-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+else
+
+
+GTEST_LIB_DIR=$GTEST_DIR/lib
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using gtest lib directory: $GTEST_LIB_DIR" >&5
+$as_echo "$as_me: using gtest lib directory: $GTEST_LIB_DIR" >&6;}
+
+if test -d "$GTEST_LIB_DIR"; then
+      GTEST_LDFLAGS="-L$GTEST_LIB_DIR -Wl,-rpath,$GTEST_LIB_DIR"
+      GTEST_LDFLAGS=$GTEST_LDFLAGS
+
+      LDFLAGS="$LDFLAGS $GTEST_LDFLAGS"
+
+else
+  as_fn_error $? "$GTEST_LIB_DIR is not a valid directory...
+Use '--with-gtest-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+fi
+
+
+else
+  if test "x$GTEST_INCLUDE_DIR" != "x"; then
+
+
+GTEST_INCLUDE_DIR=$GTEST_INCLUDE_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using gtest include directory: $GTEST_INCLUDE_DIR" >&5
+$as_echo "$as_me: using gtest include directory: $GTEST_INCLUDE_DIR" >&6;}
+
+if test -d "$GTEST_INCLUDE_DIR"; then
+      GTEST_CPPFLAGS="-I$GTEST_INCLUDE_DIR"
+      GTEST_CPPFLAGS=$GTEST_CPPFLAGS
+
+      CPPFLAGS="$CPPFLAGS $GTEST_CPPFLAGS"
+
+else
+  as_fn_error $? "$GTEST_INCLUDE_DIR is not a valid directory...
+Use '--with-gtest-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+  fi
+  if test "x$GTEST_LIB_DIR" != "x"; then
+
+
+GTEST_LIB_DIR=$GTEST_LIB_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using gtest lib directory: $GTEST_LIB_DIR" >&5
+$as_echo "$as_me: using gtest lib directory: $GTEST_LIB_DIR" >&6;}
+
+if test -d "$GTEST_LIB_DIR"; then
+      GTEST_LDFLAGS="-L$GTEST_LIB_DIR -Wl,-rpath,$GTEST_LIB_DIR"
+      GTEST_LDFLAGS=$GTEST_LDFLAGS
+
+      LDFLAGS="$LDFLAGS $GTEST_LDFLAGS"
+
+else
+  as_fn_error $? "$GTEST_LIB_DIR is not a valid directory...
+Use '--with-gtest-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+  fi
   if test "x$IS_INSTALL_GTEST" = "xyes"; then
 
 
-
-ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
-PACKAGE_CFLAGS=""
-PACKAGE_CPPFLAGS=""
-PACKAGE_CXXFLAGS=""
-PACKAGE_FCFLAGS=""
-PACKAGE_LDFLAGS=""
-PACKAGE_LIBS=""
-PACKAGE_FCLIBS=""
-PACKAGE_CONTRIB_LIBS=""
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_LIBS=$LIBS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}:
-
- ****************************************
- *      Downloading and installing      *
- *             gtest-1.7.0              *
- ****************************************
-" >&5
-$as_echo "$as_me:
-
- ****************************************
- *      Downloading and installing      *
- *             gtest-1.7.0              *
- ****************************************
-" >&6;}
-echo "*** INFO *** Downloading gtest-1.7.0... "
-VERSION=1.7.0
-TARBALL=release-$VERSION.tar.gz
-URL=https://github.com/google/googletest/archive/$TARBALL
-wget $URL -P /tmp
-GTEST_DIR=$BUILDDIR/externalpackages/gtest-$VERSION
-GTEST_DIR=$GTEST_DIR
-
-mkdir -p $GTEST_DIR/build
-tar -xzf /tmp/$TARBALL -C $GTEST_DIR --strip-components=1
-rm -f /tmp/$TARBALL
-echo "*** INFO *** Building gtest-1.7.0... "
+version=1.7.0
+tarball=release-$version.tar.gz
+url=https://github.com/google/googletest/archive/$tarball
+GTEST_DIR=$BUILDDIR/externalpackages/gtest-$version
+if test ! -d "$GTEST_DIR"; then
+  echo "downloading gtest-$version... "
+  wget -q $url -P /tmp
+  mkdir -p $GTEST_DIR/build
+  tar -xzf /tmp/$tarball -C $GTEST_DIR --strip-components=1
+  rm -f /tmp/$tarball
+fi
+echo "building and installing gtest-$version... "
 cd $GTEST_DIR/build
 if test "x$enable_shared" = "xyes"; then
   cmake $GTEST_DIR \
+    -DCMAKE_BUILD_TYPE="Release" \
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_MACOSX_RPATH=1
@@ -18636,6 +18529,7 @@ if test "x$enable_shared" = "xyes"; then
 fi
 if test "x$enable_static" = "xyes"; then
   cmake $GTEST_DIR \
+    -DCMAKE_BUILD_TYPE="Release" \
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_MACOSX_RPATH=1
@@ -18649,16 +18543,6 @@ cp -r $GTEST_DIR/build/*.so $prefix/lib/.
 cp -r $GTEST_DIR/build/*.dylib $prefix/lib/.
 cd $BUILDDIR
 
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
-
-
 echo
 
 
@@ -18670,9 +18554,9 @@ if test "x$ac_cv_header_gtest_gtest_h" = xyes; then :
 
 else
   as_fn_error $? "Couldn't find gtest/gtest.h...
-Please use '--with-gtest-dir=PATH' to provide the directory of the package
-or '--enable-gtest' to download and install gtest-1.7.0.
-" "$LINENO" 5
+Use '--with-gtest-dir=PATH' to provide the directory of the package or
+Use '--with-gtest-include=PATH' and '--with-gtest-lib=PATH' or
+Use '--enable-gtest' to download, build, and install gtest-1.7.0." "$LINENO" 5
 fi
 
 
@@ -18731,12 +18615,12 @@ FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
 CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
-# check for presence of `--with-petsc-dir=PATH` and `--with-petsc-arch=PATH`
 
 # Check whether --with-petsc-dir was given.
 if test "${with_petsc_dir+set}" = set; then :
   withval=$with_petsc_dir; PETSC_DIR=$withval
 fi
+
 
 
 # Check whether --with-petsc-arch was given.
@@ -18746,12 +18630,14 @@ fi
 
 
 if test ! -d "$PETSC_DIR" ; then
-  as_fn_error $? "$PETSC_DIR is not a valid directory;
-please use \`--with-petsc-dir\` to provide a PETSc directory" "$LINENO" 5
+  as_fn_error $? "$PETSC_DIR is not a valid directory...
+Use \`--with-petsc-dir\` to provide a PETSc directory." "$LINENO" 5
 else
-  if test ! -d "$PETSC_DIR/$PETSC_ARCH" ; then
-    as_fn_error $? "$PETSC_DIR/$PETSC_ARCH is not a valid directory;
-please use \`--with-petsc-arch\` to provide a PETSc arch" "$LINENO" 5
+  if test "xPETSC_ARCH" != "x"; then
+    if test ! -d "$PETSC_DIR/$PETSC_ARCH" ; then
+      as_fn_error $? "$PETSC_DIR/$PETSC_ARCH is not a valid directory...
+Use \`--with-petsc-arch\` to provide a PETSc arch." "$LINENO" 5
+    fi
   fi
 fi
 
@@ -18760,7 +18646,6 @@ $as_echo "$as_me: using PETSc: $PETSC_DIR" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: with arch: $PETSC_ARCH" >&5
 $as_echo "$as_me: with arch: $PETSC_ARCH" >&6;}
 
-# check for presence of file petscvariables
 PETSCVARIABLES="$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables"
 as_ac_File=`$as_echo "ac_cv_file_$PETSCVARIABLES" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $PETSCVARIABLES" >&5
@@ -18780,15 +18665,11 @@ eval ac_res=\$$as_ac_File
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
-  HAVE_PETSCVARIABLES=yes
+
 else
-  HAVE_PETSCVARIABLES=no
+  as_fn_error $? "Couldn't find file petscvariables." "$LINENO" 5
 fi
 
-if test "$HAVE_PETSCVARIABLES" = no; then
-  as_fn_error $? "could not find file petscvariables;
-please use PETSc-3.8" "$LINENO" 5
-fi
 
 PETSC_CC_INCLUDES=`grep "PETSC_CC_INCLUDES =" $PETSCVARIABLES | sed -e 's/.*=//' -e 's/^ \t*//'`
 PETSC_EXTERNAL_LIB_BASIC=`grep "PETSC_EXTERNAL_LIB_BASIC =" $PETSCVARIABLES | sed -e 's/.*=//' -e 's/^ \t*//'`
@@ -18803,17 +18684,15 @@ LIBS="$PETSC_WITH_EXTERNAL_LIB $LIBS"
 PETSC_LDFLAGS=$PETSC_WITH_EXTERNAL_LIB
 
 
-# check for presence of header file petsc.h
 ac_fn_cxx_check_header_mongrel "$LINENO" "petsc.h" "ac_cv_header_petsc_h" "$ac_includes_default"
 if test "x$ac_cv_header_petsc_h" = xyes; then :
 
 else
-  as_fn_error $? "could not find header file petsc.h" "$LINENO" 5
+  as_fn_error $? "Couldn't find header file petsc.h." "$LINENO" 5
 fi
 
 
 
-# check for PETSc version
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PETSc version" >&5
 $as_echo_n "checking for PETSc version... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -18829,7 +18708,7 @@ int
 main ()
 {
 
-#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 9, 0)) || PETSC_VERSION_RELEASE != 1)
+#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 11, 0)) || PETSC_VERSION_RELEASE != 1)
 #else
 asdf
 #endif
@@ -18848,7 +18727,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${PETSC_VERSION_VALID}" >&5
 $as_echo "${PETSC_VERSION_VALID}" >&6; }
 if test "$PETSC_VERSION_VALID" = no; then
-  as_fn_error $? "invalid PETSc version detected; please use PETSc 3.8" "$LINENO" 5
+  as_fn_error $? "Invalid PETSc version detected... Use PETSc 3.8+." "$LINENO" 5
 fi
 
 
@@ -18866,17 +18745,31 @@ echo
 
 
 
-# Check whether --with-amgx-dir was given.
-if test "${with_amgx_dir+set}" = set; then :
-  withval=$with_amgx_dir; ENABLE_AMGX=yes
+# Check whether --with-amgxwrapper-dir was given.
+if test "${with_amgxwrapper_dir+set}" = set; then :
+  withval=$with_amgxwrapper_dir; WITH_AMGXWRAPPER=yes
 fi
 
-# Check whether --enable-amgx was given.
-if test "${enable_amgx+set}" = set; then :
-  enableval=$enable_amgx; ENABLE_AMGX=yes
+
+# Check whether --with-amgxwrapper-include was given.
+if test "${with_amgxwrapper_include+set}" = set; then :
+  withval=$with_amgxwrapper_include; WITH_AMGXWRAPPER=yes
 fi
 
-if test "x$ENABLE_AMGX" = xyes; then
+
+# Check whether --with-amgxwrapper-lib was given.
+if test "${with_amgxwrapper_lib+set}" = set; then :
+  withval=$with_amgxwrapper_lib; WITH_AMGXWRAPPER=yes
+fi
+
+# Check whether --enable-amgxwrapper was given.
+if test "${enable_amgxwrapper+set}" = set; then :
+  enableval=$enable_amgxwrapper; WITH_AMGXWRAPPER=yes
+fi
+
+if test "x$WITH_AMGXWRAPPER" = xyes; then
+
+
 
 
 
@@ -18917,44 +18810,89 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 
-
-
 # Check whether --with-cuda-dir was given.
 if test "${with_cuda_dir+set}" = set; then :
   withval=$with_cuda_dir; CUDA_DIR=$withval
-else
-  CUDA_DIR=/usr/local/cuda
 fi
 
 
-if test ! -d $CUDA_DIR ; then
-  as_fn_error $? "$CUDA_DIR is not a valid directory;
-please use \`--with-cuda-dir\` to provide CUDA directory
-or set the environment variable CUDA_DIR" "$LINENO" 5
-fi
+if test "x$CUDA_DIR" != "x"; then
+
 
 CUDA_DIR=$CUDA_DIR
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: using CUDA: $CUDA_DIR" >&5
 $as_echo "$as_me: using CUDA: $CUDA_DIR" >&6;}
 
-CUDA_CPPFLAGS="-I$CUDA_DIR/include"
-if test -d "$CUDA_DIR/lib64"; then
-  CUDA_LDFLAGS="-L$CUDA_DIR/lib64 -Wl,-rpath,$CUDA_DIR/lib64"
-elif test -d "$CUDA_DIR/lib"; then
-  CUDA_LDFLAGS="-L$CUDA_DIR/lib -Wl,-rpath,$CUDA_DIR/lib"
+if test ! -d "$CUDA_DIR"; then
+  as_fn_error $? "$CUDA_DIR is not a valid directory...
+Use '--with-cuda-dir=PATH' to provide the directory of the package." "$LINENO" 5
 fi
-CUDA_LIBS="-lcudart -lcublas -lcusparse -lcusolver"
-CPPFLAGS="$CUDA_CPPFLAGS $CPPFLAGS"
 
-LDFLAGS="$CUDA_LDFLAGS $LDFLAGS"
 
+CUDA_INCLUDE_DIR=$CUDA_DIR/include
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using CUDA include directory: $CUDA_INCLUDE_DIR" >&5
+$as_echo "$as_me: using CUDA include directory: $CUDA_INCLUDE_DIR" >&6;}
+
+if test -d "$CUDA_INCLUDE_DIR"; then
+  CUDA_CPPFLAGS="-I$CUDA_INCLUDE_DIR"
+  CUDA_CPPFLAGS=$CUDA_CPPFLAGS
+
+  CPPFLAGS="$CPPFLAGS $CUDA_CPPFLAGS"
+
+else
+  as_fn_error $? "$CUDA_INCLUDE_DIR is not a valid directory...
+Use '--with-cuda-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+if test -d "$CUDA_DIR/lib64"; then
+
+
+CUDA_LIB_DIR=$CUDA_DIR/lib64
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using CUDA lib directory: $CUDA_LIB_DIR" >&5
+$as_echo "$as_me: using CUDA lib directory: $CUDA_LIB_DIR" >&6;}
+
+if test -d "$CUDA_LIB_DIR"; then
+  CUDA_LDFLAGS="-L$CUDA_LIB_DIR -Wl,-rpath,$CUDA_LIB_DIR"
+  CUDA_LDFLAGS=$CUDA_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $CUDA_LDFLAGS"
+
+else
+  as_fn_error $? "$CUDA_LIB_DIR is not a valid directory...
+Use '--with-cuda-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+else
+
+
+CUDA_LIB_DIR=$CUDA_DIR/lib
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using CUDA lib directory: $CUDA_LIB_DIR" >&5
+$as_echo "$as_me: using CUDA lib directory: $CUDA_LIB_DIR" >&6;}
+
+if test -d "$CUDA_LIB_DIR"; then
+  CUDA_LDFLAGS="-L$CUDA_LIB_DIR -Wl,-rpath,$CUDA_LIB_DIR"
+  CUDA_LDFLAGS=$CUDA_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $CUDA_LDFLAGS"
+
+else
+  as_fn_error $? "$CUDA_LIB_DIR is not a valid directory...
+Use '--with-cuda-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+fi
+
+
+fi
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "cuda_runtime.h" "ac_cv_header_cuda_runtime_h" "$ac_includes_default"
 if test "x$ac_cv_header_cuda_runtime_h" = xyes; then :
 
 else
-  as_fn_error $? "could not find header file cuda_runtime.h" "$LINENO" 5
+  as_fn_error $? "could not find cuda_runtime.h; check config.log" "$LINENO" 5
 fi
 
 
@@ -18990,9 +18928,10 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${CUDART_VERSION_VALID}" >&5
 $as_echo "${CUDART_VERSION_VALID}" >&6; }
 if test "$CUDART_VERSION_VALID" = no; then
-  as_fn_error $? "invalid CUDA version detected; please use CUDA 6.5 or above" "$LINENO" 5
+  as_fn_error $? "invalid CUDA version detected; use CUDA-6.5 or above" "$LINENO" 5
 fi
 
+CUDA_LIBS="-lcudart -lcublas -lcusparse -lcusolver"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cudaRuntimeGetVersion in -lcudart" >&5
 $as_echo_n "checking for cudaRuntimeGetVersion in -lcudart... " >&6; }
 if ${ac_cv_lib_cudart_cudaRuntimeGetVersion+:} false; then :
@@ -19186,56 +19125,151 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 
-
-
 # Check whether --with-amgx-dir was given.
 if test "${with_amgx_dir+set}" = set; then :
   withval=$with_amgx_dir; AMGX_DIR=$withval
 fi
 
 
-if test ! -d $AMGX_DIR || test "x$AMGX_DIR" = "x" ; then
-  as_fn_error $? "$AMGX_DIR is not a valid AmgX directory;
-please use \`--with-amgx-dir\` to provide AmgX directory
-or set the environment variable AMGX_DIR;
-otherwise, disable amgx" "$LINENO" 5
+
+# Check whether --with-amgx-include was given.
+if test "${with_amgx_include+set}" = set; then :
+  withval=$with_amgx_include; AMGX_INCLUDE_DIR=$withval
 fi
 
-AMGX_DIR=$AMGX_DIR
 
+
+# Check whether --with-amgx-lib was given.
+if test "${with_amgx_lib+set}" = set; then :
+  withval=$with_amgx_lib; AMGX_LIB_DIR=$withval
+fi
+
+
+
+if test "x$AMGX_DIR" != "x"; then
+
+
+AMGX_DIR=$AMGX_DIR
 { $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX: $AMGX_DIR" >&5
 $as_echo "$as_me: using AmgX: $AMGX_DIR" >&6;}
 
-if test -f "$AMGX_DIR/base/include/amgx_c.h"; then
-  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/base/include $CUDA_CPPFLAGS"
-elif test -f "$AMGX_DIR/include/amgx_c.h"; then
-  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/include $CUDA_CPPFLAGS"
-elif test -f "$AMGX_DIR/examples/amgx_c.h"; then
-  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_DIR/examples $CUDA_CPPFLAGS"
+if test ! -d "$AMGX_DIR"; then
+  as_fn_error $? "$AMGX_DIR is not a valid directory...
+Use '--with-amgx-dir=PATH' to provide the directory of the package." "$LINENO" 5
 fi
-if test -d "$AMGX_DIR/lib"; then
-  AMGX_LDFLAGS="-L$AMGX_DIR/lib -Wl,-rpath,$AMGX_DIR/lib $CUDA_LDFLAGS"
-elif test -d "$AMGX_DIR/lib64"; then
-  AMGX_LDFLAGS="-L$AMGX_DIR/lib64 -Wl,-rpath,$AMGX_DIR/lib64 $CUDA_LDFLAGS"
+
+
+AMGX_INCLUDE_DIR=$AMGX_DIR/include
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX include directory: $AMGX_INCLUDE_DIR" >&5
+$as_echo "$as_me: using AmgX include directory: $AMGX_INCLUDE_DIR" >&6;}
+
+if test -d "$AMGX_INCLUDE_DIR"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_INCLUDE_DIR $CUDA_CPPFLAGS"
+  AMGX_CPPFLAGS=$AMGX_CPPFLAGS
+
+  CPPFLAGS="$CPPFLAGS $AMGX_CPPFLAGS"
+
+else
+  as_fn_error $? "$AMGX_INCLUDE_DIR is not a valid directory...
+Use '--with-amgx-include=PATH' to provide the include directory of the package." "$LINENO" 5
 fi
-CPPFLAGS="$AMGX_CPPFLAGS $CPPFLAGS"
-
-LDFLAGS="$AMGX_LDFLAGS $LDFLAGS"
 
 
-# check for presence of header file amgx_c.h
+if test -d "$AMGX_DIR/lib64"; then
+
+
+AMGX_LIB_DIR=$AMGX_DIR/lib64
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX lib directory: $AMGX_LIB_DIR" >&5
+$as_echo "$as_me: using AmgX lib directory: $AMGX_LIB_DIR" >&6;}
+
+if test -d "$AMGX_LIB_DIR"; then
+  AMGX_LDFLAGS="-L$AMGX_LIB_DIR -Wl,-rpath,$AMGX_LIB_DIR $CUDA_LDFLAGS"
+  AMGX_LDFLAGS=$AMGX_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $AMGX_LDFLAGS"
+
+else
+  as_fn_error $? "$AMGX_LIB_DIR is not a valid directory...
+Use '--with-amgx-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+else
+
+
+AMGX_LIB_DIR=$AMGX_DIR/lib
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX lib directory: $AMGX_LIB_DIR" >&5
+$as_echo "$as_me: using AmgX lib directory: $AMGX_LIB_DIR" >&6;}
+
+if test -d "$AMGX_LIB_DIR"; then
+  AMGX_LDFLAGS="-L$AMGX_LIB_DIR -Wl,-rpath,$AMGX_LIB_DIR $CUDA_LDFLAGS"
+  AMGX_LDFLAGS=$AMGX_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $AMGX_LDFLAGS"
+
+else
+  as_fn_error $? "$AMGX_LIB_DIR is not a valid directory...
+Use '--with-amgx-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+fi
+
+
+else
+  if test "x$AMGX_INCLUDE_DIR" != "x"; then
+
+
+AMGX_INCLUDE_DIR=$AMGX_INCLUDE_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX include directory: $AMGX_INCLUDE_DIR" >&5
+$as_echo "$as_me: using AmgX include directory: $AMGX_INCLUDE_DIR" >&6;}
+
+if test -d "$AMGX_INCLUDE_DIR"; then
+  AMGX_CPPFLAGS="-DHAVE_AMGX -I$AMGX_INCLUDE_DIR $CUDA_CPPFLAGS"
+  AMGX_CPPFLAGS=$AMGX_CPPFLAGS
+
+  CPPFLAGS="$CPPFLAGS $AMGX_CPPFLAGS"
+
+else
+  as_fn_error $? "$AMGX_INCLUDE_DIR is not a valid directory...
+Use '--with-amgx-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+  fi
+  if test "x$AMGX_LIB_DIR" != "x"; then
+
+
+AMGX_LIB_DIR=$AMGX_LIB_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgX lib directory: $AMGX_LIB_DIR" >&5
+$as_echo "$as_me: using AmgX lib directory: $AMGX_LIB_DIR" >&6;}
+
+if test -d "$AMGX_LIB_DIR"; then
+  AMGX_LDFLAGS="-L$AMGX_LIB_DIR -Wl,-rpath,$AMGX_LIB_DIR $CUDA_LDFLAGS"
+  AMGX_LDFLAGS=$AMGX_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $AMGX_LDFLAGS"
+
+else
+  as_fn_error $? "$AMGX_LIB_DIR is not a valid directory...
+Use '--with-amgx-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+  fi
+fi
+
 ac_fn_cxx_check_header_mongrel "$LINENO" "amgx_c.h" "ac_cv_header_amgx_c_h" "$ac_includes_default"
 if test "x$ac_cv_header_amgx_c_h" = xyes; then :
 
 else
-  as_fn_error $? "could not find header file amgx_c.h" "$LINENO" 5
+  as_fn_error $? "could not find amgx_c.h; check config.log" "$LINENO" 5
 fi
 
 
 
 if test "x$enable_shared" = "xyes"; then
   AMGX_LIBS="-lamgxsh $CUDA_LIBS"
-  # check for presence of library
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgxsh" >&5
 $as_echo_n "checking for AMGX_initialize in -lamgxsh... " >&6; }
 if ${ac_cv_lib_amgxsh_AMGX_initialize+:} false; then :
@@ -19283,16 +19317,15 @@ else
   as_fn_error $? "could not use library amgxsh; check config.log" "$LINENO" 5
 fi
 
-else
+elif test "x$enable_static" = "xyes"; then
   AMGX_LIBS="-lamgx $CUDA_LIBS"
-  # check for presence of library
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for AMGX_initialize in -lamgx" >&5
 $as_echo_n "checking for AMGX_initialize in -lamgx... " >&6; }
 if ${ac_cv_lib_amgx_AMGX_initialize+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lamgx $CUDA_LIBS -lcusolver -fopenmp $LIBS"
+LIBS="-lamgx $CUDA_LIBS $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -19386,11 +19419,23 @@ CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
 
 
 
-
-
 # Check whether --with-amgxwrapper-dir was given.
 if test "${with_amgxwrapper_dir+set}" = set; then :
   withval=$with_amgxwrapper_dir; AMGXWRAPPER_DIR=$withval
+fi
+
+
+
+# Check whether --with-amgxwrapper-include was given.
+if test "${with_amgxwrapper_include+set}" = set; then :
+  withval=$with_amgxwrapper_include; AMGXWRAPPER_INCLUDE_DIR=$withval
+fi
+
+
+
+# Check whether --with-amgxwrapper-lib was given.
+if test "${with_amgxwrapper_lib+set}" = set; then :
+  withval=$with_amgxwrapper_lib; AMGXWRAPPER_LIB_DIR=$withval
 fi
 
 
@@ -19403,97 +19448,136 @@ fi
 
 
 if test "x$AMGXWRAPPER_DIR" != "x"; then
-  if test -d "$AMGXWRAPPER_DIR"; then
 
 
 AMGXWRAPPER_DIR=$AMGXWRAPPER_DIR
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: using AmgXWrapper: $AMGXWRAPPER_DIR" >&5
 $as_echo "$as_me: using AmgXWrapper: $AMGXWRAPPER_DIR" >&6;}
-AMGXWRAPPER_CPPFLAGS="-I$AMGXWRAPPER_DIR/include $AMGX_CPPFLAGS"
-AMGXWRAPPER_CPPFLAGS=$AMGXWRAPPER_CPPFLAGS
 
-if test -d "$AMGXWRAPPER_DIR/lib"; then
-  AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_DIR/lib -Wl,-rpath,$AMGXWRAPPER_DIR/lib $AMGX_LDFLAGS"
-elif test -d "$AMGXWRAPPER_DIR/lib64"; then
-  AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_DIR/lib64 -Wl,-rpath,$AMGXWRAPPER_DIR/lib64 $AMGX_LDFLAGS"
+if test ! -d "$AMGXWRAPPER_DIR"; then
+  as_fn_error $? "$AMGXWRAPPER_DIR is not a valid directory...
+Use '--with-amgxwrapper-dir=PATH' to provide the directory of the package." "$LINENO" 5
 fi
-AMGXWRAPPER_LDFLAGS=$AMGXWRAPPER_LDFLAGS
-
-CPPFLAGS="$AMGXWRAPPER_CPPFLAGS $CPPFLAGS"
-
-LDFLAGS="$AMGXWRAPPER_LDFLAGS $LDFLAGS"
 
 
+AMGXWRAPPER_INCLUDE_DIR=$AMGXWRAPPER_DIR/include
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgXWrapper include directory: $AMGXWRAPPER_INCLUDE_DIR" >&5
+$as_echo "$as_me: using AmgXWrapper include directory: $AMGXWRAPPER_INCLUDE_DIR" >&6;}
 
-  else
-    as_fn_error $? "
-$AMGXWRAPPER_DIR is not a valid directory;
-please use '--with-amgxwrapper-dir=PATH' to provide the directory of the package" "$LINENO" 5
-  fi
+if test -d "$AMGXWRAPPER_INCLUDE_DIR"; then
+  AMGXWRAPPER_CPPFLAGS="-I$AMGXWRAPPER_INCLUDE_DIR $AMGX_CPPFLAGS $PETSC_CPPFLAGS"
+  AMGXWRAPPER_CPPFLAGS=$AMGXWRAPPER_CPPFLAGS
+
+  CPPFLAGS="$CPPFLAGS $AMGXWRAPPER_CPPFLAGS"
+
 else
+  as_fn_error $? "$AMGXWRAPPER_INCLUDE_DIR is not a valid directory...
+Use '--with-amgxwrapper-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+if test -d "$AMGXWRAPPER_DIR/lib64"; then
+
+
+AMGXWRAPPER_LIB_DIR=$AMGXWRAPPER_DIR/lib64
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgXWrapper lib directory: $AMGXWRAPPER_LIB_DIR" >&5
+$as_echo "$as_me: using AmgXWrapper lib directory: $AMGXWRAPPER_LIB_DIR" >&6;}
+
+if test -d "$AMGXWRAPPER_LIB_DIR"; then
+  AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_LIB_DIR -Wl,-rpath,$AMGXWRAPPER_LIB_DIR $AMGX_LDFLAGS $PETSC_LDFLAGS"
+  AMGXWRAPPER_LDFLAGS=$AMGXWRAPPER_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $AMGXWRAPPER_LDFLAGS"
+
+else
+  as_fn_error $? "$AMGXWRAPPER_LIB_DIR is not a valid directory...
+Use '--with-amgxwrapper-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+else
+
+
+AMGXWRAPPER_LIB_DIR=$AMGXWRAPPER_DIR/lib
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgXWrapper lib directory: $AMGXWRAPPER_LIB_DIR" >&5
+$as_echo "$as_me: using AmgXWrapper lib directory: $AMGXWRAPPER_LIB_DIR" >&6;}
+
+if test -d "$AMGXWRAPPER_LIB_DIR"; then
+  AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_LIB_DIR -Wl,-rpath,$AMGXWRAPPER_LIB_DIR $AMGX_LDFLAGS $PETSC_LDFLAGS"
+  AMGXWRAPPER_LDFLAGS=$AMGXWRAPPER_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $AMGXWRAPPER_LDFLAGS"
+
+else
+  as_fn_error $? "$AMGXWRAPPER_LIB_DIR is not a valid directory...
+Use '--with-amgxwrapper-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+fi
+
+
+else
+  if test "x$AMGXWRAPPER_INCLUDE_DIR" != "x"; then
+
+
+AMGXWRAPPER_INCLUDE_DIR=$AMGXWRAPPER_INCLUDE_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgXWrapper include directory: $AMGXWRAPPER_INCLUDE_DIR" >&5
+$as_echo "$as_me: using AmgXWrapper include directory: $AMGXWRAPPER_INCLUDE_DIR" >&6;}
+
+if test -d "$AMGXWRAPPER_INCLUDE_DIR"; then
+  AMGXWRAPPER_CPPFLAGS="-I$AMGXWRAPPER_INCLUDE_DIR $AMGX_CPPFLAGS $PETSC_CPPFLAGS"
+  AMGXWRAPPER_CPPFLAGS=$AMGXWRAPPER_CPPFLAGS
+
+  CPPFLAGS="$CPPFLAGS $AMGXWRAPPER_CPPFLAGS"
+
+else
+  as_fn_error $? "$AMGXWRAPPER_INCLUDE_DIR is not a valid directory...
+Use '--with-amgxwrapper-include=PATH' to provide the include directory of the package." "$LINENO" 5
+fi
+
+
+  fi
+  if test "x$AMGXWRAPPER_LIB_DIR" != "x"; then
+
+
+AMGXWRAPPER_LIB_DIR=$AMGXWRAPPER_LIB_DIR
+{ $as_echo "$as_me:${as_lineno-$LINENO}: using AmgXWrapper lib directory: $AMGXWRAPPER_LIB_DIR" >&5
+$as_echo "$as_me: using AmgXWrapper lib directory: $AMGXWRAPPER_LIB_DIR" >&6;}
+
+if test -d "$AMGXWRAPPER_LIB_DIR"; then
+  AMGXWRAPPER_LDFLAGS="-L$AMGXWRAPPER_LIB_DIR -Wl,-rpath,$AMGXWRAPPER_LIB_DIR $AMGX_LDFLAGS $PETSC_LDFLAGS"
+  AMGXWRAPPER_LDFLAGS=$AMGXWRAPPER_LDFLAGS
+
+  LDFLAGS="$LDFLAGS $AMGXWRAPPER_LDFLAGS"
+
+else
+  as_fn_error $? "$AMGXWRAPPER_LIB_DIR is not a valid directory...
+Use '--with-amgxwrapper-lib=PATH' to provide the lib directory of the package." "$LINENO" 5
+fi
+
+
+  fi
   if test "x$IS_INSTALL_AMGXWRAPPER" = "xyes"; then
 
 
-
-ABSOLUTE_SRCDIR=`cd $srcdir ; pwd`
-PACKAGE_CFLAGS=""
-PACKAGE_CPPFLAGS=""
-PACKAGE_CXXFLAGS=""
-PACKAGE_FCFLAGS=""
-PACKAGE_LDFLAGS=""
-PACKAGE_LIBS=""
-PACKAGE_FCLIBS=""
-PACKAGE_CONTRIB_LIBS=""
-
-
-PACKAGE_save_CFLAGS=$CFLAGS
-PACKAGE_save_CPPFLAGS=$CPPFLAGS
-PACKAGE_save_CXXFLAGS=$CXXFLAGS
-PACKAGE_save_FCFLAGS=$FCFLAGS
-PACKAGE_save_LDFLAGS=$LDFLAGS
-PACKAGE_save_LIBS=$LIBS
-PACKAGE_save_FCLIBS=$FCLIBS
-PACKAGE_save_CONTRIB_LIBS=$CONTRIB_LIBS
-CFLAGS="$PACKAGE_CFLAGS $CFLAGS"
-CPPFLAGS="$PACKAGE_CPPFLAGS $CPPFLAGS"
-CXXFLAGS="$PACKAGE_CXXFLAGS $CXXFLAGS"
-FCFLAGS="$PACKAGE_FCFLAGS $FCFLAGS"
-LDFLAGS="$PACKAGE_LDFLAGS $LDFLAGS"
-LIBS="$PACKAGE_LIBS $LIBS"
-FCLIBS="$PACKAGE_FCLIBS $FCLIBS"
-CONTRIB_LIBS="$PACKAGE_CONTRIB_LIBS $CONTRIB_LIBS"
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}:
-
- ****************************************
- *      Downloading and installing      *
- *           AmgXWrapper-1.4            *
- ****************************************
-" >&5
-$as_echo "$as_me:
-
- ****************************************
- *      Downloading and installing      *
- *           AmgXWrapper-1.4            *
- ****************************************
-" >&6;}
-echo "*** INFO *** Downloading AmgXWrapper-1.4... "
-VERSION=1.4
-TARBALL=v$VERSION.tar.gz
-URL=https://github.com/barbagroup/AmgXWrapper/archive/$TARBALL
-wget $URL -P /tmp
-AMGXWRAPPER_DIR=$BUILDDIR/externalpackages/AmgXWrapper-$VERSION
-AMGXWRAPPER_DIR=$AMGXWRAPPER_DIR
-
-mkdir -p $AMGXWRAPPER_DIR/build
-tar -xzf /tmp/$TARBALL -C $AMGXWRAPPER_DIR --strip-components=1
-rm -f /tmp/$TARBALL
-echo "*** INFO *** Building AmgXWrapper-1.4... "
+version=1.4
+tarball=v$version.tar.gz
+url=https://github.com/barbagroup/AmgXWrapper/archive/$tarball
+AMGXWRAPPER_DIR=$BUILDDIR/externalpackages/AmgXWrapper-$version
+if test ! -d "$AMGXWRAPPER_DIR"; then
+  echo "downloading AmgXWrapper-$version... "
+  wget -q $url -P /tmp
+  mkdir -p $AMGXWRAPPER_DIR/build
+  tar -xzf /tmp/$tarball -C $AMGXWRAPPER_DIR --strip-components=1
+  rm -f /tmp/$tarball
+fi
+echo "building and installing AmgXWrapper-$version... "
 cd $AMGXWRAPPER_DIR/build
 if test "x$enable_shared" = "xyes"; then
   cmake $AMGXWRAPPER_DIR \
-    -DAMGX_DIR=$AMGX_DIR \
+    -DAMGX_INCLUDE_DIRS=$AMGX_INCLUDE_DIR \
+    -DAMGX_LIBRARIES=$AMGX_LIB_DIR/libamgxsh.so \
     -DCUDA_DIR=$CUDA_DIR \
     -DPETSC_DIR=$PETSC_DIR \
     -DPETSC_ARCH=$PETSC_ARCH \
@@ -19506,7 +19590,8 @@ if test "x$enable_shared" = "xyes"; then
 fi
 if test "x$enable_static" = "xyes"; then
   cmake $AMGXWRAPPER_DIR \
-    -DAMGX_DIR=$AMGX_DIR \
+    -DAMGX_INCLUDE_DIRS=$AMGX_INCLUDE_DIR \
+    -DAMGX_LIBRARIES=$AMGX_LIB_DIR/libamgx.a \
     -DCUDA_DIR=$CUDA_DIR \
     -DPETSC_DIR=$PETSC_DIR \
     -DPETSC_ARCH=$PETSC_ARCH \
@@ -19518,19 +19603,15 @@ if test "x$enable_static" = "xyes"; then
   rm -f $AMGXWRAPPER_DIR/build/CMakeCache.txt
 fi
 cd $BUILDDIR
-AMGXWRAPPER_CPPFLAGS=$AMGX_CPPFLAGS
+AMGXWRAPPER_CPPFLAGS="$AMGX_CPPFLAGS $PETSC_CPPFLAGS"
+AMGXWRAPPER_CPPFLAGS=$AMGXWRAPPER_CPPFLAGS
 
-AMGXWRAPPER_LDFLAGS=$AMGX_LDFLAGS
+CPPFLAGS="$CPPFLAGS $AMGXWRAPPER_CPPFLAGS"
 
+AMGXWRAPPER_LDFLAGS="$AMGX_LDFLAGS $PETSC_LDFLAGS"
+AMGXWRAPPER_LDFLAGS=$AMGXWRAPPER_LDFLAGS
 
-CFLAGS=$PACKAGE_save_CFLAGS
-CPPFLAGS=$PACKAGE_save_CPPFLAGS
-CXXFLAGS=$PACKAGE_save_CXXFLAGS
-FCFLAGS=$PACKAGE_save_FCFLAGS
-LDFLAGS=$PACKAGE_save_LDFLAGS
-LIBS=$PACKAGE_save_LIBS
-FCLIBS=$PACKAGE_save_FCLIBS
-CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
+LDFLAGS="$LDFLAGS $AMGXWRAPPER_LDFLAGS"
 
 
 echo
@@ -19539,18 +19620,14 @@ echo
   fi
 fi
 
-CPPFLAGS="$CPPFLAGS $AMGX_CPPFLAGS"
-
-CPPFLAGS="$CPPFLAGS $PETSC_CPPFLAGS"
-
 ac_fn_cxx_check_header_mongrel "$LINENO" "AmgXSolver.hpp" "ac_cv_header_AmgXSolver_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_AmgXSolver_hpp" = xyes; then :
 
 else
-  as_fn_error $? "Couldn't find AmgXSolver.hpp...
-Please use '--with-amgxwrapper-dir=PATH' to provide the directory of the package
-or '--enable-amgxwrapper' to download and install AmgXWrapper-1.3 (AmgX-2.0).
-" "$LINENO" 5
+  as_fn_error $? "could not find AmgXSolver.hpp...
+Use '--with-amgxwrapper-dir=PATH' to provide the directory of the package or
+Use '--with-amgxwrapper-include=PATH' and '--with-amgxwrapper-lib=PATH' or
+Use '--enable-amgxwrapper' to download, build, and install AmgXWrapper-1.4." "$LINENO" 5
 fi
 
 
@@ -19573,10 +19650,8 @@ CONTRIB_LIBS=$PACKAGE_save_CONTRIB_LIBS
 echo
 
 
-
-
 fi
- if test "x$ENABLE_AMGX" = xyes; then
+ if test "x$WITH_AMGXWRAPPER" = xyes; then
   WITH_AMGX_TRUE=
   WITH_AMGX_FALSE='#'
 else
@@ -19586,7 +19661,7 @@ fi
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile applications/writemesh/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
 
 
 # output message
@@ -20738,6 +20813,7 @@ do
     "applications/navierstokes/Makefile") CONFIG_FILES="$CONFIG_FILES applications/navierstokes/Makefile" ;;
     "applications/ibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/ibpm/Makefile" ;;
     "applications/decoupledibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/decoupledibpm/Makefile" ;;
+    "applications/writemesh/Makefile") CONFIG_FILES="$CONFIG_FILES applications/writemesh/Makefile" ;;
     "examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile") CONFIG_FILES="$CONFIG_FILES examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

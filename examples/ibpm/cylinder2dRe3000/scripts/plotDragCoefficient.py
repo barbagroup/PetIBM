@@ -11,58 +11,54 @@ _References:_
 """
 
 import os
+import pathlib
 import numpy
+import collections
 from matplotlib import pyplot
 
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.path.dirname(script_dir)
-root_dir = os.environ.get('PETIBM_EXAMPLES',
-                          os.path.dirname(os.path.dirname(simu_dir)))
+simu_dir = pathlib.Path(__file__).absolute().parents[1]
+root_dir = os.environ.get('PETIBM_EXAMPLES')
+if not root_dir:
+    root_dir = simu_dir.parents[1]
+
+data = collections.OrderedDict({})
 
 # Reads forces from file.
-filepath = os.path.join(simu_dir, 'forces.txt')
+label = 'PetIBM'
+filepath = simu_dir / 'forces-0.txt'
 with open(filepath, 'r') as infile:
-  data = numpy.loadtxt(infile, dtype=numpy.float64, unpack=True)
-times, cd = data[0], 2.0 * data[1]
+    t, fx = numpy.loadtxt(infile, dtype=numpy.float64,
+                          unpack=True, usecols=(0, 1))
+data[label] = {'t': t, 'cd': 2 * fx}
+data[label]['kwargs'] = {}
 
 # Reads drag coefficient of Koumoutsakos and Leonard (1995) for Re=3000.
+label = 'Koumoutsakos and Leonard (1995)'
 filename = 'koumoutsakos_leonard_1995_cylinder_dragCoefficientRe3000.dat'
-filepath = os.path.join(root_dir, 'data', filename)
+filepath = root_dir / 'data' / filename
 with open(filepath, 'r') as infile:
-  times_kl, cd_kl = numpy.loadtxt(infile, dtype=numpy.float64, unpack=True)
-times_kl *= 0.5
+    t, cd = numpy.loadtxt(infile, dtype=numpy.float64, unpack=True)
+data[label] = {'t': 0.5 * t, 'cd': cd}
+data[label]['kwargs'] = {'linewidth': 0, 'marker': 'o',
+                         'markerfacecolor': 'none', 'markeredgecolor': 'black'}
+
+pyplot.rc('font', family='serif', size=16)
 
 # Plots the instantaneous drag coefficients.
-pyplot.style.use('seaborn-dark')
-kwargs_data = {'label': 'PetIBM',
-               'color': '#336699',
-               'linestyle': '-',
-               'linewidth': 3,
-               'zorder': 10}
-kwargs_kl1995 = {'label': 'Koumoutsakos and Leonard (1995)',
-                 'color': '#993333',
-                 'linewidth': 0,
-                 'markeredgewidth': 2,
-                 'markeredgecolor': '#993333',
-                 'markerfacecolor': 'none',
-                 'marker': 'o',
-                 'markersize': 4,
-                 'zorder': 10}
-fig, ax = pyplot.subplots(figsize=(6, 6))
-ax.grid(True, zorder=0)
-ax.set_xlabel('non-dimensional time', fontsize=16)
-ax.set_ylabel('drag coefficient', fontsize=16)
-ax.plot(times, cd, **kwargs_data)
-ax.plot(times_kl, cd_kl, **kwargs_kl1995)
-ax.axis([0.0, 3.0, 0.0, 2.0])
-ax.legend(prop={'size': 16})
+fig, ax = pyplot.subplots(figsize=(8.0, 6.0))
+ax.grid()
+ax.set_xlabel('Non-dimensional time')
+ax.set_ylabel('Drag coefficient')
+for label, subdata in data.items():
+    ax.plot(subdata['t'], subdata['cd'], label=label, **subdata['kwargs'])
+ax.axis((0.0, 3.0, 0.0, 2.0))
+ax.legend()
 
 pyplot.show()
 
-# Saves figure.
-figures_dir = os.path.join(simu_dir, 'figures')
-if not os.path.isdir(figures_dir):
-  os.makedirs(figures_dir)
-filepath = os.path.join(figures_dir, 'dragCoefficient.png')
-fig.savefig(filepath)
+# Save figure.
+fig_dir = simu_dir / 'figures'
+fig_dir.mkdir(parents=True, exist_ok=True)
+filepath = fig_dir / 'dragCoefficient.png'
+fig.savefig(str(filepath), dpi=300)

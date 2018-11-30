@@ -5,16 +5,14 @@
  * \license BSD 3-Clause License.
  */
 
-# include <petibm/mesh.h>
-# include <petibm/cartesianmesh.h>
-# include <petibm/io.h>
-
+#include <petibm/cartesianmesh.h>
+#include <petibm/io.h>
+#include <petibm/mesh.h>
 
 namespace petibm
 {
 namespace mesh
 {
-
 // implement MeshBase::~MeshBase
 MeshBase::~MeshBase()
 {
@@ -26,7 +24,7 @@ MeshBase::~MeshBase()
     ierr = PetscFinalized(&finalized); CHKERRV(ierr);
     if (finalized) return;
 
-    for(int f=0; f<dim; ++f)
+    for (int f = 0; f < dim; ++f)
     {
         ierr = DMDestroy(&da[f]); CHKERRV(ierr);
     }
@@ -34,7 +32,7 @@ MeshBase::~MeshBase()
     ierr = DMDestroy(&da[4]); CHKERRV(ierr);
     ierr = DMDestroy(&UPack); CHKERRV(ierr);
     comm = MPI_COMM_NULL;
-} // ~MeshBase
+}  // ~MeshBase
 
 // implement MeshBase::destroy
 PetscErrorCode MeshBase::destroy()
@@ -43,7 +41,7 @@ PetscErrorCode MeshBase::destroy()
 
     PetscErrorCode ierr;
 
-    for(int f=0; f<dim; ++f)
+    for (int f = 0; f < dim; ++f)
     {
         ierr = DMDestroy(&da[f]); CHKERRQ(ierr);
     }
@@ -71,7 +69,7 @@ PetscErrorCode MeshBase::destroy()
     mpiSize = mpiRank = 0;
 
     PetscFunctionReturn(0);
-} // destroy
+}  // destroy
 
 // implement MeshBase::printInfo
 PetscErrorCode MeshBase::printInfo() const
@@ -82,18 +80,18 @@ PetscErrorCode MeshBase::printInfo() const
     ierr = io::print(info); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-} // printInfo
+}  // printInfo
 
 // implement petibm::mesh::createMesh
-PetscErrorCode createMesh(const MPI_Comm &comm,
-        const YAML::Node &node, type::Mesh &mesh)
+PetscErrorCode createMesh(const MPI_Comm &comm, const YAML::Node &node,
+                          type::Mesh &mesh)
 {
     PetscFunctionBeginUser;
 
     mesh = std::make_shared<CartesianMesh>(comm, node);
 
     PetscFunctionReturn(0);
-} // createMesh
+}  // createMesh
 
-} // end of mesh
-} // end of petibm
+}  // namespace mesh
+}  // namespace petibm

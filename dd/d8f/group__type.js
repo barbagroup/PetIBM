@@ -19,7 +19,6 @@ var group__type =
     [ "BoolVec2D", "dd/d8f/group__type.html#ga806853959629f5611464435d2b1c8814", null ],
     [ "BoolVec3D", "dd/d8f/group__type.html#ga1d6837e7b3cb1050a5742943c81f5c44", null ],
     [ "GhostedVec2D", "dd/d8f/group__type.html#ga42ca13471c417e0ca3f42ad2952f1838", null ],
-    [ "GhostedVec3D", "dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520", null ],
     [ "GhostPointsList", "dd/d8f/group__type.html#ga8f4d08b0bb20cce14e82c946ec638112", null ],
     [ "IntVec1D", "dd/d8f/group__type.html#gaaa21faeebd76c114587f21e65ca7fa53", null ],
     [ "IntVec2D", "dd/d8f/group__type.html#ga0173f75594de88ef6cdb6d4b6838928d", null ],
@@ -55,6 +54,12 @@ var group__type =
       [ "p", "dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eadaa71bfcb768bafb823ac11a8a7186a73f", null ],
       [ "vertex", "dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eadaf1663bf81f8e4829d905e4e7bd226742", null ]
     ] ],
+    [ "ProbeType", "dd/d8f/group__type.html#ga87d121071b83e99e39e2136bca4490b2", [
+      [ "POINT", "dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2ad853a865e222ac9b22bd6b4106f6d310", null ],
+      [ "LINE", "dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2a9860edd96fb3924c1d6881349bb335ff", null ],
+      [ "SURFACE", "dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2ac17b869b8201c39e5250b563c6152e45", null ],
+      [ "VOLUME", "dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2a3c8755a52bfee4d5e123804cea461a80", null ]
+    ] ],
     [ "bl2str", "dd/d8f/group__type.html#ga2902d569ef2c179f064d484a3e2296ef", null ],
     [ "bt2str", "dd/d8f/group__type.html#gab9b5288c273bd424c10da00593e580d0", null ],
     [ "dir2str", "dd/d8f/group__type.html#gab43916db84e759fb6a5da061cd2c6796", null ],
@@ -62,5 +67,6 @@ var group__type =
     [ "str2bl", "dd/d8f/group__type.html#ga95d4548d19f72eb6bac3f8cbeb73724b", null ],
     [ "str2bt", "dd/d8f/group__type.html#ga9bdc652390984cb7518a8d9bdfb7d23b", null ],
     [ "str2dir", "dd/d8f/group__type.html#gacfcb8980b70d91d3e0f0cf6886879310", null ],
-    [ "str2fd", "dd/d8f/group__type.html#gada665dacf461c067e3c03599beb84afd", null ]
+    [ "str2fd", "dd/d8f/group__type.html#gada665dacf461c067e3c03599beb84afd", null ],
+    [ "str2ProbeType", "dd/d8f/group__type.html#ga5e9dfaf7a9b48425560ed623c7fa5e12", null ]
 ];

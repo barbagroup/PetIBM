@@ -5,6 +5,10 @@ var hierarchy =
       [ "petibm::boundary::BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html", null ]
     ] ],
     [ "petibm::type::GhostPointInfo", "d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html", null ],
+    [ "petibm::misc::LinInterpBase", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html", [
+      [ "petibm::misc::BiLinInterp", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html", null ],
+      [ "petibm::misc::TriLinInterp", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html", null ]
+    ] ],
     [ "petibm::linsolver::LinSolverBase", "de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html", [
       [ "petibm::linsolver::LinSolverAmgX", "df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html", null ],
       [ "petibm::linsolver::LinSolverKSP", "d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html", null ]
@@ -14,8 +18,14 @@ var hierarchy =
       [ "petibm::mesh::CartesianMesh", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html", null ]
     ] ],
     [ "NavierStokesSolver", "d4/de8/class_navier_stokes_solver.html", [
-      [ "DecoupledIBPMSolver", "d4/d1d/class_decoupled_i_b_p_m_solver.html", null ],
+      [ "DecoupledIBPMSolver", "d4/d1d/class_decoupled_i_b_p_m_solver.html", [
+        [ "RigidKinematicsSolver", "dc/dbc/class_rigid_kinematics_solver.html", null ]
+      ] ],
       [ "IBPMSolver", "d2/dec/class_i_b_p_m_solver.html", null ]
+    ] ],
+    [ "petibm::misc::ProbeBase", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html", [
+      [ "petibm::misc::ProbePoint", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html", null ],
+      [ "petibm::misc::ProbeVolume", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html", null ]
     ] ],
     [ "petibm::type::RowModifier", "d3/dd1/structpetibm_1_1type_1_1_row_modifier.html", null ],
     [ "petibm::body::SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html", [

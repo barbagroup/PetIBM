@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -134,23 +134,23 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga78c31227d8caca6bfa3f746a562e284d"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d1a/group__body_module.html#ga78c31227d8caca6bfa3f746a562e284d">createBodyPack</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;mesh, const YAML::Node &amp;node, <a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b">type::BodyPack</a> &amp;bodies)</td></tr>
-<tr class="memdesc:ga78c31227d8caca6bfa3f746a562e284d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function for creating <a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b" title="Definition of type::BodyPack. ">type::BodyPack</a>.  <a href="../../d0/d1a/group__body_module.html#ga78c31227d8caca6bfa3f746a562e284d">More...</a><br /></td></tr>
-<tr class="separator:ga78c31227d8caca6bfa3f746a562e284d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga370db0729ca609e2ca80a4283f5d96f0"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d1a/group__body_module.html#ga370db0729ca609e2ca80a4283f5d96f0">createSingleBody</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;mesh, const std::string &amp;type, const std::string &amp;name, const std::string &amp;file, <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e">type::SingleBody</a> &amp;body)</td></tr>
-<tr class="memdesc:ga370db0729ca609e2ca80a4283f5d96f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">factory for creating a SingleBody object.  <a href="../../d0/d1a/group__body_module.html#ga370db0729ca609e2ca80a4283f5d96f0">More...</a><br /></td></tr>
-<tr class="separator:ga370db0729ca609e2ca80a4283f5d96f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga47a869524c466e16ffc9601deec5e0ac"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d1a/group__body_module.html#ga47a869524c466e16ffc9601deec5e0ac">createBodyPack</a> (const MPI_Comm &amp;comm, const PetscInt &amp;dim, const YAML::Node &amp;node, <a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b">type::BodyPack</a> &amp;bodies)</td></tr>
+<tr class="memdesc:ga47a869524c466e16ffc9601deec5e0ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a pack of bodies.  <a href="../../d0/d1a/group__body_module.html#ga47a869524c466e16ffc9601deec5e0ac">More...</a><br /></td></tr>
+<tr class="separator:ga47a869524c466e16ffc9601deec5e0ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa4f77a0832f28fbf899cc7381274c259"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d1a/group__body_module.html#gaa4f77a0832f28fbf899cc7381274c259">createSingleBody</a> (const MPI_Comm &amp;comm, const PetscInt &amp;dim, const std::string &amp;type, const std::string &amp;name, const std::string &amp;filePath, <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e">type::SingleBody</a> &amp;body)</td></tr>
+<tr class="memdesc:gaa4f77a0832f28fbf899cc7381274c259"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a single body.  <a href="../../d0/d1a/group__body_module.html#gaa4f77a0832f28fbf899cc7381274c259">More...</a><br /></td></tr>
+<tr class="separator:gaa4f77a0832f28fbf899cc7381274c259"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A namespace for objects and functions related to immersed-boundary bodies. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b" title="Definition of type::BodyPack. ">petibm::type::BodyPack</a>, <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e" title="Definition of type::SingleBody. ">petibm::type::SingleBody</a>, <a class="el" href="../../d0/d1a/group__body_module.html#ga78c31227d8caca6bfa3f746a562e284d" title="Factory function for creating type::BodyPack. ">petibm::body::createBodyPack</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b" title="Definition of type::BodyPack. ">petibm::type::BodyPack</a>, <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e" title="Definition of type::SingleBody. ">petibm::type::SingleBody</a>, <a class="el" href="../../d0/d1a/group__body_module.html#ga47a869524c466e16ffc9601deec5e0ac" title="Factory function to create a pack of bodies. ">petibm::body::createBodyPack</a> </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d5/d3a/namespacepetibm_1_1body.html">body</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

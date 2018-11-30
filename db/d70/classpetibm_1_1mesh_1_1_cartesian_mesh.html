@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -129,7 +129,8 @@ $(document).ready(function(){initNavTree('db/d70/classpetibm_1_1mesh_1_1_cartesi
 <div class="dynheader">
 Inheritance diagram for petibm::mesh::CartesianMesh:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../df/d92/classpetibm_1_1mesh_1_1_cartesian_mesh__inherit__graph.svg" width="208" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../df/d92/classpetibm_1_1mesh_1_1_cartesian_mesh__inherit__graph.svg" width="208" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -143,8 +144,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abf19ad588071eb146afa32f0bce77f44"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#abf19ad588071eb146afa32f0bce77f44">destroy</a> ()</td></tr>
 <tr class="memdesc:abf19ad588071eb146afa32f0bce77f44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manually destroy data.  <a href="#abf19ad588071eb146afa32f0bce77f44">More...</a><br /></td></tr>
 <tr class="separator:abf19ad588071eb146afa32f0bce77f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae75489be01f01290f23030b0f11e4afb"><td class="memItemLeft" align="right" valign="top">virtual PetscBool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ae75489be01f01290f23030b0f11e4afb">isPointOnLocalProc</a> (const <a class="el" href="../../dd/d8f/group__type.html#gad19e550a4119623bdfdd2f9b02ce1678">type::RealVec1D</a> &amp;point, const <a class="el" href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">type::Field</a> &amp;field)</td></tr>
+<tr class="separator:ae75489be01f01290f23030b0f11e4afb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89e129c900347f5a005b8364d984f725"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a89e129c900347f5a005b8364d984f725">write</a> (const std::string &amp;filePath) const </td></tr>
-<tr class="memdesc:a89e129c900347f5a005b8364d984f725"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write grid/mesh data to a HDF5.  <a href="#a89e129c900347f5a005b8364d984f725">More...</a><br /></td></tr>
+<tr class="memdesc:a89e129c900347f5a005b8364d984f725"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the mesh object into a HDF5 file.  <a href="#a89e129c900347f5a005b8364d984f725">More...</a><br /></td></tr>
 <tr class="separator:a89e129c900347f5a005b8364d984f725"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0307a5e7dc1ea47a498c47fa97372ff"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ac0307a5e7dc1ea47a498c47fa97372ff">getLocalIndex</a> (const PetscInt &amp;f, const MatStencil &amp;s, PetscInt &amp;idx) const </td></tr>
 <tr class="memdesc:ac0307a5e7dc1ea47a498c47fa97372ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the local index of a point by providing MatStencil.  <a href="#ac0307a5e7dc1ea47a498c47fa97372ff">More...</a><br /></td></tr>
@@ -191,10 +194,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ae0a277ae4c229177b7a08a10d36149db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../dd/d8f/group__type.html#ga806853959629f5611464435d2b1c8814">type::BoolVec2D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ae0a277ae4c229177b7a08a10d36149db">periodic</a></td></tr>
 <tr class="memdesc:ae0a277ae4c229177b7a08a10d36149db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bools indicating if any direction is periodic.  <a href="#ae0a277ae4c229177b7a08a10d36149db">More...</a><br /></td></tr>
 <tr class="separator:ae0a277ae4c229177b7a08a10d36149db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61c1b0d7b2994804afce08459d9ca515"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a61c1b0d7b2994804afce08459d9ca515">coord</a></td></tr>
+<tr class="memitem:a61c1b0d7b2994804afce08459d9ca515"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d54/namespacepetibm_1_1type.html#af76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a61c1b0d7b2994804afce08459d9ca515">coord</a></td></tr>
 <tr class="memdesc:a61c1b0d7b2994804afce08459d9ca515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinates of mesh points of all fields and in all directions.  <a href="#a61c1b0d7b2994804afce08459d9ca515">More...</a><br /></td></tr>
 <tr class="separator:a61c1b0d7b2994804afce08459d9ca515"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0153c0e394d8d99eda1798cd4de9f4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aa0153c0e394d8d99eda1798cd4de9f4e">dL</a></td></tr>
+<tr class="memitem:aa0153c0e394d8d99eda1798cd4de9f4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d54/namespacepetibm_1_1type.html#af76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aa0153c0e394d8d99eda1798cd4de9f4e">dL</a></td></tr>
 <tr class="memdesc:aa0153c0e394d8d99eda1798cd4de9f4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spacings of mesh points of all fields and in all directions.  <a href="#aa0153c0e394d8d99eda1798cd4de9f4e">More...</a><br /></td></tr>
 <tr class="separator:aa0153c0e394d8d99eda1798cd4de9f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97514fe900126a564cf45ca1ab94d109"><td class="memItemLeft" align="right" valign="top">PetscInt&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a97514fe900126a564cf45ca1ab94d109">UN</a></td></tr>
@@ -258,7 +261,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:ae6649f17355b6bd4443d9be7b4728cea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a string of information.  <a href="#ae6649f17355b6bd4443d9be7b4728cea">More...</a><br /></td></tr>
 <tr class="separator:ae6649f17355b6bd4443d9be7b4728cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63c456b9e89f1a89fd9fd696358abd2d"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a63c456b9e89f1a89fd9fd696358abd2d">addLocalInfoString</a> (std::stringstream &amp;ss)</td></tr>
-<tr class="memdesc:a63c456b9e89f1a89fd9fd696358abd2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gather information of parallel distribution and add to info string.  <a href="#a63c456b9e89f1a89fd9fd696358abd2d">More...</a><br /></td></tr>
+<tr class="memdesc:a63c456b9e89f1a89fd9fd696358abd2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gather info of parallel distribution and add to info string.  <a href="#a63c456b9e89f1a89fd9fd696358abd2d">More...</a><br /></td></tr>
 <tr class="separator:a63c456b9e89f1a89fd9fd696358abd2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a539a9912293d17a0aab56d28337a2f64"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a539a9912293d17a0aab56d28337a2f64">initDMDA</a> ()</td></tr>
 <tr class="memdesc:a539a9912293d17a0aab56d28337a2f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize DMDAs.  <a href="#a539a9912293d17a0aab56d28337a2f64">More...</a><br /></td></tr>
@@ -301,7 +304,7 @@ Protected Attributes</h2></td></tr>
 <div class="textblock"><p>Class of composite staggered Cartesian mesh. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d7/d24/group__mesh_module.html" title="Objects for meshes and domain decompositions. ">Mesh objects</a>, <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>, <a class="el" href="../../d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388" title="Factory function for creating a Mesh object. ">petibm::mesh::createMesh</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00039">39</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00031">31</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="aeaf532d83fedb08366a7538ae78e40b9"></a>
 <div class="memitem">
@@ -331,14 +334,14 @@ Protected Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">world</td><td>[in] MPI communicator. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a YAML::node containing settings of mesh.</td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node.</td></tr>
   </table>
   </dd>
 </dl>
 <p>Users are not encouraged to use constructor to initialize instances directly. Please use the factory function.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388" title="Factory function for creating a Mesh object. ">petibm::mesh::createMesh</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00034">34</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00030">30</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -365,7 +368,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Default destructor. </p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00041">41</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00036">36</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -392,10 +395,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gather information of parallel distribution and add to info string. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>Gather info of parallel distribution and add to info string. </p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00422">422</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00412">412</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -421,9 +423,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create a string of information. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00365">365</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00358">358</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -449,9 +450,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create DMDA for pressure. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00552">552</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00541">541</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -477,9 +477,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create pressure mesh information. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00148">148</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00136">136</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -512,9 +511,8 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00504">504</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00492">492</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -540,9 +538,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create velocity mesh information. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00221">221</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00209">209</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -568,9 +565,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create DMDAs for velocity fields and make a DMComposite. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00573">573</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00559">559</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -596,9 +592,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create vertex information. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00189">189</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00177">177</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -624,11 +619,10 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Manually destroy data. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a1387454f06c13d7e8c8ba935cea998c3">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00056">56</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00050">50</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -673,18 +667,17 @@ Protected Attributes</h2></td></tr>
 <p>Get the global index of a point in unpacked DM by providing MatStencil. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
-    <tr><td class="paramname">s</td><td>[in] MatStencil of target point. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] global index in unpacked DM.</td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">s</td><td>[in] MatStencil object of target point. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Global index in unpacked DM object.</td></tr>
   </table>
   </dd>
 </dl>
-<p>If the provided MatStencil is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>If the provided MatStencil is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#af8791535736c0a92984a0175e7c17443">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00722">722</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00709">709</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -741,21 +734,20 @@ Protected Attributes</h2></td></tr>
 <p>Get the global index of a point in unpacked DM by providing i, j, and k. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
     <tr><td class="paramname">i</td><td>[in] i-index. </td></tr>
     <tr><td class="paramname">j</td><td>[in] j-index. </td></tr>
     <tr><td class="paramname">k</td><td>[in] k-index. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] global index in unpacked DM.</td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Global index in unpacked DM.</td></tr>
   </table>
   </dd>
 </dl>
 <p>For 2D mesh, the value of k-index will be ignored.</p>
-<p>If the provided <code>(i, j, k)</code> is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>If the provided <code>(i, j, k)</code> is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a95fe2894684d2576e1142e1d5fe35e34">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00737">737</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00724">724</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -800,18 +792,17 @@ Protected Attributes</h2></td></tr>
 <p>Get the local index of a point by providing MatStencil. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
-    <tr><td class="paramname">s</td><td>[in] MatStencil of target point. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] local index.</td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">s</td><td>[in] MatStencil object of target point. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Local index.</td></tr>
   </table>
   </dd>
 </dl>
-<p>Note that the stencil must belong to this process.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>Note that the stencil must belong to this process. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ab5fb40a505ac2c3a3ba5465078bbd1ae">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00693">693</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00679">679</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -868,20 +859,19 @@ Protected Attributes</h2></td></tr>
 <p>Get the local index of a point by providing i, j, and k. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
     <tr><td class="paramname">i</td><td>[in] i-index. </td></tr>
     <tr><td class="paramname">j</td><td>[in] j-index. </td></tr>
     <tr><td class="paramname">k</td><td>[in] k-index. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] local index.</td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Local index.</td></tr>
   </table>
   </dd>
 </dl>
-<p>Note that the stencil must belong to this process. For 2D mesh, the value of k-index will be ignored.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>Note that the stencil must belong to this process. For 2D mesh, the value of k-index will be ignored. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a436774ea576c4bd5b126645e08a8ce80">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00707">707</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00693">693</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -926,18 +916,17 @@ Protected Attributes</h2></td></tr>
 <p>Get the natural index of a point by providing MatStencil. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
-    <tr><td class="paramname">s</td><td>[in] MatStencil of target point. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] returned natural index.</td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">s</td><td>[in] MatStencil object of target point. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Natural index.</td></tr>
   </table>
   </dd>
 </dl>
-<p>If the provided MatStencil is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>If the provided MatStencil is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a555f13cc0700cba13ea14a2b1c457328">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00595">595</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00578">578</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -994,21 +983,20 @@ Protected Attributes</h2></td></tr>
 <p>Get the natural index of a point by providing i, j, and k. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
     <tr><td class="paramname">i</td><td>[in] i-index. </td></tr>
     <tr><td class="paramname">j</td><td>[in] j-index. </td></tr>
     <tr><td class="paramname">k</td><td>[in] k-index. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] natural index.</td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Natural index.</td></tr>
   </table>
   </dd>
 </dl>
 <p>For 2D mesh, the value of k-index will be ignored.</p>
-<p>If the provided <code>(i, j, k)</code> is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>If the provided <code>(i, j, k)</code> is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a613a897002ae9d3349344aa273dfbdad">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00609">609</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00592">592</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1053,19 +1041,18 @@ Protected Attributes</h2></td></tr>
 <p>Get the global index of a point in packed DM by providing MatStencil. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
-    <tr><td class="paramname">s</td><td>[in] MatStencil of target point. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] global index in packed DM.</td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">s</td><td>[in] MatStencil object of target point. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Global index in packed DM.</td></tr>
   </table>
   </dd>
 </dl>
 <p>For pressure field (f=3), packed ID will be equal to unpacked ID.</p>
-<p>If the provided MatStencil is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>If the provided MatStencil is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4959ce578d9e348213749b09069c7f20">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00752">752</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00740">740</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1122,21 +1109,20 @@ Protected Attributes</h2></td></tr>
 <p>Get the global index of a point in packed DM by providing i, j, and k. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] target field (u=0, v=1, w=2, p=3). </td></tr>
+    <tr><td class="paramname">f</td><td>[in] Target field (u=0, v=1, w=2, p=3). </td></tr>
     <tr><td class="paramname">i</td><td>[in] i-index. </td></tr>
     <tr><td class="paramname">j</td><td>[in] j-index. </td></tr>
     <tr><td class="paramname">k</td><td>[in] k-index. </td></tr>
-    <tr><td class="paramname">idx</td><td>[out] global index in packed DM.</td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Global index in packed DM.</td></tr>
   </table>
   </dd>
 </dl>
 <p>For 2D mesh, the value of k-index will be ignored. For pressure field (f=3), packed ID will be equal to unpacked ID.</p>
-<p>If the provided <code>(i, j, k)</code> is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>If the provided <code>(i, j, k)</code> is not valid or is a ghost point, the <code>idx</code> will be <code>-1</code>. </p>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aedf7045a248be0743ddea9686c3ba70b">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00792">792</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00782">782</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1176,17 +1162,16 @@ Protected Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">world</td><td>[in] MPI communicator. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node containing setting of Cartesian mesh.</td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node.</td></tr>
   </table>
   </dd>
 </dl>
 <p>Given the design of PetIBM is to use factory function to create shared pointers of instances, it seems not necessary to make this function public.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388" title="Factory function for creating a Mesh object. ">petibm::mesh::createMesh</a> </dd></dl>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ad44da271d457481339b06007bad0dc7f">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00076">76</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00069">69</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1212,9 +1197,46 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initialize DMDAs. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00449">449</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00438">438</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae75489be01f01290f23030b0f11e4afb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscBool petibm::mesh::CartesianMesh::isPointOnLocalProc </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="../../dd/d8f/group__type.html#gad19e550a4119623bdfdd2f9b02ce1678">type::RealVec1D</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">type::Field</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4fbf225cdf61a22d9bf5f7b94845f03b">petibm::mesh::MeshBase</a>.</p>
+
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00825">825</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1240,9 +1262,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Print information to standard output. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/dd2/mesh_8cpp_source.html#l00077">77</a> of file <a class="el" href="../../d8/dd2/mesh_8cpp_source.html">mesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/dd2/mesh_8cpp_source.html#l00075">75</a> of file <a class="el" href="../../d8/dd2/mesh_8cpp_source.html">mesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1268,18 +1289,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Write grid/mesh data to a HDF5. </p>
+<p>Write the mesh object into a HDF5 file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">filePath</td><td>[in] path to the file (without extension).</td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to write in. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implements <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a3ce399ac4501e08dd098ae5e668fbc92">petibm::mesh::MeshBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00807">807</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html#l00798">798</a> of file <a class="el" href="../../d7/d5c/cartesianmesh_8cpp_source.html">cartesianmesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -1304,7 +1324,7 @@ Protected Attributes</h2></td></tr>
 
 <p>References to underlying AO objects of velocity DMs. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00105">105</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00101">101</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1328,7 +1348,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The beginning index of all fields in all directions of this process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00113">113</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00107">107</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1352,7 +1372,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Communicator. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00133">133</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00128">128</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1364,7 +1384,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a> petibm::mesh::MeshBase::coord</td>
+          <td class="memname"><a class="el" href="../../d4/d54/namespacepetibm_1_1type.html#af76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a> petibm::mesh::MeshBase::coord</td>
         </tr>
       </table>
   </td>
@@ -1376,7 +1396,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Coordinates of mesh points of all fields and in all directions. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00089">89</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00084">84</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1400,7 +1420,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Underlying data for mesh point coordinates. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00102">102</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00098">98</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1424,7 +1444,7 @@ Protected Attributes</h2></td></tr>
 
 <p>A vector of DMs of all fields. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00107">107</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00100">100</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1448,7 +1468,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Dimension. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00074">74</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00068">68</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1460,7 +1480,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a> petibm::mesh::MeshBase::dL</td>
+          <td class="memname"><a class="el" href="../../d4/d54/namespacepetibm_1_1type.html#af76ec721f2ad0f1ba0fe6a233ac1a520">type::GhostedVec3D</a> petibm::mesh::MeshBase::dL</td>
         </tr>
       </table>
   </td>
@@ -1472,7 +1492,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Spacings of mesh points of all fields and in all directions. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00092">92</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00087">87</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1496,7 +1516,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Underlying data for mesh point spacing. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00099">99</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00095">95</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1520,7 +1540,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The ending index of all fields in all directions of this process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00116">116</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00111">111</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1544,7 +1564,7 @@ Protected Attributes</h2></td></tr>
 
 <p>A string for printing information. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00101">101</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00096">96</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1568,7 +1588,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The number of points of all fields in all directions of this process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00119">119</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00115">115</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1592,7 +1612,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Maximum coordinates of boundaries in all directions. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00080">80</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00074">74</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1616,7 +1636,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Minimum coordinates of boundaries in all directions. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00077">77</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00071">71</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1640,7 +1660,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Rank of this process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00139">139</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00134">134</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1664,7 +1684,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of processes. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00136">136</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00131">131</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1688,7 +1708,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of points of all fields and in all directions. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00083">83</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00077">77</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1712,7 +1732,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Number of processes in all directions. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00110">110</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00103">103</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1736,7 +1756,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Offsets of velocity points in unpacked DMs for all processes and all velocity field. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00117">117</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00113">113</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1760,7 +1780,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Offsets of packed velocity points in packed DM. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00120">120</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00116">116</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1784,7 +1804,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Bools indicating if any direction is periodic. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00086">86</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00080">80</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1808,7 +1828,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of pressure points. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00098">98</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00093">93</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1832,7 +1852,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of pressure points local to this process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00125">125</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00121">121</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1856,7 +1876,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of velocity points. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00095">95</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00090">90</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1880,7 +1900,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of velocity points local to this process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00122">122</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00118">118</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1904,7 +1924,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Number of local velocity points (without ghost points) for all processes and all velocity fields. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00109">109</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00105">105</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1928,7 +1948,7 @@ Protected Attributes</h2></td></tr>
 
 <p>DMComposte of velocity DMs. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00128">128</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00124">124</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -1952,7 +1972,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Number of local packed velocity points (without ghost points) for all processes. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00113">113</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html#l00109">109</a> of file <a class="el" href="../../dd/d38/cartesianmesh_8h_source.html">cartesianmesh.h</a>.</p>
 
 </div>
 </div>
@@ -1966,7 +1986,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d6/db9/namespacepetibm_1_1mesh.html">mesh</a></li><li class="navelem"><a class="el" href="../../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html">CartesianMesh</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

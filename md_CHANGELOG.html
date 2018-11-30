@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -108,6 +108,32 @@ $(document).ready(function(){initNavTree('md_CHANGELOG.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><hr/>
+<h2>0.4.0</h2>
+<hr/>
+<h3>Added</h3>
+<ul>
+<li>Add possibility to use configuration arguments <code>--with-&lt;package&gt;-include=&lt;path&gt;</code> and <code>--with-&lt;package&gt;-lib=&lt;path&gt;</code> (instead of <code>--with-&lt;package&gt;-dir=&lt;path&gt;</code>) for yaml-cpp, gtest, AmgX, and AmgXWrapper. (<code>--with-&lt;package&gt;-dir=&lt;path&gt;</code> is still supported for those packages.)</li>
+<li>Add classes to monitor the solution in sub-regions or at specific points (using linear interpolation). <a class="el" href="d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration should be provided in the node "probes". (See Markdown documentation <code><a class="el" href="d8/d99/inputs_8md.html">doc/markdowns/inputs.md</a></code> for details on how to use.)</li>
+<li>Install application header files upon make install call. The header files are installed in the include folder of the install directory. A user can now create new classes that inherits from an application class.</li>
+<li>Add a simple class <code><a class="el" href="dc/dbc/class_rigid_kinematics_solver.html" title="Helper class to solve cases with moving rigid bodies using the decoupled IBPM. ">RigidKinematicsSolver</a></code> in the applications folder to handle cases with moving rigid bodies (with prescribed kinematics). The user should create a class that inherits from <code>RigidKinematcsSolver</code> and that implements the methods to update the coordinates and velocity of the Lagrangian points, <code>setCoordinatesBodies</code> and <code>setVelocityBodies</code>.) For example, if you want to compute the flow around a flapping wing, you just have to create a class (outside the PetIBM source directory) that inherits from the application class <code><a class="el" href="dc/dbc/class_rigid_kinematics_solver.html" title="Helper class to solve cases with moving rigid bodies using the decoupled IBPM. ">RigidKinematicsSolver</a></code> and implement the case-specific methods to update the location and velocity of the wing.</li>
+<li>Add possibility to implement different kernels for the regularized delta function. (The 3-point delta function from Roma et al. (1999) and the 4-point delta function from Peskin (2002) are currently available in PetIBM.)</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Upgrade to yaml-cpp-0.6.2 when downloading building yaml-cpp at PetIBM configuration time (configuration flag <code>--enable-yamlcpp</code>).</li>
+<li>Re-format code with clang-format. The clang-format style file is added to the repository.</li>
+<li>Re-write I/O functions to provide file paths that include the extension.</li>
+<li>Re-write application codes to simplify main functions (move PetIBM object instantiations into the init method of the application class).</li>
+<li>Change the scheme for the prediction of the forces at the beginning of a time step. Now using the forces from the previous time steps as prediction. (This is named "scheme 2" in Li et al., 2016.) Using this scheme avoids having to reset the vector of the Lagrangian momentum forcing every time step. (According to the authors there is little difference in the results between the different forcing schemes.)</li>
+<li>For each example, move the configuration files for the solvers into the sub-folder <code>config</code> of the simulation directory.</li>
+<li>Update the example for the 2D in-line oscillating cylinder to use the newly implemented application class <code><a class="el" href="dc/dbc/class_rigid_kinematics_solver.html" title="Helper class to solve cases with moving rigid bodies using the decoupled IBPM. ">RigidKinematicsSolver</a></code>.</li>
+</ul>
+<h3>Fixed</h3>
+<h3>Removed</h3>
+<ul>
+<li>Remove Boost dependency; configuration does not check for Boost anymore. <hr/>
+</li>
+</ul>
 <h2>0.3.1</h2>
 <hr/>
 <p>JOSS revision.</p>
@@ -198,7 +224,7 @@ $(document).ready(function(){initNavTree('md_CHANGELOG.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -116,7 +116,8 @@ $(document).ready(function(){initNavTree('d5/d01/group__operator_module.html','.
 <div class="dynheader">
 Collaboration diagram for Operator factories:</div>
 <div class="dyncontent">
-<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d5/d01/group__operator_module.svg" width="343" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d5/d01/group__operator_module.svg" width="342" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </td></tr></table></center>
 </div>
 <table class="memberdecls">
@@ -164,9 +165,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5b89e03619afe7ef24ccf983444d7f31"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d01/group__operator_module.html#ga5b89e03619afe7ef24ccf983444d7f31">petibm::operators::createBn</a> (const Mat &amp;Op, const Mat &amp;M, const PetscReal &amp;dt, const PetscReal &amp;coeff, const PetscInt &amp;n, Mat &amp;Bn)</td></tr>
 <tr class="memdesc:ga5b89e03619afe7ef24ccf983444d7f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create normalized matrix of approximated <img class="formulaInl" alt="$A^{-1}$" src="../../form_38.png"/>, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>.  <a href="../../d5/d01/group__operator_module.html#ga5b89e03619afe7ef24ccf983444d7f31">More...</a><br /></td></tr>
 <tr class="separator:ga5b89e03619afe7ef24ccf983444d7f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafb0fb04830cf6c8cc0bea96e95747fc2"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d01/group__operator_module.html#gafb0fb04830cf6c8cc0bea96e95747fc2">petibm::operators::createDelta</a> (const type::Mesh &amp;mesh, const type::Boundary &amp;bc, const type::BodyPack &amp;bodies, Mat &amp;Delta)</td></tr>
-<tr class="memdesc:gafb0fb04830cf6c8cc0bea96e95747fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a Delta operator, <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>.  <a href="../../d5/d01/group__operator_module.html#gafb0fb04830cf6c8cc0bea96e95747fc2">More...</a><br /></td></tr>
-<tr class="separator:gafb0fb04830cf6c8cc0bea96e95747fc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafbe8e6ab36ea7d459e2ec75169341cfd"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d01/group__operator_module.html#gafbe8e6ab36ea7d459e2ec75169341cfd">petibm::operators::createDelta</a> (const type::Mesh &amp;mesh, const type::Boundary &amp;bc, const type::BodyPack &amp;bodies, const delta::DeltaKernel &amp;kernel, const PetscInt &amp;kernelSize, Mat &amp;Op)</td></tr>
+<tr class="memdesc:gafbe8e6ab36ea7d459e2ec75169341cfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a Delta operator, <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>.  <a href="../../d5/d01/group__operator_module.html#gafbe8e6ab36ea7d459e2ec75169341cfd">More...</a><br /></td></tr>
+<tr class="separator:gafbe8e6ab36ea7d459e2ec75169341cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Matrices &amp; Operators used in Perot's framework (1993, 2002). </p>
@@ -181,7 +182,7 @@ Functions</h2></td></tr>
 </p>
 <p> where <img class="formulaInl" alt="$u_{i}$" src="../../form_12.png"/> and <img class="formulaInl" alt="$u_{i-1}$" src="../../form_13.png"/> represent a ghost point and its corresponding interior point, respectively. Hence when we apply ghost point schemes to operators, the <img class="formulaInl" alt="$a_{0}$" src="../../form_14.png"/> part will get into the interior operator (e.g. <img class="formulaInl" alt="$D$" src="../../form_9.png"/>), and the <img class="formulaInl" alt="$a_{1}$" src="../../form_15.png"/> part will be decoupled into the boundary correction matrix, i.e., <img class="formulaInl" alt="$D_{bc}$" src="../../form_10.png"/>.</p>
 <p>Here is an example code for creating a divergence operator and its boundary correction operator, and calculating the divergence of velocity.</p>
-<div class="fragment"><div class="line">PetscErrorCode ierr;</div><div class="line">Mat D, Dbc;</div><div class="line">Vec div;</div><div class="line"><a class="code" href="../../dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174">petibm::type::Solution</a> solution;</div><div class="line"><a class="code" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">petibm::type::Mesh</a> mesh;</div><div class="line"><a class="code" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c">petibm::type::Boundary</a> boundary;</div><div class="line"><a class="code" href="../../dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174">petibm::type::Solution</a> solution;</div><div class="line"></div><div class="line"><span class="comment">// create mesh with petibm::mesh::createMesh</span></div><div class="line"><span class="comment">// create boundary with petibm::boundary::createBoundary</span></div><div class="line"><span class="comment">// create solution with petibm::solution::createSolution, and have some values </span></div><div class="line"><span class="comment">// create vector div with correct memory allocation</span></div><div class="line"></div><div class="line"><span class="comment">// create divergence operator</span></div><div class="line">ierr = <a class="code" href="../../d5/d01/group__operator_module.html#ga255cbdcfe47b97a2708e1c08343411a7">petibm::createDivergence</a>(mesh, boundary, D, Dbc); CHKERRQ(ierr);</div><div class="line"></div><div class="line"><span class="comment">// calculate divergence of velocity, result will be in div</span></div><div class="line">ierr = MatMult(D, solution-&gt;UGlobal, div); CHKERRQ(ierr);</div><div class="line">ierr = MatMultAdd(Dbc, solution-&gt;UGlobal, div, div); CHKERRQ(ierr);</div></div><!-- fragment --> <h2 class="groupheader">Function Documentation</h2>
+<div class="fragment"><div class="line">PetscErrorCode ierr;</div><div class="line">Mat D, Dbc;</div><div class="line">Vec div;</div><div class="line"><a class="code" href="../../dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174">petibm::type::Solution</a> solution;</div><div class="line"><a class="code" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">petibm::type::Mesh</a> mesh;</div><div class="line"><a class="code" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c">petibm::type::Boundary</a> boundary;</div><div class="line"><a class="code" href="../../dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174">petibm::type::Solution</a> solution;</div><div class="line"></div><div class="line"><span class="comment">// create mesh with petibm::mesh::createMesh</span></div><div class="line"><span class="comment">// create boundary with petibm::boundary::createBoundary</span></div><div class="line"><span class="comment">// create solution with petibm::solution::createSolution, and have some</span></div><div class="line">values</div><div class="line"><span class="comment">// create vector div with correct memory allocation</span></div><div class="line"></div><div class="line"><span class="comment">// create divergence operator</span></div><div class="line">ierr = <a class="code" href="../../d5/d01/group__operator_module.html#ga255cbdcfe47b97a2708e1c08343411a7">petibm::createDivergence</a>(mesh, boundary, D, Dbc); CHKERRQ(ierr);</div><div class="line"></div><div class="line"><span class="comment">// calculate divergence of velocity, result will be in div</span></div><div class="line">ierr = MatMult(D, solution-&gt;UGlobal, div); CHKERRQ(ierr);</div><div class="line">ierr = MatMultAdd(Dbc, solution-&gt;UGlobal, div, div); CHKERRQ(ierr);</div></div><!-- fragment --> <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga1c146c5e8d54f9b1c9bec6083419aec5"></a>
 <div class="memitem">
 <div class="memproto">
@@ -239,17 +240,16 @@ Functions</h2></td></tr>
 <p>Create normalized matrix of approximated <img class="formulaInl" alt="$A^{-1}$" src="../../form_38.png"/>, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Op</td><td>[in] a PETSc Mat; implicit operator. </td></tr>
-    <tr><td class="paramname">R</td><td>[in] the normalization matrix to define <img class="formulaInl" alt="$M = \hat{M}R^{-1}$" src="../../form_49.png"/>. </td></tr>
-    <tr><td class="paramname">MHead</td><td>[in] the normalization matrix to define <img class="formulaInl" alt="$M = \hat{M}R^{-1}$" src="../../form_49.png"/>. </td></tr>
-    <tr><td class="paramname">dt</td><td>[in] size of a time step. </td></tr>
-    <tr><td class="paramname">coeff</td><td>[in] coefficient of temporal integration for implicit operator. </td></tr>
-    <tr><td class="paramname">n</td><td>[in] an integer; the order of <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </td></tr>
-    <tr><td class="paramname">Bn</td><td>[out] a PETSc Mat; returned matrix, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </td></tr>
+    <tr><td class="paramname">Op</td><td>[in] Implicit operator <img class="formulaInl" alt="$A$" src="../../form_40.png"/>. </td></tr>
+    <tr><td class="paramname">R</td><td>[in] Matrix to define <img class="formulaInl" alt="$M = \hat{M}R^{-1}$" src="../../form_49.png"/>. </td></tr>
+    <tr><td class="paramname">MHead</td><td>[in] Matrix to define <img class="formulaInl" alt="$M = \hat{M}R^{-1}$" src="../../form_49.png"/>. </td></tr>
+    <tr><td class="paramname">dt</td><td>[in] Time-step size. </td></tr>
+    <tr><td class="paramname">coeff</td><td>[in] Time-scheme coefficient for the implicit operator. </td></tr>
+    <tr><td class="paramname">n</td><td>[in] Truncation index of the Taylor series. </td></tr>
+    <tr><td class="paramname">Bn</td><td>[out] Matrix, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>Similar to <a class="el" href="../../d5/d01/group__operator_module.html#gabe361a4fc3dfda999f1b8cd9eb4c92b6">createBnHead</a>, except that A is now defined as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ A = \frac{M}{dt} - coeff \times \hat{M}OpR \]" src="../../form_50.png"/>
 </p>
@@ -312,21 +312,20 @@ Functions</h2></td></tr>
 <p>Create normalized matrix of approximated <img class="formulaInl" alt="$A^{-1}$" src="../../form_38.png"/>, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Op</td><td>[in] a PETSc Mat; implicit operator. </td></tr>
-    <tr><td class="paramname">M</td><td>[in] the <img class="formulaInl" alt="$M$" src="../../form_29.png"/> matrix as defined in <img class="formulaInl" alt="$A = M/dt - coeff * Op$" src="../../form_52.png"/>. </td></tr>
-    <tr><td class="paramname">dt</td><td>[in] size of a time step. </td></tr>
-    <tr><td class="paramname">coeff</td><td>[in] coefficient of temporal integration for implicit operator. </td></tr>
+    <tr><td class="paramname">Op</td><td>[in] Implicit operator <img class="formulaInl" alt="$A$" src="../../form_40.png"/>. </td></tr>
+    <tr><td class="paramname">M</td><td>[in] The <img class="formulaInl" alt="$M$" src="../../form_29.png"/> matrix as defined in <img class="formulaInl" alt="$A = M/dt - coeff * Op$" src="../../form_52.png"/>. </td></tr>
+    <tr><td class="paramname">dt</td><td>[in] Time-step size. </td></tr>
+    <tr><td class="paramname">coeff</td><td>[in] Time-scheme coefficient for the implicit operator. </td></tr>
     <tr><td class="paramname">n</td><td>[in] an integer; the order of Bn. </td></tr>
-    <tr><td class="paramname">Bn</td><td>[out] returned matrix, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </td></tr>
+    <tr><td class="paramname">Bn</td><td>[out] Matrix <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>Similar to <a class="el" href="../../d5/d01/group__operator_module.html#gabe361a4fc3dfda999f1b8cd9eb4c92b6">createBnHead</a>, except that A is now defined as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ A = \frac{M}{dt} - coeff \times Op \]" src="../../form_53.png"/>
 </p>
  
-<p>Definition at line <a class="el" href="../../db/db8/createbn_8cpp_source.html#l00132">132</a> of file <a class="el" href="../../db/db8/createbn_8cpp_source.html">createbn.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../db/db8/createbn_8cpp_source.html#l00131">131</a> of file <a class="el" href="../../db/db8/createbn_8cpp_source.html">createbn.cpp</a>.</p>
 
 </div>
 </div>
@@ -375,15 +374,14 @@ Functions</h2></td></tr>
 <p>Create non-normalized matrix of approximated <img class="formulaInl" alt="$A^{-1}$" src="../../form_38.png"/>, <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Op</td><td>[in] a PETSc Mat; implicit operator. </td></tr>
-    <tr><td class="paramname">dt</td><td>[in] size of a time step. </td></tr>
-    <tr><td class="paramname">coeff</td><td>[in] coefficient of temporal integration for implicit operator. </td></tr>
-    <tr><td class="paramname">n</td><td>[in] integer; the order of Bn. </td></tr>
-    <tr><td class="paramname">BnHead</td><td>[out] returned <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>. </td></tr>
+    <tr><td class="paramname">Op</td><td>[in] Implicit operator <img class="formulaInl" alt="$A$" src="../../form_40.png"/>. </td></tr>
+    <tr><td class="paramname">dt</td><td>[in] Time-step size. </td></tr>
+    <tr><td class="paramname">coeff</td><td>[in] Time-scheme coefficient for the implicit operator. </td></tr>
+    <tr><td class="paramname">n</td><td>[in] Truncation index of the Taylor series. </td></tr>
+    <tr><td class="paramname">BnHead</td><td>[out] Operator <img class="formulaInl" alt="$B_n$" src="../../form_39.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p><img class="formulaInl" alt="$A$" src="../../form_40.png"/> is defined as * </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[A=\frac{I}{dt} - coeff \times Op\]" src="../../form_41.png"/>
 </p>
@@ -401,7 +399,7 @@ Functions</h2></td></tr>
 </p>
 <p>. </p>
 
-<p>Definition at line <a class="el" href="../../db/db8/createbn_8cpp_source.html#l00022">22</a> of file <a class="el" href="../../db/db8/createbn_8cpp_source.html">createbn.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../db/db8/createbn_8cpp_source.html#l00019">19</a> of file <a class="el" href="../../db/db8/createbn_8cpp_source.html">createbn.cpp</a>.</p>
 
 </div>
 </div>
@@ -438,21 +436,20 @@ Functions</h2></td></tr>
 <p>Create a matrix-free Mat for convection operator, <img class="formulaInl" alt="$H$" src="../../form_36.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">bc</td><td>[in] an instance of <a class="el" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c" title="Type definition of petibm::type::Boundary. ">petibm::type::Boundary</a>. </td></tr>
-    <tr><td class="paramname">H</td><td>[out] a PETSc Mat; the returned operator, <img class="formulaInl" alt="$H$" src="../../form_36.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">bc</td><td>[in] Data object with boundary conditions. </td></tr>
+    <tr><td class="paramname">H</td><td>[out] Operator <img class="formulaInl" alt="$H$" src="../../form_36.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>Though this matrix-free operator is a PETSc Mat, not all PETSc Mat functions can be applied to it because we only register MatMult and MatDestroy functions in PetIBM.</p>
 <p>If <img class="formulaInl" alt="$u$" src="../../form_18.png"/> is the composite velocity vector, then the multiplication <img class="formulaInl" alt="$Hu$" src="../../form_37.png"/> will return the convection terms at velocity points. </p>
 
-<p>Definition at line <a class="el" href="../../da/d4d/createconvection_8cpp_source.html#l00399">399</a> of file <a class="el" href="../../da/d4d/createconvection_8cpp_source.html">createconvection.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d4d/createconvection_8cpp_source.html#l00372">372</a> of file <a class="el" href="../../da/d4d/createconvection_8cpp_source.html">createconvection.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="gafb0fb04830cf6c8cc0bea96e95747fc2"></a>
+<a class="anchor" id="gafbe8e6ab36ea7d459e2ec75169341cfd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -477,8 +474,20 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">delta::DeltaKernel</a> &amp;&#160;</td>
+          <td class="paramname"><em>kernel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const PetscInt &amp;&#160;</td>
+          <td class="paramname"><em>kernelSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">Mat &amp;&#160;</td>
-          <td class="paramname"><em>Delta</em>&#160;</td>
+          <td class="paramname"><em>Op</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -491,21 +500,22 @@ Functions</h2></td></tr>
 <p>Create a Delta operator, <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">bc</td><td>[in] an instance of <a class="el" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c" title="Type definition of petibm::type::Boundary. ">petibm::type::Boundary</a>. </td></tr>
-    <tr><td class="paramname">bodies</td><td>[in] an instance of <a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b" title="Definition of type::BodyPack. ">petibm::type::BodyPack</a>. </td></tr>
-    <tr><td class="paramname">Delta</td><td>[out] a PETSc Mat; returned <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">bc</td><td>[in] Data object with boundary conditions. </td></tr>
+    <tr><td class="paramname">bodies</td><td>[in] Data object with the immersed boundaries. </td></tr>
+    <tr><td class="paramname">kernel</td><td>[in] Regularized delta kernel to use. </td></tr>
+    <tr><td class="paramname">kernelSize</td><td>[in] Size of the kernel. </td></tr>
+    <tr><td class="paramname">Op</td><td>[out] Matrix <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>In <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>, rows represent Lagrangian points, while columns represent velocity mesh points.</p>
 <p>An entry in <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>, says <img class="formulaInl" alt="$Delta_{(i,j)}$" src="../../form_55.png"/>, is defined as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ Delta_{(i,j)} = d(x_j-\xi_i)d(y_j-\eta_i)d(z_j-\zeta_i) \]" src="../../form_56.png"/>
 </p>
 <p> where <img class="formulaInl" alt="$(x_j,y_j,z_j)$" src="../../form_57.png"/> and <img class="formulaInl" alt="$(\xi_i,\eta_i,\zeta_i)$" src="../../form_58.png"/> represent the coordinates of the <img class="formulaInl" alt="$j$" src="../../form_59.png"/>-th Eulerian grid point and the <img class="formulaInl" alt="$i$" src="../../form_60.png"/>-th Lagrangian point, respectively. <img class="formulaInl" alt="$d(...)$" src="../../form_61.png"/> is discretized delta function following Roma et. al. (1999). </p>
 
-<p>Definition at line <a class="el" href="../../da/df5/createdelta_8cpp_source.html#l00042">42</a> of file <a class="el" href="../../da/df5/createdelta_8cpp_source.html">createdelta.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/df5/createdelta_8cpp_source.html#l00034">34</a> of file <a class="el" href="../../da/df5/createdelta_8cpp_source.html">createdelta.cpp</a>.</p>
 
 </div>
 </div>
@@ -554,20 +564,19 @@ Functions</h2></td></tr>
 <p>Create a divergence operator, <img class="formulaInl" alt="$D$" src="../../form_9.png"/>, and corresponding boundary correction, <img class="formulaInl" alt="$D_{bc}$" src="../../form_10.png"/>, for velocity fields. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">bc</td><td>[in] an instance of <a class="el" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c" title="Type definition of petibm::type::Boundary. ">petibm::type::Boundary</a>. </td></tr>
-    <tr><td class="paramname">D</td><td>[out] a PETSc Mat; returned divergence operator, <img class="formulaInl" alt="$D$" src="../../form_9.png"/>. </td></tr>
-    <tr><td class="paramname">DCorrection</td><td>[out] a PETSc Mat; returned boundary correction, <img class="formulaInl" alt="$D_{bc}$" src="../../form_10.png"/>. </td></tr>
-    <tr><td class="paramname">normalize</td><td>[in] an optional PetscBool indicating whether or not we want normalization (default is PETSC_TRUE). </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">bc</td><td>[in] Data object with the boundary conditions. </td></tr>
+    <tr><td class="paramname">D</td><td>[out] Divergence operator <img class="formulaInl" alt="$D$" src="../../form_9.png"/>. </td></tr>
+    <tr><td class="paramname">DCorrection</td><td>[out] Operator for boundary corrections, <img class="formulaInl" alt="$D_{bc}$" src="../../form_10.png"/>. </td></tr>
+    <tr><td class="paramname">normalize</td><td>[in] Use PETSC_TRUE to normalize operator (default is PETSC_TRUE).</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix D should not be created before calling this function.</p>
 <p>If <code>normalize=PETSC_TRUE</code> (which is default), then the divergence operator, <img class="formulaInl" alt="$D$" src="../../form_9.png"/>, will only contain <code>0</code> and <code>1</code>.</p>
 <p>The divergence operator calculates the divergence of velocity on pressure points. The complete divergence operator is <img class="formulaInl" alt="$(D+D_{bc})$" src="../../form_32.png"/>. However, the boundary correction, <img class="formulaInl" alt="$D_{bc}$" src="../../form_10.png"/>, represents the constant coefficients (it means the coefficients that have nothing to do with interior points, though it may still be time-dependent) in ghost point schemes, so it's safe to put the boundary correction to right-hand side in a linear system. </p>
 
-<p>Definition at line <a class="el" href="../../de/d1a/createdivergence_8cpp_source.html#l00108">108</a> of file <a class="el" href="../../de/d1a/createdivergence_8cpp_source.html">createdivergence.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d1a/createdivergence_8cpp_source.html#l00103">103</a> of file <a class="el" href="../../de/d1a/createdivergence_8cpp_source.html">createdivergence.cpp</a>.</p>
 
 </div>
 </div>
@@ -604,17 +613,16 @@ Functions</h2></td></tr>
 <p>Create a gradient operator, <img class="formulaInl" alt="$G$" src="../../form_31.png"/>, for pressure field. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">G</td><td>[out] a PETSc Mat; returned gradient operator, <img class="formulaInl" alt="$G$" src="../../form_31.png"/>. </td></tr>
-    <tr><td class="paramname">normalize</td><td>[in] an optional PetscBool indicating whether or not we want normalization (default is PETSC_TRUE). </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">G</td><td>[out] <img class="formulaInl" alt="$G$" src="../../form_31.png"/> matrix. </td></tr>
+    <tr><td class="paramname">normalize</td><td>[in] Use PETSC_TRUE to normalize the matrix (default is PETSC_TRUE).</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>Petsc matrix G should not be created before calling this function.</p>
 <p>If <code>normalize=PETSC_TRUE</code> (which is default), then the gradient operator, <img class="formulaInl" alt="$G$" src="../../form_31.png"/>, will only contain <code>0</code> and <code>1</code>.</p>
 <p>This gradient operator doesn't require boundary conditions because we only need gradient of pressure at interior velocity points (see Perot 1993). And it can only be applied to pressure field. For example: </p><div class="fragment"><div class="line">ierr = <a class="code" href="../../d5/d01/group__operator_module.html#ga8ca31641fbf44616692fb3f03e15b68c">petibm::operators::createGradient</a>(mesh, G); CHKERRQ(ierr);</div><div class="line">ierr = MatMult(G, solution-&gt;pGlobal, grad); CHKERRQ(ierr);</div></div><!-- fragment --> 
-<p>Definition at line <a class="el" href="../../df/d7f/creategradient_8cpp_source.html#l00040">40</a> of file <a class="el" href="../../df/d7f/creategradient_8cpp_source.html">creategradient.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d7f/creategradient_8cpp_source.html#l00036">36</a> of file <a class="el" href="../../df/d7f/creategradient_8cpp_source.html">creategradient.cpp</a>.</p>
 
 </div>
 </div>
@@ -645,15 +653,14 @@ Functions</h2></td></tr>
 <p>Create an identity matrix <img class="formulaInl" alt="$I$" src="../../form_30.png"/> for velocity fields. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">I</td><td>[out] a PETSc Mat; returned matrix <img class="formulaInl" alt="$I$" src="../../form_30.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">I</td><td>[out] <img class="formulaInl" alt="$I$" src="../../form_30.png"/> matrix.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix I should not be created before calling this function. </p>
 
-<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00193">193</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00210">210</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -696,18 +703,17 @@ Functions</h2></td></tr>
 <p>Create a Laplacian operator, <img class="formulaInl" alt="$L$" src="../../form_33.png"/>, and boundary correction, <img class="formulaInl" alt="$L_{bc}$" src="../../form_34.png"/> for velocity fields. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">bc</td><td>[in] an instance of <a class="el" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c" title="Type definition of petibm::type::Boundary. ">petibm::type::Boundary</a>. </td></tr>
-    <tr><td class="paramname">L</td><td>[out] a PETSc Mat; returned Laplacian, <img class="formulaInl" alt="$L$" src="../../form_33.png"/>. </td></tr>
-    <tr><td class="paramname">LCorrection</td><td>[out] a PETSc Mat; returned boundary correction, <img class="formulaInl" alt="$L_{bc}$" src="../../form_34.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">bc</td><td>[in] Data object for the boundary conditions. </td></tr>
+    <tr><td class="paramname">L</td><td>[out] Laplacian operator <img class="formulaInl" alt="$L$" src="../../form_33.png"/>. </td></tr>
+    <tr><td class="paramname">LCorrection</td><td>[out] Operator for boundary corrections, <img class="formulaInl" alt="$L_{bc}$" src="../../form_34.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix L should not be created before calling this function.</p>
 <p>The complete Laplacian is <img class="formulaInl" alt="$(L+L_{bc})$" src="../../form_35.png"/>. The boundary correction represents the constant coefficients (the coefficients that have nothing to do with interior velocity points) in ghost point schemes. So it's often seen the boundary correction <img class="formulaInl" alt="$L_{bc}$" src="../../form_34.png"/> on right-hand side of a system, while <img class="formulaInl" alt="$L$" src="../../form_33.png"/> on left-hand side. </p>
 
-<p>Definition at line <a class="el" href="../../d1/d05/createlaplacian_8cpp_source.html#l00177">177</a> of file <a class="el" href="../../d1/d05/createlaplacian_8cpp_source.html">createlaplacian.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d05/createlaplacian_8cpp_source.html#l00170">170</a> of file <a class="el" href="../../d1/d05/createlaplacian_8cpp_source.html">createlaplacian.cpp</a>.</p>
 
 </div>
 </div>
@@ -738,16 +744,15 @@ Functions</h2></td></tr>
 <p>Create a matrix <img class="formulaInl" alt="$M=\hat{M}R^{-1}$" src="../../form_28.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">M</td><td>[out] a PETSc Mat; returned matrix <img class="formulaInl" alt="$M$" src="../../form_29.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">M</td><td>[out] <img class="formulaInl" alt="$M$" src="../../form_29.png"/> matrix.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix M should not be created before calling this function.</p>
 <p>In some CFD schemes, the combination of <img class="formulaInl" alt="$\hat{M}$" src="../../form_22.png"/> and <img class="formulaInl" alt="$R^{-1}$" src="../../form_20.png"/> is used frequently. So this function creates a matrix <img class="formulaInl" alt="$M=\hat{M}R^{-1}$" src="../../form_28.png"/> for convenience. </p>
 
-<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00168">168</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00180">180</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -778,17 +783,16 @@ Functions</h2></td></tr>
 <p>Create a matrix of cell widths of velocity points, <img class="formulaInl" alt="$\hat{M}$" src="../../form_22.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">MHead</td><td>[out] a PETSc Mat; returned matrix <img class="formulaInl" alt="$\hat{M}$" src="../../form_22.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">MHead</td><td>[out] <img class="formulaInl" alt="$\hat{M}$" src="../../form_22.png"/> matrix.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix MHead should not be created before calling this function.</p>
 <p>Operator <img class="formulaInl" alt="$\hat{M}$" src="../../form_22.png"/> represents the cell width of velocity points. The cell width of a <img class="formulaInl" alt="$u$" src="../../form_18.png"/>-velocity point with index <img class="formulaInl" alt="$(i, j, k)$" src="../../form_23.png"/>, for example, is <img class="formulaInl" alt="$dx_{i,j,k}$" src="../../form_24.png"/>, and the cell width of <img class="formulaInl" alt="$v$" src="../../form_25.png"/>-velocity at <img class="formulaInl" alt="$(i, j, k)$" src="../../form_23.png"/> is <img class="formulaInl" alt="$dy_{i,j,k}$" src="../../form_26.png"/>.</p>
 <p>The multiplication of <img class="formulaInl" alt="$\hat{M}$" src="../../form_22.png"/> and <img class="formulaInl" alt="$R$" src="../../form_16.png"/> returns the cell volumes of velocity points, i.e., <img class="formulaInl" alt="$\hat{M}R=cell\ volumes$" src="../../form_27.png"/>. </p>
 
-<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00143">143</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00150">150</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -819,17 +823,16 @@ Functions</h2></td></tr>
 <p>Create a matrix of flux areas, <img class="formulaInl" alt="$R$" src="../../form_16.png"/>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">R</td><td>[out] a PETSc Mat; returned matrix <img class="formulaInl" alt="$R$" src="../../form_16.png"/>. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">R</td><td>[out] <img class="formulaInl" alt="$R$" src="../../form_16.png"/> matrix.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix R should not be created before calling this function.</p>
 <p>Operator <img class="formulaInl" alt="$R$" src="../../form_16.png"/> represents the flux areas of velocity points. For example, if <img class="formulaInl" alt="$q$" src="../../form_17.png"/> is vector of velocity flux, and <img class="formulaInl" alt="$u$" src="../../form_18.png"/> is velocity vector, then <img class="formulaInl" alt="$Rq=u$" src="../../form_19.png"/>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d5/d01/group__operator_module.html#ga0bc76dd498f8f501ad63664353ffc157" title="Create a matrix of inversed flux areas, . ">petibm::operators::createRInv</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00093">93</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00090">90</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -861,16 +864,15 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a>. </td></tr>
-    <tr><td class="paramname">RInv</td><td>[out] a PETSc Mat; returned matrix <img class="formulaInl" alt="$R^{-1}$" src="../../form_20.png"/>. </td></tr>
+    <tr><td class="paramname">RInv</td><td>[out] a PETSc Mat; returned matrix <img class="formulaInl" alt="$R^{-1}$" src="../../form_20.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>PETSc matrix RInv should not be created before calling this function.</p>
 <p>Operator <img class="formulaInl" alt="$R^{-1}$" src="../../form_20.png"/> is the inverse of <img class="formulaInl" alt="$R$" src="../../form_16.png"/>. And it has relationship <img class="formulaInl" alt="$R^{-1}u=q$" src="../../form_21.png"/>, in which <img class="formulaInl" alt="$u$" src="../../form_18.png"/> and <img class="formulaInl" alt="$q$" src="../../form_17.png"/> are as defined in <a class="el" href="../../d5/d01/group__operator_module.html#gafd24a451c19a23309e7c54c9d5268ed4" title="Create a matrix of flux areas, . ">petibm::operators::createR</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d5/d01/group__operator_module.html#gafd24a451c19a23309e7c54c9d5268ed4" title="Create a matrix of flux areas, . ">petibm::operators::createR</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00118">118</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html#l00120">120</a> of file <a class="el" href="../../d1/d45/creatediagmatrix_8cpp_source.html">creatediagmatrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -879,7 +881,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

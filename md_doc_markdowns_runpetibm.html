@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -113,6 +113,7 @@ $(document).ready(function(){initNavTree('md_doc_markdowns_runpetibm.html','');}
 <li><code>petibm-navierstokes</code></li>
 <li><code>petibm-ibpm</code></li>
 <li><code>petibm-decoupledibpm</code></li>
+<li><code>petibm-writemesh</code></li>
 <li><code>petibm-vorticity</code></li>
 <li><code>petibm-createxdmf</code></li>
 </ul>
@@ -134,6 +135,8 @@ mpiexec -np n petibm-ibpm
 <p>To run a simulation with a decoupled version of the IBPM: </p><pre class="fragment">cd &lt;simulation-directory&gt;
 mpiexec -np n petibm-decoupledibpm
 </pre><p>You can also provide the path of the simulation directory with the command-line argument <code>-directory &lt;path&gt;</code> and/or the path of the <a class="el" href="d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration file with <code>-config &lt;path&gt;</code>.</p>
+<h2>Program <code>petibm-writemesh</code></h2>
+<p>This program is a simple (and optional) pre-processing utility that creates a structured Cartesian mesh based on the configuration provided in a given <a class="el" href="d7/d1e/namespace_y_a_m_l.html">YAML</a> file. The gridline coordinates are then written into a HDF5 file (<code>grid.h5</code>) saved in the simulation directory.</p>
 <h2>Program <code>petibm-vorticity</code></h2>
 <p>This program is a post-processing utility to compute the vorticity vector field from the velocity vector field; it works for 2D and 3D configurations.</p>
 <p>In 2D, <code>petibm-vorticity</code>:</p><ul>
@@ -181,7 +184,7 @@ mpiexec -np 4 &lt;petibm-executable&gt;
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

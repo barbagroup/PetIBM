@@ -4,7 +4,7 @@ var operators_8h =
     [ "createBn", "d7/d79/operators_8h.html#ga5b89e03619afe7ef24ccf983444d7f31", null ],
     [ "createBnHead", "d7/d79/operators_8h.html#gabe361a4fc3dfda999f1b8cd9eb4c92b6", null ],
     [ "createConvection", "d7/d79/operators_8h.html#gada96f41086e1e23b93633321702af76b", null ],
-    [ "createDelta", "d7/d79/operators_8h.html#gafb0fb04830cf6c8cc0bea96e95747fc2", null ],
+    [ "createDelta", "d7/d79/operators_8h.html#gafbe8e6ab36ea7d459e2ec75169341cfd", null ],
     [ "createDivergence", "d7/d79/operators_8h.html#ga255cbdcfe47b97a2708e1c08343411a7", null ],
     [ "createGradient", "d7/d79/operators_8h.html#ga8ca31641fbf44616692fb3f03e15b68c", null ],
     [ "createIdentity", "d7/d79/operators_8h.html#ga7f4beb7b401a427e496c34907c810d2e", null ],

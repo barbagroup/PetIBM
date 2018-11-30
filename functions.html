@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -166,6 +166,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>advance()
 : <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#ad80c4f37728d0a5542af1da1d3660dfa">DecoupledIBPMSolver</a>
 , <a class="el" href="d4/de8/class_navier_stokes_solver.html#a5a7b753a1a86f1b4f95ee2144ec3371b">NavierStokesSolver</a>
+, <a class="el" href="dc/dbc/class_rigid_kinematics_solver.html#ae9dbd88a4f8b8f898b9721394cac8091">RigidKinematicsSolver</a>
 </li>
 <li>amgx
 : <a class="el" href="df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#ab438c4271e00da377583d8d84071161a">petibm::linsolver::LinSolverAmgX</a>
@@ -173,27 +174,29 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>ao
 : <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a87239803dec8de3d8ebb27181c69c8c5">petibm::mesh::CartesianMesh</a>
 </li>
-<li>applyIC()
-: <a class="el" href="dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a092a463363d3db6ffe6bc3fe56e8b90b">petibm::solution::SolutionBase</a>
-, <a class="el" href="da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a1b3af22afa65ce632690ad33a0812925">petibm::solution::SolutionSimple</a>
+<li>applyDivergenceFreeVelocity()
+: <a class="el" href="d4/de8/class_navier_stokes_solver.html#aa707100adada4a15c22d087f009d34f0">NavierStokesSolver</a>
+</li>
+<li>applyNoSlip()
+: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#a5bf91c336a46965dbeb9599116279be1">DecoupledIBPMSolver</a>
 </li>
 <li>area
 : <a class="el" href="d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html#aaa8c9170eb477583f7120babe553ae0a">petibm::type::GhostPointInfo</a>
 </li>
-<li>asciiViewers
-: <a class="el" href="d4/de8/class_navier_stokes_solver.html#a7c0d996b15baec954b4ae367c7607b5c">NavierStokesSolver</a>
-</li>
 <li>assembleRHSForces()
 : <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#ad47f110e7ea01281ef07fe28e1952632">DecoupledIBPMSolver</a>
+, <a class="el" href="dc/dbc/class_rigid_kinematics_solver.html#aed6e485de742238fda4ed74d83c836f1">RigidKinematicsSolver</a>
 </li>
 <li>assembleRHSPoisson()
-: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#a774a8785e2774dbc3533073982d5e5cb">DecoupledIBPMSolver</a>
-, <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a9435e647ebf61d1134c1c69a9615c2d8">IBPMSolver</a>
+: <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a9435e647ebf61d1134c1c69a9615c2d8">IBPMSolver</a>
 , <a class="el" href="d4/de8/class_navier_stokes_solver.html#a918564f666182b4d8c15a29c5e1c11c6">NavierStokesSolver</a>
 </li>
 <li>assembleRHSVelocity()
 : <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#ae9c65f95ad305ad7dc11775c46cafe54">DecoupledIBPMSolver</a>
 , <a class="el" href="d4/de8/class_navier_stokes_solver.html#a59f476e433c148f8bba17e02a03f029f">NavierStokesSolver</a>
+</li>
+<li>atol
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad1404b6e104efad6a797a88fc5aa5de6">petibm::misc::ProbeVolume</a>
 </li>
 </ul>
 </div><!-- contents -->
@@ -201,7 +204,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:36 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:18 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

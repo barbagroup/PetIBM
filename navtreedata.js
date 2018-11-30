@@ -32,7 +32,7 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -49,11 +49,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a488c97417c0e7cc6ac3c213115dcc634",
-"d7/d5f/misc_8cpp.html#gae51df343993fcb388fdf63def6d859b2",
-"db/d33/decoupledibpm_8cpp_source.html",
-"dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daaa42544aec2d0e3db4d2d10481e02ddf2",
-"md_doc_markdowns_inputs.html"
+"d4/d1d/class_decoupled_i_b_p_m_solver.html#a8c5b75112f9e3bcac451f94964a3bbd1",
+"d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a6915ceb3165cc2def85fff5fa4af51f5",
+"d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html#a7cef21f385ecd2dca9356845d1cdf50e",
+"db/dbd/cartesianmesh2d__dirichlet_8cpp.html#aa62c42297421f28d2a0d52fa7232fa2b",
+"dd/d8f/group__type.html#ga989472de48d796f8e8070fd6c615f150",
+"dir_5a17396c6ee06cf41110d2e7bc9bd347.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

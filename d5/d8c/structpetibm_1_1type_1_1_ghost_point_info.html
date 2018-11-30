@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -130,16 +130,13 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a4aa0466ec9a55102dc6c267bfc570d84"><td class="mdescLeft">&#160;</td><td class="mdescRight">the index in a local velocity vector of this ghost point  <a href="#a4aa0466ec9a55102dc6c267bfc570d84">More...</a><br /></td></tr>
 <tr class="separator:a4aa0466ec9a55102dc6c267bfc570d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e6ee6418028d462e9ce9a12739776c4"><td class="memItemLeft" align="right" valign="top">MatStencil&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html#a1e6ee6418028d462e9ce9a12739776c4">targetStencil</a></td></tr>
-<tr class="memdesc:a1e6ee6418028d462e9ce9a12739776c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">the stencil of point corresponding to this ghost point  <a href="#a1e6ee6418028d462e9ce9a12739776c4">More...</a><br /></td></tr>
 <tr class="separator:a1e6ee6418028d462e9ce9a12739776c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a615409c550d24d2c7b2106e73d949129"><td class="memItemLeft" align="right" valign="top">PetscInt&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html#a615409c550d24d2c7b2106e73d949129">targetPackedId</a></td></tr>
-<tr class="memdesc:a615409c550d24d2c7b2106e73d949129"><td class="mdescLeft">&#160;</td><td class="mdescRight">the index of target point in global packed velocity vector  <a href="#a615409c550d24d2c7b2106e73d949129">More...</a><br /></td></tr>
 <tr class="separator:a615409c550d24d2c7b2106e73d949129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa8c9170eb477583f7120babe553ae0a"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html#aaa8c9170eb477583f7120babe553ae0a">area</a></td></tr>
 <tr class="memdesc:aaa8c9170eb477583f7120babe553ae0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">the flux area of this ghost point  <a href="#aaa8c9170eb477583f7120babe553ae0a">More...</a><br /></td></tr>
 <tr class="separator:aaa8c9170eb477583f7120babe553ae0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1410fdf48ccab4d74bd9a98e7e8b80a7"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html#a1410fdf48ccab4d74bd9a98e7e8b80a7">dL</a></td></tr>
-<tr class="memdesc:a1410fdf48ccab4d74bd9a98e7e8b80a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">the distance between this ghost point and target velocity point  <a href="#a1410fdf48ccab4d74bd9a98e7e8b80a7">More...</a><br /></td></tr>
 <tr class="separator:a1410fdf48ccab4d74bd9a98e7e8b80a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0fb343bf1c3da9abb784e6afbd641cb"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html#ad0fb343bf1c3da9abb784e6afbd641cb">a0</a></td></tr>
 <tr class="memdesc:ad0fb343bf1c3da9abb784e6afbd641cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">the coefficient of the velocity at the target point  <a href="#ad0fb343bf1c3da9abb784e6afbd641cb">More...</a><br /></td></tr>
@@ -154,7 +151,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A data structure for a single ghost point. </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00125">125</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00160">160</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="ad0fb343bf1c3da9abb784e6afbd641cb"></a>
 <div class="memitem">
@@ -168,7 +165,7 @@ Public Attributes</h2></td></tr>
 
 <p>the coefficient of the velocity at the target point </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00132">132</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00171">171</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -184,7 +181,7 @@ Public Attributes</h2></td></tr>
 
 <p>the constant coefficient </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00133">133</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00172">172</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -200,7 +197,7 @@ Public Attributes</h2></td></tr>
 
 <p>the flux area of this ghost point </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00130">130</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00168">168</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -213,10 +210,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
 <p>the distance between this ghost point and target velocity point </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00131">131</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00169">169</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -232,7 +228,7 @@ Public Attributes</h2></td></tr>
 
 <p>the index in a local velocity vector of this ghost point </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00127">127</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00163">163</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -245,10 +241,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
 <p>the index of target point in global packed velocity vector </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00129">129</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00166">166</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -261,10 +256,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
 <p>the stencil of point corresponding to this ghost point </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00128">128</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00164">164</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -280,7 +274,7 @@ Public Attributes</h2></td></tr>
 
 <p>the value of this ghost point </p>
 
-<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00134">134</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/def/type_8h_source.html#l00173">173</a> of file <a class="el" href="../../df/def/type_8h_source.html">type.h</a>.</p>
 
 </div>
 </div>
@@ -293,7 +287,7 @@ Public Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d4/d54/namespacepetibm_1_1type.html">type</a></li><li class="navelem"><a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html">GhostPointInfo</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

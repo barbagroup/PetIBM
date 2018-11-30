@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -129,7 +129,8 @@ $(document).ready(function(){initNavTree('d5/daf/classpetibm_1_1boundary_1_1_bou
 <div class="dynheader">
 Inheritance diagram for petibm::boundary::BoundaryBase:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../dc/d8b/classpetibm_1_1boundary_1_1_boundary_base__inherit__graph.svg" width="226" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../dc/d8b/classpetibm_1_1boundary_1_1_boundary_base__inherit__graph.svg" width="226" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -193,7 +194,7 @@ Protected Attributes</h2></td></tr>
 <div class="textblock"><p>Base (abstract) class for the whole boundary. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. ">Boundaries and boundary conditions</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#gaec7c3bd05092e3f561e89b63ed268ace" title="Definition of type petibm::type::SingleBoundary. ">petibm::type::SingleBoundary</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e" title="Create a Boundary object. ">petibm::boundary::createBoundary</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00082">82</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00078">78</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a9923b17bf011e84be9a43f736e0ade12"></a>
 <div class="memitem">
@@ -247,8 +248,8 @@ Protected Attributes</h2></td></tr>
 <p>Construct a boundary object based on a given mesh object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] a Mesh object. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a YAML::Node object. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configurations. </td></tr>
   </table>
   </dd>
 </dl>
@@ -278,7 +279,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Default destructor. </p>
 
-<p>Definition at line <a class="el" href="../../d9/d15/boundary_8cpp_source.html#l00019">19</a> of file <a class="el" href="../../d9/d15/boundary_8cpp_source.html">boundary.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/d15/boundary_8cpp_source.html#l00016">16</a> of file <a class="el" href="../../d9/d15/boundary_8cpp_source.html">boundary.cpp</a>.</p>
 
 </div>
 </div>
@@ -312,7 +313,6 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a1bac62caa90374ef1d43c1461f4a0afe">petibm::boundary::BoundarySimple</a>.</p>
 
@@ -340,9 +340,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Manually destroy data. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d9/d15/boundary_8cpp_source.html#l00032">32</a> of file <a class="el" href="../../d9/d15/boundary_8cpp_source.html">boundary.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/d15/boundary_8cpp_source.html#l00028">28</a> of file <a class="el" href="../../d9/d15/boundary_8cpp_source.html">boundary.cpp</a>.</p>
 
 </div>
 </div>
@@ -381,12 +380,11 @@ Protected Attributes</h2></td></tr>
 <p>Underlying initialization function. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] a Mesh object. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a YAML::Node object. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configurations. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a8e7f8aca90c52b80f864173b0039abf1">petibm::boundary::BoundarySimple</a>.</p>
 
@@ -417,11 +415,10 @@ Protected Attributes</h2></td></tr>
 <p>Set the initial values of ghost points. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">soln</td><td>[in] a Solution object which will be used to calculate the values. </td></tr>
+    <tr><td class="paramname">soln</td><td>[in] Solution object used to calculate the field solutions. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#abee82f21a6a20dccac3dfe2a9ffcddbd">petibm::boundary::BoundarySimple</a>.</p>
 
@@ -462,12 +459,11 @@ Protected Attributes</h2></td></tr>
 <p>Update the equations between ghost and boundary points. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">soln</td><td>[in] a Solution object. </td></tr>
-    <tr><td class="paramname">dt</td><td>[in] time-step size. </td></tr>
+    <tr><td class="paramname">soln</td><td>[in] Data object for the Eulerian field solutions. </td></tr>
+    <tr><td class="paramname">dt</td><td>[in] Time-step size.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>Some kinds of boundary conditions will require changing equation coefficients. </p>
 
 <p>Implemented in <a class="el" href="../../d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#acff1824915167b8e1a33bacad117426e">petibm::boundary::BoundarySimple</a>.</p>
@@ -499,11 +495,10 @@ Protected Attributes</h2></td></tr>
 <p>Update the values of ghost points. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">soln</td><td>[in] a Solution object. </td></tr>
+    <tr><td class="paramname">soln</td><td>[in] Data object for the Eulerian field solutions. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#ab4323184dd67c25e5d66af0aba834f0e">petibm::boundary::BoundarySimple</a>.</p>
 
@@ -522,7 +517,7 @@ Protected Attributes</h2></td></tr>
 
 <p>A 2D vector holding all single boundaries. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00090">90</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00085">85</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -546,7 +541,7 @@ Protected Attributes</h2></td></tr>
 
 <p>MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00156">156</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00150">150</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -562,7 +557,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Dimension. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00087">87</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00082">82</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -586,7 +581,7 @@ Protected Attributes</h2></td></tr>
 
 <p>A shared_ptr to underlying mesh. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00165">165</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00159">159</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -610,7 +605,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The rank of this process. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00162">162</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00156">156</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -634,7 +629,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Size of MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00159">159</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00153">153</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -648,7 +643,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d6/d98/namespacepetibm_1_1boundary.html">boundary</a></li><li class="navelem"><a class="el" href="../../d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html">BoundaryBase</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

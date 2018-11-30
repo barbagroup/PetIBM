@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -110,6 +110,7 @@ $(document).ready(function(){initNavTree('db/d4d/namespacepetibm_1_1delta.html',
 
 <div class="header">
   <div class="summary">
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">petibm::delta Namespace Reference<div class="ingroups"><a class="el" href="../../da/d34/group__petibm.html">PetIBM building blocks</a> &raquo; <a class="el" href="../../df/d44/group__misc_module.html">Miscellaneous functions</a></div></div>  </div>
@@ -119,27 +120,98 @@ $(document).ready(function(){initNavTree('db/d4d/namespacepetibm_1_1delta.html',
 <p>A namespace of all kinds of discretized delta functions.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:aa8324b770ac95230a9943cf621745219"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; PetscReal(const PetscReal &amp;r, const PetscReal &amp;dr)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">DeltaKernel</a></td></tr>
+<tr class="memdesc:aa8324b770ac95230a9943cf621745219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef to choose the regularized delta kernel to use.  <a href="#aa8324b770ac95230a9943cf621745219">More...</a><br /></td></tr>
+<tr class="separator:aa8324b770ac95230a9943cf621745219"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga36f60d698bf9ddfd52f81d03c9a65d87"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga36f60d698bf9ddfd52f81d03c9a65d87">Roma_et_al</a> (const PetscReal &amp;rx, const PetscReal &amp;drx)</td></tr>
-<tr class="memdesc:ga36f60d698bf9ddfd52f81d03c9a65d87"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-dimensional discrete delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#ga36f60d698bf9ddfd52f81d03c9a65d87">More...</a><br /></td></tr>
-<tr class="separator:ga36f60d698bf9ddfd52f81d03c9a65d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadbf7c91389ecf9cf6c36e850f41f4460"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gadbf7c91389ecf9cf6c36e850f41f4460">Roma_et_al</a> (const PetscReal &amp;rx, const PetscReal &amp;drx, const PetscReal &amp;ry, const PetscReal &amp;dry)</td></tr>
-<tr class="memdesc:gadbf7c91389ecf9cf6c36e850f41f4460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Two-dimensional discrete delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#gadbf7c91389ecf9cf6c36e850f41f4460">More...</a><br /></td></tr>
-<tr class="separator:gadbf7c91389ecf9cf6c36e850f41f4460"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf71607ad49ad08a7a21954d441f3b024"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gaf71607ad49ad08a7a21954d441f3b024">Roma_et_al</a> (const PetscReal &amp;rx, const PetscReal &amp;drx, const PetscReal &amp;ry, const PetscReal &amp;dry, const PetscReal &amp;rz, const PetscReal &amp;drz)</td></tr>
-<tr class="memdesc:gaf71607ad49ad08a7a21954d441f3b024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Three-dimensional discrete delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#gaf71607ad49ad08a7a21954d441f3b024">More...</a><br /></td></tr>
-<tr class="separator:gaf71607ad49ad08a7a21954d441f3b024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga717c381c53c05be45fa0c8c365d5918e"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga717c381c53c05be45fa0c8c365d5918e">Roma_et_al_1999</a> (const PetscReal &amp;r, const PetscReal &amp;dr)</td></tr>
+<tr class="memdesc:ga717c381c53c05be45fa0c8c365d5918e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regularized delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#ga717c381c53c05be45fa0c8c365d5918e">More...</a><br /></td></tr>
+<tr class="separator:ga717c381c53c05be45fa0c8c365d5918e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7b420aae8d29abc805c7c5866e2525c8"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga7b420aae8d29abc805c7c5866e2525c8">Peskin_2002</a> (const PetscReal &amp;r, const PetscReal &amp;dr)</td></tr>
+<tr class="memdesc:ga7b420aae8d29abc805c7c5866e2525c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regularized delta function from Peskin (2002).  <a href="../../df/d44/group__misc_module.html#ga7b420aae8d29abc805c7c5866e2525c8">More...</a><br /></td></tr>
+<tr class="separator:ga7b420aae8d29abc805c7c5866e2525c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10cc0d9923b7a1b3fe4f1d0497779377"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#a10cc0d9923b7a1b3fe4f1d0497779377">getKernel</a> (const std::string &amp;name, <a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">DeltaKernel</a> &amp;kernel, PetscInt &amp;size)</td></tr>
+<tr class="memdesc:a10cc0d9923b7a1b3fe4f1d0497779377"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the delta kernel and size providing the name.  <a href="#a10cc0d9923b7a1b3fe4f1d0497779377">More...</a><br /></td></tr>
+<tr class="separator:a10cc0d9923b7a1b3fe4f1d0497779377"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2091db25dd3159653e6e17c5537e2e7f"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga2091db25dd3159653e6e17c5537e2e7f">delta</a> (const std::vector&lt; PetscReal &gt; &amp;source, const std::vector&lt; PetscReal &gt; &amp;target, const std::vector&lt; PetscReal &gt; &amp;widths, const <a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">DeltaKernel</a> &amp;kernel)</td></tr>
+<tr class="memdesc:ga2091db25dd3159653e6e17c5537e2e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discrete delta function.  <a href="../../df/d44/group__misc_module.html#ga2091db25dd3159653e6e17c5537e2e7f">More...</a><br /></td></tr>
+<tr class="separator:ga2091db25dd3159653e6e17c5537e2e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A namespace of all kinds of discretized delta functions. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="aa8324b770ac95230a9943cf621745219"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::function&lt;PetscReal(const PetscReal &amp;r, const PetscReal &amp;dr)&gt; <a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">petibm::delta::DeltaKernel</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Typedef to choose the regularized delta kernel to use. </p>
+
+<p>Definition at line <a class="el" href="../../d3/dcd/delta_8h_source.html#l00047">47</a> of file <a class="el" href="../../d3/dcd/delta_8h_source.html">delta.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a10cc0d9923b7a1b3fe4f1d0497779377"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscErrorCode petibm::delta::getKernel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">DeltaKernel</a> &amp;&#160;</td>
+          <td class="paramname"><em>kernel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PetscInt &amp;&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the delta kernel and size providing the name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>[in] Name of the delta kernel </td></tr>
+    <tr><td class="paramname">kernel</td><td>[out] The regularized delta kernel </td></tr>
+    <tr><td class="paramname">size</td><td>[out] Size of the delta kernel </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00047">47</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html">delta</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

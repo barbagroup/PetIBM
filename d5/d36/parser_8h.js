@@ -6,5 +6,6 @@ var parser_8h =
     [ "parseMesh", "d5/d36/parser_8h.html#ga434ba3d6f208b9370b4a2024254ee4ee", null ],
     [ "parseOneAxis", "d5/d36/parser_8h.html#ga2e6d3015fdebb6013160ecd7ae01592f", null ],
     [ "parseOneSubDomain", "d5/d36/parser_8h.html#gafafb413cef72933548a11fe8ead9672c", null ],
-    [ "parseSubDomains", "d5/d36/parser_8h.html#ga33fdd0338cbd5c00c50325fb1cb1a532", null ]
+    [ "parseSubDomains", "d5/d36/parser_8h.html#ga33fdd0338cbd5c00c50325fb1cb1a532", null ],
+    [ "readYAMLFile", "d5/d36/parser_8h.html#gad650bef1d4cf1e3ad2de8892ae7c59bf", null ]
 ];

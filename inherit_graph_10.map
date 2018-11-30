@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html" title="A data structure for a single ghost point. " alt="" coords="5,5,195,32"/>
+<area shape="rect" id="node1" href="$dc/d96/classpetibm_1_1solution_1_1_solution_base.html" title="Base (abstract) class for different solution holders. " alt="" coords="5,13,204,39"/>
+<area shape="rect" id="node2" href="$da/d77/classpetibm_1_1solution_1_1_solution_simple.html" title="Class to hold the velocity vector field and pressure scalar field. " alt="" coords="252,5,421,47"/>
 </map>

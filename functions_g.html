@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -151,6 +151,12 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>G
 : <a class="el" href="d4/de8/class_navier_stokes_solver.html#a7e30ae3c53402caa3741f1a0a21aefac">NavierStokesSolver</a>
 </li>
+<li>getBLGridlineIndices()
+: <a class="el" href="dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#ac22904f521ee28fa4da8a98ecf81df0b">petibm::misc::LinInterpBase</a>
+</li>
+<li>getBoxCoords()
+: <a class="el" href="dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a5e695231aa9fd4b0856ec248224ce0a0">petibm::misc::LinInterpBase</a>
+</li>
 <li>getGlobalIndex()
 : <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a8def8fb293f9c2ec350d0c96f9bb74cd">petibm::body::BodyPackBase</a>
 , <a class="el" href="dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ab3c69d5993fbfc1f6379c72c626de3e0">petibm::body::SingleBodyBase</a>
@@ -164,22 +170,25 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#af8893bf2f3fe91a9f0527939d083ffd4">petibm::linsolver::LinSolverKSP</a>
 </li>
 <li>getLocalIndex()
-: <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a9ddc0073f579ceecdec66c72320f0ef2">petibm::mesh::CartesianMesh</a>
+: <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ac0307a5e7dc1ea47a498c47fa97372ff">petibm::mesh::CartesianMesh</a>
 , <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ab5fb40a505ac2c3a3ba5465078bbd1ae">petibm::mesh::MeshBase</a>
 </li>
 <li>getNaturalIndex()
 : <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a02212003c71dabe5b738b329b4e9a274">petibm::mesh::CartesianMesh</a>
-, <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a555f13cc0700cba13ea14a2b1c457328">petibm::mesh::MeshBase</a>
+, <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a613a897002ae9d3349344aa273dfbdad">petibm::mesh::MeshBase</a>
 </li>
 <li>getPackedGlobalIndex()
-: <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a71b3b3e8286398c77645b572e8fe544f">petibm::body::BodyPackBase</a>
+: <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#aaed1a4072b8216d4609ef5a5558d7984">petibm::body::BodyPackBase</a>
 , <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ab29e490702b075662299a4ef0a08586f">petibm::mesh::CartesianMesh</a>
-, <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4959ce578d9e348213749b09069c7f20">petibm::mesh::MeshBase</a>
+, <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aedf7045a248be0743ddea9686c3ba70b">petibm::mesh::MeshBase</a>
 </li>
 <li>getResidual()
 : <a class="el" href="df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#af16e31a9fd267d85a31975c7140595bb">petibm::linsolver::LinSolverAmgX</a>
 , <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#af0fd0eedbd15c3d70652e21e8f4e7311">petibm::linsolver::LinSolverBase</a>
 , <a class="el" href="d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#ac7d5e3384cb69b3c60e18019bdace250">petibm::linsolver::LinSolverKSP</a>
+</li>
+<li>getSubMeshInfo()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a11c0f5b4c1eab08c49b6bc787c740e46">petibm::misc::ProbeVolume</a>
 </li>
 <li>getType()
 : <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#adda366e906f3d423dde09ef9dca71bbc">petibm::linsolver::LinSolverBase</a>
@@ -190,7 +199,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:36 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:18 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

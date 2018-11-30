@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -106,6 +106,7 @@ $(document).ready(function(){initNavTree('df/d44/group__misc_module.html','../..
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Miscellaneous functions<div class="ingroups"><a class="el" href="../../da/d34/group__petibm.html">PetIBM building blocks</a></div></div>  </div>
@@ -117,7 +118,8 @@ $(document).ready(function(){initNavTree('df/d44/group__misc_module.html','../..
 <div class="dynheader">
 Collaboration diagram for Miscellaneous functions:</div>
 <div class="dyncontent">
-<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../df/d44/group__misc_module.svg" width="378" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../df/d44/group__misc_module.svg" width="378" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </td></tr></table></center>
 </div>
 <table class="memberdecls">
@@ -138,39 +140,72 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html">petibm::misc::LinInterpBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract Base Class of a linear interpolation object.  <a href="../../dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html">petibm::misc::TriLinInterp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class to perform a trilinear interpolation at a point in a 3D domain.  <a href="../../d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html">petibm::misc::BiLinInterp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class to perform a bilinear interpolation at a point in a 3D domain.  <a href="../../de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html">petibm::misc::LoopBound</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper struct to make looping function easier.  <a href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html">petibm::misc::ProbeBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract Base Class of a probe.  <a href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html">petibm::misc::ProbeVolume</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probe class to monitor a volume region of the domain.  <a href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d74/classpetibm_1_1misc_1_1_probe_point.html">petibm::misc::ProbePoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probe class to monitor the solution at a single point.  <a href="../../d0/d74/classpetibm_1_1misc_1_1_probe_point.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga7d008657a5cc34f27af97a0a3422d562"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; misc::LinInterpBase &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562">petibm::type::LinInterp</a></td></tr>
+<tr class="memdesc:ga7d008657a5cc34f27af97a0a3422d562"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type definition of LinInterp.  <a href="../../df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562">More...</a><br /></td></tr>
+<tr class="separator:ga7d008657a5cc34f27af97a0a3422d562"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga875e585a052dd34aed02b7711ff76e70"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; misc::ProbeBase &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">petibm::type::Probe</a></td></tr>
+<tr class="memdesc:ga875e585a052dd34aed02b7711ff76e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type definition of Probe.  <a href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">More...</a><br /></td></tr>
+<tr class="separator:ga875e585a052dd34aed02b7711ff76e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga36f60d698bf9ddfd52f81d03c9a65d87"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga36f60d698bf9ddfd52f81d03c9a65d87">petibm::delta::Roma_et_al</a> (const PetscReal &amp;rx, const PetscReal &amp;drx)</td></tr>
-<tr class="memdesc:ga36f60d698bf9ddfd52f81d03c9a65d87"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-dimensional discrete delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#ga36f60d698bf9ddfd52f81d03c9a65d87">More...</a><br /></td></tr>
-<tr class="separator:ga36f60d698bf9ddfd52f81d03c9a65d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadbf7c91389ecf9cf6c36e850f41f4460"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gadbf7c91389ecf9cf6c36e850f41f4460">petibm::delta::Roma_et_al</a> (const PetscReal &amp;rx, const PetscReal &amp;drx, const PetscReal &amp;ry, const PetscReal &amp;dry)</td></tr>
-<tr class="memdesc:gadbf7c91389ecf9cf6c36e850f41f4460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Two-dimensional discrete delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#gadbf7c91389ecf9cf6c36e850f41f4460">More...</a><br /></td></tr>
-<tr class="separator:gadbf7c91389ecf9cf6c36e850f41f4460"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf71607ad49ad08a7a21954d441f3b024"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gaf71607ad49ad08a7a21954d441f3b024">petibm::delta::Roma_et_al</a> (const PetscReal &amp;rx, const PetscReal &amp;drx, const PetscReal &amp;ry, const PetscReal &amp;dry, const PetscReal &amp;rz, const PetscReal &amp;drz)</td></tr>
-<tr class="memdesc:gaf71607ad49ad08a7a21954d441f3b024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Three-dimensional discrete delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#gaf71607ad49ad08a7a21954d441f3b024">More...</a><br /></td></tr>
-<tr class="separator:gaf71607ad49ad08a7a21954d441f3b024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga717c381c53c05be45fa0c8c365d5918e"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga717c381c53c05be45fa0c8c365d5918e">petibm::delta::Roma_et_al_1999</a> (const PetscReal &amp;r, const PetscReal &amp;dr)</td></tr>
+<tr class="memdesc:ga717c381c53c05be45fa0c8c365d5918e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regularized delta function from Roma et al. (1999).  <a href="../../df/d44/group__misc_module.html#ga717c381c53c05be45fa0c8c365d5918e">More...</a><br /></td></tr>
+<tr class="separator:ga717c381c53c05be45fa0c8c365d5918e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7b420aae8d29abc805c7c5866e2525c8"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga7b420aae8d29abc805c7c5866e2525c8">petibm::delta::Peskin_2002</a> (const PetscReal &amp;r, const PetscReal &amp;dr)</td></tr>
+<tr class="memdesc:ga7b420aae8d29abc805c7c5866e2525c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regularized delta function from Peskin (2002).  <a href="../../df/d44/group__misc_module.html#ga7b420aae8d29abc805c7c5866e2525c8">More...</a><br /></td></tr>
+<tr class="separator:ga7b420aae8d29abc805c7c5866e2525c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2091db25dd3159653e6e17c5537e2e7f"><td class="memItemLeft" align="right" valign="top">PetscReal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga2091db25dd3159653e6e17c5537e2e7f">petibm::delta::delta</a> (const std::vector&lt; PetscReal &gt; &amp;source, const std::vector&lt; PetscReal &gt; &amp;target, const std::vector&lt; PetscReal &gt; &amp;widths, const DeltaKernel &amp;kernel)</td></tr>
+<tr class="memdesc:ga2091db25dd3159653e6e17c5537e2e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discrete delta function.  <a href="../../df/d44/group__misc_module.html#ga2091db25dd3159653e6e17c5537e2e7f">More...</a><br /></td></tr>
+<tr class="separator:ga2091db25dd3159653e6e17c5537e2e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gace1b680446fa52a0bfce7882cb243ded"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded">petibm::io::readLagrangianPoints</a> (const std::string &amp;file, PetscInt &amp;nPts, type::RealVec2D &amp;coords)</td></tr>
-<tr class="memdesc:gace1b680446fa52a0bfce7882cb243ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the number and coordinates of Lagrangian points from a file.  <a href="../../df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded">More...</a><br /></td></tr>
+<tr class="memdesc:gace1b680446fa52a0bfce7882cb243ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the number Lagrangian points and their coordinates from a file.  <a href="../../df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded">More...</a><br /></td></tr>
 <tr class="separator:gace1b680446fa52a0bfce7882cb243ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadd71230142c7050daf20da48dd5e5664"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gadd71230142c7050daf20da48dd5e5664">petibm::io::print</a> (const std::string &amp;info)</td></tr>
-<tr class="memdesc:gadd71230142c7050daf20da48dd5e5664"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information of "info" string of a parallel object to standard output.  <a href="../../df/d44/group__misc_module.html#gadd71230142c7050daf20da48dd5e5664">More...</a><br /></td></tr>
+<tr class="memdesc:gadd71230142c7050daf20da48dd5e5664"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information of a parallel object to standard output.  <a href="../../df/d44/group__misc_module.html#gadd71230142c7050daf20da48dd5e5664">More...</a><br /></td></tr>
 <tr class="separator:gadd71230142c7050daf20da48dd5e5664"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae6cbd6a9cc53ac4a98936e7e493e4e15"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gae6cbd6a9cc53ac4a98936e7e493e4e15">petibm::io::writeHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;file, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, const std::vector&lt; Vec &gt; &amp;vecs, const PetscFileMode mode=FILE_MODE_WRITE)</td></tr>
-<tr class="memdesc:gae6cbd6a9cc53ac4a98936e7e493e4e15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a vector of Vecs with names to a HDF5 file.  <a href="../../df/d44/group__misc_module.html#gae6cbd6a9cc53ac4a98936e7e493e4e15">More...</a><br /></td></tr>
-<tr class="separator:gae6cbd6a9cc53ac4a98936e7e493e4e15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf35da3339ed32f5253d1999782b9a160"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gaf35da3339ed32f5253d1999782b9a160">petibm::io::writeHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;file, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, const std::vector&lt; PetscInt &gt; &amp;n, const std::vector&lt; PetscReal * &gt; &amp;vecs, const PetscFileMode mode=FILE_MODE_WRITE)</td></tr>
-<tr class="memdesc:gaf35da3339ed32f5253d1999782b9a160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a vector of raw arrays with names to a HDF5 file.  <a href="../../df/d44/group__misc_module.html#gaf35da3339ed32f5253d1999782b9a160">More...</a><br /></td></tr>
-<tr class="separator:gaf35da3339ed32f5253d1999782b9a160"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5fc969835357bf378cdad45f5344fc23"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga5fc969835357bf378cdad45f5344fc23">petibm::io::writeHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;file, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, const type::RealVec2D &amp;vecs, const PetscFileMode mode=FILE_MODE_WRITE)</td></tr>
-<tr class="memdesc:ga5fc969835357bf378cdad45f5344fc23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13" title="2D std::vector holding PetscReal. ">type::RealVec2D</a> with names to a HDF5 file.  <a href="../../df/d44/group__misc_module.html#ga5fc969835357bf378cdad45f5344fc23">More...</a><br /></td></tr>
-<tr class="separator:ga5fc969835357bf378cdad45f5344fc23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga49bb8316775bbafd794b6b89c5e90f37"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga49bb8316775bbafd794b6b89c5e90f37">petibm::io::readHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;file, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, std::vector&lt; Vec &gt; &amp;vecs)</td></tr>
-<tr class="memdesc:ga49bb8316775bbafd794b6b89c5e90f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a vector of Vecs matching the provided names from a HDF5 file.  <a href="../../df/d44/group__misc_module.html#ga49bb8316775bbafd794b6b89c5e90f37">More...</a><br /></td></tr>
-<tr class="separator:ga49bb8316775bbafd794b6b89c5e90f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga470d48604aabc8b773a71a6834d6b730"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga470d48604aabc8b773a71a6834d6b730">petibm::io::writeHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;filePath, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, const std::vector&lt; Vec &gt; &amp;vecs, const PetscFileMode mode=FILE_MODE_WRITE)</td></tr>
+<tr class="memdesc:ga470d48604aabc8b773a71a6834d6b730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a vector of Vec objects to a HDF5 file.  <a href="../../df/d44/group__misc_module.html#ga470d48604aabc8b773a71a6834d6b730">More...</a><br /></td></tr>
+<tr class="separator:ga470d48604aabc8b773a71a6834d6b730"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6ea93afe19a9286422bac3c36e946e35"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga6ea93afe19a9286422bac3c36e946e35">petibm::io::writeHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;filePath, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, const std::vector&lt; PetscInt &gt; &amp;n, const std::vector&lt; PetscReal * &gt; &amp;vecs, const PetscFileMode mode=FILE_MODE_WRITE)</td></tr>
+<tr class="memdesc:ga6ea93afe19a9286422bac3c36e946e35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a vector of raw arrays to a HDF5 file.  <a href="../../df/d44/group__misc_module.html#ga6ea93afe19a9286422bac3c36e946e35">More...</a><br /></td></tr>
+<tr class="separator:ga6ea93afe19a9286422bac3c36e946e35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga235fe3d6b3758e87e247211cfc2e8603"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga235fe3d6b3758e87e247211cfc2e8603">petibm::io::writeHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;filePath, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, const type::RealVec2D &amp;vecs, const PetscFileMode mode=FILE_MODE_WRITE)</td></tr>
+<tr class="memdesc:ga235fe3d6b3758e87e247211cfc2e8603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13" title="2D std::vector holding PetscReal. ">petibm::type::RealVec2D</a> to a HDF5 file.  <a href="../../df/d44/group__misc_module.html#ga235fe3d6b3758e87e247211cfc2e8603">More...</a><br /></td></tr>
+<tr class="separator:ga235fe3d6b3758e87e247211cfc2e8603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9715aaee1c61908e30ba76e65cc320f7"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga9715aaee1c61908e30ba76e65cc320f7">petibm::io::readHDF5Vecs</a> (const MPI_Comm comm, const std::string &amp;filePath, const std::string &amp;loc, const std::vector&lt; std::string &gt; &amp;names, std::vector&lt; Vec &gt; &amp;vecs)</td></tr>
+<tr class="memdesc:ga9715aaee1c61908e30ba76e65cc320f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a vector of Vec objects from a HDF5 file.  <a href="../../df/d44/group__misc_module.html#ga9715aaee1c61908e30ba76e65cc320f7">More...</a><br /></td></tr>
+<tr class="separator:ga9715aaee1c61908e30ba76e65cc320f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacee1b480cd5d468666b3e1627bb65e31"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gacee1b480cd5d468666b3e1627bb65e31">petibm::io::writePetscLog</a> (const MPI_Comm comm, const std::string &amp;filePath)</td></tr>
+<tr class="memdesc:gacee1b480cd5d468666b3e1627bb65e31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a summary of the PETSc logging into a ASCII file.  <a href="../../df/d44/group__misc_module.html#gacee1b480cd5d468666b3e1627bb65e31">More...</a><br /></td></tr>
+<tr class="separator:gacee1b480cd5d468666b3e1627bb65e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad67f53da4612405f8365bbecbe3119a4"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4">petibm::misc::createLinInterp</a> (const MPI_Comm &amp;comm, const type::RealVec1D &amp;point, const type::Mesh &amp;mesh, const type::Field &amp;field, type::LinInterp &amp;interp)</td></tr>
+<tr class="memdesc:gad67f53da4612405f8365bbecbe3119a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a linear interpolation object.  <a href="../../df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4">More...</a><br /></td></tr>
+<tr class="separator:gad67f53da4612405f8365bbecbe3119a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf28203dad7596be8529f1a7c8268c797"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797">petibm::misc::checkPeriodicBC</a> (const type::IntVec2D &amp;bcTypes, type::BoolVec2D &amp;periodic)</td></tr>
 <tr class="memdesc:gaf28203dad7596be8529f1a7c8268c797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if there is any periodic boundary condition and if these periodic BCs make sense.  <a href="../../df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797">More...</a><br /></td></tr>
 <tr class="separator:gaf28203dad7596be8529f1a7c8268c797"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,8 +231,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga7bf3e89e4f41fb4cfdac1986ed4286ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper function to carry out a triple loop on a given function.  <a href="../../df/d44/group__misc_module.html#ga7bf3e89e4f41fb4cfdac1986ed4286ff">More...</a><br /></td></tr>
 <tr class="separator:ga7bf3e89e4f41fb4cfdac1986ed4286ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3099e1e7c848b6b16e5f59d83f781f97"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97">petibm::parser::getSettings</a> (YAML::Node &amp;node)</td></tr>
-<tr class="memdesc:ga3099e1e7c848b6b16e5f59d83f781f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get settings from command line arguments and read <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> files.  <a href="../../df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97">More...</a><br /></td></tr>
+<tr class="memdesc:ga3099e1e7c848b6b16e5f59d83f781f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get configuration settings.  <a href="../../df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97">More...</a><br /></td></tr>
 <tr class="separator:ga3099e1e7c848b6b16e5f59d83f781f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad650bef1d4cf1e3ad2de8892ae7c59bf"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gad650bef1d4cf1e3ad2de8892ae7c59bf">petibm::parser::readYAMLFile</a> (const std::string &amp;filePath, YAML::Node &amp;node)</td></tr>
+<tr class="memdesc:gad650bef1d4cf1e3ad2de8892ae7c59bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the content of a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file into a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#gad650bef1d4cf1e3ad2de8892ae7c59bf">More...</a><br /></td></tr>
+<tr class="separator:gad650bef1d4cf1e3ad2de8892ae7c59bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga434ba3d6f208b9370b4a2024254ee4ee"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga434ba3d6f208b9370b4a2024254ee4ee">petibm::parser::parseMesh</a> (const YAML::Node &amp;meshNode, PetscInt &amp;dim, type::RealVec1D &amp;bg, type::RealVec1D &amp;ed, type::IntVec1D &amp;nTotal, type::RealVec2D &amp;dL)</td></tr>
 <tr class="memdesc:ga434ba3d6f208b9370b4a2024254ee4ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node of cartesianMesh.  <a href="../../df/d44/group__misc_module.html#ga434ba3d6f208b9370b4a2024254ee4ee">More...</a><br /></td></tr>
 <tr class="separator:ga434ba3d6f208b9370b4a2024254ee4ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -216,11 +254,54 @@ Functions</h2></td></tr>
 <tr class="memitem:ga22ecf1119deb16634210c7ea5861d90e"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e">petibm::parser::parseICs</a> (const YAML::Node &amp;node, type::RealVec1D &amp;icValues)</td></tr>
 <tr class="memdesc:ga22ecf1119deb16634210c7ea5861d90e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse initial conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e">More...</a><br /></td></tr>
 <tr class="separator:ga22ecf1119deb16634210c7ea5861d90e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadbc7387003ade845958d20d2ebefe22b"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">petibm::misc::createProbe</a> (const MPI_Comm &amp;comm, const YAML::Node &amp;node, const type::Mesh &amp;mesh, type::Probe &amp;probe)</td></tr>
+<tr class="memdesc:gadbc7387003ade845958d20d2ebefe22b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a probe to monitor the solution.  <a href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">More...</a><br /></td></tr>
+<tr class="separator:gadbc7387003ade845958d20d2ebefe22b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Collections of the namespaces containing rarely used functions. </p>
 <p>This module contains all other public functions that are rarely used by API users. Four namespaces are categorized into this module: <a class="el" href="../../dc/d3a/namespacepetibm_1_1io.html" title="A namespace of I/O-related functions. ">petibm::io</a>, <a class="el" href="../../dc/dc0/namespacepetibm_1_1parser.html" title="A collection of YAML node parsers. ">petibm::parser</a>, <a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html" title="A namespace of all kinds of discretized delta functions. ">petibm::delta</a>, and <a class="el" href="../../dd/d40/namespacepetibm_1_1misc.html" title="A namespace holding miscellaneous functions. ">petibm::misc</a>. These functions are sometimes useful at some specific situations.</p>
 <p>Also, user-defined <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> converters are categorized into here. </p>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="ga7d008657a5cc34f27af97a0a3422d562"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::shared_ptr&lt;misc::LinInterpBase&gt; <a class="el" href="../../df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562">petibm::type::LinInterp</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type definition of LinInterp. </p>
+<p>Please use <a class="el" href="../../df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4" title="Factory function to create a linear interpolation object. ">petibm::misc::createLinInterp</a> to create a LinInterp object.</p>
+<ul>
+<li><dl class="section see"><dt>See also</dt><dd><a class="el" href="../../df/d44/group__misc_module.html" title="Collections of the namespaces containing rarely used functions. ">Miscellaneous functions</a>, <a class="el" href="../../df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4" title="Factory function to create a linear interpolation object. ">petibm::misc::createLinInterp</a>, <a class="el" href="../../dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html" title="Abstract Base Class of a linear interpolation object. ">petibm::misc::LinInterpBase</a> </dd></dl>
+</li>
+</ul>
+
+<p>Definition at line <a class="el" href="../../d9/d1d/lininterp_8h_source.html#l00172">172</a> of file <a class="el" href="../../d9/d1d/lininterp_8h_source.html">lininterp.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga875e585a052dd34aed02b7711ff76e70"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::shared_ptr&lt;misc::ProbeBase&gt; <a class="el" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">petibm::type::Probe</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type definition of Probe. </p>
+<p>Please use <a class="el" href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b" title="Factory function to create a probe to monitor the solution. ">petibm::misc::createProbe</a> to create a Probe object.</p>
+<p>Example usage: </p><div class="fragment"><div class="line">PetscErrorCode ierr;</div><div class="line"><a class="code" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">petibm::misc::Probe</a> probe;</div><div class="line"><a class="code" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">petibm::mesh::Mesh</a> mesh;</div><div class="line">YAML::node config;</div><div class="line"></div><div class="line">ierr = <a class="code" href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">petibm::misc::createProbe</a>(PETSC_COMM_WORLD, config,</div><div class="line">                                 mesh, probe); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="../../df/d44/group__misc_module.html" title="Collections of the namespaces containing rarely used functions. ">Miscellaneous functions</a>, <a class="el" href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b" title="Factory function to create a probe to monitor the solution. ">petibm::misc::createProbe</a>, <a class="el" href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html" title="Abstract Base Class of a probe. ">petibm::misc::ProbeBase</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d8/dc4/probes_8h_source.html#l00329">329</a> of file <a class="el" href="../../d8/dc4/probes_8h_source.html">probes.h</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga1563391046620fa87eaa4f2540599062"></a>
 <div class="memitem">
@@ -268,9 +349,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00086">86</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00085">85</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
 
 </div>
 </div>
@@ -302,14 +382,177 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">bcTypes</td><td>[in] a <a class="el" href="../../dd/d8f/group__type.html#ga0173f75594de88ef6cdb6d4b6838928d" title="2D std::vector holding PetscInt. ">type::IntVec2D</a> obtained from <a class="el" href="../../df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339" title="Parse boundary conditions from a YAML node. ">petibm::parser::parseBCs</a>. </td></tr>
-    <tr><td class="paramname">periodic</td><td>[out] returned 2D array of <code>PetscBool</code> indicating the status of periodic BCs. </td></tr>
+    <tr><td class="paramname">periodic</td><td>[out] returned 2D array of <code>PetscBool</code> indicating the status of periodic BCs.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This function checks if the settings of periodic boundary conditions make sense, if there is any. Also, it returns a 2D array of bools that indicates where a specific direction in a specific velocity field is periodic. For example, assuming <code>p</code> is the 2D bools returned by this function, then if <code>p[1][1]</code> is <code>PETSC_TRUE</code>, this means the y direction of v velocity field is periodic. </p>
+
+<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00019">19</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gad67f53da4612405f8365bbecbe3119a4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscErrorCode petibm::misc::createLinInterp </td>
+          <td>(</td>
+          <td class="paramtype">const MPI_Comm &amp;&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="../../dd/d8f/group__type.html#gad19e550a4119623bdfdd2f9b02ce1678">type::RealVec1D</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">type::Field</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562">type::LinInterp</a> &amp;&#160;</td>
+          <td class="paramname"><em>interp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Factory function to create a linear interpolation object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">comm</td><td>[in] MPI communicator </td></tr>
+    <tr><td class="paramname">point</td><td>[in] Coordinates of the point to interpolate </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Cartesian mesh object </td></tr>
+    <tr><td class="paramname">field</td><td>[in] Index of the field to monitor </td></tr>
+    <tr><td class="paramname">interp</td><td>[out] Linear interpolation object </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode</dd></dl>
-<p>This function checks if the settings of periodic boundary conditions make sense, if there is any. Also, it returns a 2D array of bools that indicates where a specific direction in a specific velocity field is periodic. For example, assuming <code>p</code> is the 2D bools returned by this function, then if <code>p[1][1]</code> is <code>PETSC_TRUE</code>, this means the y direction of v velocity field is periodic. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../df/d44/group__misc_module.html" title="Collections of the namespaces containing rarely used functions. ">Miscellaneous functions</a>, <a class="el" href="../../df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562" title="Type definition of LinInterp. ">petibm::type::LinInterp</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00020">20</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../df/de7/lininterp_8cpp_source.html#l00016">16</a> of file <a class="el" href="../../df/de7/lininterp_8cpp_source.html">lininterp.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gadbc7387003ade845958d20d2ebefe22b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscErrorCode petibm::misc::createProbe </td>
+          <td>(</td>
+          <td class="paramtype">const MPI_Comm &amp;&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const YAML::Node &amp;&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">type::Probe</a> &amp;&#160;</td>
+          <td class="paramname"><em>probe</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Factory function to create a probe to monitor the solution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">comm</td><td>[in] MPI communicator </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Cartesian mesh object </td></tr>
+    <tr><td class="paramname">probe</td><td>[out] Probe </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../df/d44/group__misc_module.html" title="Collections of the namespaces containing rarely used functions. ">Miscellaneous functions</a>, <a class="el" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70" title="Type definition of Probe. ">petibm::type::Probe</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d3/d8c/probes_8cpp_source.html#l00023">23</a> of file <a class="el" href="../../d3/d8c/probes_8cpp_source.html">probes.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga2091db25dd3159653e6e17c5537e2e7f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscReal petibm::delta::delta </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; PetscReal &gt; &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; PetscReal &gt; &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; PetscReal &gt; &amp;&#160;</td>
+          <td class="paramname"><em>widths</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="../../db/d4d/namespacepetibm_1_1delta.html#aa8324b770ac95230a9943cf621745219">DeltaKernel</a> &amp;&#160;</td>
+          <td class="paramname"><em>kernel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discrete delta function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>[in] Coordinates of the source point </td></tr>
+    <tr><td class="paramname">target</td><td>[in] Coordinates of the target point </td></tr>
+    <tr><td class="paramname">h</td><td>[in] Cell width</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the discrete delta function. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00070">70</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
 
 </div>
 </div>
@@ -360,9 +603,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/d08/misc_8h_source.html#l00183">183</a> of file <a class="el" href="../../d4/d08/misc_8h_source.html">misc.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d08/misc_8h_source.html#l00184">184</a> of file <a class="el" href="../../d4/d08/misc_8h_source.html">misc.h</a>.</p>
 
 </div>
 </div>
@@ -412,9 +654,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00131">131</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00129">129</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
 
 </div>
 </div>
@@ -467,16 +708,15 @@ Functions</h2></td></tr>
     <tr><td class="paramname">loc</td><td>[in] the location of the desired boundary. </td></tr>
     <tr><td class="paramname">pIdx</td><td>[in] a 1D array of the indices of the perpendicular axes. </td></tr>
     <tr><td class="paramname">ghost</td><td>[out] the returned stencil of the desired ghost point. </td></tr>
-    <tr><td class="paramname">target</td><td>[out] the stencil of the corresponding boundary point. </td></tr>
+    <tr><td class="paramname">target</td><td>[out] the stencil of the corresponding boundary point.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode</dd></dl>
 <p>For example, in a 5x5x5 3D mesh, if we want to get the stencils of the ghost and corresponding points on the <code>XPLUS</code> boundary with <code>j</code> and <code>k</code> indices equal to <code>2</code> and <code>3</code> respectively, then the following arguments can be used:</p>
 <div class="fragment"><div class="line">n = {5, 5, 5};</div><div class="line">loc = <a class="code" href="../../dd/d8f/group__type.html#ggaac0bd4791ec9e6bb0cd3ef25147f167ba627212139d64fcbe15be8b26bc2ce54a">petibm::type::BCLoc::XPLUS</a>;</div><div class="line">pIdx = {2, 3};</div></div><!-- fragment --><p>Then, the returned ghost and boundary points will be:</p>
 <div class="fragment"><div class="line">ghost = {3, 2, 5};</div><div class="line">target = {3, 2, 4};</div></div><!-- fragment --><p> Note, the order of <code>i</code>, <code>j</code>, and <code>k</code> in a <code>MatStencil</code> is <code>{k, j, i}</code>. </p>
 
-<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00227">227</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00226">226</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
 
 </div>
 </div>
@@ -512,9 +752,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00200">200</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d5f/misc_8cpp_source.html#l00199">199</a> of file <a class="el" href="../../d7/d5f/misc_8cpp_source.html">misc.cpp</a>.</p>
 
 </div>
 </div>
@@ -532,26 +771,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get settings from command line arguments and read <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> files. </p>
+<p>Get configuration settings. </p>
+<p>The function parses the command-line arguments and reads the various <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> files that contain simulation settings. If a non-empty <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node is given, sub-nodes might be overwritten.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">node</td><td>[out] a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node containing all settings. </td></tr>
+    <tr><td class="paramname">node</td><td>[out] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node with simulation settings.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
-<p>The function will look for the following command-line arguments</p>
+<p>The function looks for the following optional command-line arguments:</p>
 <ol type="1">
-<li><code>-directory</code>: the working directory. Default is the current directory if not found.</li>
-<li><code>-config</code>: location of config.yaml. If not provided, the default is [working directory]/config.yaml.</li>
-<li><code>-mesh</code>: location of mesh.yaml. This provides a way to overwrite the mesh section inside config.yaml.</li>
-<li><code>-flow</code>: location of flow.yaml. This provides a way to overwrite the flow section inside config.yaml.</li>
-<li><code>-parameters</code>: location of parameters.yaml. This provides a way to overwrite the parameters section inside config.yaml.</li>
-<li><code>-bodies</code>: location of bodies.yaml. This provides a way to overwrite the bodies section inside config.yaml.</li>
+<li><code>-directory</code>: working directory (default: current working directory).</li>
+<li><code>-output</code>: output directory (default: folder <code>output</code> in the working directory).</li>
+<li><code>-config</code>: <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file path with all settings (default: <code>config.yaml</code> file in the working directory).</li>
+<li><code>-mesh</code>: <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file path with mesh settings (default: None, i.e., does nothing).</li>
+<li><code>-flow</code>: <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file path with flow settings (default: None, i.e. does nothing).</li>
+<li><code>-parameters</code>: <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file path with simulation parameters (default: None, i.e., does nothing).</li>
+<li><code>-bodies</code>: <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file path with settings for the immersed bodies (default: None, i.e., does nothing). </li>
 </ol>
-<p>If users provide non-empty <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node as input, the data inside the node will be discarded. </p>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00221">221</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00169">169</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -588,16 +827,15 @@ Functions</h2></td></tr>
 <p>Parse boundary conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">node</td><td>[in] a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node containing boundary conditions. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
     <tr><td class="paramname">bcTypes</td><td>[out] BC types of different fields on different boundaries. </td></tr>
-    <tr><td class="paramname">bcValues</td><td>[out] BC values of different fields on different boundaries. </td></tr>
+    <tr><td class="paramname">bcValues</td><td>[out] BC values of different fields on different boundaries.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>This function will look into the key <code>boundaryConditions</code> under the key <code>flow</code> in the provided <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00414">414</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00354">354</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -628,15 +866,14 @@ Functions</h2></td></tr>
 <p>Parse initial conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">node</td><td>[in] a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </td></tr>
-    <tr><td class="paramname">icValues</td><td>[out] IC values of different fields. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">icValues</td><td>[out] IC values of different fields.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>This function will look into the key <code>initialVelocity</code> under the key <code>flow</code> in the provided <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00452">452</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00391">391</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -691,19 +928,18 @@ Functions</h2></td></tr>
 <p>Parse a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node of cartesianMesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">meshNode</td><td>[in] the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node holding mesh settings. </td></tr>
-    <tr><td class="paramname">dim</td><td>[out] returned dimension </td></tr>
-    <tr><td class="paramname">bg</td><td>[out] a vector of the starting boundary in each direction. </td></tr>
-    <tr><td class="paramname">ed</td><td>[out] a vector of the ending boundary in each direction. </td></tr>
-    <tr><td class="paramname">nTotal</td><td>[out] a vector for number of pressure cell in each direction. </td></tr>
-    <tr><td class="paramname">dL</td><td>[out] a nested vector for pressure cell sizes in each direction. </td></tr>
+    <tr><td class="paramname">meshNode</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">dim</td><td>[out] Number of dimensions </td></tr>
+    <tr><td class="paramname">bg</td><td>[out] Vector with starting coordinate in each direction. </td></tr>
+    <tr><td class="paramname">ed</td><td>[out] Vector with ending coordinate in each direction. </td></tr>
+    <tr><td class="paramname">nTotal</td><td>[out] Number of cells in each direction. </td></tr>
+    <tr><td class="paramname">dL</td><td>[out] Nested vector with grid cell sizes in each direction.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode</dd></dl>
 <p>This function will retrieve information from and do necessary calculations based on the data provided under the key <code>mesh</code> in the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00292">292</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00234">234</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -758,19 +994,18 @@ Functions</h2></td></tr>
 <p>Parse the info of only one direction from <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">axis</td><td>[in] the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </td></tr>
-    <tr><td class="paramname">dir</td><td>[out] returned direction label. </td></tr>
-    <tr><td class="paramname">bg</td><td>[out] returned starting boundary in this direction. </td></tr>
-    <tr><td class="paramname">ed</td><td>[out] returned ending boundary in this direction. </td></tr>
-    <tr><td class="paramname">nTotal</td><td>[out] returned total number of pressure cells in this direction. </td></tr>
-    <tr><td class="paramname">dL</td><td>[out] returned 1D vector for the size of each pressure cell in this direction. </td></tr>
+    <tr><td class="paramname">axis</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">dir</td><td>[out] Label of the direction. </td></tr>
+    <tr><td class="paramname">bg</td><td>[out] Starting coordinate. </td></tr>
+    <tr><td class="paramname">ed</td><td>[out] Ending coordinate. </td></tr>
+    <tr><td class="paramname">nTotal</td><td>[out] Number of cells along the direction. </td></tr>
+    <tr><td class="paramname">dL</td><td>[out] 1D vector with cell sizes along the direction.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode</dd></dl>
 <p>This function only parse information and do calculation for only one axis. </p>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00328">328</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00270">270</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -819,17 +1054,16 @@ Functions</h2></td></tr>
 <p>Parse only one sub-domain. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">sub</td><td>[in] the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node </td></tr>
-    <tr><td class="paramname">bg</td><td>[in] an input providing the starting of this sub-domain. </td></tr>
-    <tr><td class="paramname">n</td><td>[out] returned number of pressure cells in this sub-domain. </td></tr>
-    <tr><td class="paramname">ed</td><td>[out] returned ending of this sub-domain. </td></tr>
-    <tr><td class="paramname">dL</td><td>[out] returned 1D vector for sizes of pressure cells in this sub-domain. </td></tr>
+    <tr><td class="paramname">sub</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">bg</td><td>[in] Starting coordinate. </td></tr>
+    <tr><td class="paramname">n</td><td>[out] Number of cells along the direction of the sub-domain. </td></tr>
+    <tr><td class="paramname">ed</td><td>[out] Ending coordinate. </td></tr>
+    <tr><td class="paramname">dL</td><td>[out] Grid cell sizes along the direction of the sub-domain. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00388">388</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00329">329</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -878,18 +1112,55 @@ Functions</h2></td></tr>
 <p>Parse all sub-domains in a direction. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">subs</td><td>[in] the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node </td></tr>
-    <tr><td class="paramname">bg</td><td>[in] an input value providing starting of this direction. </td></tr>
-    <tr><td class="paramname">nTotal</td><td>[out] returned total number of pressure cells in this direction. </td></tr>
-    <tr><td class="paramname">ed</td><td>[out] returned ending of this direction. </td></tr>
-    <tr><td class="paramname">dL</td><td>[out] returned pressure cell sizes in this direction. </td></tr>
+    <tr><td class="paramname">subs</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">bg</td><td>[in] Starting coordinate. </td></tr>
+    <tr><td class="paramname">nTotal</td><td>[out] Number of cell along the direction. </td></tr>
+    <tr><td class="paramname">ed</td><td>[out] Ending coordinate. </td></tr>
+    <tr><td class="paramname">dL</td><td>[out] Grid cell sizes along the direction.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode</dd></dl>
 <p>This function parse the <code>subDomains</code> section of a direction. </p>
 
-<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00351">351</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00293">293</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga7b420aae8d29abc805c7c5866e2525c8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscReal petibm::delta::Peskin_2002 </td>
+          <td>(</td>
+          <td class="paramtype">const PetscReal &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const PetscReal &amp;&#160;</td>
+          <td class="paramname"><em>dr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Regularized delta function from Peskin (2002). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>[in] Distance between target and source </td></tr>
+    <tr><td class="paramname">dr</td><td>[in] Window size</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the regularized delta function. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00030">30</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
 
 </div>
 </div>
@@ -907,20 +1178,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Print information of "info" string of a parallel object to standard output. </p>
+<p>Print information of a parallel object to standard output. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">info</td><td>[in] a local string on this process. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00118">118</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00120">120</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga49bb8316775bbafd794b6b89c5e90f37"></a>
+<a class="anchor" id="ga9715aaee1c61908e30ba76e65cc320f7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -934,7 +1204,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file</em>, </td>
+          <td class="paramname"><em>filePath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -962,21 +1232,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>read a vector of Vecs matching the provided names from a HDF5 file. </p>
+<p>Read a vector of Vec objects from a HDF5 file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">comm</td><td>[in] MPI communicator (should be the same as the one in Vecs). </td></tr>
-    <tr><td class="paramname">file</td><td>[in] file path + file name (without extension). </td></tr>
-    <tr><td class="paramname">loc</td><td>[in] where in the HDF5 file that data will be read from. </td></tr>
-    <tr><td class="paramname">names</td><td>[in] a std::vector of std::string for the names of the Vecs. </td></tr>
-    <tr><td class="paramname">vecs</td><td>[out] a std::vector of Vecs. </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to read from. </td></tr>
+    <tr><td class="paramname">loc</td><td>[in] Location in the HDF5 file of the data to read. </td></tr>
+    <tr><td class="paramname">names</td><td>[in] Vector with the name of each Vec object to read. </td></tr>
+    <tr><td class="paramname">vecs</td><td>[out] Vector of Vec objects to fill.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
-<p>Note: this function won't check the length of <code>vecs</code> and <code>names</code>. </p>
+<p>Note: this function doesn't check the length of the vector of Vec objects and of the vector of names. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00238">238</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00243">243</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
 
 </div>
 </div>
@@ -1010,36 +1279,35 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Read the number and coordinates of Lagrangian points from a file. </p>
+<p>Read the number Lagrangian points and their coordinates from a file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">file</td><td>[in] the path to the file. </td></tr>
-    <tr><td class="paramname">nPts</td><td>[out] the total number of Lagrangian points. </td></tr>
-    <tr><td class="paramname">coords</td><td>[out] 2D STL vector of coordinates. </td></tr>
+    <tr><td class="paramname">file</td><td>[in] Path of the file to read from. </td></tr>
+    <tr><td class="paramname">nPts</td><td>[out] Number of Lagrangian points. </td></tr>
+    <tr><td class="paramname">coords</td><td>[out] Coordinates of the Lagrangian points as a 2D STL vector. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00026">26</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00023">23</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga36f60d698bf9ddfd52f81d03c9a65d87"></a>
+<a class="anchor" id="gad650bef1d4cf1e3ad2de8892ae7c59bf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">PetscReal petibm::delta::Roma_et_al </td>
+          <td class="memname">PetscErrorCode petibm::parser::readYAMLFile </td>
           <td>(</td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>rx</em>, </td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>drx</em>&#160;</td>
+          <td class="paramtype">YAML::Node &amp;&#160;</td>
+          <td class="paramname"><em>node</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1049,47 +1317,35 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>One-dimensional discrete delta function from Roma et al. (1999). </p>
+<p>Load the content of a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file into a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
+<p>If a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node already exists, it will be overwritten.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rx</td><td>[in] distance between target and source. </td></tr>
-    <tr><td class="paramname">drx</td><td>[in] window size. </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file. </td></tr>
+    <tr><td class="paramname">node</td><td>[out] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The value of the discrete delta function. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00021">21</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00146">146</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="gadbf7c91389ecf9cf6c36e850f41f4460"></a>
+<a class="anchor" id="ga717c381c53c05be45fa0c8c365d5918e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">PetscReal petibm::delta::Roma_et_al </td>
+          <td class="memname">PetscReal petibm::delta::Roma_et_al_1999 </td>
           <td>(</td>
           <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>rx</em>, </td>
+          <td class="paramname"><em>r</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>drx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>ry</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>dry</em>&#160;</td>
+          <td class="paramname"><em>dr</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1099,85 +1355,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Two-dimensional discrete delta function from Roma et al. (1999). </p>
+<p>Regularized delta function from Roma et al. (1999). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rx</td><td>[in] distance of the 1st component between target and source. </td></tr>
-    <tr><td class="paramname">drx</td><td>[in] window size of the 1st component. </td></tr>
-    <tr><td class="paramname">ry</td><td>[in] distance of the 2nd component between target and source. </td></tr>
-    <tr><td class="paramname">dry</td><td>[in] window size of the 2nd component. </td></tr>
+    <tr><td class="paramname">r</td><td>[in] Distance between target and source </td></tr>
+    <tr><td class="paramname">dr</td><td>[in] Window size</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The value of the discrete delta function. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the regularized delta function. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00037">37</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="gaf71607ad49ad08a7a21954d441f3b024"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">PetscReal petibm::delta::Roma_et_al </td>
-          <td>(</td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>rx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>drx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>ry</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>dry</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>rz</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const PetscReal &amp;&#160;</td>
-          <td class="paramname"><em>drz</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Three-dimensional discrete delta function from Roma et al. (1999). </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">rx</td><td>[in] distance of the 1st component between target and source. </td></tr>
-    <tr><td class="paramname">drx</td><td>[in] window size of the 1st component. </td></tr>
-    <tr><td class="paramname">ry</td><td>[in] distance of the 2nd component between target and source. </td></tr>
-    <tr><td class="paramname">dry</td><td>[in] window size of the 2nd component. </td></tr>
-    <tr><td class="paramname">rz</td><td>[in] distance of the 3rd component between target and source. </td></tr>
-    <tr><td class="paramname">drz</td><td>[in] window size of the 3rd component. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The value of the discrete delta function. </dd></dl>
-
-<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00046">46</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d3d/delta_8cpp_source.html#l00017">17</a> of file <a class="el" href="../../dd/d3d/delta_8cpp_source.html">delta.cpp</a>.</p>
 
 </div>
 </div>
@@ -1242,9 +1430,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/d08/misc_8h_source.html#l00150">150</a> of file <a class="el" href="../../d4/d08/misc_8h_source.html">misc.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d08/misc_8h_source.html#l00148">148</a> of file <a class="el" href="../../d4/d08/misc_8h_source.html">misc.h</a>.</p>
 
 </div>
 </div>
@@ -1302,13 +1489,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Definition at line <a class="el" href="../../d4/d08/misc_8h_source.html#l00211">211</a> of file <a class="el" href="../../d4/d08/misc_8h_source.html">misc.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="gae6cbd6a9cc53ac4a98936e7e493e4e15"></a>
+<a class="anchor" id="ga470d48604aabc8b773a71a6834d6b730"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1322,7 +1508,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file</em>, </td>
+          <td class="paramname"><em>filePath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1356,26 +1542,25 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Write a vector of Vecs with names to a HDF5 file. </p>
+<p>Write a vector of Vec objects to a HDF5 file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">comm</td><td>[in] MPI communicator (should be the same as the one in Vecs). </td></tr>
-    <tr><td class="paramname">file</td><td>[in] file path + file name (without extension). </td></tr>
-    <tr><td class="paramname">loc</td><td>[in] where in the HDF5 file that data will be written in. </td></tr>
-    <tr><td class="paramname">names</td><td>[in] a std::vector of std::string for the names of the Vecs. </td></tr>
-    <tr><td class="paramname">vecs</td><td>[in] a std::vector of Vecs. </td></tr>
-    <tr><td class="paramname">mode</td><td>[in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND. </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to write in. </td></tr>
+    <tr><td class="paramname">loc</td><td>[in] Location in the HDF5 file for data to write. </td></tr>
+    <tr><td class="paramname">names</td><td>[in] Vector with the name of each Vec object to write. </td></tr>
+    <tr><td class="paramname">vecs</td><td>[in] Vector of Vec objects to write. </td></tr>
+    <tr><td class="paramname">mode</td><td>[in] Either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
-<p>Note: this function won't check the length of <code>vecs</code> and <code>names</code>. </p>
+<p>Note: this function doesn't check the length of the vector of Vec objects and of the vector of names. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00135">135</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00137">137</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="gaf35da3339ed32f5253d1999782b9a160"></a>
+<a class="anchor" id="ga6ea93afe19a9286422bac3c36e946e35"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1389,7 +1574,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file</em>, </td>
+          <td class="paramname"><em>filePath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1429,27 +1614,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Write a vector of raw arrays with names to a HDF5 file. </p>
+<p>Write a vector of raw arrays to a HDF5 file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">comm</td><td>[in] MPI communicator. </td></tr>
-    <tr><td class="paramname">file</td><td>[in] file path + file name (without extension). </td></tr>
-    <tr><td class="paramname">loc</td><td>[in] where in the HDF5 file that data will be written in. </td></tr>
-    <tr><td class="paramname">names</td><td>[in] a std::vector of std::string for the names of each array. </td></tr>
-    <tr><td class="paramname">n</td><td>[in] a std::vector of integer for the length of each array. </td></tr>
-    <tr><td class="paramname">vecs</td><td>[in] a std::vector of raw arrays (i.e., PetscReal*). </td></tr>
-    <tr><td class="paramname">mode</td><td>[in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND. </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to write in. </td></tr>
+    <tr><td class="paramname">loc</td><td>[in] Location in the HDF5 file of data to write. </td></tr>
+    <tr><td class="paramname">names</td><td>[in] Vector with the name of each raw array to write. </td></tr>
+    <tr><td class="paramname">n</td><td>[in] Vector with the length of each raw array to write. </td></tr>
+    <tr><td class="paramname">vecs</td><td>[in] Vector of raw arrays to write. </td></tr>
+    <tr><td class="paramname">mode</td><td>[in] Either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
-<p>Note: this function won't check the length of <code>vecs</code> and <code>names</code>. </p>
+<p>Note: this function doesn't check the length of the vector of raw arrays and of the vector of names. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00167">167</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00169">169</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga5fc969835357bf378cdad45f5344fc23"></a>
+<a class="anchor" id="ga235fe3d6b3758e87e247211cfc2e8603"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1463,7 +1647,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file</em>, </td>
+          <td class="paramname"><em>filePath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1497,22 +1681,58 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Write <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13" title="2D std::vector holding PetscReal. ">type::RealVec2D</a> with names to a HDF5 file. </p>
+<p>Write <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13" title="2D std::vector holding PetscReal. ">petibm::type::RealVec2D</a> to a HDF5 file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">comm</td><td>[in] MPI communicator. </td></tr>
-    <tr><td class="paramname">file</td><td>[in] file path + file name (without extension). </td></tr>
-    <tr><td class="paramname">loc</td><td>[in] where in the HDF5 file that data will be written in. </td></tr>
-    <tr><td class="paramname">names</td><td>[in] a std::vector of std::string for the names of each RealVec1D. </td></tr>
-    <tr><td class="paramname">vecs</td><td>[in] a <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13" title="2D std::vector holding PetscReal. ">type::RealVec2D</a>, i.e., std::vector&lt;type::RealVec1D&gt;. </td></tr>
-    <tr><td class="paramname">mode</td><td>[in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND. </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to write in. </td></tr>
+    <tr><td class="paramname">loc</td><td>[in] Location in the HDF5 file of the data to write. </td></tr>
+    <tr><td class="paramname">names</td><td>[in] Vector with the name of each RealVec1D to write. </td></tr>
+    <tr><td class="paramname">vecs</td><td>[in] RealVec2D (i.e., std::vector&lt;type::RealVec1D&gt;) to write. </td></tr>
+    <tr><td class="paramname">mode</td><td>[in] Either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
-<p>Note: this function won't check the length of <code>vecs</code> and <code>names</code>. </p>
+<p>Note: this function doesn't check the length of the RealVec2D object and of the vector of names. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00203">203</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00207">207</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gacee1b480cd5d468666b3e1627bb65e31"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PetscErrorCode petibm::io::writePetscLog </td>
+          <td>(</td>
+          <td class="paramtype">const MPI_Comm&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write a summary of the PETSc logging into a ASCII file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">comm</td><td>[in] MPI communicator. </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to write in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d5/d5a/io_8cpp_source.html#l00274">274</a> of file <a class="el" href="../../d5/d5a/io_8cpp_source.html">io.cpp</a>.</p>
 
 </div>
 </div>
@@ -1521,7 +1741,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

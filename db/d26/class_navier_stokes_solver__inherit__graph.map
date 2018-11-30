@@ -1,4 +1,5 @@
 <map id="NavierStokesSolver" name="NavierStokesSolver">
 <area shape="rect" id="node2" href="$d4/d1d/class_decoupled_i_b_p_m_solver.html" title="Immersed&#45;boundary method proposed by Li et. al. (2016). " alt="" coords="5,80,160,107"/>
-<area shape="rect" id="node3" href="$d2/dec/class_i_b_p_m_solver.html" title="Immersed&#45;boundary method proposed by Taira and Colonius (2007). " alt="" coords="185,80,277,107"/>
+<area shape="rect" id="node4" href="$d2/dec/class_i_b_p_m_solver.html" title="Immersed&#45;boundary method proposed by Taira and Colonius (2007). " alt="" coords="185,80,277,107"/>
+<area shape="rect" id="node3" href="$dc/dbc/class_rigid_kinematics_solver.html" title="Helper class to solve cases with moving rigid bodies using the decoupled IBPM. " alt="" coords="5,155,160,181"/>
 </map>

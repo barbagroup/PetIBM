@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -160,15 +160,29 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 : <a class="el" href="d3/dd1/structpetibm_1_1type_1_1_row_modifier.html#a91886c309ae108fb5f6c79051df91fd4">petibm::type::RowModifier</a>
 </li>
 <li>comm
-: <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a678f566ba539bfa9cb1b0861e51ba615">petibm::body::BodyPackBase</a>
+: <a class="el" href="d4/de8/class_navier_stokes_solver.html#a9281a9dd97786a3d4710e83d8b11818f">NavierStokesSolver</a>
+, <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a678f566ba539bfa9cb1b0861e51ba615">petibm::body::BodyPackBase</a>
 , <a class="el" href="dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a4143ddaed2421f58d8eb4b6ff383e626">petibm::body::SingleBodyBase</a>
 , <a class="el" href="d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a1a1cb32da5a781185d5d492c7924dc81">petibm::boundary::BoundaryBase</a>
 , <a class="el" href="d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#acedb947dd126c6bf048ce86cafdff71b">petibm::boundary::SingleBoundaryBase</a>
 , <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a388988330f6c4b5f672e2909ed72c9c7">petibm::mesh::MeshBase</a>
+, <a class="el" href="dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a55646559903969223a9bebd8e57814b8">petibm::misc::LinInterpBase</a>
+, <a class="el" href="df/d8d/classpetibm_1_1misc_1_1_probe_base.html#af1c42ffc90d61c0dae7d380cb9d36b15">petibm::misc::ProbeBase</a>
 , <a class="el" href="dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a37ef2996eca0d376c227361aa3dca019">petibm::solution::SolutionBase</a>
 </li>
+<li>commRank
+: <a class="el" href="d4/de8/class_navier_stokes_solver.html#a81883e4db4513fa88bda5d51550c298d">NavierStokesSolver</a>
+, <a class="el" href="dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a7fb539de6d2780168ff2dfd1db3df4c4">petibm::misc::LinInterpBase</a>
+, <a class="el" href="df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a5b2ca550beb4fbc5ca97fb83305baf7f">petibm::misc::ProbeBase</a>
+</li>
+<li>commSize
+: <a class="el" href="d4/de8/class_navier_stokes_solver.html#aae83f20c1e7393a457be3234eee7ec0d">NavierStokesSolver</a>
+, <a class="el" href="dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a1c94f0663ac0cd1cd3e80c039f4dbe46">petibm::misc::LinInterpBase</a>
+, <a class="el" href="df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a880f263b73f177234e7bf4d65a611114">petibm::misc::ProbeBase</a>
+</li>
 <li>config
-: <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a3942d4a6342da2d7bb70cb420e7da3cd">petibm::linsolver::LinSolverBase</a>
+: <a class="el" href="d4/de8/class_navier_stokes_solver.html#a4fbfa001337323211ea4fc08d288f68a">NavierStokesSolver</a>
+, <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a3942d4a6342da2d7bb70cb420e7da3cd">petibm::linsolver::LinSolverBase</a>
 </li>
 <li>conv
 : <a class="el" href="d4/de8/class_navier_stokes_solver.html#a8dd76941ef9cebee484f976df810a0f0">NavierStokesSolver</a>
@@ -186,9 +200,13 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 </li>
 <li>coord
 : <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a61c1b0d7b2994804afce08459d9ca515">petibm::mesh::MeshBase</a>
+, <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a1502dc9fcb9d6f68f88367038d7392e6">petibm::misc::ProbeVolume</a>
 </li>
 <li>coords
 : <a class="el" href="dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ad47b882b85ba019a2bf6e807df0a62a5">petibm::body::SingleBodyBase</a>
+</li>
+<li>coords0
+: <a class="el" href="dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a5fb840d964c1b2cda3c3b5b154d0cad1">petibm::body::SingleBodyBase</a>
 </li>
 <li>coordTrue
 : <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a597138ebdeefd547892283fcca04ad71">petibm::mesh::CartesianMesh</a>
@@ -199,6 +217,9 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 <li>copyValues2LocalVecs()
 : <a class="el" href="d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a56adde39a92847505f508dcbb60fe54e">petibm::boundary::BoundaryBase</a>
 , <a class="el" href="d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a1bac62caa90374ef1d43c1461f4a0afe">petibm::boundary::BoundarySimple</a>
+</li>
+<li>count
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad57e5ef7d10055392f8a9022039525ed">petibm::misc::ProbeVolume</a>
 </li>
 <li>Crank_Nicolson()
 : <a class="el" href="d4/d5f/classpetibm_1_1timeintegration_1_1_crank___nicolson.html#ae128683505f8021cdde739e5fdb53981">petibm::timeintegration::Crank_Nicolson</a>
@@ -221,9 +242,15 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 , <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ae6649f17355b6bd4443d9be7b4728cea">petibm::mesh::CartesianMesh</a>
 , <a class="el" href="da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a4a4d473111eeb680e2c8b288dd89f2d7">petibm::solution::SolutionSimple</a>
 </li>
+<li>createIS()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a83c15207cd98e3f2900702dc10c6c051">petibm::misc::ProbeVolume</a>
+</li>
 <li>createOperators()
 : <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a267ebc4f35bffab8b7a61325ad5cf214">IBPMSolver</a>
 , <a class="el" href="d4/de8/class_navier_stokes_solver.html#a8095d77048292d3b69b3b778069d23c7">NavierStokesSolver</a>
+</li>
+<li>createPetscViewerASCII()
+: <a class="el" href="d4/de8/class_navier_stokes_solver.html#afbd87bc43c061bb8e003ca5c0bc15e39">NavierStokesSolver</a>
 </li>
 <li>createPressureDMDA()
 : <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a98ec175f3f1a11c90461c264ffde174f">petibm::mesh::CartesianMesh</a>
@@ -233,6 +260,9 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 </li>
 <li>createSingleDMDA()
 : <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a32a1bd7e8c9418c6da549c84fcd05e9a">petibm::mesh::CartesianMesh</a>
+</li>
+<li>createSubMesh()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#aaac0896144ac453a5c3906a198995e5d">petibm::misc::ProbeVolume</a>
 </li>
 <li>createVectors()
 : <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a5aa6aa09d2db8e56b7d3c5d41d646fa8">IBPMSolver</a>
@@ -253,7 +283,7 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:36 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:18 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

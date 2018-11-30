@@ -13,6 +13,7 @@ var classpetibm_1_1mesh_1_1_mesh_base =
     [ "getPackedGlobalIndex", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4959ce578d9e348213749b09069c7f20", null ],
     [ "getPackedGlobalIndex", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aedf7045a248be0743ddea9686c3ba70b", null ],
     [ "init", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ad44da271d457481339b06007bad0dc7f", null ],
+    [ "isPointOnLocalProc", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4fbf225cdf61a22d9bf5f7b94845f03b", null ],
     [ "printInfo", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#af67592d9ce3e6c7a0d975a339740d1b9", null ],
     [ "write", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a3ce399ac4501e08dd098ae5e668fbc92", null ],
     [ "bg", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4b4621c4f44be11be61856bcdc147a51", null ],

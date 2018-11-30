@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -132,9 +132,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4220f79df90c7567bf99dedb771dfd8f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a4220f79df90c7567bf99dedb771dfd8f">BodyPackBase</a> ()=default</td></tr>
 <tr class="memdesc:a4220f79df90c7567bf99dedb771dfd8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="#a4220f79df90c7567bf99dedb771dfd8f">More...</a><br /></td></tr>
 <tr class="separator:a4220f79df90c7567bf99dedb771dfd8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af23cd9c5b398ca6b9ae60e1745fb97a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#af23cd9c5b398ca6b9ae60e1745fb97a8">BodyPackBase</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;<a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a7fff9d78c8276a864cc981b0fbb8b52f">mesh</a>, const YAML::Node &amp;node)</td></tr>
-<tr class="memdesc:af23cd9c5b398ca6b9ae60e1745fb97a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor of using a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> and a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="#af23cd9c5b398ca6b9ae60e1745fb97a8">More...</a><br /></td></tr>
-<tr class="separator:af23cd9c5b398ca6b9ae60e1745fb97a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf44dbf636ef17704c21c73f579f858f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#abf44dbf636ef17704c21c73f579f858f">BodyPackBase</a> (const MPI_Comm &amp;<a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a678f566ba539bfa9cb1b0861e51ba615">comm</a>, const PetscInt &amp;<a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a67a845d905857f5a7e6f21b4c2bed098">dim</a>, const YAML::Node &amp;node)</td></tr>
+<tr class="memdesc:abf44dbf636ef17704c21c73f579f858f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialize the pack of bodies.  <a href="#abf44dbf636ef17704c21c73f579f858f">More...</a><br /></td></tr>
+<tr class="separator:abf44dbf636ef17704c21c73f579f858f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac0f22b2abe30a90b273df8c04c2277d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#aac0f22b2abe30a90b273df8c04c2277d">~BodyPackBase</a> ()</td></tr>
 <tr class="memdesc:aac0f22b2abe30a90b273df8c04c2277d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <a href="#aac0f22b2abe30a90b273df8c04c2277d">More...</a><br /></td></tr>
 <tr class="separator:aac0f22b2abe30a90b273df8c04c2277d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,7 +142,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a51f4c18e6cc159a835796dfdda7c404a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manually destroy data.  <a href="#a51f4c18e6cc159a835796dfdda7c404a">More...</a><br /></td></tr>
 <tr class="separator:a51f4c18e6cc159a835796dfdda7c404a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a616c41d96ab016ce54f8b8c54e88525e"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a616c41d96ab016ce54f8b8c54e88525e">printInfo</a> () const </td></tr>
-<tr class="memdesc:a616c41d96ab016ce54f8b8c54e88525e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information.  <a href="#a616c41d96ab016ce54f8b8c54e88525e">More...</a><br /></td></tr>
+<tr class="memdesc:a616c41d96ab016ce54f8b8c54e88525e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information about the bodies.  <a href="#a616c41d96ab016ce54f8b8c54e88525e">More...</a><br /></td></tr>
 <tr class="separator:a616c41d96ab016ce54f8b8c54e88525e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af76a2804d9b9a6f83b4017e7080bf15f"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#af76a2804d9b9a6f83b4017e7080bf15f">findProc</a> (const PetscInt &amp;bIdx, const PetscInt &amp;ptIdx, PetscMPIInt &amp;proc) const </td></tr>
 <tr class="memdesc:af76a2804d9b9a6f83b4017e7080bf15f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find which process owns the target Lagrangian point of target body.  <a href="#af76a2804d9b9a6f83b4017e7080bf15f">More...</a><br /></td></tr>
@@ -162,9 +162,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a75cddaac43e44ab83ea358ba9f256138"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a75cddaac43e44ab83ea358ba9f256138">calculateAvgForces</a> (const Vec &amp;f, <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13">type::RealVec2D</a> &amp;fAvg)</td></tr>
 <tr class="memdesc:a75cddaac43e44ab83ea358ba9f256138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the averaged force of each body.  <a href="#a75cddaac43e44ab83ea358ba9f256138">More...</a><br /></td></tr>
 <tr class="separator:a75cddaac43e44ab83ea358ba9f256138"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3b1ffa1cd4ea0f7f87e0cdfce8182b7"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ad3b1ffa1cd4ea0f7f87e0cdfce8182b7">updateMeshIdx</a> ()</td></tr>
-<tr class="memdesc:ad3b1ffa1cd4ea0f7f87e0cdfce8182b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the indices of background Pressure cells for all body.  <a href="#ad3b1ffa1cd4ea0f7f87e0cdfce8182b7">More...</a><br /></td></tr>
-<tr class="separator:ad3b1ffa1cd4ea0f7f87e0cdfce8182b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad73b3c3b0727af4cdfe4bcb5f19602db"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ad73b3c3b0727af4cdfe4bcb5f19602db">updateMeshIdx</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;mesh)</td></tr>
+<tr class="memdesc:ad73b3c3b0727af4cdfe4bcb5f19602db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of closest Eulerian mesh cell for each local Lagrangian point.  <a href="#ad73b3c3b0727af4cdfe4bcb5f19602db">More...</a><br /></td></tr>
+<tr class="separator:ad73b3c3b0727af4cdfe4bcb5f19602db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -181,40 +181,37 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a0dcbb1dcc72504c35a29f8c3ad6a77e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of local Lagrangian points.  <a href="#a0dcbb1dcc72504c35a29f8c3ad6a77e9">More...</a><br /></td></tr>
 <tr class="separator:a0dcbb1dcc72504c35a29f8c3ad6a77e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac13d1d0c19fa0c51881d11545fb111f3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e">type::SingleBody</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ac13d1d0c19fa0c51881d11545fb111f3">bodies</a></td></tr>
-<tr class="memdesc:ac13d1d0c19fa0c51881d11545fb111f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">A vector of SingleBody instances.  <a href="#ac13d1d0c19fa0c51881d11545fb111f3">More...</a><br /></td></tr>
+<tr class="memdesc:ac13d1d0c19fa0c51881d11545fb111f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of SingleBody objects.  <a href="#ac13d1d0c19fa0c51881d11545fb111f3">More...</a><br /></td></tr>
 <tr class="separator:ac13d1d0c19fa0c51881d11545fb111f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4048177f99597b43fd6a90cdc48162e"><td class="memItemLeft" align="right" valign="top">DM&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ae4048177f99597b43fd6a90cdc48162e">dmPack</a></td></tr>
-<tr class="memdesc:ae4048177f99597b43fd6a90cdc48162e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A DMComposite of DMs of all <code>SingleBody</code>s.  <a href="#ae4048177f99597b43fd6a90cdc48162e">More...</a><br /></td></tr>
+<tr class="memdesc:ae4048177f99597b43fd6a90cdc48162e"><td class="mdescLeft">&#160;</td><td class="mdescRight">DMComposite of DMDA objects of all SingleBody objects.  <a href="#ae4048177f99597b43fd6a90cdc48162e">More...</a><br /></td></tr>
 <tr class="separator:ae4048177f99597b43fd6a90cdc48162e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ccc8054f949505bae20cf3a169b47c3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a2ccc8054f949505bae20cf3a169b47c3">info</a></td></tr>
-<tr class="memdesc:a2ccc8054f949505bae20cf3a169b47c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">A string for printing information.  <a href="#a2ccc8054f949505bae20cf3a169b47c3">More...</a><br /></td></tr>
+<tr class="memdesc:a2ccc8054f949505bae20cf3a169b47c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">String used to print information.  <a href="#a2ccc8054f949505bae20cf3a169b47c3">More...</a><br /></td></tr>
 <tr class="separator:a2ccc8054f949505bae20cf3a169b47c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a7b8c7a846f5f7b5c3c6d947aad751826"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a7b8c7a846f5f7b5c3c6d947aad751826">init</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;<a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a7fff9d78c8276a864cc981b0fbb8b52f">mesh</a>, const YAML::Node &amp;node)</td></tr>
-<tr class="memdesc:a7b8c7a846f5f7b5c3c6d947aad751826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor of using a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> and a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="#a7b8c7a846f5f7b5c3c6d947aad751826">More...</a><br /></td></tr>
-<tr class="separator:a7b8c7a846f5f7b5c3c6d947aad751826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afedeb3fb8acbc9933987e1672757e4bc"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#afedeb3fb8acbc9933987e1672757e4bc">init</a> (const MPI_Comm &amp;<a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a678f566ba539bfa9cb1b0861e51ba615">comm</a>, const PetscInt &amp;<a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a67a845d905857f5a7e6f21b4c2bed098">dim</a>, const YAML::Node &amp;node)</td></tr>
+<tr class="memdesc:afedeb3fb8acbc9933987e1672757e4bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the pack of bodies.  <a href="#afedeb3fb8acbc9933987e1672757e4bc">More...</a><br /></td></tr>
+<tr class="separator:afedeb3fb8acbc9933987e1672757e4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab33cd65b5ea5ea1e9c9285e0eddaa962"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ab33cd65b5ea5ea1e9c9285e0eddaa962">createDmPack</a> ()</td></tr>
-<tr class="memdesc:ab33cd65b5ea5ea1e9c9285e0eddaa962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create DMComposite.  <a href="#ab33cd65b5ea5ea1e9c9285e0eddaa962">More...</a><br /></td></tr>
+<tr class="memdesc:ab33cd65b5ea5ea1e9c9285e0eddaa962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create DMComposite object for all bodies.  <a href="#ab33cd65b5ea5ea1e9c9285e0eddaa962">More...</a><br /></td></tr>
 <tr class="separator:ab33cd65b5ea5ea1e9c9285e0eddaa962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58f75f0cfcfc9d67453f66cbb4d4def3"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a58f75f0cfcfc9d67453f66cbb4d4def3">createInfoString</a> ()</td></tr>
-<tr class="memdesc:a58f75f0cfcfc9d67453f66cbb4d4def3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a string for printing information.  <a href="#a58f75f0cfcfc9d67453f66cbb4d4def3">More...</a><br /></td></tr>
+<tr class="memdesc:a58f75f0cfcfc9d67453f66cbb4d4def3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a string used to print information.  <a href="#a58f75f0cfcfc9d67453f66cbb4d4def3">More...</a><br /></td></tr>
 <tr class="separator:a58f75f0cfcfc9d67453f66cbb4d4def3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a7fff9d78c8276a864cc981b0fbb8b52f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a7fff9d78c8276a864cc981b0fbb8b52f">mesh</a></td></tr>
-<tr class="memdesc:a7fff9d78c8276a864cc981b0fbb8b52f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to background mesh.  <a href="#a7fff9d78c8276a864cc981b0fbb8b52f">More...</a><br /></td></tr>
-<tr class="separator:a7fff9d78c8276a864cc981b0fbb8b52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a678f566ba539bfa9cb1b0861e51ba615"><td class="memItemLeft" align="right" valign="top">MPI_Comm&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a678f566ba539bfa9cb1b0861e51ba615">comm</a></td></tr>
 <tr class="memdesc:a678f566ba539bfa9cb1b0861e51ba615"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the MPI communicator.  <a href="#a678f566ba539bfa9cb1b0861e51ba615">More...</a><br /></td></tr>
 <tr class="separator:a678f566ba539bfa9cb1b0861e51ba615"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13187db8ab06ddc2d2fe648951b0b01f"><td class="memItemLeft" align="right" valign="top">PetscMPIInt&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a13187db8ab06ddc2d2fe648951b0b01f">mpiSize</a></td></tr>
-<tr class="memdesc:a13187db8ab06ddc2d2fe648951b0b01f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of processes.  <a href="#a13187db8ab06ddc2d2fe648951b0b01f">More...</a><br /></td></tr>
+<tr class="memdesc:a13187db8ab06ddc2d2fe648951b0b01f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of processes.  <a href="#a13187db8ab06ddc2d2fe648951b0b01f">More...</a><br /></td></tr>
 <tr class="separator:a13187db8ab06ddc2d2fe648951b0b01f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab705e957affc472bc38900f294a43770"><td class="memItemLeft" align="right" valign="top">PetscMPIInt&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ab705e957affc472bc38900f294a43770">mpiRank</a></td></tr>
-<tr class="memdesc:ab705e957affc472bc38900f294a43770"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rank of this process.  <a href="#ab705e957affc472bc38900f294a43770">More...</a><br /></td></tr>
+<tr class="memdesc:ab705e957affc472bc38900f294a43770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rank of the local process.  <a href="#ab705e957affc472bc38900f294a43770">More...</a><br /></td></tr>
 <tr class="separator:ab705e957affc472bc38900f294a43770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a488c97417c0e7cc6ac3c213115dcc634"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../dd/d8f/group__type.html#gaaa21faeebd76c114587f21e65ca7fa53">type::IntVec1D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a488c97417c0e7cc6ac3c213115dcc634">nLclAllProcs</a></td></tr>
 <tr class="memdesc:a488c97417c0e7cc6ac3c213115dcc634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of local packed variables of all processes.  <a href="#a488c97417c0e7cc6ac3c213115dcc634">More...</a><br /></td></tr>
@@ -225,10 +222,10 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base (abstract) class for a pack of bodies. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d0/d1a/group__body_module.html" title="Objects related to immersed-boundary bodies. ">Immersed-boundary bodies</a>, <a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b" title="Definition of type::BodyPack. ">petibm::type::BodyPack</a>, <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e" title="Definition of type::SingleBody. ">petibm::type::SingleBody</a>, <a class="el" href="../../d0/d1a/group__body_module.html#ga78c31227d8caca6bfa3f746a562e284d" title="Factory function for creating type::BodyPack. ">petibm::body::createBodyPack</a></dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d0/d1a/group__body_module.html" title="Objects related to immersed-boundary bodies. ">Immersed-boundary bodies</a>, <a class="el" href="../../d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b" title="Definition of type::BodyPack. ">petibm::type::BodyPack</a>, <a class="el" href="../../d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e" title="Definition of type::SingleBody. ">petibm::type::SingleBody</a>, <a class="el" href="../../d0/d1a/group__body_module.html#ga47a869524c466e16ffc9601deec5e0ac" title="Factory function to create a pack of bodies. ">petibm::body::createBodyPack</a></dd></dl>
 <p>This class is designed to be an abstract class though, it actually has full implementations of all members because there is currently no necessary to do otherwise. It's just simply a collection of bodies, though it also deals with indexing of all Lagrangian points in a globally packed Vec. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00079">79</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00070">70</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a4220f79df90c7567bf99dedb771dfd8f"></a>
 <div class="memitem">
@@ -255,15 +252,21 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af23cd9c5b398ca6b9ae60e1745fb97a8"></a>
+<a class="anchor" id="abf44dbf636ef17704c21c73f579f858f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">petibm::body::BodyPackBase::BodyPackBase </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh</em>, </td>
+          <td class="paramtype">const MPI_Comm &amp;&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const PetscInt &amp;&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -279,16 +282,17 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructor of using a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> and a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
+<p>Constructor. Initialize the pack of bodies. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] An instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> for background mesh. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] A <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node specifying information of all bodies. </td></tr>
+    <tr><td class="paramname">comm</td><td>[in] MPI communicator. </td></tr>
+    <tr><td class="paramname">dim</td><td>[in] Number of dimensions. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00020">20</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00015">15</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -315,7 +319,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Default destructor. </p>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00026">26</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00021">21</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -347,15 +351,15 @@ Protected Attributes</h2></td></tr>
 <p>Calculate the averaged force of each body. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>[in] packed force Vec of Lagrangian points. </td></tr>
-    <tr><td class="paramname">fAvg</td><td>[in] return averaged force for each body.</td></tr>
+    <tr><td class="paramname">f</td><td>[in] Packed force Vec of Lagrangian points. </td></tr>
+    <tr><td class="paramname">fAvg</td><td>[out] Averaged force for each body.</td></tr>
   </table>
   </dd>
 </dl>
-<p>Note: fAvg doesn't have to have correct size. This function will resize the fAvg.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
+<p>Note: if <code>fAvg</code> doesn't have the correct size, the function will resize it. </p>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00297">297</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00298">298</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -380,10 +384,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Create DMComposite. </p>
+<p>Create DMComposite object for all bodies. </p>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00147">147</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00144">144</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -408,10 +412,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Create a string for printing information. </p>
+<p>Create a string used to print information. </p>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00164">164</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00174">174</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -437,9 +441,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Manually destroy data. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00040">40</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00035">35</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -476,15 +479,15 @@ Protected Attributes</h2></td></tr>
 <p>Find which process owns the target Lagrangian point of target body. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bIdx</td><td>[in] index of target body. </td></tr>
-    <tr><td class="paramname">ptIdx</td><td>[in] index of target point. </td></tr>
-    <tr><td class="paramname">proc</td><td>[in] returned process index.</td></tr>
+    <tr><td class="paramname">bIdx</td><td>[in] Index of target body. </td></tr>
+    <tr><td class="paramname">ptIdx</td><td>[in] Index of target point. </td></tr>
+    <tr><td class="paramname">proc</td><td>[out] Process index.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00210">210</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00211">211</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -527,16 +530,16 @@ Protected Attributes</h2></td></tr>
 <p>Find unpacked global index of a DoF of Lagrangian point of a body. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bIdx</td><td>[in] index of target body. </td></tr>
-    <tr><td class="paramname">ptIdx</td><td>[in] index of target point. </td></tr>
-    <tr><td class="paramname">dof</td><td>[in] index of target DoF. </td></tr>
-    <tr><td class="paramname">idx</td><td>[in] returned un-packed global index.</td></tr>
+    <tr><td class="paramname">bIdx</td><td>[in] Index of target body. </td></tr>
+    <tr><td class="paramname">ptIdx</td><td>[in] Index of target point. </td></tr>
+    <tr><td class="paramname">dof</td><td>[in] Index of target DoF. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Unpacked global index.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00228">228</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00229">229</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -573,15 +576,15 @@ Protected Attributes</h2></td></tr>
 <p>Find unpacked global index of a DoF of Lagrangian point of a body. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bIdx</td><td>[in] index of target body. </td></tr>
-    <tr><td class="paramname">s</td><td>[in] MatStencil of target point. </td></tr>
-    <tr><td class="paramname">idx</td><td>[in] returned unpacked global index.</td></tr>
+    <tr><td class="paramname">bIdx</td><td>[in] Index of target body. </td></tr>
+    <tr><td class="paramname">s</td><td>[in] PETSc MatStencil object of target point. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Unpacked global index.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00246">246</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00248">248</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -624,16 +627,16 @@ Protected Attributes</h2></td></tr>
 <p>Find packed global index of a DoF of Lagrangian point of a body. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bIdx</td><td>[in] index of target body. </td></tr>
-    <tr><td class="paramname">ptIdx</td><td>[in] index of target point. </td></tr>
-    <tr><td class="paramname">dof</td><td>[in] index of target DoF. </td></tr>
-    <tr><td class="paramname">idx</td><td>[in] returned packed global index.</td></tr>
+    <tr><td class="paramname">bIdx</td><td>[in] Index of target body. </td></tr>
+    <tr><td class="paramname">ptIdx</td><td>[in] Index of target point. </td></tr>
+    <tr><td class="paramname">dof</td><td>[in] Index of target DoF. </td></tr>
+    <tr><td class="paramname">idx</td><td>[out] Packed global index.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00259">259</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00261">261</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -670,19 +673,19 @@ Protected Attributes</h2></td></tr>
 <p>Find packed global index of a DoF of Lagrangian point of a body. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bIdx</td><td>[in] index of target body. </td></tr>
-    <tr><td class="paramname">s</td><td>[in] MatStencil of target point. </td></tr>
-    <tr><td class="paramname">idx</td><td>[in] returned packed global index.</td></tr>
+    <tr><td class="paramname">bIdx</td><td>[in] Index of target body. </td></tr>
+    <tr><td class="paramname">s</td><td>[in] PETSc MatStencil object of target point. </td></tr>
+    <tr><td class="paramname">idx</td><td>[in] Packed global index.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00284">284</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00285">285</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a7b8c7a846f5f7b5c3c6d947aad751826"></a>
+<a class="anchor" id="afedeb3fb8acbc9933987e1672757e4bc"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -692,8 +695,14 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">PetscErrorCode petibm::body::BodyPackBase::init </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh</em>, </td>
+          <td class="paramtype">const MPI_Comm &amp;&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const PetscInt &amp;&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -714,16 +723,18 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Constructor of using a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> and a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
+<p>Initialize the pack of bodies. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] an instance of <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> for background mesh. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node specifying information of all bodies. </td></tr>
+    <tr><td class="paramname">comm</td><td>[in] MPI communicator. </td></tr>
+    <tr><td class="paramname">dim</td><td>[in] Number of dimensions. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00061">61</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00055">55</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -740,28 +751,37 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Print information. </p>
+<p>Print information about the bodies. </p>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00193">193</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00195">195</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ad3b1ffa1cd4ea0f7f87e0cdfce8182b7"></a>
+<a class="anchor" id="ad73b3c3b0727af4cdfe4bcb5f19602db"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">PetscErrorCode petibm::body::BodyPackBase::updateMeshIdx </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Update the indices of background Pressure cells for all body. </p>
+<p>Get the index of closest Eulerian mesh cell for each local Lagrangian point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh.</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../da/d00/bodypack_8cpp_source.html#l00160">160</a> of file <a class="el" href="../../da/d00/bodypack_8cpp_source.html">bodypack.cpp</a>.</p>
 
 </div>
 </div>
@@ -776,9 +796,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A vector of SingleBody instances. </p>
+<p>Vector of SingleBody objects. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00096">96</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00086">86</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -802,7 +822,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reference to the MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00245">245</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00222">222</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -818,7 +838,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Dimension. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00084">84</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00074">74</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -832,9 +852,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A DMComposite of DMs of all <code>SingleBody</code>s. </p>
+<p>DMComposite of DMDA objects of all SingleBody objects. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00099">99</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00089">89</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -848,33 +868,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A string for printing information. </p>
+<p>String used to print information. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00102">102</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a7fff9d78c8276a864cc981b0fbb8b52f"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> petibm::body::BodyPackBase::mesh</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reference to background mesh. </p>
-
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00241">241</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00092">92</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -896,9 +892,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The rank of this process. </p>
+<p>Rank of the local process. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00253">253</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00228">228</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -920,9 +916,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The total number of processes. </p>
+<p>Total number of processes. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00249">249</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00225">225</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -938,7 +934,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Number of bodies in this pack. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00087">87</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00077">77</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -962,7 +958,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Number of local packed variables of all processes. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00257">257</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00231">231</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -978,7 +974,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of local Lagrangian points. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00093">93</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00083">83</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -994,7 +990,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Total number of Lagrangian points. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00090">90</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00080">80</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -1018,7 +1014,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Offsets of packed variables of all processes. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00261">261</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d1c/bodypack_8h_source.html#l00234">234</a> of file <a class="el" href="../../d8/d1c/bodypack_8h_source.html">bodypack.h</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1028,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d5/d3a/namespacepetibm_1_1body.html">body</a></li><li class="navelem"><a class="el" href="../../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html">BodyPackBase</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

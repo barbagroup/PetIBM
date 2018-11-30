@@ -1,6 +1,7 @@
 var delta_8cpp =
 [
-    [ "Roma_et_al", "dd/d3d/delta_8cpp.html#ga36f60d698bf9ddfd52f81d03c9a65d87", null ],
-    [ "Roma_et_al", "dd/d3d/delta_8cpp.html#gadbf7c91389ecf9cf6c36e850f41f4460", null ],
-    [ "Roma_et_al", "dd/d3d/delta_8cpp.html#gaf71607ad49ad08a7a21954d441f3b024", null ]
+    [ "delta", "dd/d3d/delta_8cpp.html#ga2091db25dd3159653e6e17c5537e2e7f", null ],
+    [ "getKernel", "dd/d3d/delta_8cpp.html#a10cc0d9923b7a1b3fe4f1d0497779377", null ],
+    [ "Peskin_2002", "dd/d3d/delta_8cpp.html#ga7b420aae8d29abc805c7c5866e2525c8", null ],
+    [ "Roma_et_al_1999", "dd/d3d/delta_8cpp.html#ga717c381c53c05be45fa0c8c365d5918e", null ]
 ];

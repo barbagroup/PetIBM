@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -145,28 +145,59 @@ $(document).ready(function(){initNavTree('functions_func_w.html','');});
 
 <h3><a class="anchor" id="index_w"></a>- w -</h3><ul>
 <li>write()
-: <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a96274c91c82a972127b83d2fe27aa0de">IBPMSolver</a>
-, <a class="el" href="d4/de8/class_navier_stokes_solver.html#abe49d1ba4744c0283dbd74a946eb8372">NavierStokesSolver</a>
+: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#ae46267da6063e2d9f86ad06f1c58e0d6">DecoupledIBPMSolver</a>
+, <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a70d6896711e7d1aceabdd21a77a46af7">IBPMSolver</a>
+, <a class="el" href="d4/de8/class_navier_stokes_solver.html#ab45b0f222be6dd0dfa2f0154fd90383a">NavierStokesSolver</a>
 , <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a89e129c900347f5a005b8364d984f725">petibm::mesh::CartesianMesh</a>
 , <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a3ce399ac4501e08dd098ae5e668fbc92">petibm::mesh::MeshBase</a>
-, <a class="el" href="dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ab3494b2ddb43e04ab5d0bc2fbb87e682">petibm::solution::SolutionBase</a>
-, <a class="el" href="da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a15843d6ad17cefabbf78e1d8fcbee3a2">petibm::solution::SolutionSimple</a>
+, <a class="el" href="dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a86ef8e10bdf5574b0cea6d02efe449ea">petibm::solution::SolutionBase</a>
+, <a class="el" href="da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a2849666c38f08e4b1e6582491ad73daa">petibm::solution::SolutionSimple</a>
+, <a class="el" href="dc/dbc/class_rigid_kinematics_solver.html#add1fb49b3d6cc2df9e06a53d8d477c78">RigidKinematicsSolver</a>
 </li>
-<li>writeIntegratedForces()
-: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#ae0c14a3f95018d0c7955d927ac54f77f">DecoupledIBPMSolver</a>
-, <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a0b96ccacefff222fa0cb8a88bfb4f151">IBPMSolver</a>
+<li>writeBodies()
+: <a class="el" href="dc/dbc/class_rigid_kinematics_solver.html#a6ac0e8ea68144cfdcd5d7dfc3ebb32ca">RigidKinematicsSolver</a>
 </li>
-<li>writeIterations()
-: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#a41cf6bba5139cc6fc001450841b8ff5c">DecoupledIBPMSolver</a>
-, <a class="el" href="d4/de8/class_navier_stokes_solver.html#a00b6a469c177683c74cab0418eb0af89">NavierStokesSolver</a>
+<li>writeBody()
+: <a class="el" href="dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a1dd37bf6025b7aed332d88723f4e763d">petibm::body::SingleBodyBase</a>
+, <a class="el" href="d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a1845bc5b839c060bea14c59f318dd7f5">petibm::body::SingleBodyPoints</a>
 </li>
-<li>writeRestartData()
-: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#a04a0a5fb73cd1bfe272aeb7a07e7cc34">DecoupledIBPMSolver</a>
-, <a class="el" href="d2/dec/class_i_b_p_m_solver.html#ad923e237329942f04e275bca6a32627a">IBPMSolver</a>
-, <a class="el" href="d4/de8/class_navier_stokes_solver.html#ae6582b68990fda20cdae58074773eada">NavierStokesSolver</a>
+<li>writeForcesASCII()
+: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#aa0a24595097d6014c696c11f9f265353">DecoupledIBPMSolver</a>
+, <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a4c61e9871a9e06bccb27258aab9dfd27">IBPMSolver</a>
+</li>
+<li>writeLinSolversInfo()
+: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#a34417ba101ccb45b05c16b9ce611cdf5">DecoupledIBPMSolver</a>
+, <a class="el" href="d4/de8/class_navier_stokes_solver.html#a6699ed427b6ad3844c676f130ecac941">NavierStokesSolver</a>
+</li>
+<li>writeRestartDataHDF5()
+: <a class="el" href="d4/d1d/class_decoupled_i_b_p_m_solver.html#a64606ebb6a6c54d4137a7254138a5116">DecoupledIBPMSolver</a>
+, <a class="el" href="d2/dec/class_i_b_p_m_solver.html#a19f5fea4b098acbd27fe1f15094c0204">IBPMSolver</a>
+, <a class="el" href="d4/de8/class_navier_stokes_solver.html#a950163fada417aa8ac3ba5c416839a8d">NavierStokesSolver</a>
+</li>
+<li>writeSolutionHDF5()
+: <a class="el" href="d2/dec/class_i_b_p_m_solver.html#aaf3d638f9559a1405b44ba0844e85bc7">IBPMSolver</a>
+, <a class="el" href="d4/de8/class_navier_stokes_solver.html#a7943ca976afc926090bd23c203999e63">NavierStokesSolver</a>
+</li>
+<li>writeSubMesh()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a828d6fe03ff81dafc43a9adf2c671850">petibm::misc::ProbeVolume</a>
+</li>
+<li>writeSubMeshASCII()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a43c77a5f231fbaf2ce252f6c1089ad8e">petibm::misc::ProbeVolume</a>
+</li>
+<li>writeSubMeshHDF5()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ae1e1f9a08b3da3eba2ddf9af690a9203">petibm::misc::ProbeVolume</a>
 </li>
 <li>writeTimeHDF5()
 : <a class="el" href="d4/de8/class_navier_stokes_solver.html#aedf1e8327c30ff4b47aef3fb90fb81f4">NavierStokesSolver</a>
+</li>
+<li>writeVec()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad8347b91c8645642ffbb5979ca2cd148">petibm::misc::ProbeVolume</a>
+</li>
+<li>writeVecASCII()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a77fd9ef8f1b04d353f49e430aad64e10">petibm::misc::ProbeVolume</a>
+</li>
+<li>writeVecHDF5()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a2d23b128183587095ea7a6c13a104510">petibm::misc::ProbeVolume</a>
 </li>
 </ul>
 </div><!-- contents -->
@@ -174,7 +205,7 @@ $(document).ready(function(){initNavTree('functions_func_w.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:36 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:18 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

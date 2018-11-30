@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -122,11 +122,11 @@ $(document).ready(function(){initNavTree('df/def/type_8h.html','../../');});
 
 <p>Definition of user-defined types for convenience.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;map&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;map&gt;</code><br />
-<code>#include &lt;petscsys.h&gt;</code><br />
 <code>#include &lt;petscmat.h&gt;</code><br />
+<code>#include &lt;petscsys.h&gt;</code><br />
 </div>
 <p><a href="../../df/def/type_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -180,9 +180,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ga42ca13471c417e0ca3f42ad2952f1838"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; PetscReal * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga42ca13471c417e0ca3f42ad2952f1838">petibm::type::GhostedVec2D</a></td></tr>
 <tr class="memdesc:ga42ca13471c417e0ca3f42ad2952f1838"><td class="mdescLeft">&#160;</td><td class="mdescRight">a vector of pointers to mimic ghosted 1D vectors.  <a href="../../dd/d8f/group__type.html#ga42ca13471c417e0ca3f42ad2952f1838">More...</a><br /></td></tr>
 <tr class="separator:ga42ca13471c417e0ca3f42ad2952f1838"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf76ec721f2ad0f1ba0fe6a233ac1a520"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; GhostedVec2D &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520">petibm::type::GhostedVec3D</a></td></tr>
-<tr class="memdesc:gaf76ec721f2ad0f1ba0fe6a233ac1a520"><td class="mdescLeft">&#160;</td><td class="mdescRight">a vector of vector pointers to mimic ghosted 2D vectors.  <a href="../../dd/d8f/group__type.html#gaf76ec721f2ad0f1ba0fe6a233ac1a520">More...</a><br /></td></tr>
-<tr class="separator:gaf76ec721f2ad0f1ba0fe6a233ac1a520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af76ec721f2ad0f1ba0fe6a233ac1a520"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; GhostedVec2D &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d54/namespacepetibm_1_1type.html#af76ec721f2ad0f1ba0fe6a233ac1a520">petibm::type::GhostedVec3D</a></td></tr>
+<tr class="memdesc:af76ec721f2ad0f1ba0fe6a233ac1a520"><td class="mdescLeft">&#160;</td><td class="mdescRight">a vector of vector pointers to mimic ghosted 2D vectors. type  <a href="../../d4/d54/namespacepetibm_1_1type.html#af76ec721f2ad0f1ba0fe6a233ac1a520">More...</a><br /></td></tr>
+<tr class="separator:af76ec721f2ad0f1ba0fe6a233ac1a520"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8f4d08b0bb20cce14e82c946ec638112"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; MatStencil, GhostPointInfo &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga8f4d08b0bb20cce14e82c946ec638112">petibm::type::GhostPointsList</a></td></tr>
 <tr class="memdesc:ga8f4d08b0bb20cce14e82c946ec638112"><td class="mdescLeft">&#160;</td><td class="mdescRight">A map between MatStencil and <a class="el" href="../../d5/d8c/structpetibm_1_1type_1_1_ghost_point_info.html" title="A data structure for a single ghost point. ">GhostPointInfo</a>.  <a href="../../dd/d8f/group__type.html#ga8f4d08b0bb20cce14e82c946ec638112">More...</a><br /></td></tr>
 <tr class="separator:ga8f4d08b0bb20cce14e82c946ec638112"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,13 +192,13 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ga56ec7cd558096ce44e4bc9ef03e6049c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga56ec7cd558096ce44e4bc9ef03e6049c">petibm::type::Dir</a> { <a class="el" href="../../dd/d8f/group__type.html#gga56ec7cd558096ce44e4bc9ef03e6049caa83c6cf9a7fc1b530361a41df7a8d403">petibm::type::x</a> =0, 
+<tr class="memitem:ga56ec7cd558096ce44e4bc9ef03e6049c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga56ec7cd558096ce44e4bc9ef03e6049c">petibm::type::Dir</a> { <a class="el" href="../../dd/d8f/group__type.html#gga56ec7cd558096ce44e4bc9ef03e6049caa83c6cf9a7fc1b530361a41df7a8d403">petibm::type::x</a> = 0, 
 <a class="el" href="../../dd/d8f/group__type.html#gga56ec7cd558096ce44e4bc9ef03e6049cabacd9f39a355dd09a46f6929e56b9b29">petibm::type::y</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#gga56ec7cd558096ce44e4bc9ef03e6049ca7c1f751ff685ce00d8c24e3c4d80050d">petibm::type::z</a>
  }<tr class="memdesc:ga56ec7cd558096ce44e4bc9ef03e6049c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legal physical directions.  <a href="../../dd/d8f/group__type.html#ga56ec7cd558096ce44e4bc9ef03e6049c">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:ga56ec7cd558096ce44e4bc9ef03e6049c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga20353232f86cf4c4087c3118519f2ead"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">petibm::type::Field</a> { <a class="el" href="../../dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eada3fb893cb41378d16ba8d506dd06b356f">petibm::type::u</a> =0, 
+<tr class="memitem:ga20353232f86cf4c4087c3118519f2ead"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">petibm::type::Field</a> { <a class="el" href="../../dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eada3fb893cb41378d16ba8d506dd06b356f">petibm::type::u</a> = 0, 
 <a class="el" href="../../dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eada1ad2b65e4279495d3c93ae6d91419234">petibm::type::v</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eadacf95fa5326fe6305bfb3b190736cd3b0">petibm::type::w</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#gga20353232f86cf4c4087c3118519f2eadaa71bfcb768bafb823ac11a8a7186a73f">petibm::type::p</a>, 
@@ -206,7 +206,7 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:ga20353232f86cf4c4087c3118519f2ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legal fields.  <a href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:ga20353232f86cf4c4087c3118519f2ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga40c909070ccfc3de19aecf93e89e06da"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga40c909070ccfc3de19aecf93e89e06da">petibm::type::BCType</a> { <a class="el" href="../../dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daaa42544aec2d0e3db4d2d10481e02ddf2">petibm::type::NOBC</a> =0, 
+<tr class="memitem:ga40c909070ccfc3de19aecf93e89e06da"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga40c909070ccfc3de19aecf93e89e06da">petibm::type::BCType</a> { <a class="el" href="../../dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daaa42544aec2d0e3db4d2d10481e02ddf2">petibm::type::NOBC</a> = 0, 
 <a class="el" href="../../dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daa30946744b955c9f2e187979d98235b0f">petibm::type::PERIODIC</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daaafdca406464fd98397dfbd8ea75b1f9d">petibm::type::DIRICHLET</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#gga40c909070ccfc3de19aecf93e89e06daaf49c5fd8395e538da758f23dcbb5e410">petibm::type::NEUMANN</a>, 
@@ -214,7 +214,7 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:ga40c909070ccfc3de19aecf93e89e06da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of boundary conditions.  <a href="../../dd/d8f/group__type.html#ga40c909070ccfc3de19aecf93e89e06da">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:ga40c909070ccfc3de19aecf93e89e06da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaac0bd4791ec9e6bb0cd3ef25147f167b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#gaac0bd4791ec9e6bb0cd3ef25147f167b">petibm::type::BCLoc</a> { <a class="el" href="../../dd/d8f/group__type.html#ggaac0bd4791ec9e6bb0cd3ef25147f167bab7d81b7d98fd0eeffeb4ff4c34bd07d0">petibm::type::XMINUS</a> =0, 
+<tr class="memitem:gaac0bd4791ec9e6bb0cd3ef25147f167b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#gaac0bd4791ec9e6bb0cd3ef25147f167b">petibm::type::BCLoc</a> { <a class="el" href="../../dd/d8f/group__type.html#ggaac0bd4791ec9e6bb0cd3ef25147f167bab7d81b7d98fd0eeffeb4ff4c34bd07d0">petibm::type::XMINUS</a> = 0, 
 <a class="el" href="../../dd/d8f/group__type.html#ggaac0bd4791ec9e6bb0cd3ef25147f167ba627212139d64fcbe15be8b26bc2ce54a">petibm::type::XPLUS</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#ggaac0bd4791ec9e6bb0cd3ef25147f167baba8cfd66ac92aced9dc41de18b74fa65">petibm::type::YMINUS</a>, 
 <a class="el" href="../../dd/d8f/group__type.html#ggaac0bd4791ec9e6bb0cd3ef25147f167ba3ee26a5a1687bab8c928ebdb3826ed4d">petibm::type::YPLUS</a>, 
@@ -223,6 +223,13 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:gaac0bd4791ec9e6bb0cd3ef25147f167b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Location of a boundary.  <a href="../../dd/d8f/group__type.html#gaac0bd4791ec9e6bb0cd3ef25147f167b">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:gaac0bd4791ec9e6bb0cd3ef25147f167b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga87d121071b83e99e39e2136bca4490b2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga87d121071b83e99e39e2136bca4490b2">petibm::type::ProbeType</a> { <a class="el" href="../../dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2ad853a865e222ac9b22bd6b4106f6d310">petibm::type::POINT</a> = 0, 
+<a class="el" href="../../dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2a9860edd96fb3924c1d6881349bb335ff">petibm::type::LINE</a>, 
+<a class="el" href="../../dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2ac17b869b8201c39e5250b563c6152e45">petibm::type::SURFACE</a>, 
+<a class="el" href="../../dd/d8f/group__type.html#gga87d121071b83e99e39e2136bca4490b2a3c8755a52bfee4d5e123804cea461a80">petibm::type::VOLUME</a>
+ }<tr class="memdesc:ga87d121071b83e99e39e2136bca4490b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of probe for monitoring solution.  <a href="../../dd/d8f/group__type.html#ga87d121071b83e99e39e2136bca4490b2">More...</a><br /></td></tr>
+</td></tr>
+<tr class="separator:ga87d121071b83e99e39e2136bca4490b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -250,6 +257,9 @@ Variables</h2></td></tr>
 <tr class="memitem:ga2902d569ef2c179f064d484a3e2296ef"><td class="memItemLeft" align="right" valign="top">std::map&lt; BCLoc, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga2902d569ef2c179f064d484a3e2296ef">petibm::type::bl2str</a></td></tr>
 <tr class="memdesc:ga2902d569ef2c179f064d484a3e2296ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mapping between <a class="el" href="../../dd/d8f/group__type.html#gaac0bd4791ec9e6bb0cd3ef25147f167b">BCLoc</a> and <code>std::string</code>.  <a href="../../dd/d8f/group__type.html#ga2902d569ef2c179f064d484a3e2296ef">More...</a><br /></td></tr>
 <tr class="separator:ga2902d569ef2c179f064d484a3e2296ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5e9dfaf7a9b48425560ed623c7fa5e12"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, ProbeType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d8f/group__type.html#ga5e9dfaf7a9b48425560ed623c7fa5e12">petibm::type::str2ProbeType</a></td></tr>
+<tr class="memdesc:ga5e9dfaf7a9b48425560ed623c7fa5e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mapping between <code>std::string</code> and <a class="el" href="../../dd/d8f/group__type.html#ga87d121071b83e99e39e2136bca4490b2">ProbeType</a>.  <a href="../../dd/d8f/group__type.html#ga5e9dfaf7a9b48425560ed623c7fa5e12">More...</a><br /></td></tr>
+<tr class="separator:ga5e9dfaf7a9b48425560ed623c7fa5e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Definition of user-defined types for convenience. </p>
@@ -263,7 +273,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="../../dir_b00d6d3965a1c6f2dc1b5bbb5126d3e8.html">petibm</a></li><li class="navelem"><a class="el" href="../../df/def/type_8h.html">type.h</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

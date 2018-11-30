@@ -21,6 +21,7 @@ var classpetibm_1_1mesh_1_1_cartesian_mesh =
     [ "getPackedGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a400e9d9d00e56d4666815881a0ecc674", null ],
     [ "init", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ac609cd7eb4f985b4f33aca8c6c794b14", null ],
     [ "initDMDA", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a539a9912293d17a0aab56d28337a2f64", null ],
+    [ "isPointOnLocalProc", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ae75489be01f01290f23030b0f11e4afb", null ],
     [ "printInfo", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#af67592d9ce3e6c7a0d975a339740d1b9", null ],
     [ "write", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a89e129c900347f5a005b8364d984f725", null ],
     [ "ao", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a87239803dec8de3d8ebb27181c69c8c5", null ],

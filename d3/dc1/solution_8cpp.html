@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -117,11 +117,11 @@ $(document).ready(function(){initNavTree('d3/dc1/solution_8cpp.html','../../');}
 </div><!--header-->
 <div class="contents">
 
-<p>Implementations of createSolution and members of SolutionBase.  
+<p>Implementation of the factory function and members of the class <a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html" title="Base (abstract) class for different solution holders. ">petibm::solution::SolutionBase</a>.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;<a class="el" href="../../d7/dac/solution_8h_source.html">petibm/solution.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="../../dc/dac/io_8h_source.html">petibm/io.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d7/dac/solution_8h_source.html">petibm/solution.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../de/de9/solutionsimple_8h_source.html">petibm/solutionsimple.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="../../dc/dac/io_8h_source.html">petibm/io.h</a>&gt;</code><br />
 </div>
 <p><a href="../../d3/dc1/solution_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -137,11 +137,11 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga56838bc3a29c8d91ab2e7f0a460d9af8"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8">petibm::solution::createSolution</a> (const type::Mesh &amp;mesh, type::Solution &amp;solution)</td></tr>
-<tr class="memdesc:ga56838bc3a29c8d91ab2e7f0a460d9af8"><td class="mdescLeft">&#160;</td><td class="mdescRight">A factory function for creating Solution objects.  <a href="../../dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8">More...</a><br /></td></tr>
+<tr class="memdesc:ga56838bc3a29c8d91ab2e7f0a460d9af8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a petibm::solution::Solution object.  <a href="../../dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8">More...</a><br /></td></tr>
 <tr class="separator:ga56838bc3a29c8d91ab2e7f0a460d9af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Implementations of createSolution and members of SolutionBase. </p>
+<div class="textblock"><p>Implementation of the factory function and members of the class <a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html" title="Base (abstract) class for different solution holders. ">petibm::solution::SolutionBase</a>. </p>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2016-2018, Barba group. All rights reserved. </dd></dl>
 <dl class="section user"><dt>License^^ BSD 3-Clause License.</dt><dd></dd></dl>
 
@@ -152,7 +152,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="../../dir_d87c8f45e11152a06ed0fc5dbd24c5a6.html">solution</a></li><li class="navelem"><a class="el" href="../../d3/dc1/solution_8cpp.html">solution.cpp</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

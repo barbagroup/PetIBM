@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['ub',['UB',['../dc/dbc/class_rigid_kinematics_solver.html#a24130103d299cf9452a9eb32a638b62e',1,'RigidKinematicsSolver']]],
   ['uglobal',['UGlobal',['../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a7c2a396ffce4f3355d90ce8628a55bb9',1,'petibm::solution::SolutionBase']]],
   ['un',['UN',['../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a97514fe900126a564cf45ca1ab94d109',1,'petibm::mesh::MeshBase']]],
   ['unlocal',['UNLocal',['../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a5274fb27c73768bb54fa5409e8dbf51e',1,'petibm::mesh::MeshBase']]],

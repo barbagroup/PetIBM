@@ -5,7 +5,7 @@ var group__operator_module =
     [ "createBn", "d5/d01/group__operator_module.html#ga5b89e03619afe7ef24ccf983444d7f31", null ],
     [ "createBnHead", "d5/d01/group__operator_module.html#gabe361a4fc3dfda999f1b8cd9eb4c92b6", null ],
     [ "createConvection", "d5/d01/group__operator_module.html#gada96f41086e1e23b93633321702af76b", null ],
-    [ "createDelta", "d5/d01/group__operator_module.html#gafb0fb04830cf6c8cc0bea96e95747fc2", null ],
+    [ "createDelta", "d5/d01/group__operator_module.html#gafbe8e6ab36ea7d459e2ec75169341cfd", null ],
     [ "createDivergence", "d5/d01/group__operator_module.html#ga255cbdcfe47b97a2708e1c08343411a7", null ],
     [ "createGradient", "d5/d01/group__operator_module.html#ga8ca31641fbf44616692fb3f03e15b68c", null ],
     [ "createIdentity", "d5/d01/group__operator_module.html#ga7f4beb7b401a427e496c34907c810d2e", null ],

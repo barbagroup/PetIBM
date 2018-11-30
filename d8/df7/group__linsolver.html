@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -118,7 +118,8 @@ $(document).ready(function(){initNavTree('d8/df7/group__linsolver.html','../../'
 <div class="dynheader">
 Collaboration diagram for Linear solvers:</div>
 <div class="dyncontent">
-<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d8/df7/group__linsolver.svg" width="319" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d8/df7/group__linsolver.svg" width="318" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </td></tr></table></center>
 </div>
 <table class="memberdecls">
@@ -169,10 +170,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Type definition of LinSolver. </p>
-<p>Please use <a class="el" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49" title="A factory function for creating a LinSolver. ">petibm::linsolver::createLinSolver</a> to create a LinSolver instance.</p>
-<p>Example Usage: </p><div class="fragment"><div class="line">PetscErrorCode ierr;</div><div class="line">Mat A;</div><div class="line">Vec lhs, rhs;</div><div class="line"><a class="code" href="../../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763">petibm::type::LinSolver</a> solver;</div><div class="line"></div><div class="line"><span class="comment">// create LinSolver with petibm::linsolver::createLinSolver</span></div><div class="line"><span class="comment">// create matrix A, vectors lhs and rhs. See PETSc manual.</span></div><div class="line"></div><div class="line">ierr = solver-&gt;setMatrix(A); CKERRQ(ierr);</div><div class="line">ierr = solver-&gt;solve(lhs, rhs); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49" title="A factory function for creating a LinSolver. ">petibm::linsolver::createLinSolver</a>, <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html" title="The abstract (base) class for different iterative solvers. ">petibm::linsolver::LinSolverBase</a>. </dd></dl>
+<p>Use <a class="el" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49" title="A factory function for creating a LinSolver. ">petibm::linsolver::createLinSolver</a> to create a LinSolver object.</p>
+<p>Example Usage: </p><div class="fragment"><div class="line"> PetscErrorCode ierr;</div><div class="line"> Mat A;</div><div class="line"> Vec lhs, rhs;</div><div class="line"> <a class="code" href="../../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763">petibm::type::LinSolver</a> solver;</div><div class="line">.</div><div class="line"> <span class="comment">// create LinSolver with petibm::linsolver::createLinSolver</span></div><div class="line"> <span class="comment">// create matrix A, vectors lhs and rhs. See PETSc manual.</span></div><div class="line"></div><div class="line"> ierr = solver-&gt;setMatrix(A); CKERRQ(ierr);</div><div class="line"> ierr = solver-&gt;solve(lhs, rhs); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49" title="A factory function for creating a LinSolver. ">petibm::linsolver::createLinSolver</a>, <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html" title="The abstract (base) class for different iterative solvers. ">petibm::linsolver::LinSolverBase</a>. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00205">205</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00174">174</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
 
 </div>
 </div>
@@ -210,19 +211,19 @@ Functions</h2></td></tr>
 <p>A factory function for creating a LinSolver. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">solverName</td><td>[in] the name for the solver. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] the YAML::Node containing all configuration. </td></tr>
-    <tr><td class="paramname">solver</td><td>[out] a LinSolver.</td></tr>
+    <tr><td class="paramname">solverName</td><td>[in] Name of the linear solver. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">solver</td><td>[out] The linear solver.</td></tr>
   </table>
   </dd>
 </dl>
 <p>This function will look into the <code>parameters</code> and find the child key <code>&lt;solverName&gt;Solver</code>. Under <code>&lt;solverName&gt;Solver</code>, there should at least be two child keys: <code>type</code> and <code>config</code>. <code>type</code> indicate the type of the solver, and <code>config</code> provides the path to the the solver configuration file.</p>
 <p>For example, if the name of the target LinSolver is <b>velocity</b>, this factory function will use <code>node[parameters][velocitySolver][type]</code>and <code>node[parameters][velocitySolver][config]</code> to determine the type and the path to the configuration file for the underlying linear solver.</p>
 <p>Currently in PetIBM, the key <code>type</code> only accepts <code>CPU</code> and <code>GPU</code>.</p>
-<p>An example of creating a LinSolver instance with KSP: </p><div class="fragment"><div class="line">YAML::Node node;</div><div class="line">node[<span class="stringliteral">&quot;parameters&quot;</span>][<span class="stringliteral">&quot;velocitySolver&quot;</span>][<span class="stringliteral">&quot;type&quot;</span>] = <span class="stringliteral">&quot;CPU&quot;</span>;</div><div class="line">node[<span class="stringliteral">&quot;parameters&quot;</span>][<span class="stringliteral">&quot;velocitySolver&quot;</span>][<span class="stringliteral">&quot;config&quot;</span>] = <span class="stringliteral">&quot;solversPetscOptions.info&quot;</span>;</div><div class="line"></div><div class="line">PetscErrorCode ierr;</div><div class="line"><a class="code" href="../../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763">petibm::type::LinSolver</a> solver;</div><div class="line">ierr = <a class="code" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49">petibm::linsolver::createLinSolver</a>(<span class="stringliteral">&quot;velocity&quot;</span>, node, solver); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
+<p>An example of creating a LinSolver instance with KSP: </p><div class="fragment"><div class="line">YAML::Node node;</div><div class="line">node[<span class="stringliteral">&quot;parameters&quot;</span>][<span class="stringliteral">&quot;velocitySolver&quot;</span>][<span class="stringliteral">&quot;type&quot;</span>] = <span class="stringliteral">&quot;CPU&quot;</span>;</div><div class="line">node[<span class="stringliteral">&quot;parameters&quot;</span>][<span class="stringliteral">&quot;velocitySolver&quot;</span>][<span class="stringliteral">&quot;config&quot;</span>] = <span class="stringliteral">&quot;solversPetscOptions.info&quot;</span>;</div><div class="line"></div><div class="line">PetscErrorCode ierr;</div><div class="line"><a class="code" href="../../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763">petibm::type::LinSolver</a> solver;</div><div class="line">ierr = <a class="code" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49">petibm::linsolver::createLinSolver</a>(</div><div class="line">    <span class="stringliteral">&quot;velocity&quot;</span>, node, solver); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763" title="Type definition of LinSolver. ">petibm::type::LinSolver</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d19/linsolver_8cpp_source.html#l00063">63</a> of file <a class="el" href="../../d5/d19/linsolver_8cpp_source.html">linsolver.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d19/linsolver_8cpp_source.html#l00057">57</a> of file <a class="el" href="../../d5/d19/linsolver_8cpp_source.html">linsolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -231,7 +232,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

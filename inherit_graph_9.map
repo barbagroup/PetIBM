@@ -1,7 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$d8/d39/classpetibm_1_1timeintegration_1_1_time_integration_base.html" title="Base (abstract) class that stores information of temporal integration. " alt="" coords="5,104,160,145"/>
-<area shape="rect" id="node2" href="$d7/db6/classpetibm_1_1timeintegration_1_1_adams___bashforth__2.html" title="An implementation of TimeIntegrationBase for 2nd order Adams&#45;Bashforth. " alt="" coords="208,5,363,47"/>
-<area shape="rect" id="node3" href="$d4/d5f/classpetibm_1_1timeintegration_1_1_crank___nicolson.html" title="An implementation of TimeIntegrationBase for 2nd order Crank&#45;Nicolson. " alt="" coords="208,71,363,112"/>
-<area shape="rect" id="node4" href="$d7/d33/classpetibm_1_1timeintegration_1_1_euler___explicit.html" title="An implementation of TimeIntegrationBase for 1st order explicit Euler. " alt="" coords="208,136,363,177"/>
-<area shape="rect" id="node5" href="$da/d48/classpetibm_1_1timeintegration_1_1_euler___implicit.html" title="An implementation of TimeIntegrationBase for 1st order implicit Euler. " alt="" coords="208,201,363,243"/>
+<area shape="rect" id="node1" href="$df/d8d/classpetibm_1_1misc_1_1_probe_base.html" title="Abstract Base Class of a probe. " alt="" coords="5,31,175,57"/>
+<area shape="rect" id="node2" href="$d0/d74/classpetibm_1_1misc_1_1_probe_point.html" title="Probe class to monitor the solution at a single point. " alt="" coords="229,5,399,32"/>
+<area shape="rect" id="node3" href="$db/da9/classpetibm_1_1misc_1_1_probe_volume.html" title="Probe class to monitor a volume region of the domain. " alt="" coords="223,56,405,83"/>
 </map>

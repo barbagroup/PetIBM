@@ -1,20 +1,25 @@
 var searchData=
 [
   ['scheme',['scheme',['../d8/d39/classpetibm_1_1timeintegration_1_1_time_integration_base.html#a6959b1773ee34888af17a8b08375f739',1,'petibm::timeintegration::TimeIntegrationBase']]],
-  ['settings',['settings',['../d4/de8/class_navier_stokes_solver.html#ae2a7b725aa50d63ca65eb2b8407a8344',1,'NavierStokesSolver']]],
   ['solution',['solution',['../d4/de8/class_navier_stokes_solver.html#a10d97e608998b533ecd182d70a6632df',1,'NavierStokesSolver']]],
+  ['solversviewer',['solversViewer',['../d4/de8/class_navier_stokes_solver.html#affddb369bd4d238921fe102df05c4c44',1,'NavierStokesSolver']]],
   ['stageinitialize',['stageInitialize',['../d4/de8/class_navier_stokes_solver.html#a67e00b9b439b1cbbe0323a9bf20e71f9',1,'NavierStokesSolver']]],
   ['stageintegrateforces',['stageIntegrateForces',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#aae2d58fe660bf57a2c2f0206acd3b007',1,'DecoupledIBPMSolver::stageIntegrateForces()'],['../d2/dec/class_i_b_p_m_solver.html#a5507077bedf95ffa92c01d669dee0abf',1,'IBPMSolver::stageIntegrateForces()']]],
-  ['stageprojectionstep',['stageProjectionStep',['../d4/de8/class_navier_stokes_solver.html#a4594f1fd4f626b33596dcfd8ad6db618',1,'NavierStokesSolver']]],
+  ['stagemonitor',['stageMonitor',['../d4/de8/class_navier_stokes_solver.html#a23efb6269092ddacbaea85b277160266',1,'NavierStokesSolver']]],
+  ['stagemoveib',['stageMoveIB',['../dc/dbc/class_rigid_kinematics_solver.html#a31546e95ddf15ff305252b2a8bffc025',1,'RigidKinematicsSolver']]],
   ['stagerhsforces',['stageRHSForces',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#a05c1a4ce2c4161165ca3150a119ce6f0',1,'DecoupledIBPMSolver']]],
   ['stagerhspoisson',['stageRHSPoisson',['../d4/de8/class_navier_stokes_solver.html#acc207fa3ccbca6883fa95107a602227b',1,'NavierStokesSolver']]],
   ['stagerhsvelocity',['stageRHSVelocity',['../d4/de8/class_navier_stokes_solver.html#aaf0751b7d1e340b29c96bbe24341e54d',1,'NavierStokesSolver']]],
   ['stagesolveforces',['stageSolveForces',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#a9a9a1309b8fef541dc3bd9430366f237',1,'DecoupledIBPMSolver']]],
   ['stagesolvepoisson',['stageSolvePoisson',['../d4/de8/class_navier_stokes_solver.html#a48266792f6931e25f9ed1de59625fccb',1,'NavierStokesSolver']]],
   ['stagesolvevelocity',['stageSolveVelocity',['../d4/de8/class_navier_stokes_solver.html#ac76dfa8bb32f94ffcc4fe1455f745b43',1,'NavierStokesSolver']]],
+  ['stageupdate',['stageUpdate',['../d4/de8/class_navier_stokes_solver.html#abdb06b41d09397b40dfb936575719878',1,'NavierStokesSolver']]],
   ['stagewrite',['stageWrite',['../d4/de8/class_navier_stokes_solver.html#ab9eb562177681fcb5d72b772c6930e9a',1,'NavierStokesSolver']]],
+  ['startidxdir',['startIdxDir',['../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ae6e544a5dd62f21f05b91f82a4929736',1,'petibm::misc::ProbeVolume']]],
   ['str2bl',['str2bl',['../dd/d8f/group__type.html#ga95d4548d19f72eb6bac3f8cbeb73724b',1,'petibm::type']]],
   ['str2bt',['str2bt',['../dd/d8f/group__type.html#ga9bdc652390984cb7518a8d9bdfb7d23b',1,'petibm::type']]],
   ['str2dir',['str2dir',['../dd/d8f/group__type.html#gacfcb8980b70d91d3e0f0cf6886879310',1,'petibm::type']]],
-  ['str2fd',['str2fd',['../dd/d8f/group__type.html#gada665dacf461c067e3c03599beb84afd',1,'petibm::type']]]
+  ['str2fd',['str2fd',['../dd/d8f/group__type.html#gada665dacf461c067e3c03599beb84afd',1,'petibm::type']]],
+  ['str2probetype',['str2ProbeType',['../dd/d8f/group__type.html#ga5e9dfaf7a9b48425560ed623c7fa5e12',1,'petibm::type']]],
+  ['svec',['svec',['../d0/d74/classpetibm_1_1misc_1_1_probe_point.html#a2944748ac8b64e961229f0815200a100',1,'petibm::misc::ProbePoint']]]
 ];

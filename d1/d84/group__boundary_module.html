@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -118,7 +118,8 @@ $(document).ready(function(){initNavTree('d1/d84/group__boundary_module.html','.
 <div class="dynheader">
 Collaboration diagram for Boundaries and boundary conditions:</div>
 <div class="dyncontent">
-<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d1/d84/group__boundary_module.svg" width="390" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d1/d84/group__boundary_module.svg" width="384" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </td></tr></table></center>
 </div>
 <table class="memberdecls">
@@ -199,7 +200,7 @@ Functions</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. ">Boundaries and boundary conditions</a>, <a class="el" href="../../d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html" title="Base (abstract) class for the whole boundary. ">petibm::boundary::BoundaryBase</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e" title="Create a Boundary object. ">petibm::boundary::createBoundary</a></dd></dl>
 <p>Please use <a class="el" href="../../d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e" title="Create a Boundary object. ">petibm::boundary::createBoundary</a> to create a Mesh object. </p>
 
-<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00180">180</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/daa/boundary_8h_source.html#l00175">175</a> of file <a class="el" href="../../d4/daa/boundary_8h_source.html">boundary.h</a>.</p>
 
 </div>
 </div>
@@ -217,7 +218,7 @@ Functions</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. ">Boundaries and boundary conditions</a>, <a class="el" href="../../d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html" title="Base (abstract) class for ghost points &amp; BC on a single boundary. ">petibm::boundary::SingleBoundaryBase</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#gafcf3cca0a792f346914df62c9fe5aabf" title="Factory function for creating a SingleBoundary object. ">petibm::boundary::createSingleBoundary</a></dd></dl>
 <p>Please use <a class="el" href="../../d1/d84/group__boundary_module.html#gafcf3cca0a792f346914df62c9fe5aabf" title="Factory function for creating a SingleBoundary object. ">petibm::boundary::createSingleBoundary</a> to create a Mesh object. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00189">189</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00178">178</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -255,16 +256,15 @@ Functions</h2></td></tr>
 <p>Create a Boundary object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] underlying Mesh object. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a YAML::Node object. </td></tr>
-    <tr><td class="paramname">boundary</td><td>[out] resulting Boundary object. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Structured Cartesian mesh object. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configurations. </td></tr>
+    <tr><td class="paramname">boundary</td><td>[out] Data object with boundary conditions.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. ">Boundaries and boundary conditions</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c" title="Type definition of petibm::type::Boundary. ">petibm::type::Boundary</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d9/d15/boundary_8cpp_source.html#l00045">45</a> of file <a class="el" href="../../d9/d15/boundary_8cpp_source.html">boundary.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/d15/boundary_8cpp_source.html#l00041">41</a> of file <a class="el" href="../../d9/d15/boundary_8cpp_source.html">boundary.cpp</a>.</p>
 
 </div>
 </div>
@@ -332,7 +332,7 @@ Functions</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. ">Boundaries and boundary conditions</a>, petibm::type::SingleBoundarym <a class="el" href="../../d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e" title="Create a Boundary object. ">petibm::boundary::createBoundary</a></dd></dl>
 <p>This is generally not used by API users. API users normally only need to use <a class="el" href="../../d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e" title="Create a Boundary object. ">petibm::boundary::createBoundary</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dbd/singleboundary_8cpp_source.html#l00021">21</a> of file <a class="el" href="../../d7/dbd/singleboundary_8cpp_source.html">singleboundary.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dbd/singleboundary_8cpp_source.html#l00019">19</a> of file <a class="el" href="../../d7/dbd/singleboundary_8cpp_source.html">singleboundary.cpp</a>.</p>
 
 </div>
 </div>
@@ -341,7 +341,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

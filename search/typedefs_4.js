@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['linsolver',['LinSolver',['../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763',1,'petibm::type']]]
+  ['kernel',['Kernel',['../da/d84/namespacepetibm_1_1operators.html#a5156855de62f0ea8c6213016fa9af970',1,'petibm::operators']]],
+  ['kerneltype',['KernelType',['../da/d84/namespacepetibm_1_1operators.html#ac3fb49eeef09b8e846d02c676e7ab8c2',1,'petibm::operators']]]
 ];

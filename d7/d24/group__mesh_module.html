@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -118,7 +118,8 @@ $(document).ready(function(){initNavTree('d7/d24/group__mesh_module.html','../..
 <div class="dynheader">
 Collaboration diagram for Mesh objects:</div>
 <div class="dyncontent">
-<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d7/d24/group__mesh_module.svg" width="315" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><table><tr><td><div class="center"><iframe scrolling="no" frameborder="0" src="../../d7/d24/group__mesh_module.svg" width="315" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </td></tr></table></center>
 </div>
 <table class="memberdecls">
@@ -170,7 +171,7 @@ Functions</h2></td></tr>
 <p>Please use <a class="el" href="../../d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388" title="Factory function for creating a Mesh object. ">petibm::mesh::createMesh</a> to create a Mesh object.</p>
 <p>Example usage: </p><div class="fragment"><div class="line">PetscErrorCode ierr;</div><div class="line"><a class="code" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">petibm::type::Mesh</a> mesh;</div><div class="line"></div><div class="line"><span class="comment">// create Mesh with petibm::mesh::createMesh</span></div><div class="line"></div><div class="line">ierr = mesh-&gt;printInfo(); CHKERRQ(ierr);</div><div class="line">ierr = mesh-&gt;write(<span class="stringliteral">&quot;./grid&quot;</span>); CHKERRQ(ierr);</div><div class="line"></div><div class="line">PetscInt idx;</div><div class="line">ierr = mesh-&gt;getNaturalIndex(0, 1, 1, 1, idx); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d7/d24/group__mesh_module.html" title="Objects for meshes and domain decompositions. ">Mesh objects</a>, <a class="el" href="../../d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388" title="Factory function for creating a Mesh object. ">petibm::mesh::createMesh</a>, <a class="el" href="../../db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html" title="Base (abstract) class of mesh. ">petibm::mesh::MeshBase</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00389">389</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d3b/mesh_8h_source.html#l00348">348</a> of file <a class="el" href="../../d8/d3b/mesh_8h_source.html">mesh.h</a>.</p>
 
 </div>
 </div>
@@ -209,17 +210,16 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">comm</td><td>[in] MPI Communicator. </td></tr>
-    <tr><td class="paramname">node</td><td>[in] a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node containing all settings. </td></tr>
-    <tr><td class="paramname">mesh</td><td>[out] a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> instance. </td></tr>
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[out] Structured Cartesian mesh object.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>This function will look into the key <code>mesh</code> in <code>node</code> for mesh settings. An example of 2D stretched Cartesian mesh settings in the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node is shown as the following:</p>
 <div class="fragment"><div class="line">YAML::Node node;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;direction&quot;</span>] = <span class="stringliteral">&quot;x&quot;</span>;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;start&quot;</span>] = 0.0;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;subDomains&quot;</span>][0][<span class="stringliteral">&quot;end&quot;</span>] = 0.5;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;subDomains&quot;</span>][0][<span class="stringliteral">&quot;cells&quot;</span>] = 64;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;subDomains&quot;</span>][0][<span class="stringliteral">&quot;stretchRatio&quot;</span>] = 1.01;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;subDomains&quot;</span>][1][<span class="stringliteral">&quot;end&quot;</span>] = 1.0;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;subDomains&quot;</span>][1][<span class="stringliteral">&quot;cells&quot;</span>] = 64;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][0][<span class="stringliteral">&quot;subDomains&quot;</span>][1][<span class="stringliteral">&quot;stretchRatio&quot;</span>] = 0.9900990099001;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;direction&quot;</span>] = <span class="stringliteral">&quot;y&quot;</span>;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;start&quot;</span>] = 0.0;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;subDomains&quot;</span>][0][<span class="stringliteral">&quot;end&quot;</span>] = 0.5;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;subDomains&quot;</span>][0][<span class="stringliteral">&quot;cells&quot;</span>] = 64;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;subDomains&quot;</span>][0][<span class="stringliteral">&quot;stretchRatio&quot;</span>] = 1.01;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;subDomains&quot;</span>][1][<span class="stringliteral">&quot;end&quot;</span>] = 1.0;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;subDomains&quot;</span>][1][<span class="stringliteral">&quot;cells&quot;</span>] = 64;</div><div class="line">node[<span class="stringliteral">&quot;mesh&quot;</span>][1][<span class="stringliteral">&quot;subDomains&quot;</span>][1][<span class="stringliteral">&quot;stretchRatio&quot;</span>] = 0.9900990099001;</div></div><!-- fragment --><p>Or in an ASCII <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file:</p>
 <div class="fragment"><div class="line">mesh:</div><div class="line">  - direction: <a class="code" href="../../dd/d8f/group__type.html#gga56ec7cd558096ce44e4bc9ef03e6049caa83c6cf9a7fc1b530361a41df7a8d403">x</a></div><div class="line">    start: 0.0</div><div class="line">    subDomains:</div><div class="line">      - end: 0.5</div><div class="line">        cells: 64</div><div class="line">        stretchRatio: 1.01</div><div class="line">      - end: 1.0</div><div class="line">        cells: 64</div><div class="line">        stretchRatio: 0.9900990099001</div><div class="line"></div><div class="line">  - direction: <a class="code" href="../../dd/d8f/group__type.html#gga56ec7cd558096ce44e4bc9ef03e6049cabacd9f39a355dd09a46f6929e56b9b29">y</a></div><div class="line">    start: 0.0</div><div class="line">    subDomains:</div><div class="line">      - end: 0.5</div><div class="line">        cells: 64</div><div class="line">        stretchRatio: 1.01</div><div class="line">      - end: 1.0</div><div class="line">        cells: 64</div><div class="line">        stretchRatio: 0.9900990099001</div></div><!-- fragment --><p>We then pass this <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node into the factory function: </p><div class="fragment"><div class="line">PetscErrorCode ierr;</div><div class="line">petibm::type::mesh mesh;</div><div class="line">ierr = <a class="code" href="../../d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388">petibm::mesh::createMesh</a>(PETSC_COMM_WORLD, node, mesh); CHKERRQ(ierr);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d7/d24/group__mesh_module.html" title="Objects for meshes and domain decompositions. ">Mesh objects</a>, <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">petibm::type::Mesh</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/dd2/mesh_8cpp_source.html#l00088">88</a> of file <a class="el" href="../../d8/dd2/mesh_8cpp_source.html">mesh.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/dd2/mesh_8cpp_source.html#l00086">86</a> of file <a class="el" href="../../d8/dd2/mesh_8cpp_source.html">mesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -228,7 +228,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

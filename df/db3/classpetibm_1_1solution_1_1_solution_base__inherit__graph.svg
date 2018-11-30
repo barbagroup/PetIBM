@@ -16,7 +16,7 @@
 </g>
 <!-- Node2 -->
 <g id="node2" class="node"><title>Node2</title>
-<g id="a_node2"><a xlink:href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html" target="_top" xlink:title="A class holding only velocity and pressure solutions. ">
+<g id="a_node2"><a xlink:href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html" target="_top" xlink:title="Class to hold the velocity vector field and pressure scalar field. ">
 <polygon fill="white" stroke="black" points="11,-0.5 11,-30.5 138,-30.5 138,-0.5 11,-0.5"/>
 <text text-anchor="start" x="19" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">petibm::solution::Solution</text>
 <text text-anchor="middle" x="74.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Simple</text>

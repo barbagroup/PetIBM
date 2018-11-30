@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -119,13 +119,14 @@ $(document).ready(function(){initNavTree('da/df5/createdelta_8cpp.html','../../'
 
 <p>Definition of functions creating Delta operator.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;petscmat.h&gt;</code><br />
-<code>#include &lt;<a class="el" href="../../d8/d3b/mesh_8h_source.html">petibm/mesh.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="../../d4/daa/boundary_8h_source.html">petibm/boundary.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;petscmat.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../d8/d1c/bodypack_8h_source.html">petibm/bodypack.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d4/daa/boundary_8h_source.html">petibm/boundary.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d3/dcd/delta_8h_source.html">petibm/delta.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d8/d3b/mesh_8h_source.html">petibm/mesh.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../da/d58/singlebody_8h_source.html">petibm/singlebody.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../df/def/type_8h_source.html">petibm/type.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="../../d3/dcd/delta_8h_source.html">petibm/delta.h</a>&gt;</code><br />
 </div>
 <p><a href="../../da/df5/createdelta_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -140,11 +141,11 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a091c5a5be45a815bc64a82b6b24189b5"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d84/namespacepetibm_1_1operators.html#a091c5a5be45a815bc64a82b6b24189b5">petibm::operators::getWindowAndDistance</a> (const PetscInt &amp;dim, const type::IntVec1D &amp;n, const type::GhostedVec2D &amp;coords, const std::vector&lt; bool &gt; &amp;periodic, const type::RealVec1D &amp;L, const type::IntVec1D &amp;IJK, const type::RealVec1D &amp;XYZ, type::IntVec2D &amp;targets, type::RealVec2D &amp;targetdLs)</td></tr>
-<tr class="separator:a091c5a5be45a815bc64a82b6b24189b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafb0fb04830cf6c8cc0bea96e95747fc2"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d01/group__operator_module.html#gafb0fb04830cf6c8cc0bea96e95747fc2">petibm::operators::createDelta</a> (const type::Mesh &amp;mesh, const type::Boundary &amp;bc, const type::BodyPack &amp;bodies, Mat &amp;Delta)</td></tr>
-<tr class="memdesc:gafb0fb04830cf6c8cc0bea96e95747fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a Delta operator, <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>.  <a href="../../d5/d01/group__operator_module.html#gafb0fb04830cf6c8cc0bea96e95747fc2">More...</a><br /></td></tr>
-<tr class="separator:gafb0fb04830cf6c8cc0bea96e95747fc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad15b9d83e2906a5f9872236a076f83c0"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d84/namespacepetibm_1_1operators.html#ad15b9d83e2906a5f9872236a076f83c0">petibm::operators::getEulerianNeighbors</a> (const type::Mesh &amp;mesh, const PetscInt &amp;dof, const type::IntVec1D &amp;IJK, const std::vector&lt; bool &gt; &amp;periodic, const PetscInt &amp;window, type::IntVec2D &amp;ijk, type::RealVec2D &amp;xyz)</td></tr>
+<tr class="separator:ad15b9d83e2906a5f9872236a076f83c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafbe8e6ab36ea7d459e2ec75169341cfd"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d01/group__operator_module.html#gafbe8e6ab36ea7d459e2ec75169341cfd">petibm::operators::createDelta</a> (const type::Mesh &amp;mesh, const type::Boundary &amp;bc, const type::BodyPack &amp;bodies, const delta::DeltaKernel &amp;kernel, const PetscInt &amp;kernelSize, Mat &amp;Op)</td></tr>
+<tr class="memdesc:gafbe8e6ab36ea7d459e2ec75169341cfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a Delta operator, <img class="formulaInl" alt="$Delta$" src="../../form_54.png"/>.  <a href="../../d5/d01/group__operator_module.html#gafbe8e6ab36ea7d459e2ec75169341cfd">More...</a><br /></td></tr>
+<tr class="separator:gafbe8e6ab36ea7d459e2ec75169341cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Definition of functions creating Delta operator. </p>
@@ -158,7 +159,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="../../dir_82efe83b87803b3f04ecf90d1f66df00.html">operators</a></li><li class="navelem"><a class="el" href="../../da/df5/createdelta_8cpp.html">createdelta.cpp</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

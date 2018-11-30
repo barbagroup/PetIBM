@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -129,7 +129,8 @@ $(document).ready(function(){initNavTree('d6/d8f/classpetibm_1_1boundary_1_1_sin
 <div class="dynheader">
 Inheritance diagram for petibm::boundary::SingleBoundaryDirichlet:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../d4/dec/classpetibm_1_1boundary_1_1_single_boundary_dirichlet__inherit__graph.svg" width="178" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d4/dec/classpetibm_1_1boundary_1_1_single_boundary_dirichlet__inherit__graph.svg" width="178" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -214,7 +215,7 @@ Protected Attributes</h2></td></tr>
 <div class="textblock"><p>An implementation of <a class="el" href="../../d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html" title="Base (abstract) class for ghost points &amp; BC on a single boundary. ">SingleBoundaryBase</a> for Dirichlet BC. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. ">Boundaries and boundary conditions</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#gaec7c3bd05092e3f561e89b63ed268ace" title="Definition of type petibm::type::SingleBoundary. ">petibm::type::SingleBoundary</a>, <a class="el" href="../../d1/d84/group__boundary_module.html#gafcf3cca0a792f346914df62c9fe5aabf" title="Factory function for creating a SingleBoundary object. ">petibm::boundary::createSingleBoundary</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d9/de5/singleboundarydirichlet_8h_source.html#l00025">25</a> of file <a class="el" href="../../d9/de5/singleboundarydirichlet_8h_source.html">singleboundarydirichlet.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/de5/singleboundarydirichlet_8h_source.html#l00022">22</a> of file <a class="el" href="../../d9/de5/singleboundarydirichlet_8h_source.html">singleboundarydirichlet.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a87c102dd342c9ffd26d3bbe42a25ac3c"></a>
 <div class="memitem">
@@ -263,7 +264,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html#l00017">17</a> of file <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html">singleboundarydirichlet.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html#l00014">14</a> of file <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html">singleboundarydirichlet.cpp</a>.</p>
 
 </div>
 </div>
@@ -325,7 +326,7 @@ Protected Attributes</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>In PetIBM, we use a global packed Vec for velocity fields. But in some occasions, we may need local Vecs that have ghost points in them. So we have to copy the ghost values from this instance to the local Vecs. </p>
 
-<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00168">168</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00165">165</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
 
 </div>
 </div>
@@ -355,7 +356,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html#ae65ed66f7a8437b5269ce66eb31a47ca">petibm::boundary::SingleBoundaryConvective</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00039">39</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00037">37</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
 
 </div>
 </div>
@@ -422,7 +423,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00058">58</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00055">55</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
 
 </div>
 </div>
@@ -457,7 +458,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00108">108</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00107">107</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
 
 </div>
 </div>
@@ -505,7 +506,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#aaa75328e0b147a18e9860a6f47c6f9e4">petibm::boundary::SingleBoundaryBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html#l00026">26</a> of file <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html">singleboundarydirichlet.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html#l00022">22</a> of file <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html">singleboundarydirichlet.cpp</a>.</p>
 
 </div>
 </div>
@@ -552,7 +553,7 @@ Protected Attributes</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode.</dd></dl>
 <p>The equation of ghost points means the relationship between boundary points and ghost points. The equation has a form u_ghost = a0 * u_boundary + a1. This function changes a1 and a0 according to the type of BC. </p>
 
-<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00128">128</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00126">126</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
 
 </div>
 </div>
@@ -607,7 +608,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#a1bb6872e5b78cf520d997b7ed3775b17">petibm::boundary::SingleBoundaryBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html#l00053">53</a> of file <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html">singleboundarydirichlet.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html#l00049">49</a> of file <a class="el" href="../../d6/d6e/singleboundarydirichlet_8cpp_source.html">singleboundarydirichlet.cpp</a>.</p>
 
 </div>
 </div>
@@ -642,7 +643,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00148">148</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html#l00146">146</a> of file <a class="el" href="../../d2/dbf/singleboundarybase_8cpp_source.html">singleboundarybase.cpp</a>.</p>
 
 </div>
 </div>
@@ -667,7 +668,7 @@ Protected Attributes</h2></td></tr>
 
 <p>MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00163">163</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00154">154</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -691,7 +692,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Dimension. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00038">38</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00034">34</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -715,7 +716,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The field of which the ghost points represent. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00044">44</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00040">40</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -739,7 +740,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The location of this boundary. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00041">41</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00037">37</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -763,7 +764,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The corresponding Mesh object. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00173">173</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00163">163</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -787,7 +788,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The rank of this process. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00169">169</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00160">160</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -811,7 +812,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The size of the MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00166">166</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00157">157</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -835,7 +836,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The direction of normal vector. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00053">53</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00049">49</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -859,7 +860,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Indicate if this process holds part of this boundary. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00059">59</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00055">55</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -883,7 +884,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The list of ghost points on this boundary and at this field. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00056">56</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00052">52</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -907,7 +908,7 @@ Protected Attributes</h2></td></tr>
 
 <p>The type of boundary conditions. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00047">47</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00043">43</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -931,7 +932,7 @@ Protected Attributes</h2></td></tr>
 
 <p>A constant value representing BC value. </p>
 
-<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00050">50</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/df6/singleboundary_8h_source.html#l00046">46</a> of file <a class="el" href="../../de/df6/singleboundary_8h_source.html">singleboundary.h</a>.</p>
 
 </div>
 </div>
@@ -945,7 +946,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d6/d98/namespacepetibm_1_1boundary.html">boundary</a></li><li class="navelem"><a class="el" href="../../d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html">SingleBoundaryDirichlet</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

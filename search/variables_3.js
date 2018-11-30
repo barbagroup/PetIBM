@@ -13,5 +13,6 @@ var searchData=
   ['dltrue',['dLTrue',['../db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a1e818e801d16e920d8ae46c3311d3651',1,'petibm::mesh::CartesianMesh']]],
   ['dmpack',['dmPack',['../d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ae4048177f99597b43fd6a90cdc48162e',1,'petibm::body::BodyPackBase']]],
   ['dp',['dP',['../d4/de8/class_navier_stokes_solver.html#a787cc5396c5213594fd8b8725ad6c687',1,'NavierStokesSolver']]],
-  ['dt',['dt',['../d4/de8/class_navier_stokes_solver.html#a8678c30cbc6c56421f8f9c0d5514587c',1,'NavierStokesSolver']]]
+  ['dt',['dt',['../d4/de8/class_navier_stokes_solver.html#a8678c30cbc6c56421f8f9c0d5514587c',1,'NavierStokesSolver']]],
+  ['dvec',['dvec',['../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a68ed68ed4bfae5b83a391af3c62be96b',1,'petibm::misc::ProbeVolume']]]
 ];

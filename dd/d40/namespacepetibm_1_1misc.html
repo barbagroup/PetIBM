@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -122,12 +122,33 @@ $(document).ready(function(){initNavTree('dd/d40/namespacepetibm_1_1misc.html','
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html">BiLinInterp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class to perform a bilinear interpolation at a point in a 3D domain.  <a href="../../de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html">LinInterpBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract Base Class of a linear interpolation object.  <a href="../../dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html">LoopBound</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper struct to make looping function easier.  <a href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html">ProbeBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract Base Class of a probe.  <a href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d74/classpetibm_1_1misc_1_1_probe_point.html">ProbePoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probe class to monitor the solution at a single point.  <a href="../../d0/d74/classpetibm_1_1misc_1_1_probe_point.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html">ProbeVolume</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probe class to monitor a volume region of the domain.  <a href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html">TriLinInterp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class to perform a trilinear interpolation at a point in a 3D domain.  <a href="../../d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:gad67f53da4612405f8365bbecbe3119a4"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4">createLinInterp</a> (const MPI_Comm &amp;comm, const <a class="el" href="../../dd/d8f/group__type.html#gad19e550a4119623bdfdd2f9b02ce1678">type::RealVec1D</a> &amp;point, const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;mesh, const <a class="el" href="../../dd/d8f/group__type.html#ga20353232f86cf4c4087c3118519f2ead">type::Field</a> &amp;field, <a class="el" href="../../df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562">type::LinInterp</a> &amp;interp)</td></tr>
+<tr class="memdesc:gad67f53da4612405f8365bbecbe3119a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a linear interpolation object.  <a href="../../df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4">More...</a><br /></td></tr>
+<tr class="separator:gad67f53da4612405f8365bbecbe3119a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf28203dad7596be8529f1a7c8268c797"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797">checkPeriodicBC</a> (const <a class="el" href="../../dd/d8f/group__type.html#ga0173f75594de88ef6cdb6d4b6838928d">type::IntVec2D</a> &amp;bcTypes, <a class="el" href="../../dd/d8f/group__type.html#ga806853959629f5611464435d2b1c8814">type::BoolVec2D</a> &amp;periodic)</td></tr>
 <tr class="memdesc:gaf28203dad7596be8529f1a7c8268c797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if there is any periodic boundary condition and if these periodic BCs make sense.  <a href="../../df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797">More...</a><br /></td></tr>
 <tr class="separator:gaf28203dad7596be8529f1a7c8268c797"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,6 +173,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga7bf3e89e4f41fb4cfdac1986ed4286ff"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga7bf3e89e4f41fb4cfdac1986ed4286ff">tripleLoops</a> (const <a class="el" href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html">LoopBound</a> &amp;bound1, const <a class="el" href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html">LoopBound</a> &amp;bound2, const <a class="el" href="../../d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html">LoopBound</a> &amp;bound3, const std::function&lt; PetscErrorCode(const PetscInt &amp;, const PetscInt &amp;, const PetscInt &amp;)&gt; &amp;f)</td></tr>
 <tr class="memdesc:ga7bf3e89e4f41fb4cfdac1986ed4286ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper function to carry out a triple loop on a given function.  <a href="../../df/d44/group__misc_module.html#ga7bf3e89e4f41fb4cfdac1986ed4286ff">More...</a><br /></td></tr>
 <tr class="separator:ga7bf3e89e4f41fb4cfdac1986ed4286ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadbc7387003ade845958d20d2ebefe22b"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">createProbe</a> (const MPI_Comm &amp;comm, const YAML::Node &amp;node, const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;mesh, <a class="el" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">type::Probe</a> &amp;probe)</td></tr>
+<tr class="memdesc:gadbc7387003ade845958d20d2ebefe22b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a probe to monitor the solution.  <a href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">More...</a><br /></td></tr>
+<tr class="separator:gadbc7387003ade845958d20d2ebefe22b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A namespace holding miscellaneous functions. </p>
@@ -161,7 +185,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../dd/d40/namespacepetibm_1_1misc.html">misc</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

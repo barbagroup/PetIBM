@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -129,7 +129,8 @@ $(document).ready(function(){initNavTree('dc/d96/classpetibm_1_1solution_1_1_sol
 <div class="dynheader">
 Inheritance diagram for petibm::solution::SolutionBase:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../df/db3/classpetibm_1_1solution_1_1_solution_base__inherit__graph.svg" width="210" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../df/db3/classpetibm_1_1solution_1_1_solution_base__inherit__graph.svg" width="210" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -138,7 +139,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0ad3c477420721bfcbbdae88e598d2e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="#a0ad3c477420721bfcbbdae88e598d2e9">More...</a><br /></td></tr>
 <tr class="separator:a0ad3c477420721bfcbbdae88e598d2e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa83572e317e67c1c283c7620dddd0c9e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#aa83572e317e67c1c283c7620dddd0c9e">SolutionBase</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;<a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a8ab2ce034aa603780d216d300d4cf1f7">mesh</a>)</td></tr>
-<tr class="memdesc:aa83572e317e67c1c283c7620dddd0c9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct through a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a>.  <a href="#aa83572e317e67c1c283c7620dddd0c9e">More...</a><br /></td></tr>
+<tr class="memdesc:aa83572e317e67c1c283c7620dddd0c9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor using a Cartesian mesh.  <a href="#aa83572e317e67c1c283c7620dddd0c9e">More...</a><br /></td></tr>
 <tr class="separator:aa83572e317e67c1c283c7620dddd0c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c1f1092bd3b3baa73a3e493fa2c868d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a7c1f1092bd3b3baa73a3e493fa2c868d">~SolutionBase</a> ()</td></tr>
 <tr class="memdesc:a7c1f1092bd3b3baa73a3e493fa2c868d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <a href="#a7c1f1092bd3b3baa73a3e493fa2c868d">More...</a><br /></td></tr>
@@ -147,43 +148,43 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a4c06d5bdcf0d7ef9319ac886b20e35b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manually destroy data.  <a href="#a4c06d5bdcf0d7ef9319ac886b20e35b2">More...</a><br /></td></tr>
 <tr class="separator:a4c06d5bdcf0d7ef9319ac886b20e35b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a63adb7341d6de85d91ab48a4eea29f"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a9a63adb7341d6de85d91ab48a4eea29f">printInfo</a> () const </td></tr>
-<tr class="memdesc:a9a63adb7341d6de85d91ab48a4eea29f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information to standard output.  <a href="#a9a63adb7341d6de85d91ab48a4eea29f">More...</a><br /></td></tr>
+<tr class="memdesc:a9a63adb7341d6de85d91ab48a4eea29f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information about the solution to standard output.  <a href="#a9a63adb7341d6de85d91ab48a4eea29f">More...</a><br /></td></tr>
 <tr class="separator:a9a63adb7341d6de85d91ab48a4eea29f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a092a463363d3db6ffe6bc3fe56e8b90b"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a092a463363d3db6ffe6bc3fe56e8b90b">applyIC</a> (const YAML::Node &amp;node)=0</td></tr>
-<tr class="memdesc:a092a463363d3db6ffe6bc3fe56e8b90b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply ICs through the settings in a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="#a092a463363d3db6ffe6bc3fe56e8b90b">More...</a><br /></td></tr>
-<tr class="separator:a092a463363d3db6ffe6bc3fe56e8b90b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e28f0bee0a2c4df480c2f01a9d5be7a"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a9e28f0bee0a2c4df480c2f01a9d5be7a">setInitialConditions</a> (const YAML::Node &amp;node)=0</td></tr>
+<tr class="memdesc:a9e28f0bee0a2c4df480c2f01a9d5be7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set initial conditions of the flow fields.  <a href="#a9e28f0bee0a2c4df480c2f01a9d5be7a">More...</a><br /></td></tr>
+<tr class="separator:a9e28f0bee0a2c4df480c2f01a9d5be7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac54f5cca686b51b2c145521245afaf6c"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ac54f5cca686b51b2c145521245afaf6c">convert2Velocity</a> (const Mat &amp;Rinv)=0</td></tr>
-<tr class="memdesc:ac54f5cca686b51b2c145521245afaf6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assume the values in UGlobal are fluxes and convert them to velocities.  <a href="#ac54f5cca686b51b2c145521245afaf6c">More...</a><br /></td></tr>
+<tr class="memdesc:ac54f5cca686b51b2c145521245afaf6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert velocity fluxes to velocity components.  <a href="#ac54f5cca686b51b2c145521245afaf6c">More...</a><br /></td></tr>
 <tr class="separator:ac54f5cca686b51b2c145521245afaf6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a243c2ad1922f903eb2719f7eb49e87e4"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a243c2ad1922f903eb2719f7eb49e87e4">convert2Flux</a> (const Mat &amp;R)=0</td></tr>
-<tr class="memdesc:a243c2ad1922f903eb2719f7eb49e87e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assume the values in UGlobal are velocities and convert them to fluxes.  <a href="#a243c2ad1922f903eb2719f7eb49e87e4">More...</a><br /></td></tr>
+<tr class="memdesc:a243c2ad1922f903eb2719f7eb49e87e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert velocity components to velocity fluxes.  <a href="#a243c2ad1922f903eb2719f7eb49e87e4">More...</a><br /></td></tr>
 <tr class="separator:a243c2ad1922f903eb2719f7eb49e87e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3494b2ddb43e04ab5d0bc2fbb87e682"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ab3494b2ddb43e04ab5d0bc2fbb87e682">write</a> (const std::string &amp;file) const =0</td></tr>
-<tr class="memdesc:ab3494b2ddb43e04ab5d0bc2fbb87e682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write solution vectors to a given file.  <a href="#ab3494b2ddb43e04ab5d0bc2fbb87e682">More...</a><br /></td></tr>
-<tr class="separator:ab3494b2ddb43e04ab5d0bc2fbb87e682"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9730a0625e79b3707363bdc6246c6f5e"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a9730a0625e79b3707363bdc6246c6f5e">read</a> (const std::string &amp;file)=0</td></tr>
-<tr class="memdesc:a9730a0625e79b3707363bdc6246c6f5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read solution vectors from a given file.  <a href="#a9730a0625e79b3707363bdc6246c6f5e">More...</a><br /></td></tr>
-<tr class="separator:a9730a0625e79b3707363bdc6246c6f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86ef8e10bdf5574b0cea6d02efe449ea"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a86ef8e10bdf5574b0cea6d02efe449ea">write</a> (const std::string &amp;filePath) const =0</td></tr>
+<tr class="memdesc:a86ef8e10bdf5574b0cea6d02efe449ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write flow field solutions to a file.  <a href="#a86ef8e10bdf5574b0cea6d02efe449ea">More...</a><br /></td></tr>
+<tr class="separator:a86ef8e10bdf5574b0cea6d02efe449ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad655baee2373c20b0a7a855212e242"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#aaad655baee2373c20b0a7a855212e242">read</a> (const std::string &amp;filePath)=0</td></tr>
+<tr class="memdesc:aaad655baee2373c20b0a7a855212e242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the flow field solutions from a file.  <a href="#aaad655baee2373c20b0a7a855212e242">More...</a><br /></td></tr>
+<tr class="separator:aaad655baee2373c20b0a7a855212e242"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af612e664797d7d4511081c4827739c3f"><td class="memItemLeft" align="right" valign="top">PetscInt&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#af612e664797d7d4511081c4827739c3f">dim</a></td></tr>
-<tr class="memdesc:af612e664797d7d4511081c4827739c3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dimension.  <a href="#af612e664797d7d4511081c4827739c3f">More...</a><br /></td></tr>
+<tr class="memdesc:af612e664797d7d4511081c4827739c3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of dimensions.  <a href="#af612e664797d7d4511081c4827739c3f">More...</a><br /></td></tr>
 <tr class="separator:af612e664797d7d4511081c4827739c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c2a396ffce4f3355d90ce8628a55bb9"><td class="memItemLeft" align="right" valign="top">Vec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a7c2a396ffce4f3355d90ce8628a55bb9">UGlobal</a></td></tr>
-<tr class="memdesc:a7c2a396ffce4f3355d90ce8628a55bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packed PETSc Vec for velocities.  <a href="#a7c2a396ffce4f3355d90ce8628a55bb9">More...</a><br /></td></tr>
+<tr class="memdesc:a7c2a396ffce4f3355d90ce8628a55bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packed PETSc Vec object for the velocity vector field.  <a href="#a7c2a396ffce4f3355d90ce8628a55bb9">More...</a><br /></td></tr>
 <tr class="separator:a7c2a396ffce4f3355d90ce8628a55bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace2283c61781eca113f2df9551b69c6f"><td class="memItemLeft" align="right" valign="top">Vec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ace2283c61781eca113f2df9551b69c6f">pGlobal</a></td></tr>
-<tr class="memdesc:ace2283c61781eca113f2df9551b69c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A PETSc Vec for pressure field.  <a href="#ace2283c61781eca113f2df9551b69c6f">More...</a><br /></td></tr>
+<tr class="memdesc:ace2283c61781eca113f2df9551b69c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">PETSc Vec for the pressure scalar field.  <a href="#ace2283c61781eca113f2df9551b69c6f">More...</a><br /></td></tr>
 <tr class="separator:ace2283c61781eca113f2df9551b69c6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a452ed054c37bf65a3fe31fa6ba221be7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a452ed054c37bf65a3fe31fa6ba221be7">info</a></td></tr>
-<tr class="memdesc:a452ed054c37bf65a3fe31fa6ba221be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">A std::string containing information.  <a href="#a452ed054c37bf65a3fe31fa6ba221be7">More...</a><br /></td></tr>
+<tr class="memdesc:a452ed054c37bf65a3fe31fa6ba221be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">String containing information about the solution.  <a href="#a452ed054c37bf65a3fe31fa6ba221be7">More...</a><br /></td></tr>
 <tr class="separator:a452ed054c37bf65a3fe31fa6ba221be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:af9bff9cf7e274063135edd3f43aaccfd"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#af9bff9cf7e274063135edd3f43aaccfd">init</a> (const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;<a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a8ab2ce034aa603780d216d300d4cf1f7">mesh</a>)=0</td></tr>
-<tr class="memdesc:af9bff9cf7e274063135edd3f43aaccfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Underlying initialization function.  <a href="#af9bff9cf7e274063135edd3f43aaccfd">More...</a><br /></td></tr>
+<tr class="memdesc:af9bff9cf7e274063135edd3f43aaccfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the flow field solutions.  <a href="#af9bff9cf7e274063135edd3f43aaccfd">More...</a><br /></td></tr>
 <tr class="separator:af9bff9cf7e274063135edd3f43aaccfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
@@ -195,17 +196,17 @@ Protected Attributes</h2></td></tr>
 <tr class="memdesc:a38e78f61fd71a0cfaac05fe359079576"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of MPI communicator.  <a href="#a38e78f61fd71a0cfaac05fe359079576">More...</a><br /></td></tr>
 <tr class="separator:a38e78f61fd71a0cfaac05fe359079576"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1230a8c253b0f78eea43f4af65ce029f"><td class="memItemLeft" align="right" valign="top">PetscMPIInt&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a1230a8c253b0f78eea43f4af65ce029f">mpiRank</a></td></tr>
-<tr class="memdesc:a1230a8c253b0f78eea43f4af65ce029f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rank of this process.  <a href="#a1230a8c253b0f78eea43f4af65ce029f">More...</a><br /></td></tr>
+<tr class="memdesc:a1230a8c253b0f78eea43f4af65ce029f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rank of the local process.  <a href="#a1230a8c253b0f78eea43f4af65ce029f">More...</a><br /></td></tr>
 <tr class="separator:a1230a8c253b0f78eea43f4af65ce029f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ab2ce034aa603780d216d300d4cf1f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a8ab2ce034aa603780d216d300d4cf1f7">mesh</a></td></tr>
-<tr class="memdesc:a8ab2ce034aa603780d216d300d4cf1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">A std::shared_ptr to underlying mesh.  <a href="#a8ab2ce034aa603780d216d300d4cf1f7">More...</a><br /></td></tr>
+<tr class="memdesc:a8ab2ce034aa603780d216d300d4cf1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared pointer to the underlying Cartesian mesh object.  <a href="#a8ab2ce034aa603780d216d300d4cf1f7">More...</a><br /></td></tr>
 <tr class="separator:a8ab2ce034aa603780d216d300d4cf1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base (abstract) class for different solution holders. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../dd/df7/group__solution_module.html" title="Simple and useful structures for holding solutions. ">Solution holders</a>, <a class="el" href="../../dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174" title="Type definition of Solution. ">petibm::type::Solution</a>, <a class="el" href="../../dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8" title="A factory function for creating Solution objects. ">petibm::solution::createSolution</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="../../dd/df7/group__solution_module.html" title="Simple structures to hold flow field solutions. ">Solution holders</a>, <a class="el" href="../../dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174" title="Type definition of solution object. ">petibm::type::Solution</a>, <a class="el" href="../../dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8" title="Factory function to create a petibm::solution::Solution object. ">petibm::solution::createSolution</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00055">55</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00059">59</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0ad3c477420721bfcbbdae88e598d2e9"></a>
 <div class="memitem">
@@ -254,15 +255,15 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Construct through a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a>. </p>
+<p>Constructor using a Cartesian mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a> object. </td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Cartesian mesh object. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00080">80</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00082">82</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -289,46 +290,11 @@ Protected Attributes</h2></td></tr>
 
 <p>Default destructor. </p>
 
-<p>Definition at line <a class="el" href="../../d3/dc1/solution_8cpp_source.html#l00017">17</a> of file <a class="el" href="../../d3/dc1/solution_8cpp_source.html">solution.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dc1/solution_8cpp_source.html#l00018">18</a> of file <a class="el" href="../../d3/dc1/solution_8cpp_source.html">solution.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a092a463363d3db6ffe6bc3fe56e8b90b"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual PetscErrorCode petibm::solution::SolutionBase::applyIC </td>
-          <td>(</td>
-          <td class="paramtype">const YAML::Node &amp;&#160;</td>
-          <td class="paramname"><em>node</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Apply ICs through the settings in a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">node</td><td>[in] a YAML::Node containing settings of the flow.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
-
-<p>Implemented in <a class="el" href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a1b3af22afa65ce632690ad33a0812925">petibm::solution::SolutionSimple</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a243c2ad1922f903eb2719f7eb49e87e4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -351,10 +317,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Assume the values in UGlobal are velocities and convert them to fluxes. </p>
+<p>Convert velocity components to velocity fluxes. </p>
+<p>It assumes that UGlobal currently contains velocity components and converts (inplace) to velocity fluxes.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">R</td><td>[in] a PETSc Mat representing converting operator.</td></tr>
+    <tr><td class="paramname">R</td><td>[in] Operator to convert components to fluxes.</td></tr>
   </table>
   </dd>
 </dl>
@@ -386,10 +353,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Assume the values in UGlobal are fluxes and convert them to velocities. </p>
+<p>Convert velocity fluxes to velocity components. </p>
+<p>It assumes that UGlobal currently contains velocity fluxes and converts (inplace) to velocity components.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Rinv</td><td>[in] a PETSc Mat representing converting operator.</td></tr>
+    <tr><td class="paramname">Rinv</td><td>[in] Operator to convert fluxes to components.</td></tr>
   </table>
   </dd>
 </dl>
@@ -423,7 +391,7 @@ Protected Attributes</h2></td></tr>
 <p>Manually destroy data. </p>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/dc1/solution_8cpp_source.html#l00032">32</a> of file <a class="el" href="../../d3/dc1/solution_8cpp_source.html">solution.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dc1/solution_8cpp_source.html#l00034">34</a> of file <a class="el" href="../../d3/dc1/solution_8cpp_source.html">solution.cpp</a>.</p>
 
 </div>
 </div>
@@ -449,10 +417,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Underlying initialization function. </p>
+<p>Initialize the flow field solutions. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>[in] a <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309" title="Type definition of Mesh. ">type::Mesh</a>.</td></tr>
+    <tr><td class="paramname">mesh</td><td>[in] Cartesian mesh object.</td></tr>
   </table>
   </dd>
 </dl>
@@ -475,14 +443,14 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Print information to standard output. </p>
+<p>Print information about the solution to standard output. </p>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/dc1/solution_8cpp_source.html#l00050">50</a> of file <a class="el" href="../../d3/dc1/solution_8cpp_source.html">solution.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dc1/solution_8cpp_source.html#l00053">53</a> of file <a class="el" href="../../d3/dc1/solution_8cpp_source.html">solution.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a9730a0625e79b3707363bdc6246c6f5e"></a>
+<a class="anchor" id="aaad655baee2373c20b0a7a855212e242"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -493,7 +461,7 @@ Protected Attributes</h2></td></tr>
           <td class="memname">virtual PetscErrorCode petibm::solution::SolutionBase::read </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file</em></td><td>)</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -504,21 +472,56 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Read solution vectors from a given file. </p>
-<p>Now only support HDF5 format.</p>
+<p>Read the flow field solutions from a file. </p>
+<p>Currently only supports HDF5 format.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">file</td><td>[in] the full path to the file, without extension.</td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to read from.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a6f55ade74547550ac71ccd9340d25f09">petibm::solution::SolutionSimple</a>.</p>
+<p>Implemented in <a class="el" href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#ad9355f1f0857148eb92e32d7250c7ff0">petibm::solution::SolutionSimple</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ab3494b2ddb43e04ab5d0bc2fbb87e682"></a>
+<a class="anchor" id="a9e28f0bee0a2c4df480c2f01a9d5be7a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual PetscErrorCode petibm::solution::SolutionBase::setInitialConditions </td>
+          <td>(</td>
+          <td class="paramtype">const YAML::Node &amp;&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set initial conditions of the flow fields. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node with flow settings.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+
+<p>Implemented in <a class="el" href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a4a989076b28bd85a833253a564942bc2">petibm::solution::SolutionSimple</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a86ef8e10bdf5574b0cea6d02efe449ea"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -529,7 +532,7 @@ Protected Attributes</h2></td></tr>
           <td class="memname">virtual PetscErrorCode petibm::solution::SolutionBase::write </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file</em></td><td>)</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -540,17 +543,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Write solution vectors to a given file. </p>
-<p>Now only support HDF5 format.</p>
+<p>Write flow field solutions to a file. </p>
+<p>Currently only supports HDF5 format.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">file</td><td>[in] the full path to the file, without extension.</td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] Path of the file to write in.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a15843d6ad17cefabbf78e1d8fcbee3a2">petibm::solution::SolutionSimple</a>.</p>
+<p>Implemented in <a class="el" href="../../da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a2849666c38f08e4b1e6582491ad73daa">petibm::solution::SolutionSimple</a>.</p>
 
 </div>
 </div>
@@ -575,7 +578,7 @@ Protected Attributes</h2></td></tr>
 
 <p>MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00163">163</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00167">167</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -589,9 +592,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Dimension. </p>
+<p>Number of dimensions. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00060">60</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00063">63</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -605,9 +608,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A std::string containing information. </p>
+<p>String containing information about the solution. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00069">69</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00072">72</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -629,9 +632,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>A std::shared_ptr to underlying mesh. </p>
+<p>Shared pointer to the underlying Cartesian mesh object. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00172">172</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00176">176</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -653,9 +656,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The rank of this process. </p>
+<p>Rank of the local process. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00169">169</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00173">173</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -679,7 +682,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Size of MPI communicator. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00166">166</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00170">170</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -693,9 +696,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A PETSc Vec for pressure field. </p>
+<p>PETSc Vec for the pressure scalar field. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00066">66</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00069">69</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -709,9 +712,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Packed PETSc Vec for velocities. </p>
+<p>Packed PETSc Vec object for the velocity vector field. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00063">63</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dac/solution_8h_source.html#l00066">66</a> of file <a class="el" href="../../d7/dac/solution_8h_source.html">solution.h</a>.</p>
 
 </div>
 </div>
@@ -725,7 +728,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../db/dea/namespacepetibm_1_1solution.html">solution</a></li><li class="navelem"><a class="el" href="../../dc/d96/classpetibm_1_1solution_1_1_solution_base.html">SolutionBase</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

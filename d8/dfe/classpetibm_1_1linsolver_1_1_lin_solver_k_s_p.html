@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.3.1</span>
+   &#160;<span id="projectnumber">0.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -128,7 +128,8 @@ $(document).ready(function(){initNavTree('d8/dfe/classpetibm_1_1linsolver_1_1_li
 <div class="dynheader">
 Inheritance diagram for petibm::linsolver::LinSolverKSP:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../d6/d11/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p__inherit__graph.svg" width="136" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d6/d11/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p__inherit__graph.svg" width="136" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -143,16 +144,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7a3d660431053b3d681bff370d36056c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manually destroy the data in the current instance.  <a href="#a7a3d660431053b3d681bff370d36056c">More...</a><br /></td></tr>
 <tr class="separator:a7a3d660431053b3d681bff370d36056c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a317ce7b599e1cce67e54d689cb6f32d8"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#a317ce7b599e1cce67e54d689cb6f32d8">setMatrix</a> (const Mat &amp;A)</td></tr>
-<tr class="memdesc:a317ce7b599e1cce67e54d689cb6f32d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the coefficient matrix A as in Ax=b.  <a href="#a317ce7b599e1cce67e54d689cb6f32d8">More...</a><br /></td></tr>
+<tr class="memdesc:a317ce7b599e1cce67e54d689cb6f32d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the coefficient matrix of the linear system.  <a href="#a317ce7b599e1cce67e54d689cb6f32d8">More...</a><br /></td></tr>
 <tr class="separator:a317ce7b599e1cce67e54d689cb6f32d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c04927166df8baa1cb0709a3beb462d"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#a1c04927166df8baa1cb0709a3beb462d">solve</a> (Vec &amp;x, Vec &amp;b)</td></tr>
-<tr class="memdesc:a1c04927166df8baa1cb0709a3beb462d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve Ax=b.  <a href="#a1c04927166df8baa1cb0709a3beb462d">More...</a><br /></td></tr>
+<tr class="memdesc:a1c04927166df8baa1cb0709a3beb462d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the linear system.  <a href="#a1c04927166df8baa1cb0709a3beb462d">More...</a><br /></td></tr>
 <tr class="separator:a1c04927166df8baa1cb0709a3beb462d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8893bf2f3fe91a9f0527939d083ffd4"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#af8893bf2f3fe91a9f0527939d083ffd4">getIters</a> (PetscInt &amp;iters)</td></tr>
-<tr class="memdesc:af8893bf2f3fe91a9f0527939d083ffd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of iterations of the last solve.  <a href="#af8893bf2f3fe91a9f0527939d083ffd4">More...</a><br /></td></tr>
+<tr class="memdesc:af8893bf2f3fe91a9f0527939d083ffd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of iterations of the solver.  <a href="#af8893bf2f3fe91a9f0527939d083ffd4">More...</a><br /></td></tr>
 <tr class="separator:af8893bf2f3fe91a9f0527939d083ffd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7d5e3384cb69b3c60e18019bdace250"><td class="memItemLeft" align="right" valign="top">virtual PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#ac7d5e3384cb69b3c60e18019bdace250">getResidual</a> (PetscReal &amp;res)</td></tr>
-<tr class="memdesc:ac7d5e3384cb69b3c60e18019bdace250"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the final residual of the last solve.  <a href="#ac7d5e3384cb69b3c60e18019bdace250">More...</a><br /></td></tr>
+<tr class="memdesc:ac7d5e3384cb69b3c60e18019bdace250"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the final residual of the solver.  <a href="#ac7d5e3384cb69b3c60e18019bdace250">More...</a><br /></td></tr>
 <tr class="separator:ac7d5e3384cb69b3c60e18019bdace250"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7c8f20c619c5ed3302763ef689cf909"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#ae7c8f20c619c5ed3302763ef689cf909">printInfo</a> () const </td></tr>
 <tr class="memdesc:ae7c8f20c619c5ed3302763ef689cf909"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information to standard output.  <a href="#ae7c8f20c619c5ed3302763ef689cf909">More...</a><br /></td></tr>
@@ -173,13 +174,13 @@ Protected Attributes</h2></td></tr>
 <tr class="memdesc:a19f9165d9f5bc17fc80ed6730ca3dc51"><td class="mdescLeft">&#160;</td><td class="mdescRight">the underlying KSP solver  <a href="#a19f9165d9f5bc17fc80ed6730ca3dc51">More...</a><br /></td></tr>
 <tr class="separator:a19f9165d9f5bc17fc80ed6730ca3dc51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75c86a86f0c7c72e85140de99e42977f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a75c86a86f0c7c72e85140de99e42977f">name</a></td></tr>
-<tr class="memdesc:a75c86a86f0c7c72e85140de99e42977f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The name of this solver.  <a href="#a75c86a86f0c7c72e85140de99e42977f">More...</a><br /></td></tr>
+<tr class="memdesc:a75c86a86f0c7c72e85140de99e42977f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the linear solver.  <a href="#a75c86a86f0c7c72e85140de99e42977f">More...</a><br /></td></tr>
 <tr class="separator:a75c86a86f0c7c72e85140de99e42977f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3942d4a6342da2d7bb70cb420e7da3cd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a3942d4a6342da2d7bb70cb420e7da3cd">config</a></td></tr>
-<tr class="memdesc:a3942d4a6342da2d7bb70cb420e7da3cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The path to the configuration file for the underlying solver.  <a href="#a3942d4a6342da2d7bb70cb420e7da3cd">More...</a><br /></td></tr>
+<tr class="memdesc:a3942d4a6342da2d7bb70cb420e7da3cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path of the solver configuration file to read.  <a href="#a3942d4a6342da2d7bb70cb420e7da3cd">More...</a><br /></td></tr>
 <tr class="separator:a3942d4a6342da2d7bb70cb420e7da3cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2582bc6b3b57080048491555dee51ed"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#ad2582bc6b3b57080048491555dee51ed">type</a></td></tr>
-<tr class="memdesc:ad2582bc6b3b57080048491555dee51ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of the underlying linear solver.  <a href="#ad2582bc6b3b57080048491555dee51ed">More...</a><br /></td></tr>
+<tr class="memdesc:ad2582bc6b3b57080048491555dee51ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the linear solver.  <a href="#ad2582bc6b3b57080048491555dee51ed">More...</a><br /></td></tr>
 <tr class="separator:ad2582bc6b3b57080048491555dee51ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -187,7 +188,7 @@ Protected Attributes</h2></td></tr>
 <p>This class holds a KSP object from PETSc. The configuration of this underlying KSP solver will be read from the provided argument <code>file</code>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d8/df7/group__linsolver.html#gaf4b8946333755bf50282bc7916720763" title="Type definition of LinSolver. ">petibm::type::LinSolver</a>, <a class="el" href="../../d8/df7/group__linsolver.html#ga4570812b9208e25e36d4479684844b49" title="A factory function for creating a LinSolver. ">petibm::linsolver::createLinSolver</a>. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../db/de5/linsolverksp_8h_source.html#l00033">33</a> of file <a class="el" href="../../db/de5/linsolverksp_8h_source.html">linsolverksp.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/de5/linsolverksp_8h_source.html#l00028">28</a> of file <a class="el" href="../../db/de5/linsolverksp_8h_source.html">linsolverksp.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="adeec849cef70fb649004a453e837132d"></a>
 <div class="memitem">
@@ -216,14 +217,14 @@ Protected Attributes</h2></td></tr>
 <p>Constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">solverName</td><td>[in] the name of the solver. </td></tr>
-    <tr><td class="paramname">file</td><td>[in] the path to the configuration file of the underlying solver.</td></tr>
+    <tr><td class="paramname">solverName</td><td>[in] Name of the solver. </td></tr>
+    <tr><td class="paramname">file</td><td>[in] Path of the configuration file for the solver.</td></tr>
   </table>
   </dd>
 </dl>
 <p>The argument <code>name</code> will be used as a prefix for the configuration of the underlying KSP solver in the provided configuration file. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00019">19</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00016">16</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -250,7 +251,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Default destructor. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00027">27</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00023">23</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -277,11 +278,10 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Manually destroy the data in the current instance. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a7bd78ba14bf51cfe182e7ac7425f8565">petibm::linsolver::LinSolverBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00042">42</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00037">37</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -307,18 +307,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the number of iterations of the last solve. </p>
+<p>Get the number of iterations of the solver. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">iters</td><td>[out] number of iterations.</td></tr>
+    <tr><td class="paramname">iters</td><td>[out] Number of iterations. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implements <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#ab1f83b0c4852fbb189f8b19f7d64ec65">petibm::linsolver::LinSolverBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00118">118</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00110">110</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -344,18 +343,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the final residual of the last solve. </p>
+<p>Get the final residual of the solver. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">res</td><td>[out] residual (norm).</td></tr>
+    <tr><td class="paramname">res</td><td>[out] Residual. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implements <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#af0fd0eedbd15c3d70652e21e8f4e7311">petibm::linsolver::LinSolverBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00131">131</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00122">122</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -384,14 +382,13 @@ Protected Attributes</h2></td></tr>
 <p>Get the type of this instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">_type</td><td>[out] a string representing the type.</td></tr>
+    <tr><td class="paramname">_type</td><td>[out] String representing the type.</td></tr>
   </table>
   </dd>
 </dl>
-<p>The possible return of <code>_type</code> is either <code>NVIDIA AmgX</code> or <code>PETSc KSP</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>Possible returns for <code>_type</code> are <code>NVIDIA AmgX</code> or <code>PETSc KSP</code>. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d19/linsolver_8cpp_source.html#l00054">54</a> of file <a class="el" href="../../d5/d19/linsolver_8cpp_source.html">linsolver.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d19/linsolver_8cpp_source.html#l00049">49</a> of file <a class="el" href="../../d5/d19/linsolver_8cpp_source.html">linsolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -417,12 +414,11 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Private initialization function. </p>
-<p>The design of linear solver classes is that only the factory function can initialize the instances, and it doesn't allow user to declare instance first and initialize the instance later. So it seems not necessary to make initialization function public.</p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
+<p>The design of linear solver classes is that only the factory function can initialize the instances, and it doesn't allow user to declare instance first and initialize the instance later. So it seems not necessary to make initialization function public. </p>
 
 <p>Implements <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#af7082bdd0fa63edc53e5eedf796bbaad">petibm::linsolver::LinSolverBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00054">54</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00048">48</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -448,9 +444,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Print information to standard output. </p>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d19/linsolver_8cpp_source.html#l00033">33</a> of file <a class="el" href="../../d5/d19/linsolver_8cpp_source.html">linsolver.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d19/linsolver_8cpp_source.html#l00029">29</a> of file <a class="el" href="../../d5/d19/linsolver_8cpp_source.html">linsolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -476,18 +471,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the coefficient matrix A as in Ax=b. </p>
+<p>Set the coefficient matrix of the linear system. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">A</td><td>[in] a PETSc Mat; the coefficient matrix.</td></tr>
+    <tr><td class="paramname">A</td><td>[in] Coefficient matrix. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implements <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#a043854d27b1096281f76295df2cd7539">petibm::linsolver::LinSolverBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00079">79</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00072">72</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -523,19 +517,18 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Solve Ax=b. </p>
+<p>Solve the linear system. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">x</td><td>[in, out] a PETSc Vec; the vector of unknowns. </td></tr>
-    <tr><td class="paramname">b</td><td>[in] a PETSc Vec; the RHS vector.</td></tr>
+    <tr><td class="paramname">x</td><td>[in, out] Vector of unknowns. </td></tr>
+    <tr><td class="paramname">b</td><td>[in] Right-hand side of the linear system. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>PetscErrorCode. </dd></dl>
 
 <p>Implements <a class="el" href="../../de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#ad93df700abd1ba97d26078871eaaec0b">petibm::linsolver::LinSolverBase</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00093">93</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html#l00085">85</a> of file <a class="el" href="../../dd/d63/linsolverksp_8cpp_source.html">linsolverksp.cpp</a>.</p>
 
 </div>
 </div>
@@ -558,9 +551,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The path to the configuration file for the underlying solver. </p>
+<p>Path of the solver configuration file to read. </p>
 
-<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00160">160</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00132">132</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
 
 </div>
 </div>
@@ -584,7 +577,7 @@ Protected Attributes</h2></td></tr>
 
 <p>the underlying KSP solver </p>
 
-<p>Definition at line <a class="el" href="../../db/de5/linsolverksp_8h_source.html#l00065">65</a> of file <a class="el" href="../../db/de5/linsolverksp_8h_source.html">linsolverksp.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/de5/linsolverksp_8h_source.html#l00058">58</a> of file <a class="el" href="../../db/de5/linsolverksp_8h_source.html">linsolverksp.h</a>.</p>
 
 </div>
 </div>
@@ -606,10 +599,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The name of this solver. </p>
-<p>This name will also be used as the prefix for PETSc solver options. For example, if name is "velocity", the prefix in PETSc solver options will be "velocity_". </p>
+<p>Name of the linear solver. </p>
+<p>The name should match the prefix used for to configure the solver from the command line or from a configuration file. For example, if the name is "velocity", the prefix should be "_velocity". </p>
 
-<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00157">157</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00129">129</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
 
 </div>
 </div>
@@ -631,9 +624,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The type of the underlying linear solver. </p>
+<p>Type of the linear solver. </p>
 
-<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00163">163</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d19/linsolver_8h_source.html#l00135">135</a> of file <a class="el" href="../../d6/d19/linsolver_8h_source.html">linsolver.h</a>.</p>
 
 </div>
 </div>
@@ -647,7 +640,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d7/d53/namespacepetibm.html">petibm</a></li><li class="navelem"><a class="el" href="../../d1/d12/namespacepetibm_1_1linsolver.html">linsolver</a></li><li class="navelem"><a class="el" href="../../d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html">LinSolverKSP</a></li>
-    <li class="footer">Generated on Fri Jun 22 2018 12:14:35 for PetIBM by
+    <li class="footer">Generated on Fri Nov 30 2018 16:52:08 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

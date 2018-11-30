@@ -193,6 +193,7 @@ This node gather various `parameters` regarding the advancement of a simulation.
 - `nrestart`: frequency (in number of time steps) of saving for the convective and diffusive terms; those terms will required upon restart of a run at a time step different from 0.
 - `convection`: time scheme for the convective terms; choices are the default explicit Euler method (`EULER_EXPLICIT`) or an explicit second-order Adams-Bashforth scheme (`ADAMS_BASHFORTH_2`).
 - `diffusion`: time scheme for the diffusive terms; choices are the default implicit Euler method (`EULER_IMPLICIT`), an explicit Euler method (`EULER_EXPLICIT`), or a second-order Crank-Nicolson scheme (`CRANK_NICOLSON`).
+- `delta`: regularized delta function to use; choices are `ROMA_ET_AL_1999` (3-point kernel) and `PESKIN_2002` (4-point kernel).
 - `velocitySolver`, `poissonSolver`, and `forcesSolver` (for the decoupled version of the immersed-boundary projection method) each references the type of hardware used to solve the linear system (either `CPU` or `GPU`) and the path (relative to the YAML configuration file) of the file containing the parameters for the linear solver.
 
 In the following example, PetIBM will run 1000 time steps (from time step 0) with a time increment of 0.01, saving the numerical solution (velocity vector field, pressure scalar field, and Lagrangian boundary forces) every 100 time steps and saving the convective and diffusive terms every 200 time steps.

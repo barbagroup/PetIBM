@@ -2,6 +2,37 @@
 
 ---
 
+## 0.4.0
+
+---
+
+### Added
+
+* Add possibility to use configuration arguments `--with-<package>-include=<path>` and `--with-<package>-lib=<path>` (instead of `--with-<package>-dir=<path>`) for yaml-cpp, gtest, AmgX, and AmgXWrapper. (`--with-<package>-dir=<path>` is still supported for those packages.)
+* Add classes to monitor the solution in sub-regions or at specific points (using linear interpolation). YAML configuration should be provided in the node "probes". (See Markdown documentation `doc/markdowns/inputs.md` for details on how to use.)
+* Install application header files upon make install call. The header files are installed in the include folder of the install directory. A user can now create new classes that inherits from an application class.
+* Add a simple class `RigidKinematicsSolver` in the applications folder to handle cases with moving rigid bodies (with prescribed kinematics). The user should create a class that inherits from `RigidKinematcsSolver` and that implements the methods to update the coordinates and velocity of the Lagrangian points, `setCoordinatesBodies` and `setVelocityBodies`.) For example, if you want to compute the flow around a flapping wing, you just have to create a class (outside the PetIBM source directory) that inherits from the application class `RigidKinematicsSolver` and implement the case-specific methods to update the location and velocity of the wing.
+* Add possibility to implement different kernels for the regularized delta function. (The 3-point delta function from Roma et al. (1999) and the 4-point delta function from Peskin (2002) are currently available in PetIBM.)
+
+### Changed
+
+* Upgrade to yaml-cpp-0.6.2 when downloading building yaml-cpp at PetIBM configuration time (configuration flag `--enable-yamlcpp`).
+* Re-format code with clang-format. The clang-format style file is added to the repository.
+* Re-write I/O functions to provide file paths that include the extension.
+* Re-write application codes to simplify main functions (move PetIBM object instantiations into the init method of the application class).
+* Change the scheme for the prediction of the forces at the beginning of a time step. Now using the forces from the previous time steps as prediction. (This is named "scheme 2" in Li et al., 2016.) Using this scheme avoids having to reset the vector of the Lagrangian momentum forcing every time step. (According to the authors there is little difference in the results between the different forcing schemes.)
+* For each example, move the configuration files for the solvers into the sub-folder `config` of the simulation directory.
+* Update the example for the 2D in-line oscillating cylinder to use the newly implemented application class `RigidKinematicsSolver`.
+
+### Fixed
+
+
+### Removed
+
+* Remove Boost dependency; configuration does not check for Boost anymore.
+
+---
+
 ## 0.3.1
 
 ---

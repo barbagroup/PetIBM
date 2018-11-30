@@ -52,10 +52,10 @@ parameters:
   diffusion: CRANK_NICOLSON
   velocitySolver:
     type: CPU
-    config: solversPetscOptions.info
+    config: config/velocity_solver.info
   poissonSolver:
     type: GPU
-    config: solversAmgXOptions.info
+    config: config/poisson_solver.info
 
 bodies:
   - type: points

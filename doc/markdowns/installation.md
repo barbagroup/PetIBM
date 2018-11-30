@@ -128,21 +128,14 @@ The PETSc Users Manual and the Manual Pages can be found on their
 
 [yaml-cpp](https://github.com/jbeder/yaml-cpp) is a YAML parser in C++ used in PetIBM to parse the input configuration file.
 
-The PetIBM configuration script gives the possibility to a previously installed version of yaml-cpp (with the configuration argument `--with-yamlcpp-dir=<directory>`) or to download and install yaml-cpp-0.5.1 (with `--enable-yamlcpp`).
-
----
-
-## Boost
-
-yaml-cpp depends on the Boost library.
-When configuring PetIBM, you can either use a previously installed version of Boost and provide the path of the directory that contains the headers' folder `boost` with `--with-boost-dir=<directory>` or request to download Boost-1.65.1 with `--enable-boost`.
+The PetIBM configuration script gives the possibility to use a previously installed version of yaml-cpp (with the configuration argument `--with-yamlcpp-dir=<path>`, or `--with-yamlcpp-include=<path>` and `--with-yamlcpp-lib=<path>`) or to download and install yaml-cpp-0.6.2 (with `--enable-yamlcpp`).
 
 ---
 
 ## gtest
 
 We use Google's C++ test framework [gtest](https://github.com/google/googletest) to run unit-tests after compiling PetIBM.
-When configuring PetIBM, you can either use a previously installed version of gtest and provide the path of the directory of the gtest installation with `--with-gtest-dir=<directory>` or request to download and install gtest-1.7.0 with `--enable-gtest`.
+When configuring PetIBM, you can either use a previously installed version of gtest and provide the path of the directory of the gtest installation with `--with-gtest-dir=<path>` (or using `--with-gtest-include=<path>` and `--with-gtest-lib=<path>`) or request to download and install gtest-1.7.0 with `--enable-gtest`.
 
 ---
 
@@ -176,21 +169,19 @@ Configure and build PetIBM with PETSc in debugging mode:
         CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
         --with-petsc-dir=$PETSC_DIR \
         --with-petsc-arch=$PETSC_ARCH \
-        --with-yamlcpp-dir=<directory> \
-        --with-boost-dir=<directory> \
-        --with-gtest-dir=<directory>
+        --with-yamlcpp-dir=<path> \
+        --with-gtest-dir=<path>
     make all
     make check
     make install
 
-If yaml-cpp, Boost, and/or gtest are not available, you can request installation at configuration time using:
+If yaml-cpp and/or gtest are not available, you can request installation at configuration time using:
 
     $PETIBM_DIR/configure \
         --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
         CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
         CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
         --enable-yamlcpp \
-        --enable-boost \
         --enable-gtest
 
 For production runs, you may want to use the optimized build of PETSc:
@@ -206,9 +197,8 @@ You may also want to build a optimized version:
         CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
         --with-petsc-dir=$PETSC_DIR \
         --with-petsc-arch=$PETSC_ARCH \
-        --with-yamlcpp-dir=<directory> \
-        --with-boost-dir=<directory> \
-        --with-gtest-dir=<directory>
+        --with-yamlcpp-dir=<path> \
+        --with-gtest-dir=<path>
     make all
     make check
     make install
@@ -234,10 +224,10 @@ Input files are located in `$PETIBM_DIR`, but can be copied to another directory
 
 PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the NVIDIA [AmgX](https://github.com/NVIDIA/AMGX) library.
 
-To solve linear systems on multiple GPU devices with PetIBM, the user must install CUDA and AmgX before building PetIBM.
+To solve linear systems on multiple GPU devices with PetIBM, the user must install CUDA and AmgX before building PetIBM and use the configuration arguments `--with-cuda-dir=<path>` for CUDA and `--with-amgx-dir=<path>` (or `--with-amgx-include=<path>` and `--with-amgx-lib=<path>`) for AmgX.
 
 To handle the data conversion between PETSc and AmgX, we use our in-house wrapper, called [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper).
-When configuring PetIBM, you can either use a previously installed version of AmgXWrapper and provide the path of the directory of the AmgXWrapper installation with `--with-amgxwrapper-dir=<directory>` or request to download and install AmgXWrapper-1.3 with `--enable-amgxwrapper`.
+When configuring PetIBM, you can either use a previously installed version of AmgXWrapper and provide the path of the directory of the AmgXWrapper installation with `--with-amgxwrapper-dir=<path>` (or using `--with-amgxwrapper-include=<path>` and `--with-amgxwrapper-lib=<path>`) or request to download and install AmgXWrapper-1.4 with `--enable-amgxwrapper`.
 
 For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWrapper:
 
@@ -250,12 +240,11 @@ For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWr
         CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
         --with-petsc-dir=$PETSC_DIR \
         --with-petsc-arch=$PETSC_ARCH \
-        --with-yamlcpp-dir=<directory> \
-        --with-boost-dir=<directory> \
-        --with-gtest-dir=<directory> \
-        --with-cuda-dir=<directory> \
-        --with-amgx-dir=<directory> \
-        --with-amgxwrapper-dir=<directory>
+        --with-yamlcpp-dir=<path> \
+        --with-gtest-dir=<path> \
+        --with-cuda-dir=<path> \
+        --with-amgx-dir=<path> \
+        --with-amgxwrapper-dir=<path>
     make all
     make check
     make install

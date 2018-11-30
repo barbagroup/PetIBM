@@ -9,21 +9,19 @@
 
 #pragma once
 
-// YAML-CPP
-# include <yaml-cpp/yaml.h>
+#include <yaml-cpp/yaml.h>
 
-// PetIBM
-# include <petibm/mesh.h>
-# include <petibm/solution.h>
-# include <petibm/boundary.h>
-# include <petibm/timeintegration.h>
-# include <petibm/linsolver.h>
-# include <petibm/operators.h>
-
+#include <petibm/boundary.h>
+#include <petibm/linsolver.h>
+#include <petibm/mesh.h>
+#include <petibm/operators.h>
+#include <petibm/probes.h>
+#include <petibm/solution.h>
+#include <petibm/timeintegration.h>
 
 /**
  * \class NavierStokesSolver
- * \brief Solve the incompressible Navier-Stokes equations with a projection 
+ * \brief Solve the incompressible Navier-Stokes equations with a projection
  *        method (Perot 1993).
  * \see nssolver
  * \ingroup nssolver
@@ -31,264 +29,264 @@
 class NavierStokesSolver
 {
 public:
-    
-    /** \brief Default constructor.  */
+    /** \brief Default constructor. */
     NavierStokesSolver() = default;
 
-    /**
-     * \brief Constructor; Set references to the mesh and boundary conditions.
+    /** \brief Constructor. Initialize the Navier-Stokes solver.
      *
-     * \param mesh [in] a type::Mesh object.
-     * \param bc [in] a type::Boundary object.
-     * \param node [in] YAML::Node containing settings.
+     * \param world [in] MPI communicator
+     * \param node [in] YAML configuration settings
      */
-    NavierStokesSolver(
-            const petibm::type::Mesh &mesh,
-            const petibm::type::Boundary &bc,
-            const YAML::Node &node);
+    NavierStokesSolver(const MPI_Comm &world,
+                       const YAML::Node &node);
 
-    /**
-     * \brief Default destructor.
-     */
+    /** \brief Default destructor. */
     ~NavierStokesSolver();
 
-
-    /**
-     * \brief Manually destroy data.
-     *
-     * \return PetscErrorCode.
-     */
+    /** \brief Manually destroy data. */
     PetscErrorCode destroy();
 
-    /**
-     * \brief Initialize vectors, operators, and linear solvers.
+    /** \brief Initialize the Navier-Stokes solver.
+     *
+     * Create a structured Cartesian mesh and write it into a HDF5 file.
+     * Create the initial field solution.
+     * Create the linear solvers (along with their vectors and operators).
+     * Create probes to monitor the solution in some user-defined regions.
+     * Record some simulation parameters.
+     *
+     * \param world [in] MPI communicator
+     * \param node [in] YAML configuration settings
+     * \return PetscErrorCode
      */
-    PetscErrorCode initialize(
-            const petibm::type::Mesh &mesh,
-            const petibm::type::Boundary &bc,
-            const YAML::Node &node);
+    PetscErrorCode init(const MPI_Comm &world, const YAML::Node &node);
 
-    /**
-     * \brief Advance in time for one step.
-     */
+    /** \brief Read or write initial data. */
+    PetscErrorCode ioInitialData();
+
+    /** \brief Advance the solution by one time step. */
     PetscErrorCode advance();
 
-    /**
-     * \brief Write the solution into a file.
-     *
-     * \param t [in] time
-     * \param filePath [in] path of the file to save (without the extension)
-     */
-    PetscErrorCode write(const PetscReal &t, const std::string &filePath);
-    
-    /**
-     * \brief Write the extra data that are required for restarting sessions.
-     * 
-     * If the file already has solutions in it, only extra necessary data will
-     * be written in. Otherwise, solutions and extra data will all be written in.
-     *
-     * \param t [in] time
-     * \param filePath [in] path of the file to save (without the extension)
-     */
-    PetscErrorCode writeRestartData(
-      const PetscReal &t, const std::string &filePath);
-    
-    /**
-     * \brief Read data that are required for restarting sessions.
-     * 
-     * \param filePath [in] path of the file to save (without the extension)
-     * \param t [out] time
-     */
-    PetscErrorCode readRestartData(const std::string &filePath, PetscReal &t);
+    /** \brief Write solution and solver info to files. */
+    PetscErrorCode write();
 
-    /**
-     * \brief Initialize viewers for ASCII files, such as iteration log.
-     *
-     * \param filePath [in] a string indicating the path to the file.
-     * \param mode [in] either FILE_MODE_WRITE (default) or FILE_MODE_APPEND.
-     *
-     * \return PetscErrorCode.
-     */
-    PetscErrorCode initializeASCIIFiles(const std::string &filePath,
-            const PetscFileMode &mode=FILE_MODE_WRITE);
-
-    /**
-     * \brief Write number of iterations executed by each solver at current time
-     *        step.
-     *
-     * For a given `filePath`, an `initializeASCIIFiles` should be called for 
-     * this `filePath` prior any call to `writeIterations`.
-     *
-     * \param timeIndex [in] Time-step index
-     * \param filePath [in] Path of the file to write in
-     */
-    PetscErrorCode writeIterations(const int &timeIndex, const std::string &filePath);
-
-    /**
-     * \brief Write the time value into HDF5 file.
-     *
-     * The time value is written as an attribute of the pressure (dataset p),
-     * which must be existing.
-     *
-     * \param t [in] time
-     * \param filePath [in] Path of the file to write in
-     */
-    PetscErrorCode writeTimeHDF5(
-      const PetscReal &t, const std::string &filePath);
-
-    /**
-     * \brief Read the time value from HDF5 file.
-     *
-     * The time value is an attribute of the pressure (dataset p),
-     * which must be existing.
-     *
-     * \param filePath [in] Path of the file to read from
-     * \param t [out] time
-     */
-    PetscErrorCode readTimeHDF5(const std::string &filePath, PetscReal &t);
+    /** \brief Evaluate if the simulation is finished. */
+    bool finished();
 
 protected:
-    
-    
-    /** \brief A reference to the YAML::Node passed in. */
-    YAML::Node                      settings;
-    
-    /** \brief Structured Cartesian mesh. */
-    petibm::type::Mesh              mesh; 
-    
+    /** \brief MPI communicator. */
+    MPI_Comm comm;
+
+    /** \brief Size of the MPI communicator. */
+    PetscMPIInt commSize;
+
+    /** \brief Rank of the process in the MPI communicator. */
+    PetscMPIInt commRank;
+
+    /** \brief YAML configuration settings. */
+    YAML::Node config;
+
+    /** \brief Structured Cartesian mesh object. */
+    petibm::type::Mesh mesh;
+
     /** \brief Information about the domain boundaries. */
-    petibm::type::Boundary          bc; 
-    
-    /** \brief Velocity and pressure fields. */
-    petibm::type::Solution          solution; 
-    
+    petibm::type::Boundary bc;
+
+    /** \brief Data object holding the velocity and pressure fields. */
+    petibm::type::Solution solution;
+
     /** \brief Time scheme for the convective terms. */
-    petibm::type::TimeIntegration   convCoeffs; 
-    
-    /** \brief Time scheme for the diffusive terms. */
-    petibm::type::TimeIntegration   diffCoeffs; 
+    petibm::type::TimeIntegration convCoeffs;
+
+    /** \brief Time scheme for the diffusion terms. */
+    petibm::type::TimeIntegration diffCoeffs;
 
     /** \brief Velocity linear solver. */
-    petibm::type::LinSolver         vSolver; 
-    
+    petibm::type::LinSolver vSolver;
+
     /** \brief Poisson linear solver. */
-    petibm::type::LinSolver         pSolver; 
-    
+    petibm::type::LinSolver pSolver;
 
-    
-    /** \brief A copy of time-step size. */
-    PetscReal   dt;
-    
-    /** \brief A copy of viscosity. */
-    PetscReal   nu;
-    
+    /** \brief Probes to monitor the solution. */
+    std::vector<petibm::type::Probe> probes;
 
-    
+    /** \brief Time-step size. */
+    PetscReal dt;
+
+    /** \brief Time-step index. */
+    PetscInt ite;
+
+    /** \brief Time value. */
+    PetscReal t;
+
+    /** \brief Starting time-step index. */
+    PetscInt nstart;
+
+    /** \brief Number of time steps to compute. */
+    PetscInt nt;
+
+    /** \brief Frequency at which the solution fields are written to files. */
+    PetscInt nsave;
+
+    /** \brief Frequency at which data to restart are written to files. */
+    PetscInt nrestart;
+
+    /** \brief Viscous diffusion coefficient. */
+    PetscReal nu;
+
     /** \brief Laplacian operator. */
-    Mat         L; 
+    Mat L;
 
-    /** \brief Laplacian correction for boundary conditions. */
-    Mat         LCorrection; 
+    /** \brief Laplacian correction operator for boundary conditions. */
+    Mat LCorrection;
 
     /** \brief Gradient operator. */
-    Mat         G; 
+    Mat G;
 
     /** \brief Divergence operator. */
-    Mat         D; 
+    Mat D;
 
     /** \brief Divergence correction for boundary conditions. */
-    Mat         DCorrection; 
+    Mat DCorrection;
 
-    /** \brief Non-linear convection operator (matrix-free). */
-    Mat         N; 
+    /** \brief Convective operator (matrix-free). */
+    Mat N;
 
-    /** \brief Matrix resulting from implicit treatment. */
-    Mat         A; 
+    /** \brief Implicit operator for the velocity solver. */
+    Mat A;
 
     /** \brief Projection operator. */
-    Mat         BNG;
+    Mat BNG;
 
-    /** \brief Poisson matrix. */
-    Mat         DBNG; 
-    
-    
+    /** \brief Poisson operator. */
+    Mat DBNG;
 
     /** \brief Pressure-correction vector. */
-    Vec         dP; 
-    
-    /** \brief Boundary terms for the velocity system. */
-    Vec         bc1; 
-    
+    Vec dP;
+
+    /** \brief Inhomogeneous boundary terms for the velocity system. */
+    Vec bc1;
+
     /** \brief Right-hand side vector of the velocity system. */
-    Vec         rhs1; 
-    
+    Vec rhs1;
+
     /** \brief Right-hand side vector of the Poisson system. */
-    Vec         rhs2; 
-    
-    /** \brief Convective terms from previous time steps. */
-    std::vector<Vec> conv; 
-    
-    /** \brief Diffusive terms from previous time steps. */
-    std::vector<Vec> diff; 
-    
+    Vec rhs2;
 
-    
-    /** \brief A Bool indicating if we'll pin a reference pressure point. */
-    PetscBool   isRefP;
-    
-    
+    /** \brief Explicit convective terms. */
+    std::vector<Vec> conv;
 
-    /** \brief Log initialize phase. */
+    /** \brief Explicit diffusion terms. */
+    std::vector<Vec> diff;
+
+    /** \brief True if we pin the pressure at a reference point. */
+    PetscBool isRefP;
+
+    /** \brief Log stage for the initialization phase. */
     PetscLogStage stageInitialize;
-    
-    /** \brief Log RHS of velocity system. */
+
+    /** \brief Log stage for assembling the RHS of the velocity system. */
     PetscLogStage stageRHSVelocity;
-    
-    /** \brief Log velocity solve. */
+
+    /** \brief Log stage for solving the velocity system. */
     PetscLogStage stageSolveVelocity;
-    
-    /** \brief Log RHS of Poisson system. */
+
+    /** \brief Log stage for assembling the RHS of the Poisson system. */
     PetscLogStage stageRHSPoisson;
-    
-    /** \brief Log Poisson solve. */
+
+    /** \brief Log stage for solving the Poisson system. */
     PetscLogStage stageSolvePoisson;
-    
-    /** \brief Log projection step. */
-    PetscLogStage stageProjectionStep;
-    
-    /** \brief Log write phase. */
+
+    /** \brief Log stage for updating field variables. */
+    PetscLogStage stageUpdate;
+
+    /** \brief Log stage when write the solution fields. */
     PetscLogStage stageWrite;
 
+    /** \brief Log stage for monitoring user-defined regions of the domain. */
+    PetscLogStage stageMonitor;
 
+    /** \brief ASCII PetscViewer object to output solvers info. */
+    PetscViewer solversViewer;
 
-    /** \brief A dictionary mapping file path to PetscViewers. */
-    std::map<std::string, PetscViewer> asciiViewers;
-    
-
-    
-
-    /** \brief Assemble the RHS vector of the velocity system.  */
+    /** \brief Assemble the RHS vector of the velocity system. */
     virtual PetscErrorCode assembleRHSVelocity();
 
-    /** \brief Solve the velocity system.  */
+    /** \brief Solve the velocity system. */
     virtual PetscErrorCode solveVelocity();
 
-    /** \brief Assemble the RHS vector of the Poisson system.  */
+    /** \brief Assemble the RHS vector of the Poisson system. */
     virtual PetscErrorCode assembleRHSPoisson();
 
-    /** \brief Solve the Poisson system.  */
+    /** \brief Solve the Poisson system. */
     virtual PetscErrorCode solvePoisson();
 
-    /** \brief Project the velocity field onto the divergence-free space and 
-     *         update the pressure field.  */
-    virtual PetscErrorCode projectionStep();
-    
-    /** \brief Create operators.  */
+    virtual PetscErrorCode applyDivergenceFreeVelocity();
+
+    virtual PetscErrorCode updatePressure();
+
+    /** \brief Create operators. */
     virtual PetscErrorCode createOperators();
-    
-    /** \brief Create vectors.  */
+
+    /** \brief Create vectors. */
     virtual PetscErrorCode createVectors();
-    
-    /** \brief Set null space or apply reference point.  */
+
+    /** \brief Set Poisson nullspace or pin pressure at a reference point. */
     virtual PetscErrorCode setNullSpace();
-}; // NavierStokesSolver
+
+    /** \brief Create an ASCII PetscViewer.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \param mode [in] File mode
+     * \param viewer [out] PetscViewer object
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode createPetscViewerASCII(const std::string &filePath,
+                                                  const PetscFileMode &mode,
+                                                  PetscViewer &viewer);
+
+    /** \brief Write the solution fields into a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode writeSolutionHDF5(const std::string &filePath);
+
+    /** \brief Write data required to restart a simulation into a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode writeRestartDataHDF5(const std::string &filePath);
+
+    /** \brief Read data required to restart a simulation from a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to read from
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode readRestartDataHDF5(const std::string &filePath);
+
+    /** \brief Write numbers of iterations and residuals of solvers to file. */
+    virtual PetscErrorCode writeLinSolversInfo();
+
+    /** \brief Write the time value into a HDF5 file.
+     *
+     * \param t [in] Time
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode writeTimeHDF5(const PetscReal &t,
+                                         const std::string &filePath);
+
+    /** \brief Read the time value from a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to read from
+     * \param t [out] Time
+     * \return PetscErrorCode
+     */
+    virtual PetscErrorCode readTimeHDF5(const std::string &filePath,
+                                        PetscReal &t);
+
+    /** \brief Monitor the solution at probes. */
+    virtual PetscErrorCode monitorProbes();
+
+};  // NavierStokesSolver

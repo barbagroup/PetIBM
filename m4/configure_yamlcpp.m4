@@ -1,10 +1,7 @@
 # CONFIGURE_YAMLCPP
-# ---------------
+# -----------------
 # brief: Configures required package yaml-cpp.
-
-AC_DEFUN([CONFIGURE_YAMLCPP],[
-
-CONFIGURE_BOOST
+AC_DEFUN([CONFIGURE_YAMLCPP], [
 
 echo
 echo "====================================="
@@ -14,41 +11,49 @@ echo "====================================="
 PACKAGE_INITIALIZE_ENVIRONMENT
 PACKAGE_SETUP_ENVIRONMENT
 
-AC_ARG_VAR([YAMLCPP_DIR], [yaml-cpp directory])
-
 AC_ARG_WITH([yamlcpp-dir],
             AS_HELP_STRING([--with-yamlcpp-dir=PATH],
                            [set yaml-cpp directory]),
             [YAMLCPP_DIR=$withval],
             [])
 
+AC_ARG_WITH([yamlcpp-include],
+            AS_HELP_STRING([--with-yamlcpp-include=PATH],
+                           [set yaml-cpp include directory]),
+            [YAMLCPP_INCLUDE_DIR=$withval],
+            [])
+
+AC_ARG_WITH([yamlcpp-lib],
+            AS_HELP_STRING([--with-yamlcpp-lib=PATH],
+                           [set yaml-cpp lib directory]),
+            [YAMLCPP_LIB_DIR=$withval],
+            [])
+
 AC_ARG_ENABLE([yamlcpp],
               AS_HELP_STRING([--enable-yamlcpp],
-                             [download and install yaml-cpp-0.5.1]),
+                             [download and install yaml-cpp-0.6.2]),
               [IS_INSTALL_YAMLCPP=yes],
               [IS_INSTALL_YAMLCPP=no])
 
 if test "x$YAMLCPP_DIR" != "x"; then
-  if test -d "$YAMLCPP_DIR"; then
-    SETUP_YAMLCPP
-  else
-    AC_MSG_ERROR([
-$YAMLCPP_DIR is not a valid directory;
-please use '--with-yamlcpp-dir=PATH' to provide the directory of the package])
-  fi
+  CHECK_YAMLCPP_DIR($YAMLCPP_DIR)
 else
+  if test "x$YAMLCPP_INCLUDE_DIR" != "x"; then
+    CHECK_YAMLCPP_INCLUDE_DIR($YAMLCPP_INCLUDE_DIR)
+  fi
+  if test "x$YAMLCPP_LIB_DIR" != "x"; then
+    CHECK_YAMLCPP_LIB_DIR($YAMLCPP_LIB_DIR)
+  fi
   if test "x$IS_INSTALL_YAMLCPP" = "xyes"; then
     INSTALL_YAMLCPP
   fi
 fi
 
-CPPFLAGS_APPEND($BOOST_CPPFLAGS)
-AC_CHECK_HEADER([yaml-cpp/yaml.h],
-                [],
-                [AC_MSG_ERROR([Couldn't find yaml-cpp/yaml.h...
-Please use '--with-yamlcpp-dir=PATH' to provide the directory of the package
-or '--enable-yamlcpp' to download and install yaml-cpp-0.5.1.
-])])
+AC_CHECK_HEADER([yaml-cpp/yaml.h], [],
+                [AC_MSG_ERROR([could not find yaml-cpp/yaml.h...
+Use '--with-yamlcpp-dir=PATH' to provide the directory of the package or
+Use '--with-yamlcpp-include=PATH' and '--with-yamlcpp-lib=PATH' or
+Use '--enable-yamlcpp' to download, build, and install yaml-cpp-0.6.2.])])
 
 AC_SUBST(YAMLCPP_LIBS, -lyaml-cpp)
 
@@ -59,83 +64,107 @@ echo
 ]) # CONFIGURE_YAMLCPP
 
 
-AC_DEFUN([SETUP_YAMLCPP], [
+# CHECK_YAMLCPP_DIR
+# -----------------
+# brief: Checks the existence of the yaml-cpp directory.
+AC_DEFUN([CHECK_YAMLCPP_DIR], [
 
-AC_SUBST(YAMLCPP_DIR, $YAMLCPP_DIR)
+YAMLCPP_DIR=$1
 AC_MSG_NOTICE([using yaml-cpp: $YAMLCPP_DIR])
-YAMLCPP_CPPFLAGS="-I$YAMLCPP_DIR/include $BOOST_CPPFLAGS"
-AC_SUBST(YAMLCPP_CPPFLAGS, $YAMLCPP_CPPFLAGS)
-CPPFLAGS_APPEND($YAMLCPP_CPPFLAGS)
-if test -d "$YAMLCPP_DIR/lib"; then
-  YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib -Wl,-rpath,$YAMLCPP_DIR/lib"
-elif test -d "$YAMLCPP_DIR/lib64"; then
-  YAMLCPP_LDFLAGS="-L$YAMLCPP_DIR/lib64 -Wl,-rpath,$YAMLCPP_DIR/lib64"
+
+if test ! -d "$YAMLCPP_DIR"; then
+  AC_MSG_ERROR([$YAMLCPP_DIR is not a valid directory...
+Use '--with-yamlcpp-dir=PATH' to provide the directory of the package.])
 fi
-AC_SUBST(YAMLCPP_LDFLAGS, $YAMLCPP_LDFLAGS)
-LDFLAGS_APPEND($YAMLCPP_LDFLAGS)
+CHECK_YAMLCPP_INCLUDE_DIR($YAMLCPP_DIR/include)
+if test -d "$YAMLCPP_DIR/lib64"; then
+  CHECK_YAMLCPP_LIB_DIR($YAMLCPP_DIR/lib64)
+else
+  CHECK_YAMLCPP_LIB_DIR($YAMLCPP_DIR/lib)
+fi
 
-]) # SETUP_YAMLCPP
+]) # CHECK_YAMLCPP_DIR
 
 
+# CHECK_YAMLCPP_INCLUDE_DIR
+# -------------------------
+# brief: Checks the existence of the yaml-cpp include directory.
+AC_DEFUN([CHECK_YAMLCPP_INCLUDE_DIR], [
+
+YAMLCPP_INCLUDE_DIR=$1
+AC_MSG_NOTICE([using yaml-cpp include directory: $YAMLCPP_INCLUDE_DIR])
+
+if test -d "$YAMLCPP_INCLUDE_DIR"; then
+      YAMLCPP_CPPFLAGS="-I$YAMLCPP_INCLUDE_DIR"
+      AC_SUBST(YAMLCPP_CPPFLAGS, $YAMLCPP_CPPFLAGS)
+      CPPFLAGS_APPEND($YAMLCPP_CPPFLAGS)
+else
+  AC_MSG_ERROR([$YAMLCPP_INCLUDE_DIR is not a valid directory...
+please use '--with-yamlcpp-include=PATH' to provide the include directory of the package.])
+fi
+
+]) # CHECK_YAMLCPP_INCLUDE_DIR
+
+
+# CHECK_YAMLCPP_LIB_DIR
+# ---------------------
+# brief: Checks the existence of the yaml-cpp lib directory.
+AC_DEFUN([CHECK_YAMLCPP_LIB_DIR], [
+
+YAMLCPP_LIB_DIR=$1
+AC_MSG_NOTICE([using yaml-cpp lib directory: $YAMLCPP_LIB_DIR])
+
+if test -d "$YAMLCPP_LIB_DIR"; then
+      YAMLCPP_LDFLAGS="-L$YAMLCPP_LIB_DIR -Wl,-rpath,$YAMLCPP_LIB_DIR"
+      AC_SUBST(YAMLCPP_LDFLAGS, $YAMLCPP_LDFLAGS)
+      LDFLAGS_APPEND($YAMLCPP_LDFLAGS)
+else
+  AC_MSG_ERROR([$YAMLCPP_LIB_DIR is not a valid directory...
+Use '--with-yamlcpp-lib=PATH' to provide the lib directory of the package.])
+fi
+
+]) # CHECK_YAMLCPP_LIB_DIR
+
+
+# INSTALL_YAMLCPP
+# ---------------
+# brief: Downloads, builds, and installs yaml-cpp.
 AC_DEFUN([INSTALL_YAMLCPP], [
 
-PACKAGE_INITIALIZE_ENVIRONMENT
-PACKAGE_SETUP_ENVIRONMENT
-AC_MSG_NOTICE([
- 
- ****************************************
- *      Downloading and installing      *
- *           yaml-cpp-0.5.1             *
- ****************************************
-])
-echo "*** INFO *** Downloading yaml-cpp-0.5.1... "
-VERSION=0.5.1
-TARBALL=release-$VERSION.tar.gz
-URL=https://github.com/jbeder/yaml-cpp/archive/$TARBALL
-wget $URL -P /tmp
-YAMLCPP_DIR=$BUILDDIR/externalpackages/yaml-cpp-$VERSION
-AC_SUBST([YAMLCPP_DIR], [$YAMLCPP_DIR])
-mkdir -p $YAMLCPP_DIR/build
-tar -xzf /tmp/$TARBALL -C $YAMLCPP_DIR --strip-components=1
-rm -f /tmp/$TARBALL
-echo "*** INFO *** Building yaml-cpp-0.5.1... "
+version=0.6.2
+tarball=yaml-cpp-$version.tar.gz
+url=https://github.com/jbeder/yaml-cpp/archive/$tarball
+YAMLCPP_DIR=$BUILDDIR/externalpackages/yaml-cpp-$version
+if test ! -d "$YAMLCPP_DIR"; then
+  echo "downloading yaml-cpp-$version... "
+  wget -q $url -P /tmp
+  mkdir -p $YAMLCPP_DIR/build
+  tar -xzf /tmp/$tarball -C $YAMLCPP_DIR --strip-components=1
+  rm -f /tmp/$tarball
+fi
+echo "building and installing yaml-cpp-$version... "
 cd $YAMLCPP_DIR/build
 if test "x$enable_shared" = "xyes"; then
-  if test ! "x$BOOST_DIR" = "x"; then
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBoost_INCLUDE_DIR=$BOOST_DIR \
-      -DBUILD_SHARED_LIBS=ON \
-      -DCMAKE_MACOSX_RPATH=1
-  else
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBUILD_SHARED_LIBS=ON \
-      -DCMAKE_MACOSX_RPATH=1
-  fi
-  make all -j4
+  cmake $YAMLCPP_DIR \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_INSTALL_PREFIX=$prefix \
+    -DBUILD_SHARED_LIBS=ON \
+    -DYAML_CPP_BUILD_TESTS=OFF \
+    -DCMAKE_MACOSX_RPATH=1
+  make all
   make install
 fi
 if test "x$enable_static" = "xyes"; then
-  if test ! "x$BOOST_DIR" = "x"; then
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBoost_INCLUDE_DIR=$BOOST_DIR \
-      -DBUILD_SHARED_LIBS=OFF \
-      -DCMAKE_MACOSX_RPATH=1
-  else
-    cmake $YAMLCPP_DIR \
-      -DCMAKE_INSTALL_PREFIX=$prefix \
-      -DBUILD_SHARED_LIBS=OFF \
-      -DCMAKE_MACOSX_RPATH=1
-  fi
-  make all -j4
+  cmake $YAMLCPP_DIR \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_INSTALL_PREFIX=$prefix \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DYAML_CPP_BUILD_TESTS=OFF \
+    -DCMAKE_MACOSX_RPATH=1
+  make all
   make install
 fi
 cd $BUILDDIR
-YAMLCPP_CPPFLAGS=$BOOST_CPPFLAGS
-AC_SUBST(YAMLCPP_CPPFLAGS, $YAMLCPP_CPPFLAGS)
-PACKAGE_RESTORE_ENVIRONMENT
 
 echo
 

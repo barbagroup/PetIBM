@@ -5,6 +5,7 @@ nobase_include_HEADERS = \
 	petibm/cartesianmesh.h \
 	petibm/delta.h \
 	petibm/io.h \
+	petibm/lininterp.h \
 	petibm/linsolveramgx.h \
 	petibm/linsolver.h \
 	petibm/linsolverksp.h \
@@ -12,6 +13,7 @@ nobase_include_HEADERS = \
 	petibm/misc.h \
 	petibm/operators.h \
 	petibm/parser.h \
+	petibm/probes.h \
 	petibm/singlebody.h \
 	petibm/singlebodypoints.h \
 	petibm/singleboundaryconvective.h \

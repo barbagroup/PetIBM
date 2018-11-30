@@ -31,25 +31,29 @@ mesh:
 
 parameters:
   dt: 0.002
+  startStep: 0
   nt: 10000
   nsave: 100
-  nrestart: 2500
+  nrestart: 5000
   convection: ADAMS_BASHFORTH_2
   diffusion: CRANK_NICOLSON
-  decoupling:
-    maxIters: 1
+  delta: PESKIN_2002
   velocitySolver:
     type: CPU
-    config: configs/velocity_solver.info
+    config: config/velocity_solver.info
   poissonSolver:
     type: GPU
-    config: configs/poisson_solver.info
+    config: config/poisson_solver.info
   forcesSolver:
     type: CPU
-    config: configs/forces_solver.info
+    config: config/forces_solver.info
 
 bodies:
   - type: points
+    name: "circle"
     file: circle.body
-    amplitude: 0.7957747154594768
-    frequency: 0.2
+    kinematics:
+      KC: 5.0
+      D: 1.0
+      f: 0.2
+      center: [0.0, 0.0]

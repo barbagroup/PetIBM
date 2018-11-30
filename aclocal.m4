@@ -1188,7 +1188,6 @@ AC_SUBST([am__untar])
 
 m4_include([m4/configure_amgx.m4])
 m4_include([m4/configure_amgxwrapper.m4])
-m4_include([m4/configure_boost.m4])
 m4_include([m4/configure_cuda.m4])
 m4_include([m4/configure_gtest.m4])
 m4_include([m4/configure_petsc.m4])

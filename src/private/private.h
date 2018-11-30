@@ -5,9 +5,9 @@
  * \license BSD 3-Clause License.
  */
 
-# pragma once
+#pragma once
 
-# include <petscmat.h>
+#include <petscmat.h>
 
 /**
  * \brief Operator< of MatStencil for using it as a key to map.
@@ -31,4 +31,4 @@ static bool operator<(const MatStencil &l, const MatStencil &r)
     if (l.c < r.c) return true;
 
     return false;
-} // operator<
+}  // operator<

@@ -1,9 +1,11 @@
 noinst_LTLIBRARIES = libmisc.la
 
 libmisc_la_SOURCES = \
+	lininterp.cpp \
 	misc.cpp \
 	type.cpp \
-	delta.cpp
+	delta.cpp \
+	probes.cpp
 
 libmisc_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \

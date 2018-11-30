@@ -5,18 +5,13 @@
  * \license BSD 3-Clause License.
  */
 
+#pragma once
 
-# pragma once
+#include <vector>
 
-// STL
-# include <vector>
+#include <petscvec.h>
 
-// PETSc
-# include <petscvec.h>
-
-// here goes headers from our PetIBM
-# include <petibm/boundary.h>
-
+#include <petibm/boundary.h>
 
 namespace petibm
 {
@@ -30,31 +25,33 @@ namespace boundary
 class BoundarySimple : public BoundaryBase
 {
 public:
-
-    /** \copydoc BoundaryBase::BoundaryBase(const type::Mesh &, const YAML::Node &) */
+    /** \copydoc BoundaryBase::BoundaryBase(const type::Mesh &, const YAML::Node
+     * &) */
     BoundarySimple(const type::Mesh &mesh, const YAML::Node &node);
 
     /** \copydoc BoundaryBase::~BoundaryBase */
     virtual ~BoundarySimple() = default;
 
-
     // implementation of BoundaryBase::setGhostICs
     virtual PetscErrorCode setGhostICs(const type::Solution &soln);
 
     // implementation of BoundaryBase::updateEqs
-    virtual PetscErrorCode updateEqs(const type::Solution &soln, const PetscReal &dt);
+    virtual PetscErrorCode updateEqs(const type::Solution &soln,
+                                     const PetscReal &dt);
 
     // implementation of BoundaryBase::updateGhostValues
     virtual PetscErrorCode updateGhostValues(const type::Solution &soln);
 
     // implementation of BoundaryBase::copyValues2LocalVecs
-    virtual PetscErrorCode copyValues2LocalVecs(std::vector<Vec> &lclVecs) const;
+    virtual PetscErrorCode copyValues2LocalVecs(
+        std::vector<Vec> &lclVecs) const;
 
 protected:
-
     // implementation of BoundaryBase::init
     virtual PetscErrorCode init(const type::Mesh &mesh, const YAML::Node &node);
 
-}; // BoundarySimple
-} // end of namespace boundary
-} // end of namespace petibm
+};  // BoundarySimple
+
+}  // end of namespace boundary
+
+}  // end of namespace petibm

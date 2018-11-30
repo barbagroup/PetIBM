@@ -2,22 +2,26 @@
 Create a circle.
 """
 
-import os
+import pathlib
+import math
 import numpy
 
-R = 0.5
-xc, yc = 0.0, 0.0
-ds = 0.02
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-simu_dir = os.path.dirname(script_dir)
+root_dir = pathlib.Path(__file__).absolute().parents[1]
 
-n = int(2.0 * numpy.pi * R / ds)
+# Circle's parameters.
+R = 0.5  # radius
+xc, yc = 0.0, 0.0  # center's coordinates
+ds = 0.02  # distance between two consecutive points
+
+# Create coordinates of the circle.
+n = math.ceil(2 * numpy.pi * R / ds)  # number of divisions
 theta = numpy.linspace(0.0, 2.0 * numpy.pi, num=n, endpoint=False)
 x, y = xc + R * numpy.cos(theta), yc + R * numpy.sin(theta)
 
-filepath = os.path.join(simu_dir, 'circle.body')
+# Write coordinates into file.
+filepath = root_dir / 'circle.body'
 with open(filepath, 'w') as outfile:
-  outfile.write('{}\n'.format(n))
+    outfile.write('{}\n'.format(n))
 with open(filepath, 'ab') as outfile:
-  numpy.savetxt(outfile, numpy.c_[x, y])
+    numpy.savetxt(outfile, numpy.c_[x, y])

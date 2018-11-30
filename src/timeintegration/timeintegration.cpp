@@ -5,10 +5,8 @@
  * \license BSD 3-Clause License.
  */
 
-
 // here goes headers from our PetIBM
-# include <petibm/timeintegration.h>
-
+#include <petibm/timeintegration.h>
 
 namespace petibm
 {
@@ -17,49 +15,52 @@ namespace timeintegration
 PetscErrorCode TimeIntegrationBase::printInfo() const
 {
     PetscFunctionBeginUser;
-    
+
     PetscErrorCode ierr;
-    
+
     std::string info;
-    
+
     info += (std::string(80, '=') + "\n");
     info += ("Time Integration [" + name + "]\n");
     info += (std::string(80, '=') + "\n");
-    
+
     info += ("\tScheme: " + scheme + "\n\n");
-    info += ("\tCoefficient of implicit term: " + 
-            std::to_string(implicitCoeff) + "\n\n");
+    info +=
+        ("\tCoefficient of implicit term: " + std::to_string(implicitCoeff) +
+         "\n\n");
     info += "\tCoefficients of Explicit terms: [";
-    for(auto it: explicitCoeffs) info += (std::to_string(it) + ", ");
+    for (auto it : explicitCoeffs) info += (std::to_string(it) + ", ");
     info += "]\n\n";
-    
+
     ierr = PetscPrintf(PETSC_COMM_WORLD, "%s", info.c_str()); CHKERRQ(ierr);
-    
+
     PetscFunctionReturn(0);
-} // printInfo
+}  // printInfo
 
 PetscErrorCode createTimeIntegration(const std::string &name,
-        const YAML::Node &node, type::TimeIntegration &integration)
+                                     const YAML::Node &node,
+                                     type::TimeIntegration &integration)
 {
     PetscFunctionBeginUser;
 
-    std::string     scheme;
-    
-    if (! node["parameters"].IsDefined())
+    std::string scheme;
+
+    if (!node["parameters"].IsDefined())
     {
         SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
                 "Could not find the key \"parameters\" in the YAML node "
                 "passed to the function \"createTimeIntegration\"!");
     }
-    
-    if (! node["parameters"][name].IsDefined())
+
+    if (!node["parameters"][name].IsDefined())
     {
         SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
-                "Could not find the key \"%s\" under sub-node \"parameters\" "
-                "in the YAML node passed to the function "
-                "\"createTimeIntegration\"!", name.c_str());
+                 "Could not find the key \"%s\" under sub-node \"parameters\" "
+                 "in the YAML node passed to the function "
+                 "\"createTimeIntegration\"!",
+                 name.c_str());
     }
-    
+
     scheme = node["parameters"][name].as<std::string>();
 
     // set up coefficients.
@@ -74,13 +75,12 @@ PetscErrorCode createTimeIntegration(const std::string &name,
     else
     {
         SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_OUTOFRANGE,
-                "The time integration scheme \"%s\" does not exist.\n",
-                scheme.c_str());
+                 "The time integration scheme \"%s\" does not exist.\n",
+                 scheme.c_str());
     }
 
-
     PetscFunctionReturn(0);
-} // createTimeIntegration
+}  // createTimeIntegration
 
-} // end of namespace timeintegration
-} // end of namespace petibm
+}  // end of namespace timeintegration
+}  // end of namespace petibm

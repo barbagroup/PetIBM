@@ -1,73 +1,75 @@
 /**
  * \file solution.cpp
- * \brief Implementations of createSolution and members of SolutionBase.
+ * \brief Implementation of the factory function
+ *        and members of the class petibm::solution::SolutionBase.
  * \copyright Copyright (c) 2016-2018, Barba group. All rights reserved.
  * \license BSD 3-Clause License.
  */
 
-# include <petibm/solution.h>
-# include <petibm/solutionsimple.h>
-# include <petibm/io.h>
-
+#include <petibm/io.h>
+#include <petibm/solution.h>
+#include <petibm/solutionsimple.h>
 
 namespace petibm
 {
 namespace solution
 {
-    SolutionBase::~SolutionBase()
-    {
-        PetscFunctionBeginUser;
-        PetscErrorCode ierr;
-        PetscBool finalized;
+// Destructor.
+SolutionBase::~SolutionBase()
+{
+    PetscErrorCode ierr;
+    PetscBool finalized;
 
-        ierr = PetscFinalized(&finalized); CHKERRV(ierr);
-        if (finalized) return;
+    PetscFunctionBeginUser;
 
-        ierr = VecDestroy(&UGlobal); CHKERRV(ierr);
-        ierr = VecDestroy(&pGlobal); CHKERRV(ierr);
-        comm = MPI_COMM_NULL;
-    } // ~SolutionBase
+    ierr = PetscFinalized(&finalized); CHKERRV(ierr);
+    if (finalized) return;
 
+    ierr = VecDestroy(&UGlobal); CHKERRV(ierr);
+    ierr = VecDestroy(&pGlobal); CHKERRV(ierr);
+    comm = MPI_COMM_NULL;
+}  // ~SolutionBase
 
-    PetscErrorCode SolutionBase::destroy()
-    {
-        PetscFunctionBeginUser;
-        PetscErrorCode ierr;
+//  Manually destroy data.
+PetscErrorCode SolutionBase::destroy()
+{
+    PetscErrorCode ierr;
 
-        dim = -1;
-        ierr = VecDestroy(&UGlobal); CHKERRQ(ierr);
-        ierr = VecDestroy(&pGlobal); CHKERRQ(ierr);
-        info = "";
+    PetscFunctionBeginUser;
 
-        comm = MPI_COMM_NULL;
-        mpiRank = mpiSize = 0;
-        mesh.reset();
+    dim = -1;
+    ierr = VecDestroy(&UGlobal); CHKERRQ(ierr);
+    ierr = VecDestroy(&pGlobal); CHKERRQ(ierr);
+    info = "";
 
-        PetscFunctionReturn(0);
-    } // destroy
+    comm = MPI_COMM_NULL;
+    mpiRank = mpiSize = 0;
+    mesh.reset();
 
+    PetscFunctionReturn(0);
+}  // destroy
 
-    PetscErrorCode SolutionBase::printInfo() const
-    {
-        PetscFunctionBeginUser;
-        
-        PetscErrorCode  ierr;
-        
-        ierr = io::print(info); CHKERRQ(ierr);
-        
-        PetscFunctionReturn(0);
-    } // printInfo
-    
+// Print information about the solution to standard output.
+PetscErrorCode SolutionBase::printInfo() const
+{
+    PetscErrorCode ierr;
 
-    PetscErrorCode createSolution(
-            const type::Mesh &mesh, type::Solution &solution)
-    {
-        PetscFunctionBeginUser;
-        
-        solution = std::make_shared<SolutionSimple>(mesh);
+    PetscFunctionBeginUser;
 
-        PetscFunctionReturn(0);
-    } // createSolution
+    ierr = io::print(info); CHKERRQ(ierr);
 
-} // end of namespace solution
-} // end of namespace petibm
+    PetscFunctionReturn(0);
+}  // printInfo
+
+// Factory function to create a petibm::solution::Solution object.
+PetscErrorCode createSolution(const type::Mesh &mesh, type::Solution &solution)
+{
+    PetscFunctionBeginUser;
+
+    solution = std::make_shared<SolutionSimple>(mesh);
+
+    PetscFunctionReturn(0);
+}  // createSolution
+
+}  // end of namespace solution
+}  // end of namespace petibm

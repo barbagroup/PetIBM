@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -87,11 +89,11 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@WITH_AMGX_TRUE@am__append_1 = $(AMGXWRAPPER_LDFLAGS) $(AMGXWRAPPER_LIBS)
 subdir = applications
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/m4/configure_amgxwrapper.m4 \
-	$(top_srcdir)/m4/configure_boost.m4 \
 	$(top_srcdir)/m4/configure_cuda.m4 \
 	$(top_srcdir)/m4/configure_gtest.m4 \
 	$(top_srcdir)/m4/configure_petsc.m4 \
@@ -103,11 +105,63 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/configure_amgx.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(decoupledibpminclude_HEADERS) \
+	$(ibpminclude_HEADERS) $(navierstokesinclude_HEADERS) \
+	$(rigidkinematicsinclude_HEADERS) $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(decoupledibpmincludedir)" \
+	"$(DESTDIR)$(ibpmincludedir)" \
+	"$(DESTDIR)$(navierstokesincludedir)" \
+	"$(DESTDIR)$(rigidkinematicsincludedir)"
+LTLIBRARIES = $(lib_LTLIBRARIES)
+am__DEPENDENCIES_1 =
+@WITH_AMGX_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
+@WITH_AMGX_TRUE@	$(am__DEPENDENCIES_1)
+libpetibmapps_la_DEPENDENCIES = $(top_builddir)/src/libpetibm.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_libpetibmapps_la_OBJECTS =  \
+	navierstokes/libpetibmapps_la-navierstokes.lo \
+	ibpm/libpetibmapps_la-ibpm.lo \
+	decoupledibpm/libpetibmapps_la-decoupledibpm.lo \
+	rigidkinematics/libpetibmapps_la-rigidkinematics.lo
+libpetibmapps_la_OBJECTS = $(am_libpetibmapps_la_OBJECTS)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -120,8 +174,30 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-SOURCES =
-DIST_SOURCES =
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/config
+depcomp = $(SHELL) $(top_srcdir)/config/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX     " $@;
+am__v_CXX_1 = 
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD   " $@;
+am__v_CXXLD_1 = 
+SOURCES = $(libpetibmapps_la_SOURCES)
+DIST_SOURCES = $(libpetibmapps_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -135,6 +211,9 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+HEADERS = $(decoupledibpminclude_HEADERS) $(ibpminclude_HEADERS) \
+	$(navierstokesinclude_HEADERS) \
+	$(rigidkinematicsinclude_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -163,7 +242,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -192,10 +271,10 @@ am__relativize = \
   reldir="$$dir2"
 ACLOCAL = @ACLOCAL@
 AMGXWRAPPER_CPPFLAGS = @AMGXWRAPPER_CPPFLAGS@
-AMGXWRAPPER_DIR = @AMGXWRAPPER_DIR@
 AMGXWRAPPER_LDFLAGS = @AMGXWRAPPER_LDFLAGS@
 AMGXWRAPPER_LIBS = @AMGXWRAPPER_LIBS@
-AMGX_DIR = @AMGX_DIR@
+AMGX_CPPFLAGS = @AMGX_CPPFLAGS@
+AMGX_LDFLAGS = @AMGX_LDFLAGS@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -203,15 +282,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
-BOOST_DIR = @BOOST_DIR@
 BUILDDIR = @BUILDDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
-CUDA_DIR = @CUDA_DIR@
+CUDA_CPPFLAGS = @CUDA_CPPFLAGS@
+CUDA_LDFLAGS = @CUDA_LDFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -230,7 +308,6 @@ EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_CPPFLAGS = @GTEST_CPPFLAGS@
-GTEST_DIR = @GTEST_DIR@
 GTEST_LDFLAGS = @GTEST_LDFLAGS@
 GTEST_LIBS = @GTEST_LIBS@
 INSTALL = @INSTALL@
@@ -273,7 +350,6 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YAMLCPP_CPPFLAGS = @YAMLCPP_CPPFLAGS@
-YAMLCPP_DIR = @YAMLCPP_DIR@
 YAMLCPP_LDFLAGS = @YAMLCPP_LDFLAGS@
 YAMLCPP_LIBS = @YAMLCPP_LIBS@
 abs_builddir = @abs_builddir@
@@ -335,11 +411,40 @@ SUBDIRS = \
 	ibpm \
 	decoupledibpm \
 	vorticity \
-	createxdmf
+	createxdmf \
+	writemesh
 
+lib_LTLIBRARIES = libpetibmapps.la
+libpetibmapps_la_SOURCES = \
+	navierstokes/navierstokes.cpp \
+	ibpm/ibpm.cpp \
+	decoupledibpm/decoupledibpm.cpp \
+	rigidkinematics/rigidkinematics.cpp
+
+libpetibmapps_la_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	navierstokes \
+	ibpm \
+	decoupledibpm \
+	rigidkinematics \
+	$(PETSC_CPPFLAGS) \
+	$(YAMLCPP_CPPFLAGS)
+
+libpetibmapps_la_LIBADD = $(top_builddir)/src/libpetibm.la \
+	$(PETSC_LDFLAGS) $(PETSC_LIBS) $(YAMLCPP_LDFLAGS) \
+	$(YAMLCPP_LIBS) $(am__append_1)
+navierstokesincludedir = $(includedir)/petibm/navierstokes
+navierstokesinclude_HEADERS = navierstokes/navierstokes.h
+ibpmincludedir = $(includedir)/petibm/ibpm
+ibpminclude_HEADERS = ibpm/ibpm.h
+decoupledibpmincludedir = $(includedir)/petibm/decoupledibpm
+decoupledibpminclude_HEADERS = decoupledibpm/decoupledibpm.h
+rigidkinematicsincludedir = $(includedir)/petibm/rigidkinematics
+rigidkinematicsinclude_HEADERS = rigidkinematics/rigidkinematics.h
 all: all-recursive
 
 .SUFFIXES:
+.SUFFIXES: .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -370,11 +475,243 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	list2=; for p in $$list; do \
+	  if test -f $$p; then \
+	    list2="$$list2 $$p"; \
+	  else :; fi; \
+	done; \
+	test -z "$$list2" || { \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(libdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(libdir)" || exit 1; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
+	}
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	for p in $$list; do \
+	  $(am__strip_dir) \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$f"; \
+	done
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+	@list='$(lib_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
+navierstokes/$(am__dirstamp):
+	@$(MKDIR_P) navierstokes
+	@: > navierstokes/$(am__dirstamp)
+navierstokes/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) navierstokes/$(DEPDIR)
+	@: > navierstokes/$(DEPDIR)/$(am__dirstamp)
+navierstokes/libpetibmapps_la-navierstokes.lo:  \
+	navierstokes/$(am__dirstamp) \
+	navierstokes/$(DEPDIR)/$(am__dirstamp)
+ibpm/$(am__dirstamp):
+	@$(MKDIR_P) ibpm
+	@: > ibpm/$(am__dirstamp)
+ibpm/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ibpm/$(DEPDIR)
+	@: > ibpm/$(DEPDIR)/$(am__dirstamp)
+ibpm/libpetibmapps_la-ibpm.lo: ibpm/$(am__dirstamp) \
+	ibpm/$(DEPDIR)/$(am__dirstamp)
+decoupledibpm/$(am__dirstamp):
+	@$(MKDIR_P) decoupledibpm
+	@: > decoupledibpm/$(am__dirstamp)
+decoupledibpm/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) decoupledibpm/$(DEPDIR)
+	@: > decoupledibpm/$(DEPDIR)/$(am__dirstamp)
+decoupledibpm/libpetibmapps_la-decoupledibpm.lo:  \
+	decoupledibpm/$(am__dirstamp) \
+	decoupledibpm/$(DEPDIR)/$(am__dirstamp)
+rigidkinematics/$(am__dirstamp):
+	@$(MKDIR_P) rigidkinematics
+	@: > rigidkinematics/$(am__dirstamp)
+rigidkinematics/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) rigidkinematics/$(DEPDIR)
+	@: > rigidkinematics/$(DEPDIR)/$(am__dirstamp)
+rigidkinematics/libpetibmapps_la-rigidkinematics.lo:  \
+	rigidkinematics/$(am__dirstamp) \
+	rigidkinematics/$(DEPDIR)/$(am__dirstamp)
+
+libpetibmapps.la: $(libpetibmapps_la_OBJECTS) $(libpetibmapps_la_DEPENDENCIES) $(EXTRA_libpetibmapps_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libpetibmapps_la_OBJECTS) $(libpetibmapps_la_LIBADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+	-rm -f decoupledibpm/*.$(OBJEXT)
+	-rm -f decoupledibpm/*.lo
+	-rm -f ibpm/*.$(OBJEXT)
+	-rm -f ibpm/*.lo
+	-rm -f navierstokes/*.$(OBJEXT)
+	-rm -f navierstokes/*.lo
+	-rm -f rigidkinematics/*.$(OBJEXT)
+	-rm -f rigidkinematics/*.lo
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@decoupledibpm/$(DEPDIR)/libpetibmapps_la-decoupledibpm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ibpm/$(DEPDIR)/libpetibmapps_la-ibpm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@navierstokes/$(DEPDIR)/libpetibmapps_la-navierstokes.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@rigidkinematics/$(DEPDIR)/libpetibmapps_la-rigidkinematics.Plo@am__quote@
+
+.cpp.o:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
+
+.cpp.obj:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.cpp.lo:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+navierstokes/libpetibmapps_la-navierstokes.lo: navierstokes/navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT navierstokes/libpetibmapps_la-navierstokes.lo -MD -MP -MF navierstokes/$(DEPDIR)/libpetibmapps_la-navierstokes.Tpo -c -o navierstokes/libpetibmapps_la-navierstokes.lo `test -f 'navierstokes/navierstokes.cpp' || echo '$(srcdir)/'`navierstokes/navierstokes.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) navierstokes/$(DEPDIR)/libpetibmapps_la-navierstokes.Tpo navierstokes/$(DEPDIR)/libpetibmapps_la-navierstokes.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='navierstokes/navierstokes.cpp' object='navierstokes/libpetibmapps_la-navierstokes.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o navierstokes/libpetibmapps_la-navierstokes.lo `test -f 'navierstokes/navierstokes.cpp' || echo '$(srcdir)/'`navierstokes/navierstokes.cpp
+
+ibpm/libpetibmapps_la-ibpm.lo: ibpm/ibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ibpm/libpetibmapps_la-ibpm.lo -MD -MP -MF ibpm/$(DEPDIR)/libpetibmapps_la-ibpm.Tpo -c -o ibpm/libpetibmapps_la-ibpm.lo `test -f 'ibpm/ibpm.cpp' || echo '$(srcdir)/'`ibpm/ibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ibpm/$(DEPDIR)/libpetibmapps_la-ibpm.Tpo ibpm/$(DEPDIR)/libpetibmapps_la-ibpm.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ibpm/ibpm.cpp' object='ibpm/libpetibmapps_la-ibpm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ibpm/libpetibmapps_la-ibpm.lo `test -f 'ibpm/ibpm.cpp' || echo '$(srcdir)/'`ibpm/ibpm.cpp
+
+decoupledibpm/libpetibmapps_la-decoupledibpm.lo: decoupledibpm/decoupledibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT decoupledibpm/libpetibmapps_la-decoupledibpm.lo -MD -MP -MF decoupledibpm/$(DEPDIR)/libpetibmapps_la-decoupledibpm.Tpo -c -o decoupledibpm/libpetibmapps_la-decoupledibpm.lo `test -f 'decoupledibpm/decoupledibpm.cpp' || echo '$(srcdir)/'`decoupledibpm/decoupledibpm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) decoupledibpm/$(DEPDIR)/libpetibmapps_la-decoupledibpm.Tpo decoupledibpm/$(DEPDIR)/libpetibmapps_la-decoupledibpm.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='decoupledibpm/decoupledibpm.cpp' object='decoupledibpm/libpetibmapps_la-decoupledibpm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o decoupledibpm/libpetibmapps_la-decoupledibpm.lo `test -f 'decoupledibpm/decoupledibpm.cpp' || echo '$(srcdir)/'`decoupledibpm/decoupledibpm.cpp
+
+rigidkinematics/libpetibmapps_la-rigidkinematics.lo: rigidkinematics/rigidkinematics.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT rigidkinematics/libpetibmapps_la-rigidkinematics.lo -MD -MP -MF rigidkinematics/$(DEPDIR)/libpetibmapps_la-rigidkinematics.Tpo -c -o rigidkinematics/libpetibmapps_la-rigidkinematics.lo `test -f 'rigidkinematics/rigidkinematics.cpp' || echo '$(srcdir)/'`rigidkinematics/rigidkinematics.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) rigidkinematics/$(DEPDIR)/libpetibmapps_la-rigidkinematics.Tpo rigidkinematics/$(DEPDIR)/libpetibmapps_la-rigidkinematics.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='rigidkinematics/rigidkinematics.cpp' object='rigidkinematics/libpetibmapps_la-rigidkinematics.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpetibmapps_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o rigidkinematics/libpetibmapps_la-rigidkinematics.lo `test -f 'rigidkinematics/rigidkinematics.cpp' || echo '$(srcdir)/'`rigidkinematics/rigidkinematics.cpp
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf decoupledibpm/.libs decoupledibpm/_libs
+	-rm -rf ibpm/.libs ibpm/_libs
+	-rm -rf navierstokes/.libs navierstokes/_libs
+	-rm -rf rigidkinematics/.libs rigidkinematics/_libs
+install-decoupledibpmincludeHEADERS: $(decoupledibpminclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(decoupledibpminclude_HEADERS)'; test -n "$(decoupledibpmincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(decoupledibpmincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(decoupledibpmincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(decoupledibpmincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(decoupledibpmincludedir)" || exit $$?; \
+	done
+
+uninstall-decoupledibpmincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(decoupledibpminclude_HEADERS)'; test -n "$(decoupledibpmincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(decoupledibpmincludedir)'; $(am__uninstall_files_from_dir)
+install-ibpmincludeHEADERS: $(ibpminclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(ibpminclude_HEADERS)'; test -n "$(ibpmincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(ibpmincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(ibpmincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(ibpmincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(ibpmincludedir)" || exit $$?; \
+	done
+
+uninstall-ibpmincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(ibpminclude_HEADERS)'; test -n "$(ibpmincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(ibpmincludedir)'; $(am__uninstall_files_from_dir)
+install-navierstokesincludeHEADERS: $(navierstokesinclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(navierstokesinclude_HEADERS)'; test -n "$(navierstokesincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(navierstokesincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(navierstokesincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(navierstokesincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(navierstokesincludedir)" || exit $$?; \
+	done
+
+uninstall-navierstokesincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(navierstokesinclude_HEADERS)'; test -n "$(navierstokesincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(navierstokesincludedir)'; $(am__uninstall_files_from_dir)
+install-rigidkinematicsincludeHEADERS: $(rigidkinematicsinclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(rigidkinematicsinclude_HEADERS)'; test -n "$(rigidkinematicsincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(rigidkinematicsincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(rigidkinematicsincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(rigidkinematicsincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(rigidkinematicsincludedir)" || exit $$?; \
+	done
+
+uninstall-rigidkinematicsincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(rigidkinematicsinclude_HEADERS)'; test -n "$(rigidkinematicsincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(rigidkinematicsincludedir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -532,9 +869,12 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs: installdirs-recursive
 installdirs-am:
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(decoupledibpmincludedir)" "$(DESTDIR)$(ibpmincludedir)" "$(DESTDIR)$(navierstokesincludedir)" "$(DESTDIR)$(rigidkinematicsincludedir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -561,17 +901,28 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f decoupledibpm/$(DEPDIR)/$(am__dirstamp)
+	-rm -f decoupledibpm/$(am__dirstamp)
+	-rm -f ibpm/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ibpm/$(am__dirstamp)
+	-rm -f navierstokes/$(DEPDIR)/$(am__dirstamp)
+	-rm -f navierstokes/$(am__dirstamp)
+	-rm -f rigidkinematics/$(DEPDIR)/$(am__dirstamp)
+	-rm -f rigidkinematics/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
+	mostlyclean-am
 
 distclean: distclean-recursive
+	-rm -rf decoupledibpm/$(DEPDIR) ibpm/$(DEPDIR) navierstokes/$(DEPDIR) rigidkinematics/$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-recursive
 
@@ -585,13 +936,15 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-decoupledibpmincludeHEADERS \
+	install-ibpmincludeHEADERS install-navierstokesincludeHEADERS \
+	install-rigidkinematicsincludeHEADERS
 
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-libLTLIBRARIES
 
 install-html: install-html-recursive
 
@@ -614,12 +967,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
+	-rm -rf decoupledibpm/$(DEPDIR) ibpm/$(DEPDIR) navierstokes/$(DEPDIR) rigidkinematics/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-recursive
 
@@ -629,22 +984,33 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-decoupledibpmincludeHEADERS \
+	uninstall-ibpmincludeHEADERS uninstall-libLTLIBRARIES \
+	uninstall-navierstokesincludeHEADERS \
+	uninstall-rigidkinematicsincludeHEADERS
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am check \
-	check-am clean clean-generic clean-libtool cscopelist-am ctags \
-	ctags-am distclean distclean-generic distclean-libtool \
+	check-am clean clean-generic clean-libLTLIBRARIES \
+	clean-libtool cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
+	install install-am install-data install-data-am \
+	install-decoupledibpmincludeHEADERS install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-ibpmincludeHEADERS install-info install-info-am \
+	install-libLTLIBRARIES install-man \
+	install-navierstokesincludeHEADERS install-pdf install-pdf-am \
+	install-ps install-ps-am install-rigidkinematicsincludeHEADERS \
 	install-strip installcheck installcheck-am installdirs \
 	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-decoupledibpmincludeHEADERS \
+	uninstall-ibpmincludeHEADERS uninstall-libLTLIBRARIES \
+	uninstall-navierstokesincludeHEADERS \
+	uninstall-rigidkinematicsincludeHEADERS
 
 .PRECIOUS: Makefile
 

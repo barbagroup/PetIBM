@@ -14,6 +14,7 @@ List of binary executables:
     * `petibm-navierstokes`
     * `petibm-ibpm`
     * `petibm-decoupledibpm`
+    * `petibm-writemesh`
     * `petibm-vorticity`
     * `petibm-createxdmf`
 
@@ -73,6 +74,11 @@ To run a simulation with a decoupled version of the IBPM:
     mpiexec -np n petibm-decoupledibpm
 
 You can also provide the path of the simulation directory with the command-line argument `-directory <path>` and/or the path of the YAML configuration file with `-config <path>`.
+
+## Program `petibm-writemesh`
+
+This program is a simple (and optional) pre-processing utility that creates a structured Cartesian mesh based on the configuration provided in a given YAML file.
+The gridline coordinates are then written into a HDF5 file (`grid.h5`) saved in the simulation directory.
 
 
 ## Program `petibm-vorticity`

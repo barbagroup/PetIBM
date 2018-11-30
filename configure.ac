@@ -4,7 +4,7 @@
 
 # set-up
 AC_PREREQ([2.69])
-AC_INIT([PetIBM], [0.3.1], [mesnardo@gwu.edu, pychuang@gwu.edu])
+AC_INIT([PetIBM], [0.4.0], [mesnardo@gwu.edu, pychuang@gwu.edu])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -55,13 +55,14 @@ LDFLAGS_PREPEND($LDFLAGS_)
 CONFIGURE_YAMLCPP
 CONFIGURE_GTEST
 CONFIGURE_PETSC
-AC_ARG_WITH([amgx-dir], [], [ENABLE_AMGX=yes], [])
-AC_ARG_ENABLE([amgx], [AS_HELP_STRING([--enable-amgx], [build with AmgX])],
-              [ENABLE_AMGX=yes], [])
-if test "x$ENABLE_AMGX" = xyes; then
-  CONFIGURE_AMGX
+AC_ARG_WITH([amgxwrapper-dir], [], [WITH_AMGXWRAPPER=yes], [])
+AC_ARG_WITH([amgxwrapper-include], [], [WITH_AMGXWRAPPER=yes], [])
+AC_ARG_WITH([amgxwrapper-lib], [], [WITH_AMGXWRAPPER=yes], [])
+AC_ARG_ENABLE([amgxwrapper], [], [WITH_AMGXWRAPPER=yes], [])
+if test "x$WITH_AMGXWRAPPER" = xyes; then
+  CONFIGURE_AMGXWRAPPER
 fi
-AM_CONDITIONAL([WITH_AMGX], [test "x$ENABLE_AMGX" = xyes])
+AM_CONDITIONAL([WITH_AMGX], [test "x$WITH_AMGXWRAPPER" = xyes])
 
 # list of Makefiles to generate
 AC_CONFIG_FILES([Makefile
@@ -89,6 +90,7 @@ AC_CONFIG_FILES([Makefile
                  applications/navierstokes/Makefile
                  applications/ibpm/Makefile
                  applications/decoupledibpm/Makefile
+                 applications/writemesh/Makefile
                  examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile])
 
 # output message

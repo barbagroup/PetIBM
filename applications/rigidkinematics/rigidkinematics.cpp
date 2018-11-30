@@ -167,12 +167,15 @@ PetscErrorCode RigidKinematicsSolver::writeBodies()
 
     std::string directory = config["output"].as<std::string>(".");
     std::stringstream ss;
-    ss << std::setfill('0') << std::setw(7) << ite << ".3D";
+    ss << std::setfill('0') << std::setw(7) << ite;
     std::string filepath;
     for (PetscInt i = 0; i < bodies->nBodies; ++i)
     {
         petibm::type::SingleBody &body = bodies->bodies[i];
         filepath = directory + "/" + body->name + "_" + ss.str();
+        ss.str("");
+        ss << "." << body->dim << "D";
+        filepath = filepath + ss.str();
         ierr = body->writeBody(filepath); CHKERRQ(ierr);
     }
 

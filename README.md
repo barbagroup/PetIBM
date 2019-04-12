@@ -1,8 +1,10 @@
 # PetIBM - toolbox and applications of the immersed-boundary method on distributed-memory architectures
 
-[![Build Status](https://travis-ci.org/barbagroup/PetIBM.png?branch=develop)](https://travis-ci.org/barbagroup/PetIBM)
-[![DOI](http://joss.theoj.org/papers/10.21105/joss.00558/status.svg)](https://doi.org/10.21105/joss.00558)
-[![CITE_BIB](https://img.shields.io/badge/Cite%20PetIBM-bibtex-blue.svg)](https://www.doi2bib.org/bib/10.21105%2Fjoss.00558)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://github.com/barbagroup/PetIBM/raw/master/LICENSE)
+[![Travis](https://img.shields.io/travis/barbagroup/PetIBM/develop.svg?logo=travis)](https://travis-ci.org/barbagroup/PetIBM)
+[![Docs](https://img.shields.io/badge/docs-0.4-brightgreen.svg)](https://barbagroup.github.io/PetIBM)
+[![DOI](https://img.shields.io/badge/JOSS-10.21105%2Fjoss.00558-brightgreen.svg)](https://doi.org/10.21105/joss.00558)
+[![CITE_BIB](https://img.shields.io/badge/Cite%20PetIBM-bibtex-blue.svg)](https://www.doi2bib.org/bib/10.21105/joss.00558)
 
 PetIBM implements immersed-boundary methods to solve 2D and 3D incompressible Navier-Stokes on stretched Cartesian grids using a projection approach.
 

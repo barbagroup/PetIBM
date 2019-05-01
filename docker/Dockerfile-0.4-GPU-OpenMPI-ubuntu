@@ -28,6 +28,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         flex \
         bison \
         python-dev && \
+    # For RDMA/InfiniBand
+    apt-get install -y --no-install-recommends \
+        libibverbs1 ibverbs-utils librdmacm1 rdmacm-utils \
+        ibutils ibacm libibcm1 libibmad5 libibumad3 opensm libopensm5a \
+        srptools perftest infiniband-diags ibsim-utils \
+        libmthca1 libmlx4-1 libmlx5-1 mstflint \
+        libdapl2 dapl2-utils && \
     # configure ssh server and keys
     apt-get install -y --no-install-recommends \
         openssh-server \

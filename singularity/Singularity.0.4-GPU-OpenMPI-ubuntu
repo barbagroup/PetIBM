@@ -1,0 +1,6 @@
+Bootstrap: docker
+From: barbagroup/petibm:0.4-GPU-OpenMPI-ubuntu
+IncludeCmd: yes
+
+%labels
+    AUTHOR mesnardo@gwu.edu

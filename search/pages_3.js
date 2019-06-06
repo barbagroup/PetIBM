@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['input_20files',['Input files',['../md_doc_markdowns_inputs.html',1,'']]],
-  ['installation',['Installation',['../md_doc_markdowns_installation.html',1,'']]]
+  ['how_20to_20contribute_20to_20petibm',['How to contribute to PetIBM',['../md_CONTRIBUTING.html',1,'']]]
 ];

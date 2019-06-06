@@ -134,10 +134,14 @@ PetscErrorCode ProbeBase::monitor(const type::Solution &solution,
                                                 mesh->dim, nullptr,
                                                 vel.data()); CHKERRQ(ierr);
         }
-        else  // monitor the pressure field
+        else if (field == 4)  // monitor the pressure field
         {
             ierr = monitorVec(mesh->da[3], solution->pGlobal , n, t); CHKERRQ(ierr);
         }
+        else
+            SETERRQ(comm, PETSC_ERR_SUP,
+                    "Unsupported field. Supported fields are:\n"
+                    "\t u (0), v (1), w (2), and p (3).");
     }
 
     PetscFunctionReturn(0);
@@ -263,7 +267,6 @@ PetscErrorCode ProbeVolume::createIS(const type::Mesh &mesh)
 
     DMDALocalInfo info;
     ierr = DMDAGetLocalInfo(mesh->da[field], &info); CHKERRQ(ierr);
-    
     std::vector<PetscInt> indices(nPts);
     PetscInt count = 0;
     for (PetscInt k = info.zs; k < info.zs + info.zm; ++k)
@@ -284,8 +287,11 @@ PetscErrorCode ProbeVolume::createIS(const type::Mesh &mesh)
     }
     indices.resize(count);
 
-    ierr = ISCreateGeneral(comm, count, &indices[0],
-                           PETSC_COPY_VALUES, &is); CHKERRQ(ierr);
+    AO ao;
+    ierr = DMDAGetAO(mesh->da[field], &ao); CHKERRQ(ierr);
+    ierr = AOApplicationToPetsc(ao, count, &indices[0]); CHKERRQ(ierr);
+    ierr = ISCreateGeneral(
+        comm, count, &indices[0], PETSC_COPY_VALUES, &is); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::createIS

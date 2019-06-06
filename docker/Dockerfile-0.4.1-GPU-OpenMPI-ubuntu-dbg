@@ -1,4 +1,4 @@
-# Dockerfile for PetIBM-0.4
+# Dockerfile for PetIBM-0.4.1
 
 FROM nvidia/cuda:8.0-devel-ubuntu16.04
 MAINTAINER Olivier Mesnard <mesnardo@gwu.edu>
@@ -54,7 +54,7 @@ RUN VERSION=3.10.2 && \
     TARBALL=petsc-lite-${VERSION}.tar.gz && \
     wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/${TARBALL} -P /tmp && \
     PETSC_DIR=/opt/petsc/${VERSION} && \
-    PETSC_ARCH=linux-gnu-openmpi-opt && \
+    PETSC_ARCH=linux-gnu-openmpi-dbg && \
     mkdir -p ${PETSC_DIR} && \
     tar -xzf /tmp/${TARBALL} -C ${PETSC_DIR} --strip-components=1 && \
     cd ${PETSC_DIR} && \
@@ -62,10 +62,10 @@ RUN VERSION=3.10.2 && \
       --with-cc=mpicc \
       --with-cxx=mpicxx \
       --with-fc=mpif90 \
-      --COPTFLAGS=-O3 \
-      --CXXFLAGS=-O3 \
-      --FOPTFLAGS=-O3 \
-      --with-debugging=0 \
+      --COPTFLAGS=-O0 \
+      --CXXFLAGS=-O0 \
+      --FOPTFLAGS=-O0 \
+      --with-debugging=1 \
       --download-hdf5 \
       --download-fblaslapack \
       --download-hypre \
@@ -78,12 +78,16 @@ RUN VERSION=3.10.2 && \
 
 # Build AmgX-2.0.
 RUN VERSION=2.0 && \
+    COMMIT=3049527e0c396424df4582e837f9dd89a20f50df && \
     TARBALL=master.tar.gz && \
     wget https://github.com/NVIDIA/AMGX/archive/${TARBALL} -P /tmp && \
     SRCDIR=/opt/amgx/${VERSION} && \
+    URL=https://github.com/NVIDIA/AMGX && \
+    git clone ${URL} ${SRCDIR} && \
+    cd ${SRCDIR} && \
+    git checkout ${COMMIT} && \
     BUILDDIR=${SRCDIR}/build && \
-    mkdir -p ${SRCDIR} ${BUILDDIR} && \
-    tar -xzf /tmp/${TARBALL} -C ${SRCDIR} --strip-components=1 && \
+    mkdir -p ${BUILDDIR} && \
     cd ${BUILDDIR} && \
     cmake ${SRCDIR} \
       -DCMAKE_BUILD_TYPE="Release" \
@@ -100,14 +104,13 @@ RUN VERSION=2.0 && \
       -DCUDA_HOST_COMPILER=/usr/bin/mpicc && \
     make -j"$(nproc)" all && \
     make install && \
-    rm -f /tmp/${TARBALL} /opt/amgx/srcTarball.txt && \
     ldconfig ${SRCDIR}/lib
 
 ENV PETSC_DIR=/opt/petsc/3.10.2
-ENV PETSC_ARCH=linux-gnu-openmpi-opt
+ENV PETSC_ARCH=linux-gnu-openmpi-dbg
 
-# Build and install PetIBM-0.4.
-RUN VERSION=0.4 && \
+# Build and install PetIBM-0.4.1.
+RUN VERSION=0.4.1 && \
     TARBALL=v${VERSION}.tar.gz && \
     wget https://github.com/barbagroup/PetIBM/archive/${TARBALL} -P /tmp && \
     SRCDIR=/opt/petibm/${VERSION} && \
@@ -117,7 +120,7 @@ RUN VERSION=0.4 && \
     cd ${BUILDDIR} && \
     ${SRCDIR}/configure --prefix=/usr/local \
       CXX=mpicxx \
-      CXXFLAGS="-O3 -w -std=c++14" \
+      CXXFLAGS="-g -O0 -std=c++14" \
       --enable-static=no \
       --with-petsc-dir=${PETSC_DIR} \
       --with-petsc-arch=${PETSC_ARCH} \

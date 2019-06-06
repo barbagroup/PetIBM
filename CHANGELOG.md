@@ -2,6 +2,22 @@
 
 ---
 
+## 0.4.1
+
+---
+
+### Added
+
+### Changed
+
+### Fixed
+
+* Probes: monitor the correct sub-domain using indices with PETSc ordering, not natural ordering (see PR [#144](https://github.com/barbagroup/PetIBM/pull/144)).
+
+### Removed
+
+---
+
 ## 0.4.0
 
 ---

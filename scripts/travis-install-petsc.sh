@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install PETSc-3.8.2 in debug mode.
+# Install PETSc-3.11.3 in debug mode.
 # Use the cached PETSc if mpicxx is detected.
 
 PETSC_DIR=$1
@@ -17,8 +17,8 @@ if [ -f "$PETSC_DIR/$PETSC_ARCH/bin/mpicxx" ]; then
     --download-f2cblaslapack --download-hdf5 --download-openmpi
 else
   echo "Downloading PETSc"
-  URL="http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.8.2.tar.gz"
-  TARBALL=/tmp/petsc-lite-3.8.2.tar.gz
+  URL="http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.11.3.tar.gz"
+  TARBALL=/tmp/petsc-lite-3.11.3.tar.gz
   wget $URL -O $TARBALL
   tar xfz $TARBALL -C $PETSC_DIR --strip-components=1
   rm -f $TARBALL

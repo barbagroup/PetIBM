@@ -4,32 +4,32 @@
 
 **Required**:
 
-* GNU C++ compiler g++: v4.9.2, v5.4.0, and v7.2.1 have been tested
-* [PETSc](https://www.mcs.anl.gov/petsc/): v3.8.1 or above; with HDF5 enabled
-* MPI: OpenMPI, MPICH, and Intel MPI have been tested
-* [yaml-cpp](https://github.com/jbeder/yaml-cpp)
-* [gtest](https://github.com/google/googletest)
+* GNU C++ compiler g++ (4.9.2, 5.4.0, and 7.2.1 have been tested)
+* [PETSc](https://www.mcs.anl.gov/petsc/) (3.8+) with HDF5 enabled
+* MPI: OpenMPI, MPICH, or Intel MPI
+* [yaml-cpp](https://github.com/jbeder/yaml-cpp) (0.6.2)
+* [gtest](https://github.com/google/googletest) (1.7.0)
 
 **Optional for GPU linear solvers**:
 
-* [AmgX](https://github.com/NVIDIA/AMGX)
-* [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) (v1.3)
+* [AmgX](https://github.com/NVIDIA/AMGX) (2.0.0.130-opensource)
+* [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) (1.4)
 
-**Optional for pre- and post-processing scripts**:
+**Optional for pre- and post-processing Python scripts**:
 
-* Python (3.6)
-* Numpy (1.12.1)
-* H5py (2.7.0)
+* Python (3.6+)
+* NumPy (1.12.1)
+* h5py (2.7.0)
 * Matplotlib (2.0.2)
 
 **Note**:
 
 * MPI can be either installed during [PETSc configuration](#petsc) or installed explicitly by users.
-* [yaml-cpp](https://github.com/jbeder/yaml-cpp), 
-  [gtest](https://github.com/google/googletest), and 
+* [yaml-cpp](https://github.com/jbeder/yaml-cpp),
+  [gtest](https://github.com/google/googletest), and
   [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) can be automatically installed during PetIBM configuration or explicitly installed by users in advance.
 * PetIBM has been tested on:
-    * Ubuntu 16.04 with g++-5.4, and PETSc-3.8.1
+    * Ubuntu 16.04 with g++-5.4, and PETSc-3.11.2
     * MacOS Sierra with g++-6.0, and PETSc-3.8.2
     * Arch Linux with g++-7.2, and PETSc-3.8.2
 * PetIBM has also been tested on the following HPC systems:
@@ -56,68 +56,94 @@ On Mac OS X, `g++` can be installed on Mac OS X via XCode or [Homebrew](brew.sh)
 
 PetIBM relies on the data structures and parallel routines of the PETSc library.
 
-Install PETSc-3.8 in debugging mode and/or optimized mode.
+Here, we provide the command-line instructions to install PETSc-3.11.3 in debugging mode and/or optimized mode.
 The debug mode is recommended during development, while the optimized mode should be used for production runs.
 
 Get and unpack PETSc:
 
-    cd $HOME/sfw
-    mkdir -p petsc/3.8.1
-    wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.8.1.tar.gz
-    tar -xvf petsc-lite-3.8.1.tar.gz -C petsc/3.8.1 --strip-components=1
-    cd petsc/3.8.1
+```shell
+cd $HOME/sfw
+mkdir -p petsc/3.11.3
+wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.11.3.tar.gz
+tar -xvf petsc-lite-3.11.3.tar.gz -C petsc/3.11.3 --strip-components=1
+cd petsc/3.11.3
+```
 
 Configure and build an debugging version of PETSc:
 
-    export PETSC_DIR=$HOME/sfw/petsc/3.8.1
-    export PETSC_ARCH=linux-dbg
-    ./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \
-        --with-cc=gcc \
-        --with-cxx=g++ \
-        --with-fc=gfortran \
-        --COPTFLAGS="-O0" \
-        --CXXOPTFLAGS="-O0" \
-        --FOPTFLAGS="-O0" \
-        --with-debugging=1 \
-        --download-fblaslapack \
-        --download-openmpi \
-        --download-hdf5
-    make all
-    make test
+```shell
+export PETSC_DIR=$HOME/sfw/petsc/3.11.3
+export PETSC_ARCH=linux-dbg
+./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \
+    --with-cc=gcc \
+    --with-cxx=g++ \
+    --with-fc=gfortran \
+    --COPTFLAGS="-O0" \
+    --CXXOPTFLAGS="-O0" \
+    --FOPTFLAGS="-O0" \
+    --with-debugging=1 \
+    --download-fblaslapack \
+    --download-openmpi \
+    --download-hdf5 \
+    --download-hypre \
+    --download-ptscotch \
+    --download-metis \
+    --download-parmetis \
+    --download-superlu_dist
+make all
+make test
+```
 
 If you do not have a Fortran compiler ready, you use the following configuration:
 
-    ./configure --PETSC_ARCH=$PETSC_ARCH \
-        --with-cc=gcc \
-        --with-cxx=g++ \
-        --COPTFLAGS="-O0" \
-        --CXXOPTFLAGS="-O0" \
-        --with-debugging=1 \
-        --download-f2cblaslapack \
-        --download-openmpi \
-        --download-hdf5
+```shell
+./configure --PETSC_ARCH=$PETSC_ARCH \
+    --with-cc=gcc \
+    --with-cxx=g++ \
+    --COPTFLAGS="-O0" \
+    --CXXOPTFLAGS="-O0" \
+    --with-debugging=1 \
+    --download-f2cblaslapack \
+    --download-openmpi \
+    --download-hdf5 \
+    --download-hypre \
+    --download-ptscotch \
+    --download-metis \
+    --download-parmetis \
+    --download-superlu_dist
+```
 
 Configure and build an optimized version of PETSc:
 
-    export PETSC_DIR=$HOME/sfw/petsc/3.8.1
-    export PETSC_ARCH=linux-opt
-    ./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \
-        --with-cc=gcc \
-        --with-cxx=g++ \
-        --with-fc=gfortran \
-        --COPTFLAGS="-O3" \
-        --CXXOPTFLAGS="-O3" \
-        --FOPTFLAGS="-O3" \
-        --with-debugging=0 \
-        --download-fblaslapack \
-        --download-openmpi \
-        --download-hdf5
-    make all
-    make test
+```shell
+export PETSC_DIR=$HOME/sfw/petsc/3.11.3
+export PETSC_ARCH=linux-opt
+./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \
+    --with-cc=gcc \
+    --with-cxx=g++ \
+    --with-fc=gfortran \
+    --COPTFLAGS="-O3" \
+    --CXXOPTFLAGS="-O3" \
+    --FOPTFLAGS="-O3" \
+    --with-debugging=0 \
+    --download-fblaslapack \
+    --download-openmpi \
+    --download-hdf5 \
+    --download-hypre \
+    --download-ptscotch \
+    --download-metis \
+    --download-parmetis \
+    --download-superlu_dist
+make all
+make test
+```
 
-When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to work with the cluster. Hence, **do not use the `--download-openmpi` flag**, but instead point to the folder with the MPI compilers and executables using the `--with-mpi-dir` flag. If BLAS and LAPACK are already installed in the system, you can point to the libraries using the `--with-blas-lib` and `--with-lapack-lib` flags.
+When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to work with the cluster.
+Hence, **do not use the `--download-openmpi` flag**, but instead point to the folder with the MPI compilers and executables using the `--with-mpi-dir` flag.
+If BLAS and LAPACK are already installed in the system, you can point to the libraries using the `--with-blas-lib` and `--with-lapack-lib` flags.
 
-[Detailed instructions](http://www.mcs.anl.gov/petsc/documentation/installation.html) with more options to customize your installation can be found on the PETSc website. Run `./configure --help` in the PETSc root directory to list all the available configure flags.
+[Detailed instructions](http://www.mcs.anl.gov/petsc/documentation/installation.html) with more options to customize your installation can be found on the PETSc website.
+Run `./configure --help` in the PETSc root directory to list all the available configure flags.
 
 The PETSc Users Manual and the Manual Pages can be found on their
 [documentation page](http://www.mcs.anl.gov/petsc/documentation/index.html).
@@ -126,7 +152,7 @@ The PETSc Users Manual and the Manual Pages can be found on their
 
 ## yaml-cpp
 
-[yaml-cpp](https://github.com/jbeder/yaml-cpp) is a YAML parser in C++ used in PetIBM to parse the input configuration file.
+[yaml-cpp](https://github.com/jbeder/yaml-cpp) is a YAML parser in C++, used in PetIBM to parse the input configuration file.
 
 The PetIBM configuration script gives the possibility to use a previously installed version of yaml-cpp (with the configuration argument `--with-yamlcpp-dir=<path>`, or `--with-yamlcpp-include=<path>` and `--with-yamlcpp-lib=<path>`) or to download and install yaml-cpp-0.6.2 (with `--enable-yamlcpp`).
 
@@ -143,69 +169,82 @@ When configuring PetIBM, you can either use a previously installed version of gt
 
 Create a local copy of the PetIBM repository:
 
-    cd $HOME/sfw
-    mkdir petibm && cd petibm
-    git clone https://github.com/barbagroup/PetIBM.git
-    export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
+```shell
+cd $HOME/sfw
+mkdir petibm && cd petibm
+git clone https://github.com/barbagroup/PetIBM.git
+export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
+```
 
 You can set the environment variable `PETIBM_DIR` to your `$HOME/.bashrc` or `$HOME/.bash_profile` files by adding the line:
 
-    export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
+```shell
+export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
+```
 
-and restart you terminal or  source the file:
+and restart you terminal or source the file:
 
-    source $HOME/.bashrc
+```shell
+source $HOME/.bashrc
+```
 
 Note: if you are using C shell, use the `setenv` command instead of `export`.
 
 Configure and build PetIBM with PETSc in debugging mode:
 
-    PETSC_DIR=$HOME/sfw/petsc/3.8.1
-    PETSC_ARCH=linux-dbg
-    mkdir petibm-linux-dbg && cd petibm-linux-dbg
-    $PETIBM_DIR/configure \
-        --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
-        CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-        CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
-        --with-petsc-dir=$PETSC_DIR \
-        --with-petsc-arch=$PETSC_ARCH \
-        --with-yamlcpp-dir=<path> \
-        --with-gtest-dir=<path>
-    make all
-    make check
-    make install
+```shell
+PETSC_DIR=$HOME/sfw/petsc/3.11.3
+PETSC_ARCH=linux-dbg
+mkdir petibm-linux-dbg && cd petibm-linux-dbg
+$PETIBM_DIR/configure \
+    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
+    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
+    CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
+    --with-petsc-dir=$PETSC_DIR \
+    --with-petsc-arch=$PETSC_ARCH \
+    --with-yamlcpp-dir=<path> \
+    --with-gtest-dir=<path>
+make all
+make check
+make install
+```
 
 If yaml-cpp and/or gtest are not available, you can request installation at configuration time using:
 
-    $PETIBM_DIR/configure \
-        --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
-        CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-        CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
-        --enable-yamlcpp \
-        --enable-gtest
+```shell
+$PETIBM_DIR/configure \
+    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
+    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
+    CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
+    --enable-yamlcpp \
+    --enable-gtest
+```
 
 For production runs, you may want to use the optimized build of PETSc:
 
-You may also want to build a optimized version:
+```shell
+PETSC_DIR=$HOME/sfw/petsc/3.11.3
+PETSC_ARCH=linux-opt
+mkdir petibm-linux-opt && cd petibm-linux-opt
+$PETIBM_DIR/configure \
+    --prefix=$HOME/sfw/petibm/petibm-linux-opt \
+    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
+    CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
+    --with-petsc-dir=$PETSC_DIR \
+    --with-petsc-arch=$PETSC_ARCH \
+    --with-yamlcpp-dir=<path> \
+    --with-gtest-dir=<path>
+make all
+make check
+make install
+```
 
-    PETSC_DIR=$HOME/sfw/petsc/3.8.1
-    PETSC_ARCH=linux-opt
-    mkdir petibm-linux-opt && cd petibm-linux-opt
-    $PETIBM_DIR/configure \
-        --prefix=$HOME/sfw/petibm/petibm-linux-opt \
-        CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-        CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
-        --with-petsc-dir=$PETSC_DIR \
-        --with-petsc-arch=$PETSC_ARCH \
-        --with-yamlcpp-dir=<path> \
-        --with-gtest-dir=<path>
-    make all
-    make check
-    make install
+Et voila!
+You can now add the `bin` directory (that contains the executables) to you PATH environment variable:
 
-Et voila! You can now add the `bin` directory (that contains the executables) to you PATH environment variable:
-
-    export PATH=$HOME/sfw/petibm/petibm-linux-opt/bin:$PATH
+```shell
+export PATH=$HOME/sfw/petibm/petibm-linux-opt/bin:$PATH
+```
 
 ---
 
@@ -214,7 +253,9 @@ Et voila! You can now add the `bin` directory (that contains the executables) to
 We provide some examples!
 Input files are located in `$PETIBM_DIR`, but can be copied to another directory with
 
-    make copy-examples EXAMPLES_DIR=<directory>
+```shell
+make copy-examples EXAMPLES_DIR=<directory>
+```
 
 `EXAMPLES_DIR` is optional and the default directory is the folder `examples` in the top build directory.
 
@@ -231,23 +272,25 @@ When configuring PetIBM, you can either use a previously installed version of Am
 
 For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWrapper:
 
-    PETSC_DIR=$HOME/sfw/petsc/3.8.1
-    PETSC_ARCH=linux-opt
-    mkdir petibm-linux-opt && cd petibm-linux-opt
-    $PETIBM_DIR/configure \
-        --prefix=$HOME/sfw/petibm/petibm-linux-opt \
-        CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-        CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
-        --with-petsc-dir=$PETSC_DIR \
-        --with-petsc-arch=$PETSC_ARCH \
-        --with-yamlcpp-dir=<path> \
-        --with-gtest-dir=<path> \
-        --with-cuda-dir=<path> \
-        --with-amgx-dir=<path> \
-        --with-amgxwrapper-dir=<path>
-    make all
-    make check
-    make install
+```shell
+PETSC_DIR=$HOME/sfw/petsc/3.11.3
+PETSC_ARCH=linux-opt
+mkdir petibm-linux-opt && cd petibm-linux-opt
+$PETIBM_DIR/configure \
+    --prefix=$HOME/sfw/petibm/petibm-linux-opt \
+    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
+    CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
+    --with-petsc-dir=$PETSC_DIR \
+    --with-petsc-arch=$PETSC_ARCH \
+    --with-yamlcpp-dir=<path> \
+    --with-gtest-dir=<path> \
+    --with-cuda-dir=<path> \
+    --with-amgx-dir=<path> \
+    --with-amgxwrapper-dir=<path>
+make all
+make check
+make install
+```
 
 ---
 

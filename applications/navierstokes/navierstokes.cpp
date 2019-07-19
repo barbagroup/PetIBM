@@ -339,8 +339,10 @@ PetscErrorCode NavierStokesSolver::createOperators()
     ierr = MatShift(A, 1.0 / dt); CHKERRQ(ierr);
 
     // create the projection operator: BNG
+    PetscInt N;  // order of the truncate Taylor series expansion
+    N = config["parameters"]["BN"].as<PetscInt>(1);
     ierr = petibm::operators::createBnHead(
-        L, dt, diffCoeffs->implicitCoeff * nu, 1, BN); CHKERRQ(ierr);
+        L, dt, diffCoeffs->implicitCoeff * nu, N, BN); CHKERRQ(ierr);
     ierr = MatMatMult(
         BN, G, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &BNG); CHKERRQ(ierr);
 

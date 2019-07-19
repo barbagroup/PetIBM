@@ -193,6 +193,7 @@ This node gather various `parameters` regarding the advancement of a simulation.
 - `nrestart`: frequency (in number of time steps) of saving for the convective and diffusive terms; those terms will required upon restart of a run at a time step different from 0.
 - `convection`: time scheme for the convective terms; choices are the default explicit Euler method (`EULER_EXPLICIT`) or an explicit second-order Adams-Bashforth scheme (`ADAMS_BASHFORTH_2`).
 - `diffusion`: time scheme for the diffusive terms; choices are the default implicit Euler method (`EULER_IMPLICIT`), an explicit Euler method (`EULER_EXPLICIT`), or a second-order Crank-Nicolson scheme (`CRANK_NICOLSON`).
+- `BN`: order of the truncated Taylor series expansion of the implicit matrix `A` (where `A` is the left-hand side operator of the system for the intermediate velocity vector). The default value is `1`, which leads to the identity operator scaled by the time-step size.
 - `delta`: regularized delta function to use; choices are `ROMA_ET_AL_1999` (3-point kernel) and `PESKIN_2002` (4-point kernel).
 - `velocitySolver`, `poissonSolver`, and `forcesSolver` (for the decoupled version of the immersed-boundary projection method) each references the type of hardware used to solve the linear system (either `CPU` or `GPU`) and the path (relative to the YAML configuration file) of the file containing the parameters for the linear solver.
 
@@ -207,6 +208,7 @@ parameters:
     nrestart: 200
     convection: ADAMS_BASHFORTH_2
     diffusion: CRANK_NICOLSON
+    BN: 1
     velocitySolver:
       type: CPU
       config: solversPetscOptions.info

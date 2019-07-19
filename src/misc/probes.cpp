@@ -134,7 +134,7 @@ PetscErrorCode ProbeBase::monitor(const type::Solution &solution,
                                                 mesh->dim, nullptr,
                                                 vel.data()); CHKERRQ(ierr);
         }
-        else if (field == 4)  // monitor the pressure field
+        else if (field == 3)  // monitor the pressure field
         {
             ierr = monitorVec(mesh->da[3], solution->pGlobal , n, t); CHKERRQ(ierr);
         }

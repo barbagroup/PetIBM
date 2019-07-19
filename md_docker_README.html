@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>PetIBM: Dockerfile for PetIBM-0.4</title>
+<title>PetIBM: Dockerfile for PetIBM-0.4.2</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.4.1</span>
+   &#160;<span id="projectnumber">0.4.2</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -104,26 +104,27 @@ $(document).ready(function(){initNavTree('md_docker_README.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Dockerfile for PetIBM-0.4 </div>  </div>
+<div class="title">Dockerfile for PetIBM-0.4.2 </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The present directory contains the <code>Dockerfile</code> used to create the Docker image <code>petibm:0.4-GPU-OpenMPI-ubuntu</code>. The Docker image is available on DockerHub; to pull the image:</p>
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;docker pull barbagroup/petibm:0.4-GPU-OpenMPI-ubuntu</div></div><!-- fragment --><p>In this image, PetIBM (0.4) was installed along with its dependencies:</p>
+<div class="textblock"><p>The present directory contains the <code>Dockerfile</code> used to create the Docker image <code>petibm:0.4.2-GPU-OpenMPI-xenial</code>. The Docker image, based on Ubuntu 16.04 (Xenial) is available on DockerHub; to pull the image:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;docker pull barbagroup/petibm:0.4.2-GPU-OpenMPI-xenial</div></div><!-- fragment --><p>In this image, PetIBM (0.4.2) was installed along with its dependencies:</p>
 <ul>
-<li>CUDA Toolkit 8.0</li>
-<li>OpenMPI 1.10.2</li>
-<li>PETSc 3.10.2</li>
-<li>AmgX 2.0 (commit <a href="https://github.com/NVIDIA/AMGX/tree/732338c32e30ad87f9b71244346346f66fc3f735">732338c</a>)</li>
+<li>CUDA Toolkit 10.1 (requires CUDA Driver Version &gt;= 418.39)</li>
+<li>OpenMPI 3.0.1</li>
+<li>PETSc 3.11.3</li>
+<li>AmgX 2.0 (commit [a46b311]<a href="https://github.com/NVIDIA/AMGX/tree/a46b3112bc563592b8d794ba95e57350d282d584">732338c</a>)</li>
 <li>AmgXWrapper 1.4</li>
 </ul>
-<p>Docker containers created out of this image can run PetIBM applications on either CPU or GPU devices. Note that if you want to run a PetIBM application using GPUs, you have to create the container using the utility <code>nvidia-docker</code> (instead of <code>docker</code>):</p>
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;nvidia-docker run -it barbagroup/petibm:0.4-GPU-OpenMPI-ubuntu /bin/bash</div></div><!-- fragment --><p>If you wish to re-build the image locally:</p>
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;docker build --tag=mypetibm:latest --file=Dockerfile-0.4-GPU-OpenMPI-ubuntu .</div></div><!-- fragment --> </div></div><!-- contents -->
+<p>Docker containers based on this image can run PetIBM applications on CPU and GPU. Note that if you want to run a PetIBM application using GPUs, you have to create the container using the utility <a href="https://github.com/NVIDIA/nvidia-docker"><code>nvidia-docker v2</code></a> (instead of <code>docker</code>):</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;nvidia-docker run -it barbagroup/petibm:0.4.2-GPU-OpenMPI-xenial /bin/bash</div></div><!-- fragment --><p>If you want to re-build the image locally:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;docker build --tag=mypetibm:latest --file=Dockerfile-0.4.2-GPU-OpenMPI-xenial .</div></div><!-- fragment --><p>The Docker image <code>barbagroup/petibm:0.4.2-GPU-OpenMPI-xenial</code> does not contain the source files and builds. This was intended to make the Docker image as light as possible. If you wish to have the source files and builds, you can use the bigger Docker image <code>barbagroup/petibm:0.4.2-GPU-OpenMPI-xenial-devel</code>. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 6 2019 18:53:50 for PetIBM by
+    <li class="footer">Generated on Fri Jul 19 2019 16:11:43 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

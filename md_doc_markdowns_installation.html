@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.4.1</span>
+   &#160;<span id="projectnumber">0.4.2</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -110,22 +110,22 @@ $(document).ready(function(){initNavTree('md_doc_markdowns_installation.html',''
 <div class="textblock"><h2>Dependencies (last tested)</h2>
 <p><b>Required</b>:</p>
 <ul>
-<li>GNU C++ compiler g++: v4.9.2, v5.4.0, and v7.2.1 have been tested</li>
-<li><a href="https://www.mcs.anl.gov/petsc/">PETSc</a>: v3.8.1 or above; with HDF5 enabled</li>
-<li>MPI: OpenMPI, MPICH, and Intel MPI have been tested</li>
-<li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a></li>
-<li><a href="https://github.com/google/googletest">gtest</a></li>
+<li>GNU C++ compiler g++ (4.9.2, 5.4.0, and 7.2.1 have been tested)</li>
+<li><a href="https://www.mcs.anl.gov/petsc/">PETSc</a> (3.8+) with HDF5 enabled</li>
+<li>MPI: OpenMPI, MPICH, or Intel MPI</li>
+<li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> (0.6.2)</li>
+<li><a href="https://github.com/google/googletest">gtest</a> (1.7.0)</li>
 </ul>
 <p><b>Optional for GPU linear solvers</b>:</p>
 <ul>
-<li><a href="https://github.com/NVIDIA/AMGX">AmgX</a></li>
-<li><a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> (v1.3)</li>
+<li><a href="https://github.com/NVIDIA/AMGX">AmgX</a> (2.0.0.130-opensource)</li>
+<li><a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> (1.4)</li>
 </ul>
-<p><b>Optional for pre- and post-processing scripts</b>:</p>
+<p><b>Optional for pre- and post-processing Python scripts</b>:</p>
 <ul>
-<li>Python (3.6)</li>
-<li>Numpy (1.12.1)</li>
-<li>H5py (2.7.0)</li>
+<li>Python (3.6+)</li>
+<li>NumPy (1.12.1)</li>
+<li>h5py (2.7.0)</li>
 <li>Matplotlib (2.0.2)</li>
 </ul>
 <p><b>Note</b>:</p>
@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('md_doc_markdowns_installation.html',''
 <li>MPI can be either installed during <a href="#petsc">PETSc configuration</a> or installed explicitly by users.</li>
 <li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a>, <a href="https://github.com/google/googletest">gtest</a>, and <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> can be automatically installed during PetIBM configuration or explicitly installed by users in advance.</li>
 <li>PetIBM has been tested on:<ul>
-<li>Ubuntu 16.04 with g++-5.4, and PETSc-3.8.1</li>
+<li>Ubuntu 16.04 with g++-5.4, and PETSc-3.11.2</li>
 <li>MacOS Sierra with g++-6.0, and PETSc-3.8.2</li>
 <li>Arch Linux with g++-7.2, and PETSc-3.8.2</li>
 </ul>
@@ -151,129 +151,38 @@ $(document).ready(function(){initNavTree('md_doc_markdowns_installation.html',''
 </pre><p>On Mac OS X, <code>g++</code> can be installed on Mac OS X via XCode or <a href="brew.sh">Homebrew</a>. </p><hr/>
 <h2>PETSc</h2>
 <p>PetIBM relies on the data structures and parallel routines of the PETSc library.</p>
-<p>Install PETSc-3.8 in debugging mode and/or optimized mode. The debug mode is recommended during development, while the optimized mode should be used for production runs.</p>
-<p>Get and unpack PETSc: </p><pre class="fragment">cd $HOME/sfw
-mkdir -p petsc/3.8.1
-wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.8.1.tar.gz
-tar -xvf petsc-lite-3.8.1.tar.gz -C petsc/3.8.1 --strip-components=1
-cd petsc/3.8.1
-</pre><p>Configure and build an debugging version of PETSc: </p><pre class="fragment">export PETSC_DIR=$HOME/sfw/petsc/3.8.1
-export PETSC_ARCH=linux-dbg
-./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \
-    --with-cc=gcc \
-    --with-cxx=g++ \
-    --with-fc=gfortran \
-    --COPTFLAGS="-O0" \
-    --CXXOPTFLAGS="-O0" \
-    --FOPTFLAGS="-O0" \
-    --with-debugging=1 \
-    --download-fblaslapack \
-    --download-openmpi \
-    --download-hdf5
-make all
-make test
-</pre><p>If you do not have a Fortran compiler ready, you use the following configuration: </p><pre class="fragment">./configure --PETSC_ARCH=$PETSC_ARCH \
-    --with-cc=gcc \
-    --with-cxx=g++ \
-    --COPTFLAGS="-O0" \
-    --CXXOPTFLAGS="-O0" \
-    --with-debugging=1 \
-    --download-f2cblaslapack \
-    --download-openmpi \
-    --download-hdf5
-</pre><p>Configure and build an optimized version of PETSc: </p><pre class="fragment">export PETSC_DIR=$HOME/sfw/petsc/3.8.1
-export PETSC_ARCH=linux-opt
-./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \
-    --with-cc=gcc \
-    --with-cxx=g++ \
-    --with-fc=gfortran \
-    --COPTFLAGS="-O3" \
-    --CXXOPTFLAGS="-O3" \
-    --FOPTFLAGS="-O3" \
-    --with-debugging=0 \
-    --download-fblaslapack \
-    --download-openmpi \
-    --download-hdf5
-make all
-make test
-</pre><p>When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to work with the cluster. Hence, <b>do not use the <code>--download-openmpi</code> flag</b>, but instead point to the folder with the MPI compilers and executables using the <code>--with-mpi-dir</code> flag. If BLAS and LAPACK are already installed in the system, you can point to the libraries using the <code>--with-blas-lib</code> and <code>--with-lapack-lib</code> flags.</p>
+<p>Here, we provide the command-line instructions to install PETSc-3.11.3 in debugging mode and/or optimized mode. The debug mode is recommended during development, while the optimized mode should be used for production runs.</p>
+<p>Get and unpack PETSc:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;cd $HOME/sfw</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;mkdir -p petsc/3.11.3</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.11.3.tar.gz</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;tar -xvf petsc-lite-3.11.3.tar.gz -C petsc/3.11.3 --strip-components=1</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;cd petsc/3.11.3</div></div><!-- fragment --><p>Configure and build an debugging version of PETSc:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;export PETSC_DIR=$HOME/sfw/petsc/3.11.3</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;export PETSC_ARCH=linux-dbg</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    --with-cc=gcc \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --with-cxx=g++ \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    --with-fc=gfortran \</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    --COPTFLAGS=&quot;-O0&quot; \</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    --CXXOPTFLAGS=&quot;-O0&quot; \</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    --FOPTFLAGS=&quot;-O0&quot; \</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    --with-debugging=1 \</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    --download-fblaslapack \</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    --download-openmpi \</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    --download-hdf5 \</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    --download-hypre \</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    --download-ptscotch \</div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    --download-metis \</div><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    --download-parmetis \</div><div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    --download-superlu_dist</div><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;make all</div><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;make test</div></div><!-- fragment --><p>If you do not have a Fortran compiler ready, you use the following configuration:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;./configure --PETSC_ARCH=$PETSC_ARCH \</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    --with-cc=gcc \</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    --with-cxx=g++ \</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    --COPTFLAGS=&quot;-O0&quot; \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --CXXOPTFLAGS=&quot;-O0&quot; \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    --with-debugging=1 \</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    --download-f2cblaslapack \</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    --download-openmpi \</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    --download-hdf5 \</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    --download-hypre \</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    --download-ptscotch \</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    --download-metis \</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    --download-parmetis \</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    --download-superlu_dist</div></div><!-- fragment --><p>Configure and build an optimized version of PETSc:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;export PETSC_DIR=$HOME/sfw/petsc/3.11.3</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;export PETSC_ARCH=linux-opt</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    --with-cc=gcc \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --with-cxx=g++ \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    --with-fc=gfortran \</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    --COPTFLAGS=&quot;-O3&quot; \</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    --CXXOPTFLAGS=&quot;-O3&quot; \</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    --FOPTFLAGS=&quot;-O3&quot; \</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    --with-debugging=0 \</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    --download-fblaslapack \</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    --download-openmpi \</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    --download-hdf5 \</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    --download-hypre \</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    --download-ptscotch \</div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    --download-metis \</div><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    --download-parmetis \</div><div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    --download-superlu_dist</div><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;make all</div><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;make test</div></div><!-- fragment --><p>When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to work with the cluster. Hence, <b>do not use the <code>--download-openmpi</code> flag</b>, but instead point to the folder with the MPI compilers and executables using the <code>--with-mpi-dir</code> flag. If BLAS and LAPACK are already installed in the system, you can point to the libraries using the <code>--with-blas-lib</code> and <code>--with-lapack-lib</code> flags.</p>
 <p><a href="http://www.mcs.anl.gov/petsc/documentation/installation.html">Detailed instructions</a> with more options to customize your installation can be found on the PETSc website. Run <code>./configure --help</code> in the PETSc root directory to list all the available configure flags.</p>
 <p>The PETSc Users Manual and the Manual Pages can be found on their <a href="http://www.mcs.anl.gov/petsc/documentation/index.html">documentation page</a>. </p><hr/>
 <h2>yaml-cpp</h2>
-<p><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> is a <a class="el" href="d7/d1e/namespace_y_a_m_l.html">YAML</a> parser in C++ used in PetIBM to parse the input configuration file.</p>
+<p><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> is a <a class="el" href="d7/d1e/namespace_y_a_m_l.html">YAML</a> parser in C++, used in PetIBM to parse the input configuration file.</p>
 <p>The PetIBM configuration script gives the possibility to use a previously installed version of yaml-cpp (with the configuration argument <code>--with-yamlcpp-dir=&lt;path&gt;</code>, or <code>--with-yamlcpp-include=&lt;path&gt;</code> and <code>--with-yamlcpp-lib=&lt;path&gt;</code>) or to download and install yaml-cpp-0.6.2 (with <code>--enable-yamlcpp</code>). </p><hr/>
 <h2>gtest</h2>
 <p>We use Google's C++ test framework <a href="https://github.com/google/googletest">gtest</a> to run unit-tests after compiling PetIBM. When configuring PetIBM, you can either use a previously installed version of gtest and provide the path of the directory of the gtest installation with <code>--with-gtest-dir=&lt;path&gt;</code> (or using <code>--with-gtest-include=&lt;path&gt;</code> and <code>--with-gtest-lib=&lt;path&gt;</code>) or request to download and install gtest-1.7.0 with <code>--enable-gtest</code>. </p><hr/>
 <h2>PetIBM</h2>
-<p>Create a local copy of the PetIBM repository: </p><pre class="fragment">cd $HOME/sfw
-mkdir petibm &amp;&amp; cd petibm
-git clone https://github.com/barbagroup/PetIBM.git
-export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
-</pre><p>You can set the environment variable <code>PETIBM_DIR</code> to your <code>$HOME/.bashrc</code> or <code>$HOME/.bash_profile</code> files by adding the line: </p><pre class="fragment">export PETIBM_DIR=$HOME/sfw/petibm/PetIBM
-</pre><p>and restart you terminal or source the file: </p><pre class="fragment">source $HOME/.bashrc
-</pre><p>Note: if you are using C shell, use the <code>setenv</code> command instead of <code>export</code>.</p>
-<p>Configure and build PetIBM with PETSc in debugging mode: </p><pre class="fragment">PETSC_DIR=$HOME/sfw/petsc/3.8.1
-PETSC_ARCH=linux-dbg
-mkdir petibm-linux-dbg &amp;&amp; cd petibm-linux-dbg
-$PETIBM_DIR/configure \
-    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
-    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-    CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
-    --with-petsc-dir=$PETSC_DIR \
-    --with-petsc-arch=$PETSC_ARCH \
-    --with-yamlcpp-dir=&lt;path&gt; \
-    --with-gtest-dir=&lt;path&gt;
-make all
-make check
-make install
-</pre><p>If yaml-cpp and/or gtest are not available, you can request installation at configuration time using: </p><pre class="fragment">$PETIBM_DIR/configure \
-    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \
-    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-    CXXFLAGS="-g -O0 -Wall -Wno-deprecated -std=c++14" \
-    --enable-yamlcpp \
-    --enable-gtest
-</pre><p>For production runs, you may want to use the optimized build of PETSc:</p>
-<p>You may also want to build a optimized version: </p><pre class="fragment">PETSC_DIR=$HOME/sfw/petsc/3.8.1
-PETSC_ARCH=linux-opt
-mkdir petibm-linux-opt &amp;&amp; cd petibm-linux-opt
-$PETIBM_DIR/configure \
-    --prefix=$HOME/sfw/petibm/petibm-linux-opt \
-    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-    CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
-    --with-petsc-dir=$PETSC_DIR \
-    --with-petsc-arch=$PETSC_ARCH \
-    --with-yamlcpp-dir=&lt;path&gt; \
-    --with-gtest-dir=&lt;path&gt;
-make all
-make check
-make install
-</pre><p>Et voila! You can now add the <code>bin</code> directory (that contains the executables) to you PATH environment variable: </p><pre class="fragment">export PATH=$HOME/sfw/petibm/petibm-linux-opt/bin:$PATH
-</pre><hr/>
+<p>Create a local copy of the PetIBM repository:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;cd $HOME/sfw</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;mkdir petibm &amp;&amp; cd petibm</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;git clone https://github.com/barbagroup/PetIBM.git</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;export PETIBM_DIR=$HOME/sfw/petibm/PetIBM</div></div><!-- fragment --><p>You can set the environment variable <code>PETIBM_DIR</code> to your <code>$HOME/.bashrc</code> or <code>$HOME/.bash_profile</code> files by adding the line:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;export PETIBM_DIR=$HOME/sfw/petibm/PetIBM</div></div><!-- fragment --><p>and restart you terminal or source the file:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;source $HOME/.bashrc</div></div><!-- fragment --><p>Note: if you are using C shell, use the <code>setenv</code> command instead of <code>export</code>.</p>
+<p>Configure and build PetIBM with PETSc in debugging mode:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;PETSC_DIR=$HOME/sfw/petsc/3.11.3</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;PETSC_ARCH=linux-dbg</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;mkdir petibm-linux-dbg &amp;&amp; cd petibm-linux-dbg</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;$PETIBM_DIR/configure \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    CXXFLAGS=&quot;-g -O0 -Wall -Wno-deprecated -std=c++14&quot; \</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    --with-petsc-dir=$PETSC_DIR \</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    --with-petsc-arch=$PETSC_ARCH \</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    --with-yamlcpp-dir=&lt;path&gt; \</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    --with-gtest-dir=&lt;path&gt;</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;make all</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;make check</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;make install</div></div><!-- fragment --><p>If yaml-cpp and/or gtest are not available, you can request installation at configuration time using:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;$PETIBM_DIR/configure \</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    CXXFLAGS=&quot;-g -O0 -Wall -Wno-deprecated -std=c++14&quot; \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --enable-yamlcpp \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    --enable-gtest</div></div><!-- fragment --><p>For production runs, you may want to use the optimized build of PETSc:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;PETSC_DIR=$HOME/sfw/petsc/3.11.3</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;PETSC_ARCH=linux-opt</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;mkdir petibm-linux-opt &amp;&amp; cd petibm-linux-opt</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;$PETIBM_DIR/configure \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --prefix=$HOME/sfw/petibm/petibm-linux-opt \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    CXXFLAGS=&quot;-O3 -Wall -Wno-deprecated -std=c++14&quot; \</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    --with-petsc-dir=$PETSC_DIR \</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    --with-petsc-arch=$PETSC_ARCH \</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    --with-yamlcpp-dir=&lt;path&gt; \</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    --with-gtest-dir=&lt;path&gt;</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;make all</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;make check</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;make install</div></div><!-- fragment --><p>Et voila! You can now add the <code>bin</code> directory (that contains the executables) to you PATH environment variable:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;export PATH=$HOME/sfw/petibm/petibm-linux-opt/bin:$PATH</div></div><!-- fragment --> <hr/>
 <h2>PetIBM examples</h2>
-<p>We provide some examples! Input files are located in <code>$PETIBM_DIR</code>, but can be copied to another directory with </p><pre class="fragment">make copy-examples EXAMPLES_DIR=&lt;directory&gt;
-</pre><p><code>EXAMPLES_DIR</code> is optional and the default directory is the folder <code>examples</code> in the top build directory. </p><hr/>
+<p>We provide some examples! Input files are located in <code>$PETIBM_DIR</code>, but can be copied to another directory with</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;make copy-examples EXAMPLES_DIR=&lt;directory&gt;</div></div><!-- fragment --><p><code>EXAMPLES_DIR</code> is optional and the default directory is the folder <code>examples</code> in the top build directory. </p><hr/>
 <h2>Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs</h2>
 <p>PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the NVIDIA <a href="https://github.com/NVIDIA/AMGX">AmgX</a> library.</p>
 <p>To solve linear systems on multiple GPU devices with PetIBM, the user must install CUDA and AmgX before building PetIBM and use the configuration arguments <code>--with-cuda-dir=&lt;path&gt;</code> for CUDA and <code>--with-amgx-dir=&lt;path&gt;</code> (or <code>--with-amgx-include=&lt;path&gt;</code> and <code>--with-amgx-lib=&lt;path&gt;</code>) for AmgX.</p>
 <p>To handle the data conversion between PETSc and AmgX, we use our in-house wrapper, called <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a>. When configuring PetIBM, you can either use a previously installed version of AmgXWrapper and provide the path of the directory of the AmgXWrapper installation with <code>--with-amgxwrapper-dir=&lt;path&gt;</code> (or using <code>--with-amgxwrapper-include=&lt;path&gt;</code> and <code>--with-amgxwrapper-lib=&lt;path&gt;</code>) or request to download and install AmgXWrapper-1.4 with <code>--enable-amgxwrapper</code>.</p>
-<p>For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWrapper: </p><pre class="fragment">PETSC_DIR=$HOME/sfw/petsc/3.8.1
-PETSC_ARCH=linux-opt
-mkdir petibm-linux-opt &amp;&amp; cd petibm-linux-opt
-$PETIBM_DIR/configure \
-    --prefix=$HOME/sfw/petibm/petibm-linux-opt \
-    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \
-    CXXFLAGS="-O3 -Wall -Wno-deprecated -std=c++14" \
-    --with-petsc-dir=$PETSC_DIR \
-    --with-petsc-arch=$PETSC_ARCH \
-    --with-yamlcpp-dir=&lt;path&gt; \
-    --with-gtest-dir=&lt;path&gt; \
-    --with-cuda-dir=&lt;path&gt; \
-    --with-amgx-dir=&lt;path&gt; \
-    --with-amgxwrapper-dir=&lt;path&gt;
-make all
-make check
-make install
-</pre><hr/>
+<p>For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWrapper:</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;PETSC_DIR=$HOME/sfw/petsc/3.11.3</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;PETSC_ARCH=linux-opt</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;mkdir petibm-linux-opt &amp;&amp; cd petibm-linux-opt</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;$PETIBM_DIR/configure \</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    --prefix=$HOME/sfw/petibm/petibm-linux-opt \</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    CXXFLAGS=&quot;-O3 -Wall -Wno-deprecated -std=c++14&quot; \</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    --with-petsc-dir=$PETSC_DIR \</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    --with-petsc-arch=$PETSC_ARCH \</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    --with-yamlcpp-dir=&lt;path&gt; \</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    --with-gtest-dir=&lt;path&gt; \</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    --with-cuda-dir=&lt;path&gt; \</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    --with-amgx-dir=&lt;path&gt; \</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    --with-amgxwrapper-dir=&lt;path&gt;</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;make all</div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;make check</div><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;make install</div></div><!-- fragment --> <hr/>
 <h2>Contributing and reporting bugs</h2>
 <p>To report bugs, please use the GitHub issue tracking system. We are also open to pull-requests. </p>
 </div></div><!-- contents -->
@@ -281,7 +190,7 @@ make install
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 6 2019 18:53:50 for PetIBM by
+    <li class="footer">Generated on Fri Jul 19 2019 16:11:43 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

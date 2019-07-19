@@ -2,7 +2,7 @@
 
 ---
 
-## 0.4.1
+## 0.4.2
 
 ---
 
@@ -13,6 +13,22 @@
 ### Changed
 
 * Use `-pc_factor_mat_solver_type` instead of `-pc_factor_mat_solver_package` in the configuration files for the forces solver. (This removes the deprecation warning when using PETSc-3.9+.)
+
+### Fixed
+
+* Probes: fix index for pressure field when using a volume probe (see PR [#145](https://github.com/barbagroup/PetIBM/pull/145)).
+
+### Removed
+
+---
+
+## 0.4.1
+
+---
+
+### Added
+
+### Changed
 
 ### Fixed
 

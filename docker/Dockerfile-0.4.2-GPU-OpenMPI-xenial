@@ -1,0 +1,176 @@
+# Dockerfile for PetIBM-0.4.2
+
+FROM nvidia/cuda:10.1-devel-ubuntu16.04 as build
+MAINTAINER Olivier Mesnard <mesnardo@gwu.edu>
+
+ENV CUDA_VERSION=10.1
+ENV CUDA_DIR=/usr/local/cuda-${CUDA_VERSION}
+
+# Install base system.
+COPY ssh_config /root/.ssh/config
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        autotools-dev \
+        bison \
+        build-essential \
+        ca-certificates \
+        cmake \
+        curl \
+        flex \
+        gfortran \
+        git \
+        pkg-config \
+        python-dev \
+        unzip \
+        wget && \
+    apt-get install -y --no-install-recommends \
+        libibverbs1 ibverbs-utils librdmacm1 rdmacm-utils \
+        ibutils ibacm libibcm1 libibmad5 libibumad3 opensm libopensm5a \
+        srptools perftest infiniband-diags ibsim-utils \
+        libmthca1 libmlx4-1 libmlx5-1 mstflint \
+        libdapl2 dapl2-utils && \
+    apt-get install -y --no-install-recommends \
+        openssh-server \
+        openssh-client && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    mkdir /var/run/sshd && \
+    ssh-keygen -A && \
+    sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' && \
+    chmod 600 /root/.ssh/config && \
+    chmod 700 /root/.ssh && \
+    cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+
+# Build PETSc in optimized mode.
+ENV PETSC_VERSION=3.11.3
+RUN TARBALL=petsc-lite-${PETSC_VERSION}.tar.gz && \
+    URL=http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/${TARBALL} && \
+    wget ${URL} -P /tmp && \
+    PETSC_DIR=/opt/petsc/${PETSC_VERSION} && \
+    PETSC_ARCH=linux-gnu-openmpi-opt && \
+    mkdir -p ${PETSC_DIR} && \
+    tar -xzf /tmp/${TARBALL} -C ${PETSC_DIR} --strip-components=1 && \
+    cd ${PETSC_DIR} && \
+    ./configure \
+      --prefix=/usr/local/petsc-${PETSC_VERSION} \
+      --PETSC_DIR=${PETSC_DIR} \
+      --PETSC_ARCH=${PETSC_ARCH} \
+      --COPTFLAGS="-O3" \
+      --CXXFLAGS="-O3" \
+      --FOPTFLAGS="-O3" \
+      --with-shared-libraries=1 \
+      --with-pic=1 \
+      --with-cxx-dialect="C++11" \
+      --with-debugging=0 \
+      --download-openmpi \
+      --download-hdf5 \
+      --download-fblaslapack \
+      --download-hypre \
+      --download-ptscotch \
+      --download-metis \
+      --download-parmetis \
+      --download-superlu_dist && \
+    make PETSC_DIR=${PETSC_DIR} PETSC_ARCH=${PETSC_ARCH} all && \
+    make PETSC_DIR=${PETSC_DIR} PETSC_ARCH=${PETSC_ARCH} install && \
+    rm -f /tmp/${TARBALL}
+ENV PETSC_DIR=/usr/local/petsc-${PETSC_VERSION}
+
+ENV PATH=${PETSC_DIR}/bin:${PATH}
+ENV CPATH=${PETSC_DIR}/include:${CPATH}
+
+# Build AmgX.
+ENV AMGX_VERSION=2.0
+ENV AMGX_SHA=a46b3112bc563592b8d794ba95e57350d282d584
+RUN REPO=https://github.com/NVIDIA/AMGX && \
+    AMGX_DIR=/opt/amgx/${AMGX_VERSION} && \
+    AMGX_ARCH=linux-gnu-openmpi-opt && \
+    git clone ${REPO} ${AMGX_DIR} && \
+    cd ${AMGX_DIR} && \
+    git checkout -b use4petibm ${AMGX_SHA} && \
+    BUILDDIR=${AMGX_DIR}/${AMGX_ARCH}/build && \
+    mkdir -p ${BUILDDIR} && \
+    cd ${BUILDDIR} && \
+    cmake ${AMGX_DIR} \
+      -DCMAKE_BUILD_TYPE="Release" \
+      -DCMAKE_INSTALL_PREFIX=/usr/local/amgx-${AMGX_VERSION} \
+      -DCMAKE_C_COMPILER=mpicc \
+      -DCMAKE_C_FLAGS_PROFILE="-O3 -DNDEBUG" \
+      -DCMAKE_CXX_COMPILER=mpicxx \
+      -DCMAKE_CXX_FLAGS_PROFILE="-O3 -DNDEBUG" \
+      -DMPI_CXX_COMPILER=mpicxx \
+      -DMPI_C_COMPILER=mpicc \
+      -DCUDA_ARCH="35 37 60" \
+      -DCUDA_HOST_COMPILER=/usr/bin/gcc-5 && \
+    make -j"$(nproc)" all && \
+    make install
+ENV AMGX_DIR=/usr/local/amgx-${AMGX_VERSION}
+
+# Build and install PetIBM.
+ENV PETIBM_VERSION=0.4.2
+RUN TARBALL=v${PETIBM_VERSION}.tar.gz && \
+    URL=https://github.com/barbagroup/PetIBM/archive/${TARBALL} && \
+    wget ${URL} -P /tmp && \
+    PETIBM_DIR=/opt/petibm/${PETIBM_VERSION} && \
+    PETIBM_ARCH=linux-gnu-openmpi-opt && \
+    BUILDDIR=${PETIBM_DIR}/${PETIBM_ARCH}/build && \
+    mkdir -p ${BUILDDIR} && \
+    tar -xzf /tmp/${TARBALL} -C ${PETIBM_DIR} --strip-components=1 && \
+    cd ${BUILDDIR} && \
+    ${PETIBM_DIR}/configure --prefix=/usr/local/petibm-${PETIBM_VERSION} \
+      CC=mpicc \
+      CFLAGS="-w -O3 -std=c++14" \
+      CXX=mpicxx \
+      CXXFLAGS="-w -O3 -std=c++14" \
+      --enable-static=no \
+      --with-petsc-dir=${PETSC_DIR} \
+      --with-petsc-arch="" \
+      --with-cuda-dir=${CUDA_DIR} \
+      --with-amgx-dir=${AMGX_DIR} \
+      --enable-amgxwrapper \
+      --enable-yamlcpp \
+      --enable-gtest && \
+    make -j"$(nproc)" all && \
+    make check && \
+    make install && \
+    rm -f /tmp/${TARBALL}
+ENV PETIBM_DIR=/usr/local/petibm-${PETIBM_VERSION}
+
+FROM nvidia/cuda:10.1-runtime-ubuntu16.04
+
+COPY ssh_config /root/.ssh/config
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gfortran g++ && \
+    apt-get install -y --no-install-recommends \
+        libibverbs1 ibverbs-utils librdmacm1 rdmacm-utils \
+        ibutils ibacm libibcm1 libibmad5 libibumad3 opensm libopensm5a \
+        srptools perftest infiniband-diags ibsim-utils \
+        libmthca1 libmlx4-1 libmlx5-1 mstflint \
+        libdapl2 dapl2-utils && \
+    apt-get install -y --no-install-recommends \
+        openssh-server \
+        openssh-client && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    mkdir /var/run/sshd && \
+    ssh-keygen -A && \
+    sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' && \
+    chmod 600 /root/.ssh/config && \
+    chmod 700 /root/.ssh && \
+    cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+
+ENV PETSC_VERSION=3.11.3
+ENV PETSC_DIR=/usr/local/petsc-${PETSC_VERSION}
+ENV AMGX_VERSION=2.0
+ENV AMGX_DIR=/usr/local/amgx-${AMGX_VERSION}
+ENV PETIBM_VERSION=0.4.2
+ENV PETIBM_DIR=/usr/local/petibm-${PETIBM_VERSION}
+ENV PATH=${PETIBM_DIR}/bin:${PETSC_DIR}/bin:${PATH}
+COPY --from=build ${PETSC_DIR} ${PETSC_DIR}
+COPY --from=build ${AMGX_DIR} ${AMGX_DIR}
+COPY --from=build ${PETIBM_DIR} ${PETIBM_DIR}
+
+EXPOSE 23
+CMD ["/usr/sbin/sshd", "-D", "-p", "23"]

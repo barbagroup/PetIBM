@@ -192,8 +192,10 @@ PetscErrorCode DecoupledIBPMSolver::createExtraOperators()
     // size of the Eulerian grid near by.
 
     // create the operator BN
+    PetscInt N;  // order of the truncate Taylor series expansion
+    N = config["parameters"]["BN"].as<PetscInt>(1);
     ierr = petibm::operators::createBnHead(
-        L, dt, diffCoeffs->implicitCoeff * nu, 1, BN); CHKERRQ(ierr);
+        L, dt, diffCoeffs->implicitCoeff * nu, N, BN); CHKERRQ(ierr);
 
     // create the operator BNH
     ierr = MatMatMult(

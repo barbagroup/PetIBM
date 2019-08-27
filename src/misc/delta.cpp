@@ -29,18 +29,13 @@ PetscReal Roma_et_al_1999(const PetscReal &r, const PetscReal &dr)
 // Regularized delta function Peskin (2002).
 PetscReal Peskin_2002(const PetscReal &r, const PetscReal &dr)
 {
-    PetscReal x = r / dr;
+    PetscReal x = std::abs(r) / dr;
 
-    if (x >= -2.0 && x <= -1.0)
-        return (5 + 2 * x - std::sqrt(-7 - 12 * x - 4 * x * x)) / (8 * dr);
-    else if (x >= -1.0 && x <= 0.0)
-        return (3 + 2 * x + std::sqrt(1 - 4 * x - 4 * x * x)) / (8 * dr);
-    else if (x >= 0.0 && x <= 1.0)
+    if (x >= 0.0 && x <= 1.0)
         return (3 - 2 * x + std::sqrt(1 + 4 * x - 4 * x * x)) / (8 * dr);
     else if (x >= 1.0 && x <= 2.0)
         return (5 - 2 * x - std::sqrt(-7 + 12 * x - 4 * x * x)) / (8 * dr);
-    else
-        return 0.0;
+    return 0.0;
 }  // Peskin_2002
 
 // Get the delta kernel and size to use

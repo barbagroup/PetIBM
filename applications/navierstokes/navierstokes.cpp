@@ -125,7 +125,7 @@ PetscErrorCode NavierStokesSolver::init(const MPI_Comm &world, const YAML::Node 
     // create the Cartesian mesh
     ierr = petibm::mesh::createMesh(comm, config, mesh); CHKERRQ(ierr);
     // write the grid points into a HDF5 file
-    std::string filePath = config["directory"].as<std::string>() + "/grid.h5";
+    std::string filePath = config["output"].as<std::string>() + "/grid.h5";
     ierr = mesh->write(filePath); CHKERRQ(ierr);
 
     // create the data object for the boundary conditions
@@ -167,13 +167,18 @@ PetscErrorCode NavierStokesSolver::init(const MPI_Comm &world, const YAML::Node 
     probes.resize(config["probes"].size());
     for (unsigned int i = 0; i < probes.size(); ++i)
     {
+         // Prepend relative path with output directory.
+        config["probes"][i]["path"] =
+            config["output"].as<std::string>() + "/" +
+            config["probes"][i]["path"].as<std::string>();
+        // Create the probe.
         ierr = petibm::misc::createProbe(mesh->comm, config["probes"][i],
                                          mesh, probes[i]); CHKERRQ(ierr);
     }
 
     // create an ASCII PetscViewer to output linear solvers info
     ierr = createPetscViewerASCII(
-        config["directory"].as<std::string>() +
+        config["output"].as<std::string>() +
         "/iterations-" + std::to_string(ite) + ".txt",
         FILE_MODE_WRITE, solversViewer); CHKERRQ(ierr);
 

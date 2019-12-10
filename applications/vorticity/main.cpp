@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         {
             ierr = petibm::io::writeHDF5Vecs(
                 PETSC_COMM_SELF,
-                setting["directory"].as<std::string>() + "/grid.h5", wNames[i],
+                setting["output"].as<std::string>() + "/grid.h5", wNames[i],
                 {"x", "y", "z"}, wCoord[i], FILE_MODE_APPEND); CHKERRQ(ierr);
         }
     }

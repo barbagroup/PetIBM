@@ -25,7 +25,9 @@ angles = numpy.arange(0, 90 + 1, 10, dtype=numpy.int32)
 cd = numpy.zeros_like(angles, dtype=numpy.float64)
 cl = numpy.zeros_like(angles, dtype=numpy.float64)
 for i, angle in enumerate(angles):
-    filepath = root_dir / 'AoA{}'.format(angle) / 'forces-0.txt'
+    simu_dir = root_dir / 'AoA{}'.format(angle)
+    data_dir = simu_dir / 'output'
+    filepath = data_dir / 'forces-0.txt'
     with open(filepath, 'r') as infile:
         data = numpy.loadtxt(infile, dtype=numpy.float64, unpack=True)
     mask = numpy.where(numpy.logical_and(data[0] >= time_limits[0],

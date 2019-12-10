@@ -10,7 +10,8 @@ from scipy import signal
 
 # Read the drag force from file.
 simu_dir = pathlib.Path(__file__).parents[1]
-filepath = simu_dir / 'forces-0.txt'
+data_dir = simu_dir / 'output'
+filepath = data_dir / 'forces-0.txt'
 with open(filepath, 'r') as infile:
     t, fx = numpy.loadtxt(infile, dtype=numpy.float64,
                           unpack=True, usecols=(0, 1))

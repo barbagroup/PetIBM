@@ -16,7 +16,7 @@ simu_dir = pathlib.Path(__file__).absolute().parents[1]
 
 # Generate coordinates of the circle.
 n = math.ceil(2.0 * numpy.pi * R / ds)
-theta = numpy.linspace(0.0, 2.0 * numpy.pi, num=n, endpoint=False)
+theta = numpy.linspace(0.0, 2.0 * numpy.pi, num=n + 1)[:-1]
 x, y = xc + R * numpy.cos(theta), yc + R * numpy.sin(theta)
 
 # Write coordinates into file.

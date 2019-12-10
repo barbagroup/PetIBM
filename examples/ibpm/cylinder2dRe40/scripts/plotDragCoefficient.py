@@ -18,6 +18,7 @@ from matplotlib import pyplot
 
 
 simu_dir = pathlib.Path(__file__).absolute().parents[1]
+data_dir = simu_dir / 'output'
 root_dir = os.environ.get('PETIBM_EXAMPLES')
 if not root_dir:
     root_dir = simu_dir.parents[1]
@@ -26,7 +27,7 @@ data = collections.OrderedDict({})
 
 # Reads forces from file.
 label = 'PetIBM'
-filepath = simu_dir / 'forces-0.txt'
+filepath = data_dir / 'forces-0.txt'
 with open(filepath, 'r') as infile:
     t, fx = numpy.loadtxt(infile, dtype=numpy.float64,
                           unpack=True, usecols=(0, 1))

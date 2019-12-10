@@ -60,9 +60,10 @@ def get_time_mask(data, time_limits=(-numpy.inf, numpy.inf)):
 
 # Set up root directory
 simu_dir = pathlib.Path(__file__).absolute().parents[1]
+data_dir = simu_dir / 'output'
 
 # Get force coefficients for all immersed bodies
-filepath = simu_dir / 'forces-0.txt'
+filepath = data_dir / 'forces-0.txt'
 data = {}
 get_force_coefficients(filepath, data, label='Body 1',
                        coeff=2.0, usecols=(0, 1, 2))

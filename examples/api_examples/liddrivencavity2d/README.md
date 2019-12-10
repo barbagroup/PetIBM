@@ -19,15 +19,36 @@ To see how to implement these elements, please refer to the source code of the N
 
 ## Build this example
 
-We provide a shell script, `build.sh`, for readers to build this example.
-It's not our intention to demonstration how to compile and build software under Linux environment, so we don't provide any Makefile or CMake files in this example.
-But the shell script should be enough to show how to link against the PetIBM library.
+* Option 1: Makefile
 
+During the configuration stage, a Makefile is created in the example's folder (under the build directory).
+You can create the executable with `make cavity`:
+
+```shell
+cd $petibm_builddir
+cd examples/api_examples/liddrivencavity2d
+make cavity
+```
+
+* Option 2: `build.sh`
+
+Alternatively, we also provide a Shell script, `build.sh`, to build this example.
 In a nutshell, when using PetIBM as a library, we also need to link against PETSc library, AmgX library (if used), and other user-provided third-party libraries (for example, if users provide their own yaml-cpp, instead of using the one provided by PetIBM configuration system).
-
 In order to use `build.sh`, readers should first modify the variables in the first section of the script to reflect the paths of PETSc and PetIBM installation.
 The remaining sections of the script show how to grab the configurations from PETSc library and how to link PetIBM library.
 Then, simply run `sh ./build.sh` to build this example.
+
+## Run the example
+
+To run the example on CPU with 1 MPI process:
+
+```shell
+cd $petibm_builddir
+cd examples/api_examples/liddrivencavity2d
+./cavity
+```
+
+The numerical solution will be saved in the sub-folder `output` of the simulation directory.
 
 ## Post-processing
 
@@ -42,6 +63,5 @@ We use XDMF format to provide such information to the post-processing software.
 (Software such as ParaView and VisIt understand XDMF format.)
 The present folder contains the XDMF file `postprocessing.xmf` that is specific to this example and can be open with ParaView and/or VisIt.
 
-For those who are just interested in using PetIBM as a CFD solver, there's no 
-need to write XDMF format.
+For those who are just interested in using PetIBM as a CFD solver, there's no need to write XDMF format.
 The utility program, `petibm-createxdmf`, installed in the `bin` directory of the PetIBM installation directory, can be used to create XDMF files for the flow variables, as long as the simulations were performed with one of the solvers from the `applications` directory.

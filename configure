@@ -20272,7 +20272,7 @@ fi
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile applications/writemesh/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile applications/writemesh/Makefile examples/api_examples/liddrivencavity2d/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
 
 
 # output message
@@ -21431,6 +21431,7 @@ do
     "applications/ibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/ibpm/Makefile" ;;
     "applications/decoupledibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/decoupledibpm/Makefile" ;;
     "applications/writemesh/Makefile") CONFIG_FILES="$CONFIG_FILES applications/writemesh/Makefile" ;;
+    "examples/api_examples/liddrivencavity2d/Makefile") CONFIG_FILES="$CONFIG_FILES examples/api_examples/liddrivencavity2d/Makefile" ;;
     "examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile") CONFIG_FILES="$CONFIG_FILES examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.4.2</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -163,7 +163,7 @@ $(document).ready(function(){initNavTree('md_doc_markdowns_inputs.html','');});
 <li><code>name</code>: (optional) name of the probe; default name is <code>unnamed</code>.</li>
 <li><code>type</code>: (required) type of the probe (<code>VOLUME</code> for to monitor a sub-volume, <code>POINT</code> to interpolate the value a single point).</li>
 <li><code>field</code>: (required) name of the scalar field variable (supported variables are <code>p</code> for the pressure, <code>u</code>, <code>v</code>, and <code>w</code> for the velocity components).</li>
-<li><code>path</code>: (required) path of the file to write the data (relative to the simulation directory) into (parent folder needs to exist).</li>
+<li><code>path</code>: (required) path of the file to write the data (relative to the <code>output</code> directory) into (parent folder needs to exist).</li>
 <li><code>n_monitor</code>: (optional) monitoring frequency (as a number of time steps); default value is <code>1</code>.</li>
 <li><code>t_start</code>: (optional) time value to start monitoring the variable; default is <code>0.0</code>.</li>
 <li><code>t_end</code>: (optional) time value to finish monitoring the variable; default is <code>1e12</code>.</li>
@@ -184,7 +184,7 @@ $(document).ready(function(){initNavTree('md_doc_markdowns_inputs.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jul 19 2019 16:11:43 for PetIBM by
+    <li class="footer">Generated on Wed Dec 11 2019 16:43:05 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

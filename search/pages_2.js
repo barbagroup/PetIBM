@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dockerfile_20for_20petibm_2d0_2e4_2e2',['Dockerfile for PetIBM-0.4.2',['../md_docker_README.html',1,'']]]
+  ['how_20to_20contribute_20to_20petibm',['How to contribute to PetIBM',['../md_CONTRIBUTING.html',1,'']]]
 ];

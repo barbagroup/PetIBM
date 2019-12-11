@@ -5,7 +5,6 @@ var searchData=
   ['readbody',['readBody',['../dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a52196378a7fadf00a7646888412aee37',1,'petibm::body::SingleBodyBase::readBody()'],['../d9/d83/classpetibm_1_1body_1_1_single_body_points.html#ad9a96c95c42037a9bdc4dfb2e8747473',1,'petibm::body::SingleBodyPoints::readBody()']]],
   ['readhdf5vecs',['readHDF5Vecs',['../df/d44/group__misc_module.html#ga9715aaee1c61908e30ba76e65cc320f7',1,'petibm::io']]],
   ['readlagrangianpoints',['readLagrangianPoints',['../df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded',1,'petibm::io']]],
-  ['readme_2emd',['README.md',['../df/d6c/docker_2_r_e_a_d_m_e_8md.html',1,'']]],
   ['readme_2emd',['README.md',['../d9/dd6/_r_e_a_d_m_e_8md.html',1,'']]],
   ['readrestartdatahdf5',['readRestartDataHDF5',['../d4/d1d/class_decoupled_i_b_p_m_solver.html#a7652e678e2aec1e2c435d5065d8e4969',1,'DecoupledIBPMSolver::readRestartDataHDF5()'],['../d2/dec/class_i_b_p_m_solver.html#a670286d7900f3921758ae95747b9481b',1,'IBPMSolver::readRestartDataHDF5()'],['../d4/de8/class_navier_stokes_solver.html#a5cb251208282b2efd0a35b8b3b5bf722',1,'NavierStokesSolver::readRestartDataHDF5()']]],
   ['readtimehdf5',['readTimeHDF5',['../d4/de8/class_navier_stokes_solver.html#a7147c282533d0dd503fdeb964c709548',1,'NavierStokesSolver']]],

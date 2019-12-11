@@ -8,5 +8,5 @@ figures
 *.xmf
 *.curve
 .logamgx
-stdout.txt
 *.log
+view.log

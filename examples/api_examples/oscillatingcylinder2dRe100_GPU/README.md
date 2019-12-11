@@ -14,7 +14,7 @@ You can run the example (for example, using 4 MPI processes and 1 GPU device) wi
 
 ```shell
 export CUDA_VISIBLE_DEVICES=<idx1>
-mpiexec -np 4 oscillatingcylinder -options_left -log_view ascii:stdout.txt
+mpiexec -np 4 oscillatingcylinder -options_left -log_view ascii:view.log
 ```
 
 The simulation should complete in less than 40 minutes when using:

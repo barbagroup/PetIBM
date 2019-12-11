@@ -14,7 +14,7 @@ for angle in ${angles[@]}; do
     mpiexec -np 4 petibm-decoupledibpm \
         -directory "AoA$angle" \
         -options_left \
-        -log_view ascii:"AoA$angle/stdout.txt"
+        -log_view ascii:"AoA$angle/view.log"
 done
 ```
 

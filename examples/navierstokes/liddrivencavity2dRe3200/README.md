@@ -3,7 +3,7 @@
 Run the example:
 
 ```
-mpiexec -np 4 petibm-navierstokes -options_left -log_view ascii:stdout.txt
+mpiexec -np 4 petibm-navierstokes -options_left -log_view ascii:view.log
 ```
 
 The simulation completes in about 6 minutes when using 4 CPU processes

@@ -4,7 +4,7 @@ Run the example using 2 CPU processes and 2 GPUs:
 
 ```
 export CUDA_VISIBLE_DEVICES=<idx1>,<idx2>
-mpiexec -np 2 petibm-decoupledibpm -options_left -log_view ascii:stdout.txt
+mpiexec -np 2 petibm-decoupledibpm -options_left -log_view ascii:view.log
 ```
 
 The simulation takes about 2 minutes to complete when using:

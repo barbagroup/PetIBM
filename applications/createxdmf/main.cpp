@@ -75,15 +75,15 @@ int main(int argc, char **argv)
     if (!isSet) step = setting["parameters"]["nsave"].as<PetscInt>();
 
     // u
-    ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "u",
+    ierr = writeSingleXDMF(setting["output"].as<std::string>(), "u",
                            mesh->dim, mesh->n[0], bg, ed, step); CHKERRQ(ierr);
 
     // v
-    ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "v",
+    ierr = writeSingleXDMF(setting["output"].as<std::string>(), "v",
                            mesh->dim, mesh->n[1], bg, ed, step); CHKERRQ(ierr);
 
     // p
-    ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "p",
+    ierr = writeSingleXDMF(setting["output"].as<std::string>(), "p",
                            mesh->dim, mesh->n[3], bg, ed, step); CHKERRQ(ierr);
 
     // wz
@@ -92,13 +92,13 @@ int main(int argc, char **argv)
     wn[0] = mesh->n[4][0];
     wn[1] = mesh->n[4][1];
     wn[2] = mesh->n[3][2];
-    ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "wz",
+    ierr = writeSingleXDMF(setting["output"].as<std::string>(), "wz",
                            mesh->dim, wn, bg, ed, step); CHKERRQ(ierr);
 
     if (mesh->dim == 3)
     {
         // w
-        ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "w",
+        ierr = writeSingleXDMF(setting["output"].as<std::string>(), "w",
                                mesh->dim, mesh->n[2], bg, ed, step);
         CHKERRQ(ierr);
 
@@ -106,14 +106,14 @@ int main(int argc, char **argv)
         wn[0] = mesh->n[3][0];
         wn[1] = mesh->n[4][1];
         wn[2] = mesh->n[4][2];
-        ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "wx",
+        ierr = writeSingleXDMF(setting["output"].as<std::string>(), "wx",
                                mesh->dim, wn, bg, ed, step); CHKERRQ(ierr);
 
         // wy
         wn[0] = mesh->n[4][0];
         wn[1] = mesh->n[3][1];
         wn[2] = mesh->n[4][2];
-        ierr = writeSingleXDMF(setting["directory"].as<std::string>(), "wy",
+        ierr = writeSingleXDMF(setting["output"].as<std::string>(), "wy",
                                mesh->dim, wn, bg, ed, step); CHKERRQ(ierr);
     }
 
@@ -150,7 +150,8 @@ PetscErrorCode writeSingleXDMF(const std::string &directory,
     ierr = PetscViewerASCIIPrintf(viewer,
                                   "<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" [\n");
     CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "\t<!ENTITY CaseDir \"%s\">\n", "./");
+    ierr = PetscViewerASCIIPrintf(
+        viewer, "\t<!ENTITY CaseDir \"%s\">\n", directory.c_str());
     CHKERRQ(ierr);
 
     // always use 3D XDMF format, so both Visit and Paraview works
@@ -247,7 +248,7 @@ PetscErrorCode writeSingleXDMF(const std::string &directory,
         CHKERRQ(ierr);
         ierr = PetscViewerASCIIPrintf(viewer,
                                       "\t\t\t\t\t"
-                                      "&CaseDir;/solution/%07d.h5:/%s\n",
+                                      "&CaseDir;/%07d.h5:/%s\n",
                                       t, name.c_str()); CHKERRQ(ierr);
         ierr = PetscViewerASCIIPrintf(viewer,
                                       "\t\t\t\t"

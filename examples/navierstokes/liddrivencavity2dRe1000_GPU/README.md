@@ -4,7 +4,7 @@ Run the example using 1 GPU (index 0):
 
 ```
 export CUDA_VISIBLE_DEVICES=<idx1>
-mpiexec -np 2 petibm-navierstokes -options_left -log_view ascii:stdout.txt
+mpiexec -np 2 petibm-navierstokes -options_left -log_view ascii:view.log
 ```
 
 The simulation completes in less than 2 minutes when using:

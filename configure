@@ -19319,7 +19319,7 @@ int
 main ()
 {
 
-#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 12, 0)) || PETSC_VERSION_RELEASE != 1)
+#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 13, 0)) || PETSC_VERSION_RELEASE != 1)
 #else
 asdf
 #endif
@@ -20272,7 +20272,7 @@ fi
 
 
 # list of Makefiles to generate
-ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile applications/writemesh/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile src/Makefile src/body/Makefile src/boundary/Makefile src/io/Makefile src/linsolver/Makefile src/mesh/Makefile src/misc/Makefile src/operators/Makefile src/parser/Makefile src/solution/Makefile src/timeintegration/Makefile tests/Makefile tests/body/Makefile tests/boundary/Makefile tests/mesh/Makefile tests/misc/Makefile tests/operators/Makefile applications/Makefile applications/createxdmf/Makefile applications/vorticity/Makefile applications/navierstokes/Makefile applications/ibpm/Makefile applications/decoupledibpm/Makefile applications/writemesh/Makefile examples/api_examples/liddrivencavity2d/Makefile examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile"
 
 
 # output message
@@ -21431,6 +21431,7 @@ do
     "applications/ibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/ibpm/Makefile" ;;
     "applications/decoupledibpm/Makefile") CONFIG_FILES="$CONFIG_FILES applications/decoupledibpm/Makefile" ;;
     "applications/writemesh/Makefile") CONFIG_FILES="$CONFIG_FILES applications/writemesh/Makefile" ;;
+    "examples/api_examples/liddrivencavity2d/Makefile") CONFIG_FILES="$CONFIG_FILES examples/api_examples/liddrivencavity2d/Makefile" ;;
     "examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile") CONFIG_FILES="$CONFIG_FILES examples/api_examples/oscillatingcylinder2dRe100_GPU/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
@@ -22884,11 +22885,9 @@ PETSC_ARCH: ${PETSC_ARCH}
 
 Now type 'make [<target>]'
   where the optional [<target>] is:
-    all            - build library and application codes
+    all            - build library and application programs
     check          - compile and run unit-tests
     install        - install everything
-    copy-examples  - copy examples (use EXAMPLES_DIR=<dir> to choose directory,
-                     default is the folder \"examples\" in the top build directory)
 " >&5
 $as_echo "$as_me: PetIBM appears to have been configured successfully
 
@@ -22902,9 +22901,7 @@ PETSC_ARCH: ${PETSC_ARCH}
 
 Now type 'make [<target>]'
   where the optional [<target>] is:
-    all            - build library and application codes
+    all            - build library and application programs
     check          - compile and run unit-tests
     install        - install everything
-    copy-examples  - copy examples (use EXAMPLES_DIR=<dir> to choose directory,
-                     default is the folder \"examples\" in the top build directory)
 " >&6;}

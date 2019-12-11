@@ -11,9 +11,10 @@ from matplotlib import pyplot
 
 # Set up root directory.
 simu_dir = pathlib.Path(__file__).absolute().parents[1]
+data_dir = simu_dir / 'output'
 
 # Get the force coefficients.
-filepath = simu_dir / 'forces-0.txt'
+filepath = data_dir / 'forces-0.txt'
 with open(filepath, 'r') as infile:
     t, fx, fy = numpy.loadtxt(infile, dtype=numpy.float64, unpack=True)
 cd, cl = 2 * fx, 2 * fy

@@ -182,9 +182,9 @@ PetscErrorCode getSettings(YAML::Node &node)
     if (flag) node["directory"] = s;
 
     // Get the output directory where to save field solutions;
-    // default is the `solution` folder under the working directory.
-    // TODO: if user provides a relative path, where should it be relative to?
-    node["output"] = node["directory"].as<std::string>() + "/solution";
+    // default is the `output` folder under the working directory.
+    // If the user provides a relative path, it is relative to $PWD.
+    node["output"] = node["directory"].as<std::string>() + "/output";
     ierr =
         PetscOptionsGetString(nullptr, nullptr, "-output", s, sizeof(s), &flag);
     CHKERRQ(ierr);
@@ -194,7 +194,7 @@ PetscErrorCode getSettings(YAML::Node &node)
     // Get the directory where to save PETSc logging files;
     // default is the `logs` folder under the working directory.
     // TODO: if user provides a relative path, where should it be relative to?
-    node["logs"] = node["directory"].as<std::string>() + "/logs";
+    node["logs"] = node["output"].as<std::string>() + "/logs";
     ierr =
         PetscOptionsGetString(nullptr, nullptr, "-logs", s, sizeof(s), &flag);
     CHKERRQ(ierr);
@@ -205,9 +205,8 @@ PetscErrorCode getSettings(YAML::Node &node)
     // default is the file `config.yaml` in the working directory.
     // TODO: if user provides a relative path, where should it be relative to?
     filePath = node["directory"].as<std::string>() + "/config.yaml";
-    ierr =
-        PetscOptionsGetString(nullptr, nullptr, "-config", s, sizeof(s), &flag);
-    CHKERRQ(ierr);
+    ierr = PetscOptionsGetString(
+        nullptr, nullptr, "-config", s, sizeof(s), &flag); CHKERRQ(ierr);
     if (flag) filePath = s;
     // Load the settings into the YAML node.
     ierr = readYAMLFile(filePath, node); CHKERRQ(ierr);

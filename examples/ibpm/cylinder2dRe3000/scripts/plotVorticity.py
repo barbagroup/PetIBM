@@ -10,15 +10,16 @@ from matplotlib import pyplot
 
 
 simu_dir = pathlib.Path(__file__).absolute().parents[1]
+data_dir = simu_dir / 'output'
 
 # Read vorticity field and its grid from files.
 name = 'wz'
-filepath = simu_dir / 'grid.h5'
+filepath = data_dir / 'grid.h5'
 f = h5py.File(filepath, 'r')
 x, y = f[name]['x'][:], f[name]['y'][:]
 X, Y = numpy.meshgrid(x, y)
 timestep = 3000
-filepath = simu_dir / 'solution' / '{:0>7}.h5'.format(timestep)
+filepath = data_dir / '{:0>7}.h5'.format(timestep)
 f = h5py.File(filepath, 'r')
 wz = f[name][:]
 

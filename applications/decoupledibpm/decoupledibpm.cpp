@@ -85,7 +85,7 @@ PetscErrorCode DecoupledIBPMSolver::init(const MPI_Comm &world,
 
     // create an ASCII PetscViewer to output the body forces
     ierr = createPetscViewerASCII(
-        config["directory"].as<std::string>() +
+        config["output"].as<std::string>() +
         "/forces-" + std::to_string(ite) + ".txt",
         FILE_MODE_WRITE, forcesViewer); CHKERRQ(ierr);
 

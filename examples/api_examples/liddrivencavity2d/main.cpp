@@ -114,7 +114,8 @@ int main(int argc, char **argv)
 
     // Write out the coordinates of grid points to a HDF file (grid.h5) under
     // the current directory.
-    ierr = mesh->write("./grid.h5"); CHKERRQ(ierr);
+    std::string outdir = config["output"].as<std::string>();
+    ierr = mesh->write(outdir + "/grid.h5"); CHKERRQ(ierr);
 
     /*
      * Step 3: create an object to hold solutions according the mesh.
@@ -347,7 +348,7 @@ int main(int argc, char **argv)
     /*
      * Step 9: output solution to a HDF5 file (./solution/0002000.h5).
      */
-    ierr = soln->write("./solution/0002000.h5"); CHKERRQ(ierr);
+    ierr = soln->write(outdir + "/0002000.h5"); CHKERRQ(ierr);
 
     /*
      * Step 10: clean up objects to avoid memory leak.

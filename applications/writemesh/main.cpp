@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     CHKERRQ(ierr);
 
     // write grid data into HDF5 file
-    std::string filePath = config["directory"].as<std::string>() + "/grid.h5";
+    std::string filePath = config["output"].as<std::string>() + "/grid.h5";
     char s[PETSC_MAX_PATH_LEN];
     PetscBool flag = PETSC_FALSE;
     ierr = PetscOptionsGetString(nullptr, nullptr, "-file", s, sizeof(s),

@@ -10,13 +10,9 @@ SUBDIRS = \
 
 EXTRA_DIST = autogen.sh
 
-EXAMPLES_DIR=$(top_builddir)/examples
-
-copy-examples:
-	@if test $(EXAMPLES_DIR) != "$(top_srcdir)/examples" ; then \
-		echo "Copying examples folders into $(EXAMPLES_DIR)..." ; \
-		mkdir -p $(EXAMPLES_DIR) ; \
-		rsync -a $(top_srcdir)/examples/* $(EXAMPLES_DIR) ; \
+install-data-hook:
+	@if test "$(prefix)/examples" != "$(top_srcdir)/examples" ; then \
+		echo "Copying examples into $(prefix)..." ; \
+		rsync -a $(top_srcdir)/examples $(prefix) ; \
+		rm -rf $(prefix)/examples/api_examples ; \
 	fi ;
-
-.PHONY: copy-examples

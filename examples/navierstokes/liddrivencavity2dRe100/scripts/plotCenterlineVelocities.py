@@ -22,6 +22,7 @@ time_step = 1000  # Time step at which to read the solution
 # End of user's parameters
 
 simu_dir = pathlib.Path(__file__).absolute().parents[1]
+data_dir = simu_dir / 'output'
 root_dir = os.environ.get('PETIBM_EXAMPLES')
 if not root_dir:
     root_dir = simu_dir.parents[1]
@@ -56,13 +57,12 @@ def read_field_hdf5(name, fieldpath, gridpath):
 
 
 # Reads data from Ghia et al. (1982).
-data_dir = root_dir / 'data'
-filepath = data_dir / 'ghia_et_al_1982_lid_driven_cavity.dat'
+filepath = root_dir / 'data' /  'ghia_et_al_1982_lid_driven_cavity.dat'
 ghia = read_data_ghia_et_al_1982(filepath, Re)
 
 # Reads gridlines and velocity fields.
-gridpath = simu_dir / 'grid.h5'
-filepath = simu_dir / 'solution' / '{:0>7}.h5'.format(time_step)
+gridpath = data_dir / 'grid.h5'
+filepath = data_dir / '{:0>7}.h5'.format(time_step)
 u = read_field_hdf5('u', filepath, gridpath)
 v = read_field_hdf5('v', filepath, gridpath)
 

@@ -43,8 +43,8 @@ fields = {}
 field_names = ['u', 'v', 'p']
 for folder in folders:
   directory = os.path.join(root_dir, folder)
-  filepath = os.path.join(directory, 'solution', '{:0>7}.h5'.format(timestep))
-  gridpath = os.path.join(directory, 'grid.h5')
+  filepath = os.path.join(directory, 'output', '{:0>7}.h5'.format(timestep))
+  gridpath = os.path.join(directory, 'output', 'grid.h5')
   fields[folder] = read_fields_from_hdf5(filepath, gridpath, names=field_names)
   # Restrict fields onto coarse grid.
   for name in field_names:

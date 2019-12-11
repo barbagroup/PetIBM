@@ -263,7 +263,7 @@ General configuration of a probe:
 - `name`: (optional) name of the probe; default name is `unnamed`.
 - `type`: (required) type of the probe (`VOLUME` for to monitor a sub-volume, `POINT` to interpolate the value a single point).
 - `field`: (required) name of the scalar field variable (supported variables are `p` for the pressure, `u`, `v`, and `w` for the velocity components).
-- `path`: (required) path of the file to write the data (relative to the simulation directory) into (parent folder needs to exist).
+- `path`: (required) path of the file to write the data (relative to the `output` directory) into (parent folder needs to exist).
 - `n_monitor`: (optional) monitoring frequency (as a number of time steps); default value is `1`.
 - `t_start`: (optional) time value to start monitoring the variable; default is `0.0`.
 - `t_end`: (optional) time value to finish monitoring the variable; default is `1e12`.

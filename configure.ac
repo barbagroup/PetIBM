@@ -4,7 +4,7 @@
 
 # set-up
 AC_PREREQ([2.69])
-AC_INIT([PetIBM], [0.4.2], [mesnardo@gwu.edu, pychuang@gwu.edu])
+AC_INIT([PetIBM], [0.5], [mesnardo@gwu.edu, pychuang@gwu.edu])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])

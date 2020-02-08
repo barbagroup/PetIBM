@@ -2,6 +2,22 @@
 
 ---
 
+## 0.5.1
+
+---
+
+### Added
+
+### Changed
+
+### Fixed
+
+* `ProbeVolume`: write a PETSc Index Set to the output file (HDF5 or ASCII) for the volume probe. The index set contains the natural index of the points located inside the volume being monitored. During post-processing stage, the index set can be used to re-arrange field values of the sub-volume and visualize the solution. Without this index set, the PETSc vector for the sub-volume (obtained with the PETSc routine `VecGetSubVector`) did not output the values in the natural ordering of the vector. `VecGetSubVector` simply concatenates the values in the parallel ordering of the vector. This problem only affected simulations running with multiple MPI processes where the window being monitored span over multiple process domains.
+
+### Removed
+
+---
+
 ## 0.5.0
 
 ---

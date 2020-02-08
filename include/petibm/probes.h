@@ -144,8 +144,11 @@ protected:
     /** \brief Limits of the volume. */
     type::RealVec2D box;
 
-    /** \brief Index set for the grid points to monitor. */
-    IS is;
+    /** \brief Index set for the grid points to monitor (PETSc ordering). */
+    IS isPetsc;
+
+    /** \brief Index set for the grid points to monitor (Natural ordering). */
+    IS isNatural;
 
     /** \brief Sub-vector of the region to monitor. */
     Vec dvec;
@@ -182,8 +185,8 @@ protected:
      * \param box [in] Box area to monitor
      * \return PetscErrorCode
      */
-    PetscErrorCode getSubMeshInfo(const type::Mesh &mesh,
-                                  const type::RealVec2D &box);
+    PetscErrorCode getInfo(const type::Mesh &mesh,
+                           const type::RealVec2D &box);
 
     /** \brief Create the index set for the points to monitor.
      *
@@ -197,28 +200,53 @@ protected:
      * \param mesh [in] Cartesian mesh object
      * \return PetscErrorCode
      */
-    PetscErrorCode createSubMesh(const type::Mesh &mesh);
+    PetscErrorCode createGrid(const type::Mesh &mesh);
 
     /** \brief Write the sub mesh grid points into a file.
+     *
+     * Supported formats are HDF5 and ASCII.
      *
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSubMesh(const std::string &filePath);
+    PetscErrorCode writeGrid(const std::string &filePath);
 
     /** \brief Write the sub mesh into an ASCII file.
      *
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSubMeshASCII(const std::string &filePath);
+    PetscErrorCode writeGrid_ASCII(const std::string &filePath);
 
     /** \brief Write the sub mesh into a HDF5 file.
      *
      * \param filePath [in] Path of the file to write in
      * \return PetscErrorCode
      */
-    PetscErrorCode writeSubMeshHDF5(const std::string &filePath);
+    PetscErrorCode writeGrid_HDF5(const std::string &filePath);
+
+    /** \brief Write index set (natural ordering) into a file.
+     *
+     * Supported formats are HDF5 and ASCII.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeIS(const std::string &filePath);
+
+    /** \brief Write index set (natural ordering) into a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeIS_HDF5(const std::string &filePath);
+
+    /** \brief Write index set (natural ordering) into a HDF5 file.
+     *
+     * \param filePath [in] Path of the file to write in
+     * \return PetscErrorCode
+     */
+    PetscErrorCode writeIS_ASCII(const std::string &filePath);
 
     /** \copydoc ProbeBase::monitorVec() */
     PetscErrorCode monitorVec(const DM &da,
@@ -242,7 +270,7 @@ protected:
      * \param t [in] Time
      * \return PetscErrorCode
      */
-    PetscErrorCode writeVecASCII(const Vec &vec, const PetscReal &t);
+    PetscErrorCode writeVec_ASCII(const Vec &vec, const PetscReal &t);
 
     /** \brief Output a PETSc Vec object to a HDF5 file.
      *
@@ -250,7 +278,7 @@ protected:
      * \param t [in] Time
      * \return PetscErrorCode
      */
-    PetscErrorCode writeVecHDF5(const Vec &vec, const PetscReal &t);
+    PetscErrorCode writeVec_HDF5(const Vec &vec, const PetscReal &t);
 
 };  // ProbeVolume
 

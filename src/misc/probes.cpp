@@ -182,7 +182,8 @@ PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
     // data are added together and we write the time averaged data
     n_sum = node["n_sum"].as<PetscInt>(0);
 
-    is = PETSC_NULL;
+    isPetsc = PETSC_NULL;
+    isNatural = PETSC_NULL;
     dvec = PETSC_NULL;
 
     // store information about the sub-volume to monitor
@@ -198,13 +199,11 @@ PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
     startIdxDir.resize(3, 0);
 
     // get information about the location of the sub-mesh
-    ierr = getSubMeshInfo(mesh, box); CHKERRQ(ierr);
+    ierr = getInfo(mesh, box); CHKERRQ(ierr);
     // create gridline coordinates for the sub-mesh
-    ierr = createSubMesh(mesh); CHKERRQ(ierr);
+    ierr = createGrid(mesh); CHKERRQ(ierr);
     // write the sub-mesh to file
-    ierr = writeSubMesh(path); CHKERRQ(ierr);
-    // create a PETSc Index Set object to easily grab a sub-vector
-    ierr = createIS(mesh); CHKERRQ(ierr);
+    ierr = writeGrid(path); CHKERRQ(ierr);
 
     // create a PETSc Viewer to output the data
     ierr = PetscViewerCreate(comm, &viewer); CHKERRQ(ierr);
@@ -213,6 +212,11 @@ PetscErrorCode ProbeVolume::init(const MPI_Comm &comm,
     // (it was created when the sub-mesh was written into it)
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, path.c_str()); CHKERRQ(ierr);
+
+    // create a PETSc Index Set objects to the sub-vector of interest
+    ierr = createIS(mesh); CHKERRQ(ierr);
+    // write Index Set (natural ordering) to file
+    ierr = writeIS(path); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::init
@@ -225,15 +229,16 @@ PetscErrorCode ProbeVolume::destroy()
     PetscFunctionBeginUser;
 
     ierr = ProbeBase::destroy(); CHKERRQ(ierr);
-    if (is != PETSC_NULL) {ierr = ISDestroy(&is); CHKERRQ(ierr);}
+    if (isPetsc != PETSC_NULL) {ierr = ISDestroy(&isPetsc); CHKERRQ(ierr);}
+    if (isNatural != PETSC_NULL) {ierr = ISDestroy(&isNatural); CHKERRQ(ierr);}
     if (dvec != PETSC_NULL) {ierr = VecDestroy(&dvec); CHKERRQ(ierr);}
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::destroy
 
 // Get information about the sub-mesh area to monitor.
-PetscErrorCode ProbeVolume::getSubMeshInfo(const type::Mesh &mesh,
-                                           const type::RealVec2D &box)
+PetscErrorCode ProbeVolume::getInfo(const type::Mesh &mesh,
+                                    const type::RealVec2D &box)
 {
     std::vector<PetscReal>::iterator low, up;
 
@@ -256,9 +261,9 @@ PetscErrorCode ProbeVolume::getSubMeshInfo(const type::Mesh &mesh,
                            1, std::multiplies<PetscInt>());
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::getSubMeshInfo
+}  // ProbeVolume::getInfo
 
-// Create the index set for the points to monitor.
+// Create the index sets (PETSc and natural ordering) of the points to monitor.
 PetscErrorCode ProbeVolume::createIS(const type::Mesh &mesh)
 {
     PetscErrorCode ierr;
@@ -287,17 +292,25 @@ PetscErrorCode ProbeVolume::createIS(const type::Mesh &mesh)
     }
     indices.resize(count);
 
+    // AO will map `indices` from natural ordering to PETSc ordering.
+    // However, we need to keep the vector with natural-ordering indices
+    // so we can post-process the solution in the sub-volume.
+    std::vector<PetscInt> indices2(indices);
+
     AO ao;
     ierr = DMDAGetAO(mesh->da[field], &ao); CHKERRQ(ierr);
     ierr = AOApplicationToPetsc(ao, count, &indices[0]); CHKERRQ(ierr);
-    ierr = ISCreateGeneral(
-        comm, count, &indices[0], PETSC_COPY_VALUES, &is); CHKERRQ(ierr);
+    ierr = ISCreateGeneral(comm, count, &indices[0],
+                           PETSC_COPY_VALUES, &isPetsc); CHKERRQ(ierr);
+    // Create IS containing the (natural )index of the points in the sub-volume.
+    ierr = ISCreateGeneral(comm, count, &indices2[0],
+                           PETSC_COPY_VALUES, &isNatural); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::createIS
 
 // Get the sub-mesh area to monitor.
-PetscErrorCode ProbeVolume::createSubMesh(const type::Mesh &mesh)
+PetscErrorCode ProbeVolume::createGrid(const type::Mesh &mesh)
 {
     PetscFunctionBeginUser;
 
@@ -313,10 +326,10 @@ PetscErrorCode ProbeVolume::createSubMesh(const type::Mesh &mesh)
     }
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::createSubMesh
+}  // ProbeVolume::createGrid
 
 // Write the sub-mesh grid points into a file.
-PetscErrorCode ProbeVolume::writeSubMesh(const std::string &filePath)
+PetscErrorCode ProbeVolume::writeGrid(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -325,11 +338,11 @@ PetscErrorCode ProbeVolume::writeSubMesh(const std::string &filePath)
     // only ASCII and HDF5 formats are currently supported
     if (std::strcmp(viewerType, "ascii") == 0)
     {
-        ierr = writeSubMeshASCII(filePath); CHKERRQ(ierr);
+        ierr = writeGrid_ASCII(filePath); CHKERRQ(ierr);
     }
     else if (std::strcmp(viewerType, "hdf5") == 0)
     {
-        ierr = writeSubMeshHDF5(filePath); CHKERRQ(ierr);
+        ierr = writeGrid_HDF5(filePath); CHKERRQ(ierr);
     }
     else
         SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
@@ -337,10 +350,10 @@ PetscErrorCode ProbeVolume::writeSubMesh(const std::string &filePath)
                 "\t PETSCVIEWERASCII and PETSCVIEWERHDF5");
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubMesh
+}  // ProbeVolume::writeGrid
 
 // Write the sub mesh into a HDF5 file.
-PetscErrorCode ProbeVolume::writeSubMeshHDF5(const std::string &filePath)
+PetscErrorCode ProbeVolume::writeGrid_HDF5(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -373,10 +386,10 @@ PetscErrorCode ProbeVolume::writeSubMeshHDF5(const std::string &filePath)
     }
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubMeshHDF5
+}  // ProbeVolume::writeGrid_HDF5
 
 // Write the sub mesh into an ASCII file.
-PetscErrorCode ProbeVolume::writeSubMeshASCII(const std::string &filePath)
+PetscErrorCode ProbeVolume::writeGrid_ASCII(const std::string &filePath)
 {
     PetscErrorCode ierr;
 
@@ -412,7 +425,63 @@ PetscErrorCode ProbeVolume::writeSubMeshASCII(const std::string &filePath)
     ierr = MPI_Barrier(comm); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeSubMeshASCII
+}  // ProbeVolume::writeGrid_ASCII
+
+// Write the index set (natural ordering) into a file.
+PetscErrorCode ProbeVolume::writeIS(const std::string &filePath)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    // only ASCII and HDF5 formats are currently supported
+    if (std::strcmp(viewerType, "ascii") == 0)
+    {
+        ierr = writeIS_ASCII(filePath); CHKERRQ(ierr);
+    }
+    else if (std::strcmp(viewerType, "hdf5") == 0)
+    {
+        ierr = writeIS_HDF5(filePath); CHKERRQ(ierr);
+    }
+    else
+        SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
+                "Unsupported PetscViewerType. Supported types are:\n"
+                "\t PETSCVIEWERASCII and PETSCVIEWERHDF5");
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::writeIS
+
+PetscErrorCode ProbeVolume::writeIS_HDF5(const std::string &filePath)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = PetscViewerFileSetMode(viewer, FILE_MODE_APPEND); CHKERRQ(ierr);
+    ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
+
+    ierr = PetscViewerHDF5PushGroup(viewer, "mesh"); CHKERRQ(ierr);
+    ierr = PetscObjectSetName((PetscObject) isNatural, "IS"); CHKERRQ(ierr);
+    ierr = ISView(isNatural, viewer); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::writeIS_HDF5
+
+// Write index set (natural ordering) into HDF5 file.
+PetscErrorCode ProbeVolume::writeIS_ASCII(const std::string &filePath)
+{
+    PetscErrorCode ierr;
+
+    PetscFunctionBeginUser;
+
+    ierr = PetscViewerPushFormat(
+        viewer, PETSC_VIEWER_ASCII_SYMMODU); CHKERRQ(ierr);
+    ierr = PetscObjectSetName((PetscObject) isNatural, "IS"); CHKERRQ(ierr);
+    ierr = ISView(isNatural, viewer); CHKERRQ(ierr);
+    ierr = PetscViewerPopFormat(viewer); CHKERRQ(ierr);
+
+    PetscFunctionReturn(0);
+}  // ProbeVolume::writeIS_ASCII
 
 // Monitor a sub-region of the full-domain PETSc Vec object.
 PetscErrorCode ProbeVolume::monitorVec(const DM &da,
@@ -426,7 +495,7 @@ PetscErrorCode ProbeVolume::monitorVec(const DM &da,
 
     // grab the part of the vector that corresponds to the sub-volume
     Vec svec;
-    ierr = VecGetSubVector(fvec, is, &svec); CHKERRQ(ierr);
+    ierr = VecGetSubVector(fvec, isPetsc, &svec); CHKERRQ(ierr);
     if (n_sum != 0)  // we accumulate the data over the time-steps
     {
         if (dvec == PETSC_NULL)
@@ -449,7 +518,7 @@ PetscErrorCode ProbeVolume::monitorVec(const DM &da,
     {
         ierr = writeVec(svec, t); CHKERRQ(ierr);
     }
-    ierr = VecRestoreSubVector(fvec, is, &svec); CHKERRQ(ierr);
+    ierr = VecRestoreSubVector(fvec, isPetsc, &svec); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::monitorVec
@@ -464,11 +533,11 @@ PetscErrorCode ProbeVolume::writeVec(const Vec &vec, const PetscReal &t)
     // only ASCII and HDF5 formats are currently supported
     if (std::strcmp(viewerType, "ascii") == 0)
     {
-        ierr = writeVecASCII(vec, t); CHKERRQ(ierr);
+        ierr = writeVec_ASCII(vec, t); CHKERRQ(ierr);
     }
     else if (std::strcmp(viewerType, "hdf5") == 0)
     {
-        ierr = writeVecHDF5(vec, t); CHKERRQ(ierr);
+        ierr = writeVec_HDF5(vec, t); CHKERRQ(ierr);
     }
     else
         SETERRQ(comm, PETSC_ERR_ARG_UNKNOWN_TYPE,
@@ -479,7 +548,7 @@ PetscErrorCode ProbeVolume::writeVec(const Vec &vec, const PetscReal &t)
 }  // ProbeVolume::writeVec
 
 // Write vector data data into a HDF5 file.
-PetscErrorCode ProbeVolume::writeVecHDF5(const Vec &vec, const PetscReal &t)
+PetscErrorCode ProbeVolume::writeVec_HDF5(const Vec &vec, const PetscReal &t)
 {
     PetscErrorCode ierr;
 
@@ -498,10 +567,10 @@ PetscErrorCode ProbeVolume::writeVecHDF5(const Vec &vec, const PetscReal &t)
     }
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeVecHDF5
+}  // ProbeVolume::writeVec_HDF5
 
 // Write vector data into an ASCII file.
-PetscErrorCode ProbeVolume::writeVecASCII(const Vec &vec, const PetscReal &t)
+PetscErrorCode ProbeVolume::writeVec_ASCII(const Vec &vec, const PetscReal &t)
 {
     PetscErrorCode ierr;
 
@@ -517,7 +586,7 @@ PetscErrorCode ProbeVolume::writeVecASCII(const Vec &vec, const PetscReal &t)
     ierr = PetscViewerPopFormat(viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
-}  // ProbeVolume::writeVecASCII
+}  // ProbeVolume::writeVec_ASCII
 
 //***************************************************************************//
 //*************************       ProbePoint        *************************//

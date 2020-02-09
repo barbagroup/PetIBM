@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PetIBM
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -157,6 +157,9 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 , <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a5d33ab76780fd4be0ade494dfe5619cb">petibm::mesh::CartesianMesh</a>
 , <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a95fe2894684d2576e1142e1d5fe35e34">petibm::mesh::MeshBase</a>
 </li>
+<li>getInfo()
+: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a2f08392dc0712d2473ff6dfbe13ac503">petibm::misc::ProbeVolume</a>
+</li>
 <li>getIters()
 : <a class="el" href="df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#aa8d718a0897b8a4fe463e3060ffa4d53">petibm::linsolver::LinSolverAmgX</a>
 , <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#ab1f83b0c4852fbb189f8b19f7d64ec65">petibm::linsolver::LinSolverBase</a>
@@ -168,20 +171,17 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 </li>
 <li>getNaturalIndex()
 : <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a02212003c71dabe5b738b329b4e9a274">petibm::mesh::CartesianMesh</a>
-, <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a555f13cc0700cba13ea14a2b1c457328">petibm::mesh::MeshBase</a>
+, <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a613a897002ae9d3349344aa273dfbdad">petibm::mesh::MeshBase</a>
 </li>
 <li>getPackedGlobalIndex()
-: <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#aaed1a4072b8216d4609ef5a5558d7984">petibm::body::BodyPackBase</a>
-, <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a400e9d9d00e56d4666815881a0ecc674">petibm::mesh::CartesianMesh</a>
+: <a class="el" href="d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a71b3b3e8286398c77645b572e8fe544f">petibm::body::BodyPackBase</a>
+, <a class="el" href="db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ab29e490702b075662299a4ef0a08586f">petibm::mesh::CartesianMesh</a>
 , <a class="el" href="db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aedf7045a248be0743ddea9686c3ba70b">petibm::mesh::MeshBase</a>
 </li>
 <li>getResidual()
 : <a class="el" href="df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#af16e31a9fd267d85a31975c7140595bb">petibm::linsolver::LinSolverAmgX</a>
 , <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#af0fd0eedbd15c3d70652e21e8f4e7311">petibm::linsolver::LinSolverBase</a>
 , <a class="el" href="d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html#ac7d5e3384cb69b3c60e18019bdace250">petibm::linsolver::LinSolverKSP</a>
-</li>
-<li>getSubMeshInfo()
-: <a class="el" href="db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a11c0f5b4c1eab08c49b6bc787c740e46">petibm::misc::ProbeVolume</a>
 </li>
 <li>getType()
 : <a class="el" href="de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html#adda366e906f3d423dde09ef9dca71bbc">petibm::linsolver::LinSolverBase</a>
@@ -192,7 +192,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Dec 11 2019 16:43:06 for PetIBM by
+    <li class="footer">Generated on Sat Feb 8 2020 19:01:25 for PetIBM by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

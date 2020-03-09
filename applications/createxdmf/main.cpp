@@ -150,8 +150,7 @@ PetscErrorCode writeSingleXDMF(const std::string &directory,
     ierr = PetscViewerASCIIPrintf(viewer,
                                   "<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" [\n");
     CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(
-        viewer, "\t<!ENTITY CaseDir \"%s\">\n", directory.c_str());
+    ierr = PetscViewerASCIIPrintf(viewer, "\t<!ENTITY CaseDir \"./\">\n");
     CHKERRQ(ierr);
 
     // always use 3D XDMF format, so both Visit and Paraview works

@@ -562,8 +562,8 @@ PetscErrorCode ProbeVolume::writeVec_HDF5(const Vec &vec, const PetscReal &t)
     if (count != 0)  // add number of time-steps accumulated as attribute
     {
         ierr = PetscViewerHDF5WriteAttribute(
-            viewer, ("/" + field_str + "/" + std::to_string(t)).c_str(), "count",
-            PETSC_INT, &count); CHKERRQ(ierr);
+            viewer, std::to_string(t).c_str(), "count", PETSC_INT, &count);
+        CHKERRQ(ierr);
     }
 
     PetscFunctionReturn(0);

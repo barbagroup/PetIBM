@@ -1,5 +1,14 @@
 # Installation
 
+For users familiar with Docker or Singularity Container, we provides images for
+the both systems to save you from compiling, buliding, and installing:
+
+* Docker: https://hub.docker.com/repository/docker/barbagroup/petibm
+* Singularity: https://github.com/barbagroup/petibm-recipes/tree/master/singularity
+
+However, if you would like to build PetIBM from scratch, please continue on this
+document.
+
 ## Dependencies (current PetIBM version)
 
 **Required**:

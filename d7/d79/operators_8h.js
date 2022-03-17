@@ -1,7 +1,7 @@
 var operators_8h =
 [
-    [ "createBn", "d7/d79/operators_8h.html#ga1c146c5e8d54f9b1c9bec6083419aec5", null ],
     [ "createBn", "d7/d79/operators_8h.html#ga5b89e03619afe7ef24ccf983444d7f31", null ],
+    [ "createBn", "d7/d79/operators_8h.html#ga1c146c5e8d54f9b1c9bec6083419aec5", null ],
     [ "createBnHead", "d7/d79/operators_8h.html#gabe361a4fc3dfda999f1b8cd9eb4c92b6", null ],
     [ "createConvection", "d7/d79/operators_8h.html#gada96f41086e1e23b93633321702af76b", null ],
     [ "createDelta", "d7/d79/operators_8h.html#gafbe8e6ab36ea7d459e2ec75169341cfd", null ],

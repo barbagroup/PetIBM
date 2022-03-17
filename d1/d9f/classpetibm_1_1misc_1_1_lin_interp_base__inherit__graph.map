@@ -1,4 +1,5 @@
 <map id="petibm::misc::LinInterpBase" name="petibm::misc::LinInterpBase">
-<area shape="rect" id="node2" href="$de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html" title="Class to perform a bilinear interpolation at a point in a 3D domain. " alt="" coords="5,80,172,107"/>
-<area shape="rect" id="node3" href="$d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html" title="Class to perform a trilinear interpolation at a point in a 3D domain. " alt="" coords="197,80,367,107"/>
+<area shape="rect" id="node1" title="Abstract Base Class of a linear interpolation object." alt="" coords="92,5,277,32"/>
+<area shape="rect" id="node2" href="$de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html" title="Class to perform a bilinear interpolation at a point in a 3D domain." alt="" coords="5,80,172,107"/>
+<area shape="rect" id="node3" href="$d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html" title="Class to perform a trilinear interpolation at a point in a 3D domain." alt="" coords="197,80,367,107"/>
 </map>

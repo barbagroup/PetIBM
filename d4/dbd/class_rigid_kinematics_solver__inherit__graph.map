@@ -1,4 +1,5 @@
 <map id="RigidKinematicsSolver" name="RigidKinematicsSolver">
-<area shape="rect" id="node2" href="$d4/d1d/class_decoupled_i_b_p_m_solver.html" title="Immersed&#45;boundary method proposed by Li et. al. (2016). " alt="" coords="5,80,160,107"/>
-<area shape="rect" id="node3" href="$d4/de8/class_navier_stokes_solver.html" title="Solve the incompressible Navier&#45;Stokes equations with a projection method (Perot 1993). " alt="" coords="13,5,152,32"/>
+<area shape="rect" id="node1" title="Helper class to solve cases with moving rigid bodies using the decoupled IBPM." alt="" coords="5,155,160,181"/>
+<area shape="rect" id="node2" href="$d4/d1d/class_decoupled_i_b_p_m_solver.html" title="Immersed&#45;boundary method proposed by Li et. al. (2016)." alt="" coords="5,80,160,107"/>
+<area shape="rect" id="node3" href="$d4/de8/class_navier_stokes_solver.html" title="Solve the incompressible Navier&#45;Stokes equations with a projection method (Perot 1993)." alt="" coords="13,5,152,32"/>
 </map>

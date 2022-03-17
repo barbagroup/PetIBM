@@ -1,3 +1,4 @@
 <map id="petibm::boundary::SingleBoundaryNeumann" name="petibm::boundary::SingleBoundaryNeumann">
-<area shape="rect" id="node2" href="$d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html" title="Base (abstract) class for ghost points &amp; BC on a single boundary. " alt="" coords="5,5,172,47"/>
+<area shape="rect" id="node1" title="An implementation of SingleBoundaryBase for Neumann BC." alt="" coords="5,95,172,136"/>
+<area shape="rect" id="node2" href="$d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html" title="Base (abstract) class for ghost points &amp; BC on a single boundary." alt="" coords="5,5,172,47"/>
 </map>

@@ -1,7 +1,7 @@
 var group__boundary_module =
 [
-    [ "boundary", "d6/d98/namespacepetibm_1_1boundary.html", null ],
-    [ "BoundaryBase", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html", [
+    [ "petibm::boundary", "d6/d98/namespacepetibm_1_1boundary.html", null ],
+    [ "petibm::boundary::BoundaryBase", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html", [
       [ "BoundaryBase", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a9923b17bf011e84be9a43f736e0ade12", null ],
       [ "BoundaryBase", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a2c561d28d30198018a70c542da493be6", null ],
       [ "~BoundaryBase", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a39c81c7f6f66bff2591ff3105b3e6bd4", null ],
@@ -18,10 +18,10 @@ var group__boundary_module =
       [ "mpiRank", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#ac001e504e496c70c4f514546f52c3978", null ],
       [ "mpiSize", "d5/daf/classpetibm_1_1boundary_1_1_boundary_base.html#a17fc01c7ac4f2de95ec634ec32bc77e3", null ]
     ] ],
-    [ "BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html", [
+    [ "petibm::boundary::BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html", [
       [ "BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a27a61034126f63b301050f95bd64d2ea", null ],
       [ "~BoundarySimple", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a893520af141dc8459bd18304e883033c", null ],
-      [ "copyValues2LocalVecs", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a1bac62caa90374ef1d43c1461f4a0afe", null ],
+      [ "copyValues2LocalVecs", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a7cc57c7b6af539e88aa9ef525743d94e", null ],
       [ "destroy", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a85cdbe497525880a647b6d85c405f882", null ],
       [ "init", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a8e7f8aca90c52b80f864173b0039abf1", null ],
       [ "setGhostICs", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#abee82f21a6a20dccac3dfe2a9ffcddbd", null ],
@@ -34,7 +34,7 @@ var group__boundary_module =
       [ "mpiRank", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#ac001e504e496c70c4f514546f52c3978", null ],
       [ "mpiSize", "d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html#a17fc01c7ac4f2de95ec634ec32bc77e3", null ]
     ] ],
-    [ "SingleBoundaryBase", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html", [
+    [ "petibm::boundary::SingleBoundaryBase", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html", [
       [ "SingleBoundaryBase", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#a4f99cce3f48e63a8155ec6adfb2679a9", null ],
       [ "SingleBoundaryBase", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#a5a1851f3ea46a852684215742a224a7a", null ],
       [ "~SingleBoundaryBase", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#acff8c7929efd7aa46aaaa7cd1cf39ebd", null ],
@@ -59,7 +59,7 @@ var group__boundary_module =
       [ "type", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#a04db13081aee2d8de43d79908ae1cbeb", null ],
       [ "value", "d6/d69/classpetibm_1_1boundary_1_1_single_boundary_base.html#aa69079afb19efaac745294681d2ef1f0", null ]
     ] ],
-    [ "SingleBoundaryConvective", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html", [
+    [ "petibm::boundary::SingleBoundaryConvective", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html", [
       [ "SingleBoundaryConvective", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html#ad021db0b0f75904cbbe33638e87099d3", null ],
       [ "~SingleBoundaryConvective", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html#ad256f765903bafa13a0c1a1aeb946f2a", null ],
       [ "copyValues2LocalVec", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html#ad96d46f514c57ef92dba37b3fb36fec0", null ],
@@ -84,7 +84,7 @@ var group__boundary_module =
       [ "type", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html#a04db13081aee2d8de43d79908ae1cbeb", null ],
       [ "value", "db/dbb/classpetibm_1_1boundary_1_1_single_boundary_convective.html#aa69079afb19efaac745294681d2ef1f0", null ]
     ] ],
-    [ "SingleBoundaryDirichlet", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html", [
+    [ "petibm::boundary::SingleBoundaryDirichlet", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html", [
       [ "SingleBoundaryDirichlet", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html#a87c102dd342c9ffd26d3bbe42a25ac3c", null ],
       [ "~SingleBoundaryDirichlet", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html#a1532d38af94a5adf6c5a21e91a0729b0", null ],
       [ "copyValues2LocalVec", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html#ad96d46f514c57ef92dba37b3fb36fec0", null ],
@@ -108,7 +108,7 @@ var group__boundary_module =
       [ "type", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html#a04db13081aee2d8de43d79908ae1cbeb", null ],
       [ "value", "d6/d8f/classpetibm_1_1boundary_1_1_single_boundary_dirichlet.html#aa69079afb19efaac745294681d2ef1f0", null ]
     ] ],
-    [ "SingleBoundaryNeumann", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html", [
+    [ "petibm::boundary::SingleBoundaryNeumann", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html", [
       [ "SingleBoundaryNeumann", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html#a3864c7a5c21810acacf1b04137232357", null ],
       [ "~SingleBoundaryNeumann", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html#adac6592930528bf4267061beeed28f7d", null ],
       [ "copyValues2LocalVec", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html#ad96d46f514c57ef92dba37b3fb36fec0", null ],
@@ -132,7 +132,7 @@ var group__boundary_module =
       [ "type", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html#a04db13081aee2d8de43d79908ae1cbeb", null ],
       [ "value", "d9/d94/classpetibm_1_1boundary_1_1_single_boundary_neumann.html#aa69079afb19efaac745294681d2ef1f0", null ]
     ] ],
-    [ "SingleBoundaryPeriodic", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html", [
+    [ "petibm::boundary::SingleBoundaryPeriodic", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html", [
       [ "SingleBoundaryPeriodic", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html#a75280c75cd4e0a9f7db1e118ac1a548f", null ],
       [ "~SingleBoundaryPeriodic", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html#a7a4af15305981cf7043db7a7c47fd8eb", null ],
       [ "copyValues2LocalVec", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html#ad96d46f514c57ef92dba37b3fb36fec0", null ],
@@ -156,8 +156,8 @@ var group__boundary_module =
       [ "type", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html#a04db13081aee2d8de43d79908ae1cbeb", null ],
       [ "value", "de/d58/classpetibm_1_1boundary_1_1_single_boundary_periodic.html#aa69079afb19efaac745294681d2ef1f0", null ]
     ] ],
-    [ "Boundary", "d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c", null ],
-    [ "SingleBoundary", "d1/d84/group__boundary_module.html#gaec7c3bd05092e3f561e89b63ed268ace", null ],
-    [ "createBoundary", "d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e", null ],
-    [ "createSingleBoundary", "d1/d84/group__boundary_module.html#gafcf3cca0a792f346914df62c9fe5aabf", null ]
+    [ "petibm::type::Boundary", "d1/d84/group__boundary_module.html#gab010687f690b655fdba72865b07bab7c", null ],
+    [ "petibm::type::SingleBoundary", "d1/d84/group__boundary_module.html#gaec7c3bd05092e3f561e89b63ed268ace", null ],
+    [ "petibm::boundary::createBoundary", "d1/d84/group__boundary_module.html#ga30a15fb72a154025c3481948ea0c8f5e", null ],
+    [ "petibm::boundary::createSingleBoundary", "d1/d84/group__boundary_module.html#gafcf3cca0a792f346914df62c9fe5aabf", null ]
 ];

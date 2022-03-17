@@ -1,3 +1,4 @@
 <map id="Decoupled IBPM solver (Li et. al. 2016)" name="Decoupled IBPM solver (Li et. al. 2016)">
-<area shape="rect" id="node1" href="$de/de6/group__apps.html" title="Flow solvers and utilities. " alt="" coords="5,13,172,39"/>
+<area shape="rect" id="node1" href="$de/de6/group__apps.html" title="Flow solvers and utilities." alt="" coords="5,13,172,38"/>
+<area shape="rect" id="node2" title="Implementation of parallel decoupled IBPM solver (Li et. al. 2016)." alt="" coords="220,5,380,45"/>
 </map>

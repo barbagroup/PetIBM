@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html" title="Abstract Base Class of a linear interpolation object. " alt="" coords="5,31,191,57"/>
-<area shape="rect" id="node2" href="$de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html" title="Class to perform a bilinear interpolation at a point in a 3D domain. " alt="" coords="241,5,407,32"/>
-<area shape="rect" id="node3" href="$d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html" title="Class to perform a trilinear interpolation at a point in a 3D domain. " alt="" coords="239,56,409,83"/>
+<area shape="rect" id="node1" href="$dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html" title="Abstract Base Class of a linear interpolation object." alt="" coords="5,31,191,57"/>
+<area shape="rect" id="node2" href="$de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html" title="Class to perform a bilinear interpolation at a point in a 3D domain." alt="" coords="241,5,407,32"/>
+<area shape="rect" id="node3" href="$d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html" title="Class to perform a trilinear interpolation at a point in a 3D domain." alt="" coords="239,56,409,83"/>
 </map>

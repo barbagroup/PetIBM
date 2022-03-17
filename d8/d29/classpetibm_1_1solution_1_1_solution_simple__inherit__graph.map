@@ -1,3 +1,4 @@
 <map id="petibm::solution::SolutionSimple" name="petibm::solution::SolutionSimple">
-<area shape="rect" id="node2" href="$dc/d96/classpetibm_1_1solution_1_1_solution_base.html" title="Base (abstract) class for different solution holders. " alt="" coords="5,5,204,32"/>
+<area shape="rect" id="node1" title="Class to hold the velocity vector field and pressure scalar field." alt="" coords="20,80,189,121"/>
+<area shape="rect" id="node2" href="$dc/d96/classpetibm_1_1solution_1_1_solution_base.html" title="Base (abstract) class for different solution holders." alt="" coords="5,5,204,32"/>
 </map>

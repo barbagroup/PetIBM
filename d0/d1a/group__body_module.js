@@ -1,7 +1,7 @@
 var group__body_module =
 [
-    [ "body", "d5/d3a/namespacepetibm_1_1body.html", null ],
-    [ "BodyPackBase", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html", [
+    [ "petibm::body", "d5/d3a/namespacepetibm_1_1body.html", null ],
+    [ "petibm::body::BodyPackBase", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html", [
       [ "BodyPackBase", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a4220f79df90c7567bf99dedb771dfd8f", null ],
       [ "BodyPackBase", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#abf44dbf636ef17704c21c73f579f858f", null ],
       [ "~BodyPackBase", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#aac0f22b2abe30a90b273df8c04c2277d", null ],
@@ -9,13 +9,13 @@ var group__body_module =
       [ "createDmPack", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ab33cd65b5ea5ea1e9c9285e0eddaa962", null ],
       [ "createInfoString", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a58f75f0cfcfc9d67453f66cbb4d4def3", null ],
       [ "destroy", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a51f4c18e6cc159a835796dfdda7c404a", null ],
-      [ "findProc", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#af76a2804d9b9a6f83b4017e7080bf15f", null ],
-      [ "getGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a8def8fb293f9c2ec350d0c96f9bb74cd", null ],
-      [ "getGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ab4a23c6c44e5b3317f25e9fa8872de52", null ],
-      [ "getPackedGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a71b3b3e8286398c77645b572e8fe544f", null ],
-      [ "getPackedGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#aaed1a4072b8216d4609ef5a5558d7984", null ],
+      [ "findProc", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#aedfa53f12dc33d7b230d2f6df0001d25", null ],
+      [ "getGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a33db402b4e7636af4f3a848cd7c4d797", null ],
+      [ "getGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#addac8dabfea034143281af83f6cc485d", null ],
+      [ "getPackedGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ac1af6682537cc20364852f6e64851b54", null ],
+      [ "getPackedGlobalIndex", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a537360551589384d0038b6ce7c8f98d9", null ],
       [ "init", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#afedeb3fb8acbc9933987e1672757e4bc", null ],
-      [ "printInfo", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a616c41d96ab016ce54f8b8c54e88525e", null ],
+      [ "printInfo", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a3f371e270703c1efe2e287df1a5fa014", null ],
       [ "updateMeshIdx", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ad73b3c3b0727af4cdfe4bcb5f19602db", null ],
       [ "bodies", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ac13d1d0c19fa0c51881d11545fb111f3", null ],
       [ "comm", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#a678f566ba539bfa9cb1b0861e51ba615", null ],
@@ -30,16 +30,16 @@ var group__body_module =
       [ "nPts", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#afab565a6b14ff72f24a666316e239ab1", null ],
       [ "offsetsAllProcs", "d4/d81/classpetibm_1_1body_1_1_body_pack_base.html#ac9c49f2c22e97a8d9233d945d258ee3f", null ]
     ] ],
-    [ "SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html", [
+    [ "petibm::body::SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html", [
       [ "SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a914778eee65ebda73e8d89ebf21b1334", null ],
       [ "SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ae3524429204bfd4b77afda8dc19f4055", null ],
       [ "~SingleBodyBase", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#afd9de09cdec02562e60de08c21f1cb72", null ],
       [ "calculateAvgForces", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a1a9a6698337e6a94e74b5e39ef72cfc7", null ],
       [ "destroy", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#aa8784f224eaaab446947403632ec5cdf", null ],
       [ "findProc", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a6afd469757bc05e71449f6a393913273", null ],
-      [ "getGlobalIndex", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ab3c69d5993fbfc1f6379c72c626de3e0", null ],
       [ "getGlobalIndex", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ac5c262222ed9307090a6e3471b5e2cbd", null ],
-      [ "printInfo", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ae8b5bd00452aa23cf1a1e934449cea2d", null ],
+      [ "getGlobalIndex", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#ab3c69d5993fbfc1f6379c72c626de3e0", null ],
+      [ "printInfo", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#aabdd44d9118bf676d3bd24886a9df1ce", null ],
       [ "readBody", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a52196378a7fadf00a7646888412aee37", null ],
       [ "updateMeshIdx", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#af2e461d617f6071595778d526fd1daa4", null ],
       [ "writeBody", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a1dd37bf6025b7aed332d88723f4e763d", null ],
@@ -62,18 +62,18 @@ var group__body_module =
       [ "nPts", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#a0d8dcfad02c58826834336aa3bba1015", null ],
       [ "offsetsAllProcs", "dc/dc6/classpetibm_1_1body_1_1_single_body_base.html#aace7d8cea27175fb74df7839d59eef0c", null ]
     ] ],
-    [ "SingleBodyPoints", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html", [
+    [ "petibm::body::SingleBodyPoints", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html", [
       [ "SingleBodyPoints", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a935fe1f5314f2e0e240563e8d0acdc8b", null ],
       [ "~SingleBodyPoints", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a67c85392a9001451cf9b505a5ac23624", null ],
-      [ "calculateAvgForces", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a9b23aef293de70ac9f1deace67571db1", null ],
+      [ "calculateAvgForces", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#ae459a1cb8b6469335ee82f3c6a280d8e", null ],
       [ "createDMDA", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#abf98a23a905d926aa99efe3f4e43ee91", null ],
       [ "createInfoString", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a3568985cf3b4f1614fd55690f6e6816d", null ],
       [ "destroy", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#aa8784f224eaaab446947403632ec5cdf", null ],
-      [ "findProc", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#abdb70c2d16906bab6e655e2f06811ee0", null ],
-      [ "getGlobalIndex", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a3970c4db6454940b31b3a58ff929caf2", null ],
-      [ "getGlobalIndex", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a8e4a6b66ceac7223d538088319599c9b", null ],
+      [ "findProc", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#ad87a5bf4b5030e5db0d9996c9d6bd388", null ],
+      [ "getGlobalIndex", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#aded01e1bfdfc5bbebb0e9179ecfdcd68", null ],
+      [ "getGlobalIndex", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a78bcee0965d57e2e8208f0cd6ae9d5d0", null ],
       [ "init", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a70b698ed940804169e49d1b7df88681b", null ],
-      [ "printInfo", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#ae8b5bd00452aa23cf1a1e934449cea2d", null ],
+      [ "printInfo", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#aabdd44d9118bf676d3bd24886a9df1ce", null ],
       [ "readBody", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#ad9a96c95c42037a9bdc4dfb2e8747473", null ],
       [ "updateMeshIdx", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a1bf2e0bd4d6501b4dd43b42dd19c712d", null ],
       [ "writeBody", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a1845bc5b839c060bea14c59f318dd7f5", null ],
@@ -95,8 +95,8 @@ var group__body_module =
       [ "nPts", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#a0d8dcfad02c58826834336aa3bba1015", null ],
       [ "offsetsAllProcs", "d9/d83/classpetibm_1_1body_1_1_single_body_points.html#aace7d8cea27175fb74df7839d59eef0c", null ]
     ] ],
-    [ "BodyPack", "d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b", null ],
-    [ "SingleBody", "d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e", null ],
-    [ "createBodyPack", "d0/d1a/group__body_module.html#ga47a869524c466e16ffc9601deec5e0ac", null ],
-    [ "createSingleBody", "d0/d1a/group__body_module.html#gaa4f77a0832f28fbf899cc7381274c259", null ]
+    [ "petibm::type::BodyPack", "d0/d1a/group__body_module.html#ga5da969fd68a7d5f758404d6cb8be464b", null ],
+    [ "petibm::type::SingleBody", "d0/d1a/group__body_module.html#gad4934fdd9a1e715099f89e212023e12e", null ],
+    [ "petibm::body::createBodyPack", "d0/d1a/group__body_module.html#ga47a869524c466e16ffc9601deec5e0ac", null ],
+    [ "petibm::body::createSingleBody", "d0/d1a/group__body_module.html#gaa4f77a0832f28fbf899cc7381274c259", null ]
 ];

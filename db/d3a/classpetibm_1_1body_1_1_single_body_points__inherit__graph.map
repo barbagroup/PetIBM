@@ -1,3 +1,4 @@
 <map id="petibm::body::SingleBodyPoints" name="petibm::body::SingleBodyPoints">
-<area shape="rect" id="node2" href="$dc/dc6/classpetibm_1_1body_1_1_single_body_base.html" title="Base (abstract) class for a single body. " alt="" coords="5,5,207,32"/>
+<area shape="rect" id="node1" title="An implementation of body::SingleBodyBase that uses point data as input." alt="" coords="21,80,191,121"/>
+<area shape="rect" id="node2" href="$dc/dc6/classpetibm_1_1body_1_1_single_body_base.html" title="Base (abstract) class for a single body." alt="" coords="5,5,207,32"/>
 </map>

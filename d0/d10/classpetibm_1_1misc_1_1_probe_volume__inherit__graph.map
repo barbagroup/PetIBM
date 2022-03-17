@@ -1,3 +1,4 @@
 <map id="petibm::misc::ProbeVolume" name="petibm::misc::ProbeVolume">
-<area shape="rect" id="node2" href="$df/d8d/classpetibm_1_1misc_1_1_probe_base.html" title="Abstract Base Class of a probe. " alt="" coords="12,5,181,32"/>
+<area shape="rect" id="node1" title="Probe class to monitor a volume region of the domain." alt="" coords="5,80,188,107"/>
+<area shape="rect" id="node2" href="$df/d8d/classpetibm_1_1misc_1_1_probe_base.html" title="Abstract Base Class of a probe." alt="" coords="12,5,181,32"/>
 </map>

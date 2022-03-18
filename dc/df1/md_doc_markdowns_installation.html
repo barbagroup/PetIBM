@@ -95,7 +95,7 @@ $(document).ready(function(){initNavTree('dc/df1/md_doc_markdowns_installation.h
 <h1>Dependencies (current PetIBM version)</h1>
 <p ><b>Required</b>:</p>
 <ul>
-<li>GNU C++ compiler g++ (only 11.2 have been tested w/ the latest PetIBM)</li>
+<li>GNU C++ compiler g++ (9.4 and 11.2 have been test with the latest PetIBM release)</li>
 <li><a href="https://www.mcs.anl.gov/petsc/">PETSc</a> (3.16+) with HDF5 enabled</li>
 <li>MPI: OpenMPI, MPICH, or Intel MPI</li>
 <li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> (0.6.2)</li>
@@ -103,8 +103,8 @@ $(document).ready(function(){initNavTree('dc/df1/md_doc_markdowns_installation.h
 </ul>
 <p ><b>Optional for GPU linear solvers</b>:</p>
 <ul>
-<li><a href="https://github.com/NVIDIA/AMGX">AmgX</a> (v2.1.0)</li>
-<li><a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> (1.5)</li>
+<li><a href="https://github.com/NVIDIA/AMGX">AmgX</a> (v2.1.0, v2.2.0)</li>
+<li><a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> (1.4 or 1.5)</li>
 </ul>
 <p ><b>Optional for pre- and post-processing Python scripts</b>:</p>
 <ul>
@@ -117,17 +117,18 @@ $(document).ready(function(){initNavTree('dc/df1/md_doc_markdowns_installation.h
 <ul>
 <li>MPI can be either installed during PETSc configuration or installed explicitly by users.</li>
 <li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a>, <a href="https://github.com/google/googletest">gtest</a>, and <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> can be automatically installed during PetIBM configuration or explicitly installed by users in advance.</li>
-<li>The current version of PetIBM has been tested with:<ul>
+<li>The latest release of PetIBM (0.5.3) has been tested with:<ul>
 <li>Arch Linux with g++-11.2.0 and PETSc 3.16.5</li>
+<li>Ubuntu 20.04 with g++-9.4 and PETSc 3.16.5</li>
 </ul>
 </li>
-<li>PetIBM versions prior commit a657821 (or version 0.5.2, included) have been tested with:<ul>
+<li>Previous releases of PetIBM (&lt;=0.5.2) have at some point been tested with:<ul>
 <li>Ubuntu 16.04 with g++-5.4, and PETSc-3.11.2</li>
 <li>MacOS Sierra with g++-6.0, and PETSc-3.8.2</li>
 <li>Arch Linux with g++-7.2, and PETSc-3.8.2</li>
 </ul>
 </li>
-<li>Older versions of PetIBM have also been tested on the following HPC systems:<ul>
+<li>In the past, we have also been able to run previous versions of PetIBM on the following HPC systems:<ul>
 <li><a href="https://colonialone.gwu.edu/">GW ColonialOne</a></li>
 <li><a href="https://www.olcf.ornl.gov/titan/">Titan</a> at ORNL</li>
 </ul>
@@ -303,7 +304,7 @@ $(document).ready(function(){initNavTree('dc/df1/md_doc_markdowns_installation.h
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Fri Mar 18 2022 14:48:19 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

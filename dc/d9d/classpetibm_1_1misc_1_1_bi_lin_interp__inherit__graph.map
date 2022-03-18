@@ -1,3 +1,4 @@
 <map id="petibm::misc::BiLinInterp" name="petibm::misc::BiLinInterp">
-<area shape="rect" id="node2" href="$dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html" title="Abstract Base Class of a linear interpolation object. " alt="" coords="5,5,191,32"/>
+<area shape="rect" id="node1" title="Class to perform a bilinear interpolation at a point in a 3D domain." alt="" coords="15,80,181,107"/>
+<area shape="rect" id="node2" href="$dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html" title="Abstract Base Class of a linear interpolation object." alt="" coords="5,5,191,32"/>
 </map>

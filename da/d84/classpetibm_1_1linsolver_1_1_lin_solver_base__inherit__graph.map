@@ -1,4 +1,5 @@
 <map id="petibm::linsolver::LinSolverBase" name="petibm::linsolver::LinSolverBase">
-<area shape="rect" id="node2" href="$df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html" title="Iterative solver using wrapper of AmgX. " alt="" coords="5,95,131,136"/>
-<area shape="rect" id="node3" href="$d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html" title="Iterative solver using PETSc KSP. " alt="" coords="155,95,280,136"/>
+<area shape="rect" id="node1" title="The abstract (base) class for different iterative solvers." alt="" coords="80,5,205,47"/>
+<area shape="rect" id="node2" href="$df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html" title="Iterative solver using wrapper of AmgX." alt="" coords="5,95,131,136"/>
+<area shape="rect" id="node3" href="$d8/dfe/classpetibm_1_1linsolver_1_1_lin_solver_k_s_p.html" title="Iterative solver using PETSc KSP." alt="" coords="155,95,280,136"/>
 </map>

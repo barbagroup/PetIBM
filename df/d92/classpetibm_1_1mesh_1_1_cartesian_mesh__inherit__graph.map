@@ -1,3 +1,4 @@
 <map id="petibm::mesh::CartesianMesh" name="petibm::mesh::CartesianMesh">
-<area shape="rect" id="node2" href="$db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html" title="Base (abstract) class of mesh. " alt="" coords="19,5,189,32"/>
+<area shape="rect" id="node1" title="Class of composite staggered Cartesian mesh." alt="" coords="5,80,203,107"/>
+<area shape="rect" id="node2" href="$db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html" title="Base (abstract) class of mesh." alt="" coords="19,5,189,32"/>
 </map>

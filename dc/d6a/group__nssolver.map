@@ -1,3 +1,4 @@
 <map id="Navier&#45;Stokes solver" name="Navier&#45;Stokes solver">
-<area shape="rect" id="node1" href="$de/de6/group__apps.html" title="Flow solvers and utilities. " alt="" coords="5,5,172,32"/>
+<area shape="rect" id="node1" href="$de/de6/group__apps.html" title="Flow solvers and utilities." alt="" coords="5,5,172,31"/>
+<area shape="rect" id="node2" title="Implementation of parallel Navier&#45;Stokes solver." alt="" coords="220,5,364,31"/>
 </map>

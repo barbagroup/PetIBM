@@ -1,3 +1,4 @@
 <map id="petibm::linsolver::LinSolverAmgX" name="petibm::linsolver::LinSolverAmgX">
-<area shape="rect" id="node2" href="$de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html" title="The abstract (base) class for different iterative solvers. " alt="" coords="5,5,131,47"/>
+<area shape="rect" id="node1" title="Iterative solver using wrapper of AmgX." alt="" coords="5,95,131,136"/>
+<area shape="rect" id="node2" href="$de/d3e/classpetibm_1_1linsolver_1_1_lin_solver_base.html" title="The abstract (base) class for different iterative solvers." alt="" coords="5,5,131,47"/>
 </map>

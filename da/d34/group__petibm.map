@@ -1,11 +1,12 @@
 <map id="PetIBM building blocks" name="PetIBM building blocks">
-<area shape="rect" id="node1" href="$d8/df7/group__linsolver.html" title="Interfaces to different libraries of linear solvers. " alt="" coords="247,5,350,32"/>
-<area shape="rect" id="node2" href="$dd/df7/group__solution_module.html" title="Simple structures to hold flow field solutions. " alt="" coords="241,56,356,83"/>
-<area shape="rect" id="node3" href="$d5/d01/group__operator_module.html" title="Matrices &amp; Operators used in Perot&#39;s framework (1993, 2002). " alt="" coords="235,107,362,133"/>
-<area shape="rect" id="node5" href="$df/d44/group__misc_module.html" title="Collections of the namespaces containing rarely used functions. " alt="" coords="217,157,380,184"/>
-<area shape="rect" id="node6" href="$dd/d8f/group__type.html" title="Useful user&#45;defined types in PetIBM. " alt="" coords="233,209,365,250"/>
-<area shape="rect" id="node7" href="$d1/d8b/group__time_module.html" title="Objects holding informations of time&#45;integration schemes. " alt="" coords="213,275,385,301"/>
-<area shape="rect" id="node8" href="$d0/d1a/group__body_module.html" title="Objects related to immersed&#45;boundary bodies. " alt="" coords="209,325,388,352"/>
-<area shape="rect" id="node9" href="$d7/d24/group__mesh_module.html" title="Objects for meshes and domain decompositions. " alt="" coords="249,376,349,403"/>
-<area shape="rect" id="node10" href="$d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes. " alt="" coords="214,427,383,469"/>
+<area shape="rect" id="node1" href="$d0/d1a/group__body_module.html" title="Objects related to immersed&#45;boundary bodies." alt="" coords="209,5,388,31"/>
+<area shape="rect" id="node2" href="$d1/d84/group__boundary_module.html" title="Objects handling boundary conditions with ghost point schemes." alt="" coords="214,55,383,95"/>
+<area shape="rect" id="node3" href="$d8/df7/group__linsolver.html" title="Interfaces to different libraries of linear solvers." alt="" coords="247,120,350,145"/>
+<area shape="rect" id="node4" href="$d7/d24/group__mesh_module.html" title="Objects for meshes and domain decompositions." alt="" coords="249,169,349,195"/>
+<area shape="rect" id="node5" href="$df/d44/group__misc_module.html" title="Collections of the namespaces containing rarely used functions." alt="" coords="217,219,380,244"/>
+<area shape="rect" id="node6" href="$d5/d01/group__operator_module.html" title="Matrices &amp; Operators used in Perot&#39;s framework (1993, 2002)." alt="" coords="235,268,362,293"/>
+<area shape="rect" id="node7" title=" " alt="" coords="5,219,161,244"/>
+<area shape="rect" id="node8" href="$dd/df7/group__solution_module.html" title="Simple structures to hold flow field solutions." alt="" coords="241,317,356,343"/>
+<area shape="rect" id="node9" href="$d1/d8b/group__time_module.html" title="Objects holding informations of time&#45;integration schemes." alt="" coords="213,367,385,392"/>
+<area shape="rect" id="node10" href="$dd/d8f/group__type.html" title="Useful user&#45;defined types in PetIBM." alt="" coords="233,417,365,457"/>
 </map>

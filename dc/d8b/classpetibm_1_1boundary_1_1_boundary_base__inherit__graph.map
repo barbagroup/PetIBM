@@ -1,3 +1,4 @@
 <map id="petibm::boundary::BoundaryBase" name="petibm::boundary::BoundaryBase">
-<area shape="rect" id="node2" href="$d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html" title="An implementation of petibm::boundary::BoundaryBase. " alt="" coords="20,80,205,121"/>
+<area shape="rect" id="node1" title="Base (abstract) class for the whole boundary." alt="" coords="5,5,220,32"/>
+<area shape="rect" id="node2" href="$d9/d18/classpetibm_1_1boundary_1_1_boundary_simple.html" title="An implementation of petibm::boundary::BoundaryBase." alt="" coords="20,80,205,121"/>
 </map>

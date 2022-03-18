@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['navierstokessolver',['NavierStokesSolver',['../d4/de8/class_navier_stokes_solver.html',1,'']]]
+  ['navierstokessolver_0',['NavierStokesSolver',['../d4/de8/class_navier_stokes_solver.html',1,'']]]
 ];

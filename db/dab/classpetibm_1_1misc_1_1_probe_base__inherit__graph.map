@@ -1,4 +1,5 @@
 <map id="petibm::misc::ProbeBase" name="petibm::misc::ProbeBase">
-<area shape="rect" id="node2" href="$d0/d74/classpetibm_1_1misc_1_1_probe_point.html" title="Probe class to monitor the solution at a single point. " alt="" coords="5,80,175,107"/>
-<area shape="rect" id="node3" href="$db/da9/classpetibm_1_1misc_1_1_probe_volume.html" title="Probe class to monitor a volume region of the domain. " alt="" coords="199,80,381,107"/>
+<area shape="rect" id="node1" title="Abstract Base Class of a probe." alt="" coords="105,5,275,32"/>
+<area shape="rect" id="node2" href="$d0/d74/classpetibm_1_1misc_1_1_probe_point.html" title="Probe class to monitor the solution at a single point." alt="" coords="5,80,175,107"/>
+<area shape="rect" id="node3" href="$db/da9/classpetibm_1_1misc_1_1_probe_volume.html" title="Probe class to monitor a volume region of the domain." alt="" coords="199,80,381,107"/>
 </map>

@@ -1,7 +1,7 @@
 var group__mesh_module =
 [
-    [ "mesh", "d6/db9/namespacepetibm_1_1mesh.html", null ],
-    [ "CartesianMesh", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html", [
+    [ "petibm::mesh", "d6/db9/namespacepetibm_1_1mesh.html", null ],
+    [ "petibm::mesh::CartesianMesh", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html", [
       [ "CartesianMesh", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#aeaf532d83fedb08366a7538ae78e40b9", null ],
       [ "~CartesianMesh", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a75c73e1608239e6808ce9a19a5a9a5b5", null ],
       [ "addLocalInfoString", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a63c456b9e89f1a89fd9fd696358abd2d", null ],
@@ -13,19 +13,19 @@ var group__mesh_module =
       [ "createVelocityPack", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#afb42d0ffb6501c8302c71a9b777d50e7", null ],
       [ "createVertexMesh", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ad071e328ee54b959f92de0dc424025f6", null ],
       [ "destroy", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#abf19ad588071eb146afa32f0bce77f44", null ],
-      [ "getGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a5d33ab76780fd4be0ade494dfe5619cb", null ],
-      [ "getGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a7275f95e9cf189b67947a816c94f1359", null ],
-      [ "getLocalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ac0307a5e7dc1ea47a498c47fa97372ff", null ],
-      [ "getLocalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a9ddc0073f579ceecdec66c72320f0ef2", null ],
-      [ "getNaturalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a02212003c71dabe5b738b329b4e9a274", null ],
-      [ "getNaturalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a4a7977a107f5b8da158d3b8b6dace1b7", null ],
-      [ "getPackedGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ab29e490702b075662299a4ef0a08586f", null ],
-      [ "getPackedGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a400e9d9d00e56d4666815881a0ecc674", null ],
+      [ "getGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a380f6ad4a2e0cea27c9c99a5a3a7bb77", null ],
+      [ "getGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#adfa2710805a2283eda3f5ffd3060e1ff", null ],
+      [ "getLocalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a9f113cc604de902a00d78b8ba5c93d1f", null ],
+      [ "getLocalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#aa13904150a49e5f92857fba78432fc76", null ],
+      [ "getNaturalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a17d87c6a0e32706800bfcb6c321737b4", null ],
+      [ "getNaturalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a9afa0a3fe110c1cc58d8993ed93ea152", null ],
+      [ "getPackedGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a4f3f8c7d1b00ef68c5bad355564dda1b", null ],
+      [ "getPackedGlobalIndex", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a6305a9fa0ffd6dcdeee8cc8932082c9c", null ],
       [ "init", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ac609cd7eb4f985b4f33aca8c6c794b14", null ],
       [ "initDMDA", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a539a9912293d17a0aab56d28337a2f64", null ],
       [ "isPointOnLocalProc", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#ae75489be01f01290f23030b0f11e4afb", null ],
-      [ "printInfo", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#af67592d9ce3e6c7a0d975a339740d1b9", null ],
-      [ "write", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a89e129c900347f5a005b8364d984f725", null ],
+      [ "printInfo", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a70ba104995a2e2b02f8212f0e2a6e05d", null ],
+      [ "write", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a4b2be5f36f85c305c591449371aac3f0", null ],
       [ "ao", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a87239803dec8de3d8ebb27181c69c8c5", null ],
       [ "bg", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a4b4621c4f44be11be61856bcdc147a51", null ],
       [ "comm", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a388988330f6c4b5f672e2909ed72c9c7", null ],
@@ -55,7 +55,7 @@ var group__mesh_module =
       [ "UPack", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a1a8fb91c338af090cab157eb521968a3", null ],
       [ "UPackNLocalAllProcs", "db/d70/classpetibm_1_1mesh_1_1_cartesian_mesh.html#a14786b61301a377a379e7bf8796cef5b", null ]
     ] ],
-    [ "MeshBase", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html", [
+    [ "petibm::mesh::MeshBase", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html", [
       [ "MeshBase", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a76e3ad708a6991c92989207efb73e256", null ],
       [ "MeshBase", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a98c10c2afb27522ee9acf87a75b42798", null ],
       [ "~MeshBase", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a62ab16e9a0566fc632929d2bb410b37d", null ],
@@ -70,7 +70,7 @@ var group__mesh_module =
       [ "getPackedGlobalIndex", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#aedf7045a248be0743ddea9686c3ba70b", null ],
       [ "init", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#ad44da271d457481339b06007bad0dc7f", null ],
       [ "isPointOnLocalProc", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4fbf225cdf61a22d9bf5f7b94845f03b", null ],
-      [ "printInfo", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#af67592d9ce3e6c7a0d975a339740d1b9", null ],
+      [ "printInfo", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a70ba104995a2e2b02f8212f0e2a6e05d", null ],
       [ "write", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a3ce399ac4501e08dd098ae5e668fbc92", null ],
       [ "bg", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a4b4621c4f44be11be61856bcdc147a51", null ],
       [ "comm", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a388988330f6c4b5f672e2909ed72c9c7", null ],
@@ -94,6 +94,6 @@ var group__mesh_module =
       [ "UNLocal", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a5274fb27c73768bb54fa5409e8dbf51e", null ],
       [ "UPack", "db/d1f/classpetibm_1_1mesh_1_1_mesh_base.html#a1a8fb91c338af090cab157eb521968a3", null ]
     ] ],
-    [ "Mesh", "d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309", null ],
-    [ "createMesh", "d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388", null ]
+    [ "petibm::type::Mesh", "d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309", null ],
+    [ "petibm::mesh::createMesh", "d7/d24/group__mesh_module.html#gaa8c2cd27ad5c89c0a9aaa14bbab74388", null ]
 ];

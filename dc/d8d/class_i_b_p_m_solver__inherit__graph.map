@@ -1,3 +1,4 @@
 <map id="IBPMSolver" name="IBPMSolver">
-<area shape="rect" id="node2" href="$d4/de8/class_navier_stokes_solver.html" title="Solve the incompressible Navier&#45;Stokes equations with a projection method (Perot 1993). " alt="" coords="5,5,144,32"/>
+<area shape="rect" id="node1" title="Immersed&#45;boundary method proposed by Taira and Colonius (2007)." alt="" coords="29,80,121,107"/>
+<area shape="rect" id="node2" href="$d4/de8/class_navier_stokes_solver.html" title="Solve the incompressible Navier&#45;Stokes equations with a projection method (Perot 1993)." alt="" coords="5,5,144,32"/>
 </map>

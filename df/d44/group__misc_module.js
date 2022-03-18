@@ -1,10 +1,10 @@
 var group__misc_module =
 [
-    [ "delta", "db/d4d/namespacepetibm_1_1delta.html", null ],
-    [ "io", "dc/d3a/namespacepetibm_1_1io.html", null ],
-    [ "misc", "dd/d40/namespacepetibm_1_1misc.html", null ],
-    [ "parser", "dc/dc0/namespacepetibm_1_1parser.html", null ],
-    [ "LinInterpBase", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html", [
+    [ "petibm::delta", "db/d4d/namespacepetibm_1_1delta.html", null ],
+    [ "petibm::io", "dc/d3a/namespacepetibm_1_1io.html", null ],
+    [ "petibm::misc", "dd/d40/namespacepetibm_1_1misc.html", null ],
+    [ "petibm::parser", "dc/dc0/namespacepetibm_1_1parser.html", null ],
+    [ "petibm::misc::LinInterpBase", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html", [
       [ "LinInterpBase", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#abbf2197dd45c045a0eadbdb774bd8bd5", null ],
       [ "~LinInterpBase", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a42e2bc32925163b3dc2d766e00938b7e", null ],
       [ "destroy", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#af079a3156a710b90ad5d46ff5d57fbc1", null ],
@@ -20,7 +20,7 @@ var group__misc_module =
       [ "target", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a32335e2e9bd998dde040d9cc7ac46411", null ],
       [ "tr", "dc/d7b/classpetibm_1_1misc_1_1_lin_interp_base.html#a4b4c63b154a19b8affdbe9efcf3eb47b", null ]
     ] ],
-    [ "TriLinInterp", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html", [
+    [ "petibm::misc::TriLinInterp", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html", [
       [ "TriLinInterp", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#abfb0c2abd43fe8b2c08193115f88db16", null ],
       [ "~TriLinInterp", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#a8bec6e84324eac401ec7d4052c3a7d4e", null ],
       [ "destroy", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#af079a3156a710b90ad5d46ff5d57fbc1", null ],
@@ -36,7 +36,7 @@ var group__misc_module =
       [ "target", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#a32335e2e9bd998dde040d9cc7ac46411", null ],
       [ "tr", "d4/da3/classpetibm_1_1misc_1_1_tri_lin_interp.html#a4b4c63b154a19b8affdbe9efcf3eb47b", null ]
     ] ],
-    [ "BiLinInterp", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html", [
+    [ "petibm::misc::BiLinInterp", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html", [
       [ "BiLinInterp", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#a624f01e34b44c85e31878caec3d25e8f", null ],
       [ "~BiLinInterp", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#ace2de1a1b455915e574a6ceb58913f06", null ],
       [ "destroy", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#af079a3156a710b90ad5d46ff5d57fbc1", null ],
@@ -52,11 +52,11 @@ var group__misc_module =
       [ "target", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#a32335e2e9bd998dde040d9cc7ac46411", null ],
       [ "tr", "de/d82/classpetibm_1_1misc_1_1_bi_lin_interp.html#a4b4c63b154a19b8affdbe9efcf3eb47b", null ]
     ] ],
-    [ "LoopBound", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html", [
+    [ "petibm::misc::LoopBound", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html", [
       [ "bg", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html#a21ecd85d8bf6167be6c850d3749e6fe9", null ],
       [ "ed", "d3/d5b/structpetibm_1_1misc_1_1_loop_bound.html#aafbdc37e976a9f9f349bfb78e376adf1", null ]
     ] ],
-    [ "ProbeBase", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html", [
+    [ "petibm::misc::ProbeBase", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html", [
       [ "ProbeBase", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a105a2cd9970ce11c82d957747c24e5ff", null ],
       [ "ProbeBase", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html#aec3c42c5294bf949c2033eb2c45772d7", null ],
       [ "~ProbeBase", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a8f74f4acdb334396f18942cdaf7ad021", null ],
@@ -76,7 +76,7 @@ var group__misc_module =
       [ "viewer", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a8a036755fd230515724f589b8cc7ba1a", null ],
       [ "viewerType", "df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a8212b237c8a2c795787136381230584b", null ]
     ] ],
-    [ "ProbeVolume", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html", [
+    [ "petibm::misc::ProbeVolume", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html", [
       [ "ProbeVolume", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a16b91e93a7de3c08ed1559cefee8531f", null ],
       [ "~ProbeVolume", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html#aead2e63cb906fb1d09f998e885273ac9", null ],
       [ "createGrid", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad2572585fca538a5d41f686f30a8b253", null ],
@@ -118,7 +118,7 @@ var group__misc_module =
       [ "viewer", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a8a036755fd230515724f589b8cc7ba1a", null ],
       [ "viewerType", "db/da9/classpetibm_1_1misc_1_1_probe_volume.html#a8212b237c8a2c795787136381230584b", null ]
     ] ],
-    [ "ProbePoint", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html", [
+    [ "petibm::misc::ProbePoint", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html", [
       [ "ProbePoint", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html#a7cc37d3a72eb9351859959c09650fdd1", null ],
       [ "~ProbePoint", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html#a71b10ae9ca22e7cebe68ae6b142db3f0", null ],
       [ "destroy", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html#a1e656c6d3de8f178ed493ea90b6ec3db", null ],
@@ -142,34 +142,34 @@ var group__misc_module =
       [ "viewer", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html#a8a036755fd230515724f589b8cc7ba1a", null ],
       [ "viewerType", "d0/d74/classpetibm_1_1misc_1_1_probe_point.html#a8212b237c8a2c795787136381230584b", null ]
     ] ],
-    [ "LinInterp", "df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562", null ],
-    [ "Probe", "df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70", null ],
-    [ "checkBoundaryProc", "df/d44/group__misc_module.html#ga1563391046620fa87eaa4f2540599062", null ],
-    [ "checkPeriodicBC", "df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797", null ],
-    [ "createLinInterp", "df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4", null ],
-    [ "createProbe", "df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b", null ],
-    [ "delta", "df/d44/group__misc_module.html#ga2091db25dd3159653e6e17c5537e2e7f", null ],
-    [ "doubleLoops", "df/d44/group__misc_module.html#ga578ec39e388d83904da4e836abbc9bab", null ],
-    [ "getGhostPointList", "df/d44/group__misc_module.html#gae51df343993fcb388fdf63def6d859b2", null ],
-    [ "getGhostTargetStencil", "df/d44/group__misc_module.html#ga086e1b6dfa6f5bfeecfb75471f7abd8c", null ],
-    [ "getPerpendAxes", "df/d44/group__misc_module.html#ga37603d55dcb07a958f03f3b61f24f8cd", null ],
-    [ "getSettings", "df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97", null ],
-    [ "parseBCs", "df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339", null ],
-    [ "parseICs", "df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e", null ],
-    [ "parseMesh", "df/d44/group__misc_module.html#ga434ba3d6f208b9370b4a2024254ee4ee", null ],
-    [ "parseOneAxis", "df/d44/group__misc_module.html#ga2e6d3015fdebb6013160ecd7ae01592f", null ],
-    [ "parseOneSubDomain", "df/d44/group__misc_module.html#gafafb413cef72933548a11fe8ead9672c", null ],
-    [ "parseSubDomains", "df/d44/group__misc_module.html#ga33fdd0338cbd5c00c50325fb1cb1a532", null ],
-    [ "Peskin_2002", "df/d44/group__misc_module.html#ga7b420aae8d29abc805c7c5866e2525c8", null ],
-    [ "print", "df/d44/group__misc_module.html#gadd71230142c7050daf20da48dd5e5664", null ],
-    [ "readHDF5Vecs", "df/d44/group__misc_module.html#ga9715aaee1c61908e30ba76e65cc320f7", null ],
-    [ "readLagrangianPoints", "df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded", null ],
-    [ "readYAMLFile", "df/d44/group__misc_module.html#gad650bef1d4cf1e3ad2de8892ae7c59bf", null ],
-    [ "Roma_et_al_1999", "df/d44/group__misc_module.html#ga717c381c53c05be45fa0c8c365d5918e", null ],
-    [ "stretchGrid", "df/d44/group__misc_module.html#gae63b24b614ceb71dc6f0ca42e129d226", null ],
-    [ "tripleLoops", "df/d44/group__misc_module.html#ga7bf3e89e4f41fb4cfdac1986ed4286ff", null ],
-    [ "writeHDF5Vecs", "df/d44/group__misc_module.html#ga470d48604aabc8b773a71a6834d6b730", null ],
-    [ "writeHDF5Vecs", "df/d44/group__misc_module.html#ga6ea93afe19a9286422bac3c36e946e35", null ],
-    [ "writeHDF5Vecs", "df/d44/group__misc_module.html#ga235fe3d6b3758e87e247211cfc2e8603", null ],
-    [ "writePetscLog", "df/d44/group__misc_module.html#gacee1b480cd5d468666b3e1627bb65e31", null ]
+    [ "petibm::type::LinInterp", "df/d44/group__misc_module.html#ga7d008657a5cc34f27af97a0a3422d562", null ],
+    [ "petibm::type::Probe", "df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70", null ],
+    [ "petibm::misc::checkBoundaryProc", "df/d44/group__misc_module.html#ga1563391046620fa87eaa4f2540599062", null ],
+    [ "petibm::misc::checkPeriodicBC", "df/d44/group__misc_module.html#gaf28203dad7596be8529f1a7c8268c797", null ],
+    [ "petibm::misc::createLinInterp", "df/d44/group__misc_module.html#gad67f53da4612405f8365bbecbe3119a4", null ],
+    [ "petibm::misc::createProbe", "df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b", null ],
+    [ "petibm::delta::delta", "df/d44/group__misc_module.html#ga2091db25dd3159653e6e17c5537e2e7f", null ],
+    [ "petibm::misc::doubleLoops", "df/d44/group__misc_module.html#ga578ec39e388d83904da4e836abbc9bab", null ],
+    [ "petibm::misc::getGhostPointList", "df/d44/group__misc_module.html#gae51df343993fcb388fdf63def6d859b2", null ],
+    [ "petibm::misc::getGhostTargetStencil", "df/d44/group__misc_module.html#ga086e1b6dfa6f5bfeecfb75471f7abd8c", null ],
+    [ "petibm::misc::getPerpendAxes", "df/d44/group__misc_module.html#ga37603d55dcb07a958f03f3b61f24f8cd", null ],
+    [ "petibm::parser::getSettings", "df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97", null ],
+    [ "petibm::parser::parseBCs", "df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339", null ],
+    [ "petibm::parser::parseICs", "df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e", null ],
+    [ "petibm::parser::parseMesh", "df/d44/group__misc_module.html#ga434ba3d6f208b9370b4a2024254ee4ee", null ],
+    [ "petibm::parser::parseOneAxis", "df/d44/group__misc_module.html#ga2e6d3015fdebb6013160ecd7ae01592f", null ],
+    [ "petibm::parser::parseOneSubDomain", "df/d44/group__misc_module.html#gafafb413cef72933548a11fe8ead9672c", null ],
+    [ "petibm::parser::parseSubDomains", "df/d44/group__misc_module.html#ga33fdd0338cbd5c00c50325fb1cb1a532", null ],
+    [ "petibm::delta::Peskin_2002", "df/d44/group__misc_module.html#ga7b420aae8d29abc805c7c5866e2525c8", null ],
+    [ "petibm::io::print", "df/d44/group__misc_module.html#gadd71230142c7050daf20da48dd5e5664", null ],
+    [ "petibm::io::readHDF5Vecs", "df/d44/group__misc_module.html#ga9715aaee1c61908e30ba76e65cc320f7", null ],
+    [ "petibm::io::readLagrangianPoints", "df/d44/group__misc_module.html#gace1b680446fa52a0bfce7882cb243ded", null ],
+    [ "petibm::parser::readYAMLFile", "df/d44/group__misc_module.html#gad650bef1d4cf1e3ad2de8892ae7c59bf", null ],
+    [ "petibm::delta::Roma_et_al_1999", "df/d44/group__misc_module.html#ga717c381c53c05be45fa0c8c365d5918e", null ],
+    [ "petibm::misc::stretchGrid", "df/d44/group__misc_module.html#gae63b24b614ceb71dc6f0ca42e129d226", null ],
+    [ "petibm::misc::tripleLoops", "df/d44/group__misc_module.html#ga7bf3e89e4f41fb4cfdac1986ed4286ff", null ],
+    [ "petibm::io::writeHDF5Vecs", "df/d44/group__misc_module.html#ga6ea93afe19a9286422bac3c36e946e35", null ],
+    [ "petibm::io::writeHDF5Vecs", "df/d44/group__misc_module.html#ga470d48604aabc8b773a71a6834d6b730", null ],
+    [ "petibm::io::writeHDF5Vecs", "df/d44/group__misc_module.html#ga235fe3d6b3758e87e247211cfc2e8603", null ],
+    [ "petibm::io::writePetscLog", "df/d44/group__misc_module.html#gacee1b480cd5d468666b3e1627bb65e31", null ]
 ];

@@ -1,7 +1,7 @@
 var group__solution_module =
 [
-    [ "solution", "db/dea/namespacepetibm_1_1solution.html", null ],
-    [ "SolutionBase", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html", [
+    [ "petibm::solution", "db/dea/namespacepetibm_1_1solution.html", null ],
+    [ "petibm::solution::SolutionBase", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html", [
       [ "SolutionBase", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a0ad3c477420721bfcbbdae88e598d2e9", null ],
       [ "SolutionBase", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#aa83572e317e67c1c283c7620dddd0c9e", null ],
       [ "~SolutionBase", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a7c1f1092bd3b3baa73a3e493fa2c868d", null ],
@@ -9,7 +9,7 @@ var group__solution_module =
       [ "convert2Velocity", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ac54f5cca686b51b2c145521245afaf6c", null ],
       [ "destroy", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a4c06d5bdcf0d7ef9319ac886b20e35b2", null ],
       [ "init", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#af9bff9cf7e274063135edd3f43aaccfd", null ],
-      [ "printInfo", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a9a63adb7341d6de85d91ab48a4eea29f", null ],
+      [ "printInfo", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a9daf2b794b98cd4e86f17e8b7a1c2039", null ],
       [ "read", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#aaad655baee2373c20b0a7a855212e242", null ],
       [ "setInitialConditions", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a9e28f0bee0a2c4df480c2f01a9d5be7a", null ],
       [ "write", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a86ef8e10bdf5574b0cea6d02efe449ea", null ],
@@ -22,7 +22,7 @@ var group__solution_module =
       [ "pGlobal", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#ace2283c61781eca113f2df9551b69c6f", null ],
       [ "UGlobal", "dc/d96/classpetibm_1_1solution_1_1_solution_base.html#a7c2a396ffce4f3355d90ce8628a55bb9", null ]
     ] ],
-    [ "SolutionSimple", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html", [
+    [ "petibm::solution::SolutionSimple", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html", [
       [ "SolutionSimple", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a768ae0c7e0ba5ac39b9e7e45bd1652b6", null ],
       [ "~SolutionSimple", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#ac84bf348bf175cc7abeb5e5aa853e33b", null ],
       [ "convert2Flux", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a0103da530724b6368b3758578f72a62e", null ],
@@ -30,10 +30,10 @@ var group__solution_module =
       [ "createInfoString", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a4a4d473111eeb680e2c8b288dd89f2d7", null ],
       [ "destroy", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a4c06d5bdcf0d7ef9319ac886b20e35b2", null ],
       [ "init", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#ac1aace7bcb3ecd9956678394dfd5536d", null ],
-      [ "printInfo", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a9a63adb7341d6de85d91ab48a4eea29f", null ],
+      [ "printInfo", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a9daf2b794b98cd4e86f17e8b7a1c2039", null ],
       [ "read", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#ad9355f1f0857148eb92e32d7250c7ff0", null ],
       [ "setInitialConditions", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a4a989076b28bd85a833253a564942bc2", null ],
-      [ "write", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a2849666c38f08e4b1e6582491ad73daa", null ],
+      [ "write", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a1d5362ae24224cb2ee57261ca240c1e4", null ],
       [ "comm", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a37ef2996eca0d376c227361aa3dca019", null ],
       [ "dim", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#af612e664797d7d4511081c4827739c3f", null ],
       [ "info", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a452ed054c37bf65a3fe31fa6ba221be7", null ],
@@ -43,6 +43,6 @@ var group__solution_module =
       [ "pGlobal", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#ace2283c61781eca113f2df9551b69c6f", null ],
       [ "UGlobal", "da/d77/classpetibm_1_1solution_1_1_solution_simple.html#a7c2a396ffce4f3355d90ce8628a55bb9", null ]
     ] ],
-    [ "Solution", "dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174", null ],
-    [ "createSolution", "dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8", null ]
+    [ "petibm::type::Solution", "dd/df7/group__solution_module.html#ga39e1133c9861c6f23b180013e3c04174", null ],
+    [ "petibm::solution::createSolution", "dd/df7/group__solution_module.html#ga56838bc3a29c8d91ab2e7f0a460d9af8", null ]
 ];

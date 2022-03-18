@@ -63,7 +63,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 #define PETSC_VERSION_GE(MAJOR, MINOR, SUBMINOR) (!PETSC_VERSION_LT(MAJOR, MINOR, SUBMINOR))
 #endif
 ]], [[
-#if ((PETSC_VERSION_GE(3, 8, 0) && PETSC_VERSION_LT(3, 13, 0)) || PETSC_VERSION_RELEASE != 1)
+#if ((PETSC_VERSION_GE(3, 16, 0) && PETSC_VERSION_LT(3, 17, 0)) || PETSC_VERSION_RELEASE != 1)
 #else
 asdf
 #endif
@@ -73,7 +73,7 @@ asdf
                   [PETSC_VERSION_VALID=no])
 AC_MSG_RESULT([${PETSC_VERSION_VALID}])
 if test "$PETSC_VERSION_VALID" = no; then
-  AC_MSG_ERROR([Invalid PETSc version detected... Use PETSc 3.8+.])
+  AC_MSG_ERROR([Invalid PETSc version detected... Use PETSc 3.16+.])
 fi
 
 PACKAGE_RESTORE_ENVIRONMENT

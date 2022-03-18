@@ -94,27 +94,27 @@ PetscErrorCode checkBoundaryProc(const DM &da, const type::IntVec1D &n,
     switch (loc)
     {
         case type::BCLoc::XMINUS:
-            ierr = DMDAGetProcessorSubset(da, DMDA_X, 0, &bcMPI);
+            ierr = DMDAGetProcessorSubset(da, DM_X, 0, &bcMPI);
             CHKERRQ(ierr);
             break;
         case type::BCLoc::XPLUS:
-            ierr = DMDAGetProcessorSubset(da, DMDA_X, n[0] - 1, &bcMPI);
+            ierr = DMDAGetProcessorSubset(da, DM_X, n[0] - 1, &bcMPI);
             CHKERRQ(ierr);
             break;
         case type::BCLoc::YMINUS:
-            ierr = DMDAGetProcessorSubset(da, DMDA_Y, 0, &bcMPI);
+            ierr = DMDAGetProcessorSubset(da, DM_Y, 0, &bcMPI);
             CHKERRQ(ierr);
             break;
         case type::BCLoc::YPLUS:
-            ierr = DMDAGetProcessorSubset(da, DMDA_Y, n[1] - 1, &bcMPI);
+            ierr = DMDAGetProcessorSubset(da, DM_Y, n[1] - 1, &bcMPI);
             CHKERRQ(ierr);
             break;
         case type::BCLoc::ZMINUS:
-            ierr = DMDAGetProcessorSubset(da, DMDA_Z, 0, &bcMPI);
+            ierr = DMDAGetProcessorSubset(da, DM_Z, 0, &bcMPI);
             CHKERRQ(ierr);
             break;
         case type::BCLoc::ZPLUS:
-            ierr = DMDAGetProcessorSubset(da, DMDA_Z, n[2] - 1, &bcMPI);
+            ierr = DMDAGetProcessorSubset(da, DM_Z, n[2] - 1, &bcMPI);
             CHKERRQ(ierr);
             break;
     }

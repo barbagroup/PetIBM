@@ -2,13 +2,17 @@
 
 ---
 
-## Current development
+## 0.5.3
 
 ---
 
 ### Added
 
 ### Changed
+
+* Upgrade PETSc to version 3.16
+* Added information of Docker and Singularity images.
+* Updated dependency information.
 
 ### Fixed
 

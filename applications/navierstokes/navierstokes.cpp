@@ -325,15 +325,15 @@ PetscErrorCode NavierStokesSolver::createOperators()
     // create the divergence operator: D
     ierr = petibm::operators::createDivergence(
         mesh, bc, D, DCorrection, PETSC_FALSE); CHKERRQ(ierr);
-    
+
     // create the gradient operator: G
     ierr = petibm::operators::createGradient(
         mesh, G, PETSC_FALSE); CHKERRQ(ierr);
-    
+
     // create the Laplacian operator: L
     ierr = petibm::operators::createLaplacian(
         mesh, bc, L, LCorrection); CHKERRQ(ierr);
-    
+
     // create the operator for the convective terms: N
     ierr = petibm::operators::createConvection(
         mesh, bc, N); CHKERRQ(ierr);
@@ -828,7 +828,8 @@ PetscErrorCode NavierStokesSolver::readTimeHDF5(const std::string &filePath,
     ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ); CHKERRQ(ierr);
     ierr = PetscViewerFileSetName(viewer, filePath.c_str()); CHKERRQ(ierr);
     // attribute has to belong to an existing dataset (choosing p)
-    ierr = PetscViewerHDF5ReadAttribute(viewer, "/p", "time", PETSC_DOUBLE, &t);
+    ierr = PetscViewerHDF5ReadAttribute(
+            viewer, "/p", "time", PETSC_DOUBLE, nullptr, &t);
     CHKERRQ(ierr);
     ierr = PetscViewerDestroy(&viewer); CHKERRQ(ierr);
 

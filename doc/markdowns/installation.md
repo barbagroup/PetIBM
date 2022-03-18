@@ -13,7 +13,7 @@ document.
 
 **Required**:
 
-* GNU C++ compiler g++ (only 11.2 have been tested w/ the latest PetIBM)
+* GNU C++ compiler g++ (9.4 and 11.2 have been test with the latest PetIBM release)
 * [PETSc](https://www.mcs.anl.gov/petsc/) (3.16+) with HDF5 enabled
 * MPI: OpenMPI, MPICH, or Intel MPI
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) (0.6.2)
@@ -21,8 +21,8 @@ document.
 
 **Optional for GPU linear solvers**:
 
-* [AmgX](https://github.com/NVIDIA/AMGX) (v2.1.0)
-* [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) (1.5)
+* [AmgX](https://github.com/NVIDIA/AMGX) (v2.1.0, v2.2.0)
+* [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) (1.4 or 1.5)
 
 **Optional for pre- and post-processing Python scripts**:
 
@@ -37,13 +37,14 @@ document.
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp),
   [gtest](https://github.com/google/googletest), and
   [AmgXWrapper](https://github.com/barbagroup/AmgXWrapper) can be automatically installed during PetIBM configuration or explicitly installed by users in advance.
-* The current version of PetIBM has been tested with:
+* The latest release of PetIBM (0.5.3) has been tested with:
     * Arch Linux with g++-11.2.0 and PETSc 3.16.5
-* PetIBM versions prior commit a657821 (or version 0.5.2, included) have been tested with:
+    * Ubuntu 20.04 with g++-9.4 and PETSc 3.16.5
+* Previous releases of PetIBM (<=0.5.2) have at some point been tested with:
     * Ubuntu 16.04 with g++-5.4, and PETSc-3.11.2
     * MacOS Sierra with g++-6.0, and PETSc-3.8.2
     * Arch Linux with g++-7.2, and PETSc-3.8.2
-* Older versions of PetIBM have also been tested on the following HPC systems:
+* In the past, we have also been able to run previous versions of PetIBM on the following HPC systems:
     * [GW ColonialOne](https://colonialone.gwu.edu/)
     * [Titan](https://www.olcf.ornl.gov/titan/) at ORNL
 

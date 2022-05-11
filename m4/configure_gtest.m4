@@ -150,7 +150,7 @@ if test "x$enable_shared" = "xyes"; then
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
 fi
 if test "x$enable_static" = "xyes"; then
   cmake $GTEST_DIR \
@@ -158,7 +158,7 @@ if test "x$enable_static" = "xyes"; then
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
 fi
 mkdir -p $prefix/include
 cp -r $GTEST_DIR/include/gtest $prefix/include/.

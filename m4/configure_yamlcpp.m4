@@ -151,7 +151,7 @@ if test "x$enable_shared" = "xyes"; then
     -DBUILD_SHARED_LIBS=ON \
     -DYAML_CPP_BUILD_TESTS=OFF \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
   make install
 fi
 if test "x$enable_static" = "xyes"; then
@@ -161,7 +161,7 @@ if test "x$enable_static" = "xyes"; then
     -DBUILD_SHARED_LIBS=OFF \
     -DYAML_CPP_BUILD_TESTS=OFF \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
   make install
 fi
 cd $BUILDDIR

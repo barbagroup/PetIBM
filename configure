@@ -20542,7 +20542,7 @@ if test "x$enable_shared" = "xyes"; then
     -DBUILD_SHARED_LIBS=ON \
     -DYAML_CPP_BUILD_TESTS=OFF \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
   make install
 fi
 if test "x$enable_static" = "xyes"; then
@@ -20552,7 +20552,7 @@ if test "x$enable_static" = "xyes"; then
     -DBUILD_SHARED_LIBS=OFF \
     -DYAML_CPP_BUILD_TESTS=OFF \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
   make install
 fi
 cd $BUILDDIR
@@ -20795,7 +20795,7 @@ if test "x$enable_shared" = "xyes"; then
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
 fi
 if test "x$enable_static" = "xyes"; then
   cmake $GTEST_DIR \
@@ -20803,7 +20803,7 @@ if test "x$enable_static" = "xyes"; then
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_MACOSX_RPATH=1
-  make all
+  make all -j
 fi
 mkdir -p $prefix/include
 cp -r $GTEST_DIR/include/gtest $prefix/include/.
@@ -21857,7 +21857,7 @@ if test "x$enable_shared" = "xyes"; then
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
-  make all
+  make all -j
   make install
   rm -f $AMGXWRAPPER_DIR/build/CMakeCache.txt
 fi
@@ -21871,7 +21871,7 @@ if test "x$enable_static" = "xyes"; then
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
-  make all
+  make all -j
   make install
   rm -f $AMGXWRAPPER_DIR/build/CMakeCache.txt
 fi

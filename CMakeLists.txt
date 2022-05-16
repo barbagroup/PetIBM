@@ -193,7 +193,16 @@ string(APPEND PETIBM_RPATH  # note it's `string` append, not `list` append
 # =============================================================================
 add_subdirectory(src)
 add_subdirectory(applications)
+add_subdirectory(examples)
 
 if (PETIBM_ENABLE_TESTS)
     add_subdirectory(tests)
 endif()
+
+# =============================================================================
+# examples
+# =============================================================================
+install(
+    DIRECTORY examples
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/petibm
+)

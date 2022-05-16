@@ -1,0 +1,30 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# `find_dependency` will change PACKAGE_PREFIX_DIR; make a copy here
+set_and_check(PETIBM_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+set_and_check(PETIBM_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
+
+# configure extra paths to find cmake/pkg-config modules/configs
+set(CMAKE_PREFIX_PATH "@PACKAGE_PETSC_DIR@" ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH "@PACKAGE_YAMLCPP_DIR@" ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH "@PACKAGE_AMGXWRAPPER_DIR@" ${CMAKE_PREFIX_PATH})
+
+# recover dependencies
+find_dependency(PkgConfig)
+pkg_search_module(PETSC REQUIRED IMPORTED_TARGET petsc)
+find_dependency(yaml-cpp 0.7.0 REQUIRED)
+find_dependency(amgxwrapper 1.6.1 REQUIRED)
+
+# aliases required by petibm::petibm
+add_library(amgxwrapper ALIAS amgxwrapper::amgxwrapper)
+
+# generate an imported target petibm::petibm
+include(${PETIBM_LIBRARY_DIR}/cmake/petibm/petibm-target.cmake)
+
+# using the imported target to create PETIBM_LIBRARIES
+get_target_property(PETIBM_LIBRARIES petibm::petibm LOCATION)
+set_and_check(PETIBM_LIBRARIES ${PETIBM_LIBRARIES})
+
+check_required_components(petibm)

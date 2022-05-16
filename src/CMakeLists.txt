@@ -59,9 +59,9 @@ target_compile_definitions(petibm
 
 target_link_libraries(petibm
     PRIVATE MPI::MPI_CXX
-    PRIVATE PkgConfig::PETSC
+    PUBLIC PkgConfig::PETSC
     PUBLIC yaml-cpp
-    PUBLIC $<$<BOOL:${PETIBM_USE_AMGX}>:AmgXWrapper>
+    PUBLIC $<$<BOOL:${PETIBM_USE_AMGX}>:amgxwrapper>
 )
 
 target_link_options(petibm
@@ -72,7 +72,7 @@ target_link_options(petibm
 
 install(
     TARGETS petibm
-    EXPORT PetIBMTarget
+    EXPORT petibm-target
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -82,4 +82,35 @@ install(
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include/petibm
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# generate petibm-config.cmake for cmake's `find_package`
+configure_package_config_file(
+    petibm-config.cmake.in
+    ${PROJECT_BINARY_DIR}/petibm-config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/petibm
+    PATH_VARS
+        CMAKE_INSTALL_LIBDIR
+        CMAKE_INSTALL_INCLUDEDIR
+        PETSC_DIR
+        YAMLCPP_DIR
+        AMGXWRAPPER_DIR
+)
+
+# generate a petibm-config-version.cmake for cmake's `find_package`
+write_basic_package_version_file(
+    ${PROJECT_BINARY_DIR}/petibm-config-version.cmake
+    COMPATIBILITY AnyNewerVersion
+)
+
+install(
+    EXPORT petibm-target NAMESPACE petibm::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/petibm
+)
+
+install(
+    FILES
+    ${PROJECT_BINARY_DIR}/petibm-config.cmake
+    ${PROJECT_BINARY_DIR}/petibm-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/petibm
 )

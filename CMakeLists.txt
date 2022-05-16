@@ -96,6 +96,7 @@ if (PETIBM_BUILD_YAMLCPP)  # download and build if an user requested
     )
     message(CHECK_PASS "done")
     list(APPEND DOWNLOADED_DEPS "_yamlcpp")
+    set(YAMLCPP_DIR ${CMAKE_INSTALL_PREFIX} CACHE PATH "" FORCE)
 else()  # use user-provided yaml-cpp; use imported target to unify later code
     message(CHECK_START "Finding yaml-cpp")
     pkg_search_module(YAMLCPP REQUIRED  QUIET IMPORTED_TARGET yaml-cpp>=0.7.0)
@@ -122,11 +123,12 @@ if (PETIBM_USE_AMGX)
         )
         message(CHECK_PASS "done")
     list(APPEND DOWNLOADED_DEPS "_amgxwrapper")
-    else()  # AmgXWrapper>=1.6 provides things CMake needs
+    set(AMGXWRAPPER_DIR ${CMAKE_INSTALL_PREFIX} CACHE PATH "" FORCE)
+    else()  # AmgXWrapper>=1.6.1 provides things CMake needs
         message(CHECK_START "Finding AmgXWrapper")
-        find_package(AmgXWrapper 1.6 REQUIRED)
-        add_library(AmgXWrapper ALIAS AmgXWrapper::AmgXWrapper)
-        message(CHECK_PASS "found AmgXWrapper ${AmgXWrapper_VERSION}")
+        find_package(amgxwrapper 1.6.1 REQUIRED)
+        add_library(amgxwrapper ALIAS amgxwrapper::amgxwrapper)
+        message(CHECK_PASS "found AmgXWrapper ${amgxwrapper_VERSION}")
     endif()
 endif()
 
@@ -182,7 +184,7 @@ string(APPEND PETIBM_RPATH  # note it's `string` append, not `list` append
             "$<BOOL:${PETIBM_USE_AMGX}>,"
             "$<NOT:$<BOOL:${PETIBM_BUILD_AMGXWRAPPER}>>"
         ">:"
-        "$<TARGET_LINKER_FILE_DIR:AmgXWrapper>"
+        "$<TARGET_LINKER_FILE_DIR:amgxwrapper>"
     ">"
 )
 

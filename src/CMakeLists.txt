@@ -35,13 +35,33 @@ set(SRC
     $<$<BOOL:${PETIBM_USE_AMGX}>:${CMAKE_CURRENT_SOURCE_DIR}/linsolver/linsolveramgx.cpp>
 )
 
-set(PETIBM_RPATH
-    ${PETSC_LIBRARY_DIRS}
-    ${AMGXWRAPPER_LIBRARY_DIR}
-    $<TARGET_LINKER_FILE_DIR:yaml-cpp>
-    $<$<BOOL:${PETIBM_USE_AMGX}>:$<TARGET_LINKER_FILE_DIR:AmgXWrapper>>
+# always include self' lib dir into rpath
+list(APPEND PETIBM_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
+
+# can't use imported target for PETSc because PkgConfig uses an interface
+# target rather than an imported target
+list(APPEND PETIBM_RPATH ${PETSC_LIBRARY_DIRS})
+
+# only add yaml-cpp to rpath if using a pre-built package
+# if using a downloaded package, TARGET_LINKER_FILE_DIR will be the build dir
+# not the installation dir
+list(APPEND PETIBM_RPATH
+    $<$<NOT:$<BOOL:${PETIBM_BUILD_YAMLCPP}>>:$<TARGET_LINKER_FILE_DIR:yaml-cpp>>
 )
 
+# only add AmgXWrapper to rpath if using a pre-built package (line too long..)
+string(APPEND PETIBM_RPATH  # note it's `string` append, not `list` append
+    ";"
+    "$<"
+        "$<AND:"
+            "$<BOOL:${PETIBM_USE_AMGX}>,"
+            "$<NOT:$<BOOL:${PETIBM_BUILD_AMGXWRAPPER}>>"
+        ">:"
+        "$<TARGET_LINKER_FILE_DIR:AmgXWrapper>"
+    ">"
+)
+
+# add library target
 add_library(petibm ${SRC})
 
 set_target_properties(petibm PROPERTIES

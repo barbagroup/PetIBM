@@ -10,8 +10,7 @@ cmake_minimum_required(VERSION 3.18.0)
 # ==============================================================================
 # project settings
 # ==============================================================================
-message("Begin configuration")
-message("===================")
+message(STATUS "Begin PetIBM configuration")
 
 project(PetIBM
     VERSION 0.5.4
@@ -120,7 +119,7 @@ if (PETIBM_USE_AMGX)
         FetchContent_Declare(
             _amgxwrapper
             GIT_REPOSITORY https://github.com/barbagroup/AmgXWrapper
-            GIT_TAG master
+            GIT_TAG v1.6.1
             GIT_SHALLOW ON
         )
         message(CHECK_PASS "done")

@@ -20,8 +20,9 @@ find_dependency(amgxwrapper 1.6.1 REQUIRED)
 # aliases required by petibm::petibm
 add_library(amgxwrapper ALIAS amgxwrapper::amgxwrapper)
 
-# generate an imported target petibm::petibm
+# generate an imported target petibm::petibm and petibm::petibmapps
 include(${PETIBM_LIBRARY_DIR}/cmake/petibm/petibm-target.cmake)
+include(${PETIBM_LIBRARY_DIR}/cmake/petibm/petibmapps-target.cmake)
 
 # using the imported target to create PETIBM_LIBRARIES
 get_target_property(PETIBM_LIBRARIES petibm::petibm LOCATION)

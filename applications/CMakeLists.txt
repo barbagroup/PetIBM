@@ -16,8 +16,9 @@ set_target_properties(petibmapps PROPERTIES
 )
 
 target_include_directories(petibmapps
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_compile_options(petibmapps
@@ -30,7 +31,7 @@ target_compile_definitions(petibmapps
 
 target_link_libraries(petibmapps
     PRIVATE MPI::MPI_CXX
-    PRIVATE PkgConfig::PETSC
+    PUBLIC PkgConfig::PETSC
     PUBLIC yaml-cpp
     PUBLIC petibm
 )
@@ -43,7 +44,7 @@ target_link_options(petibmapps
 
 install(
     TARGETS petibmapps
-    EXPORT PetIBMAppsTarget
+    EXPORT petibmapps-target
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -57,6 +58,11 @@ install(
         ${CMAKE_CURRENT_SOURCE_DIR}/rigidkinematics
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/petibm
     FILES_MATCHING PATTERN "*.h"
+)
+
+install(
+    EXPORT petibmapps-target NAMESPACE petibm::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/petibm
 )
 
 # executables

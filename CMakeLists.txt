@@ -156,15 +156,44 @@ if (PETIBM_BUILD_YAMLCPP)
     target_compile_options(yaml-cpp PRIVATE -Wno-effc++)
 endif()
 
-# =====================================================================
+# =============================================================================
+# prepare runtime path list
+# =============================================================================
+# don't use CMAKE_INSTALL_RPATH because it may be overwritten by a parent
+# project if PetIBM is included as a sub-project
+
+# always include self' lib dir into rpath
+list(APPEND PETIBM_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
+
+# can't use imported target for PETSc because PkgConfig uses an interface
+# target rather than an imported target
+list(APPEND PETIBM_RPATH ${PETSC_LIBRARY_DIRS})
+
+# only add yaml-cpp to rpath if using a pre-built package
+# if using a downloaded package, TARGET_LINKER_FILE_DIR will be the build dir
+# not the installation dir
+list(APPEND PETIBM_RPATH
+    $<$<NOT:$<BOOL:${PETIBM_BUILD_YAMLCPP}>>:$<TARGET_LINKER_FILE_DIR:yaml-cpp>>
+)
+
+# only add AmgXWrapper to rpath if using a pre-built package (line too long..)
+string(APPEND PETIBM_RPATH  # note it's `string` append, not `list` append
+    ";"
+    "$<"
+        "$<AND:"
+            "$<BOOL:${PETIBM_USE_AMGX}>,"
+            "$<NOT:$<BOOL:${PETIBM_BUILD_AMGXWRAPPER}>>"
+        ">:"
+        "$<TARGET_LINKER_FILE_DIR:AmgXWrapper>"
+    ">"
+)
+
+# =============================================================================
 # targets
-# =====================================================================
+# =============================================================================
 add_subdirectory(src)
+add_subdirectory(applications)
 
-
-# =====================================================================
-# tests
-# =====================================================================
 if (PETIBM_ENABLE_TESTS)
     add_subdirectory(tests)
 endif()

@@ -20,6 +20,7 @@ project(PetIBM
 
 include(GNUInstallDirs)  # use GNU standard installation folder hierarchy
 include(FetchContent)  # for downloading dependencies if needed
+include(CMakePackageConfigHelpers)  # generate configs for downstream projects
 
 # set default build type
 if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
@@ -37,7 +38,6 @@ option(PETIBM_BUILD_AMGXWRAPPER "Whether to download and build AmgXWrapper." OFF
 set(PETSC_DIR "$ENV{PETSC_DIR}" CACHE PATH "The path to PETSc.")
 set(PETSC_ARCH "$ENV{PETSC_ARCH}" CACHE STRING "The specific build of PETSc under PETSC_DIR.")
 set(AMGXWRAPPER_DIR "$ENV{AMGXWRAPPER_DIR}" CACHE PATH "The path to AmgXWrapper.")
-set(GTEST_DIR "$ENV{GTEST_DIR}" CACHE PATH "The path to gtest.")
 set(YAMLCPP_DIR "$ENV{YAMLCPPDIR}" CACHE PATH "The path to yaml-cpp.")
 
 # search-paths when PETIBM_BUILD_AMGXWRAPPER is ON/TRUE
@@ -55,11 +55,9 @@ set(PETSC_DIR "${PETSC_DIR}/${PETSC_ARCH}")
 
 # configure extra paths to find cmake/pkg-config modules/configs
 set(CMAKE_PREFIX_PATH ${YAMLCPP_DIR} ${CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH ${GTEST_DIR} ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH ${PETSC_DIR} ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH ${AMGXWRAPPER_DIR} ${CMAKE_PREFIX_PATH})
 set(CMAKE_MODULE_PATH ${YAMLCPP_DIR} ${CMAKE_MODULE_PATH})
-set(CMAKE_MODULE_PATH ${GTEST_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${PETSC_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${AMGXWRAPPER_DIR} ${CMAKE_MODULE_PATH})
 
@@ -100,7 +98,7 @@ if (PETIBM_BUILD_YAMLCPP)  # download and build if an user requested
     list(APPEND DOWNLOADED_DEPS "_yamlcpp")
 else()  # use user-provided yaml-cpp; use imported target to unify later code
     message(CHECK_START "Finding yaml-cpp")
-    pkg_search_module(YAMLCPP REQUIRED  QUIET IMPORTED_TARGET yaml-cpp>=0.6.2)
+    pkg_search_module(YAMLCPP REQUIRED  QUIET IMPORTED_TARGET yaml-cpp>=0.7.0)
     add_library(yaml-cpp UNKNOWN IMPORTED)
     set_target_properties(yaml-cpp PROPERTIES 
         NO_SONAME ON
@@ -193,7 +191,6 @@ string(APPEND PETIBM_RPATH  # note it's `string` append, not `list` append
 # =============================================================================
 add_subdirectory(src)
 add_subdirectory(applications)
-add_subdirectory(examples)
 
 if (PETIBM_ENABLE_TESTS)
     add_subdirectory(tests)

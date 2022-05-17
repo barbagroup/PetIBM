@@ -4,7 +4,7 @@
 
 Input files are located in the folder `examples/navierstokes/liddrivencavity2dRe100` of the PetIBM directory.
 
-Make sure that the PetIBM executables are available in your PATH environment variable.
+If PetIBM is not installed using `conda`/`mamba`, make sure that the PetIBM executables are available in your PATH environment variable.
 To add the PetIBM installation directory to you PATH:
 
     export PATH=<petibm-installation-directory>:$PATH
@@ -55,7 +55,7 @@ These files can be open with VisIt to read, visualize, and process the field sol
 
 Input files are located in the folder `examples/ibpm/cylinder2dRe40` of the PetIBM directory.
 
-Make sure that the PetIBM executables are available in your PATH environment variable.
+If PetIBM is not installed using `conda`/`mamba`, make sure that the PetIBM executables are available in your PATH environment variable.
 To add the PetIBM installation directory to you PATH:
 
     export PATH=<petibm-installation-directory>:$PATH
@@ -109,7 +109,7 @@ These files can be open with VisIt to read, visualize, and process the field sol
 
 Input files are located in the folder `examples/ibpm/cylinder2dRe550_GPU` of the PetIBM directory.
 
-Make sure that the PetIBM executables are available in your PATH environment variable.
+If PetIBM is not installed using `conda`/`mamba`, make sure that the PetIBM executables are available in your PATH environment variable.
 To add the PetIBM installation directory to you PATH:
 
     export PATH=<petibm-installation-directory>:$PATH
@@ -131,6 +131,7 @@ To run the example using 2 MPI processes and 1 CUDA-capable GPU device:
     mpiexec -np 2 petibm-ibpm
 
 The run should complete in less than 5 minutes (with a NVIDIA K40 GPU device) and the numerical solution is saved in the folder `solution`.
+The MPI flag `--mca opal_cuda_support 1` may be needed if using Anaconda's OpenMPI package.
 
 We provide a Python script (located under the folder `scripts` in the simulation directory) to plot the instantaneous drag coefficient and compare it with the numerical results from Koumoutsakos and Leonard (1995).
 To run the script:

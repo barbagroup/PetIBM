@@ -2,6 +2,27 @@
 
 ---
 
+## 0.5.4
+
+---
+
+### Added
+
+* Used CMake for compiling/building/installing.
+* Conda packages at the channel `barbagroups`.
+
+### Changed
+
+* Removed the support of GNU Automake.
+* Removed Travis CI.
+* Modified documentation for CMake-base and Anaconda-based installation procedures.
+
+### Fixed
+
+### Removed
+
+---
+
 ## 0.5.3
 
 ---

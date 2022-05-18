@@ -25,12 +25,17 @@ You can run the example (for example, using 4 MPI processes and 1 GPU device) wi
 export CUDA_VISIBLE_DEVICES=<idx1>
 mpiexec -np 4 oscillatingcylinder -options_left -log_view ascii:view.log
 ```
-`<idx1>` denotes the IDs of the two GPUs to be used (if there are more than two GPUs on your systems.)
+`<idx1>` denotes the IDs of the GPU to be used (if there are more than one GPU on your systems).
 
 The simulation should complete in less than 40 minutes when using:
 
 * 2 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
 * 2 NVIDIA K20 GPU devices.
+
+And it should complete in around 16 minutes when using
+
+* 6 CPU cores (Intel(R) Xeon(R) Platinum 8174 CPU @ 3.10GHz)
+* 1 NVIDIA V100 (32GB variant)
 
 Note, if MPI was installed using `conda`/`mamba`, then you may need to add the flag `--mca opal_cuda_support 1`, i.e., `mpiexec -np 4 --mca opal_cuda_support 1 ...`.
 This is due to that the Anaconda's OpenMPI package disables the CUDA support by default.

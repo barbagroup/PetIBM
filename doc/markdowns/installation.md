@@ -23,6 +23,12 @@ We suggest using `mamba`. If `conda` is preferred, just replace `mamba` with `co
 If an older CUDA is desired (e.g., for old GPU models), we also have packages for
 CUDA 10.2, which supports old GPUs like K20/K40. To do so, use `"petibm=*=cuda102*"` instead.
 
+**Note**: The CUDA 10.2 variant may also work on newer GPUs and drivers.
+If you encounter issues using the CUDA 11.4 variant with newer GPUs/drivers, it should be fine to
+use the CUDA 10.2 variant.
+AmgX uses somehow different code w.r.t. whether it's CUDA 10 or CUDA 11, and sometimes there are
+issues in AmgX's CUDA 11 codebase.
+
 ### A.2. Using container technology
 
 For users familiar with Docker or Singularity Container (now renamed Apptainer), we provide images

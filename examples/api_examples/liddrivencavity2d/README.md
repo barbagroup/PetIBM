@@ -30,6 +30,8 @@ $ cd build
 $ cmake -DPETIBM_DIR=<path to PetIBM installation> ../
 ```
 
+`<path to PetIBM installation>` will simply be `${CONDA_PREFIX}` if PetIBM was installed using `conda`/`mamba`.
+
 Then build with:
 
 ```shell

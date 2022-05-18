@@ -41,6 +41,9 @@ $ make all -j <number of CPUs>
 To keep `CMakeLists.txt` simple, we didn't write the installation procedure in it, so there is no `make install`.
 The build folder is itself where the solver `liddrivencavity2d` is installed.
 
+If PetIBM was installed through `conda`/`mamba`, and if you encounter errors regarding undefined reference to functions of newer `GLIBCXX`, that means your compilers are too old.
+See the `Compilers` section in the document `Use PetIBM API`.
+
 ## Run the example
 
 Assuming we're still in the `build` folder, to run the example on CPU with 1 MPI process:

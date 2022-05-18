@@ -86,3 +86,13 @@ Alternatively, flags for linking against PETSc can be found in the file `$PETSC_
 (Look for the line starting with `PETSC_WITH_EXTERNAL_LIB = `.)
 
 See the `api_examples` folder for more demo `CMakeLists.txt` files.
+
+### Compilers
+
+If PetIBM was installed through `conda`/`mamba`, newer compilers may be needed to compile your own applications.
+For example, the Anaconda package of `petibm=0.5.4=cuda114_<other tags>` was built using `gxx_linux-64=11.2` from `conda-forge` channel.
+That means when you build/compile your code against this specific PetIBM version, you may need to use `g++` greater or equal to 11.2 to use newer `glibc` and `glibcxx`.
+The easiest way is to also use the latest tools from Anaconda, i,e., you may do (replace `mamba` with `conda` if you use the former one)
+```shell
+$ mamba install -c conda-forge "gxx_linux-64>=11.2" cmake make
+```

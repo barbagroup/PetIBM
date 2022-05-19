@@ -169,18 +169,15 @@ PetscErrorCode SolutionSimple::setInitialConditions(const YAML::Node &node)
             mesh->UPack, UGlobal, dim, nullptr, UGlobalUnpacked.data());
     CHKERRQ(ierr);
 
+    // IC for velocities
     for (PetscInt field = 0; field < dim; ++field)
     {
         ierr = DMDAVecGetArray(mesh->da[field], UGlobalUnpacked[field], &raw_arry);
         CHKERRQ(ierr);
 
         switch (dim) {
-            case 2:
-                arry = static_cast<PetscReal**>(raw_arry);
-                break;
-            case 3:
-                arry = static_cast<PetscReal***>(raw_arry);
-                break;
+            case 2: arry = static_cast<PetscReal**>(raw_arry); break;
+            case 3: arry = static_cast<PetscReal***>(raw_arry); break;
         }
 
         // when 2d, properties in z are just trivial
@@ -191,9 +188,7 @@ PetscErrorCode SolutionSimple::setInitialConditions(const YAML::Node &node)
                         mesh->coord[field][0][i], mesh->coord[field][1][j],
                         mesh->coord[field][2][k], 0.0, nu
                     });
-                    std::cout << "(" << i << ", " << j << ", " << k << ") = " << value;
                     arry.set(value, i, j, k);
-                    std::cout << " = " << arry.twod[j][i] << std::endl;
                 }
             }
         }
@@ -206,8 +201,26 @@ PetscErrorCode SolutionSimple::setInitialConditions(const YAML::Node &node)
             mesh->UPack, UGlobal, dim, nullptr, UGlobalUnpacked.data());
     CHKERRQ(ierr);
 
-    // pressure scalar field initialized with zeros
-    ierr = VecSet(pGlobal, 0.0); CHKERRQ(ierr);
+    // IC for pressure
+    ierr = DMDAVecGetArray(mesh->da[3], pGlobal, &raw_arry); CHKERRQ(ierr);
+
+    switch (dim) {
+        case 2: arry = static_cast<PetscReal**>(raw_arry); break;
+        case 3: arry = static_cast<PetscReal***>(raw_arry); break;
+    }
+
+    for (PetscInt k=mesh->bg[3][2]; k<mesh->ed[3][2]; ++k) {
+        for (PetscInt j=mesh->bg[3][1]; j<mesh->ed[3][1]; ++j) {
+            for (PetscInt i=mesh->bg[3][0]; i<mesh->ed[3][0]; ++i) {
+                double value = ICs[3].call({
+                    mesh->coord[3][0][i], mesh->coord[3][1][j],
+                    mesh->coord[3][2][k], 0.0, nu
+                });
+                arry.set(value, i, j, k);
+            }
+        }
+    }
+    ierr = DMDAVecRestoreArray(mesh->da[3], pGlobal, &raw_arry); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // setInitialConditions

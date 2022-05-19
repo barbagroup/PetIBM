@@ -411,7 +411,8 @@ PetscErrorCode parseICs(
 
     const YAML::Node &temp = node["flow"]["initialVelocity"];
 
-    lambdas = std::vector<SymEngine::LambdaRealDoubleVisitor>(3);
+    // 0: u, 1: v, 2: w, 3: p
+    lambdas = std::vector<SymEngine::LambdaRealDoubleVisitor>(4);
 
     // symbols for independent variables
     auto x = SymEngine::symbol("x");
@@ -427,6 +428,16 @@ PetscErrorCode parseICs(
 
         // assign the lambdified objects to the vector
         lambdas[i].init({x, y, z, t, nu}, *expr);
+    }
+
+    // pressure; has default values if not provided
+    if (node["flow"]["initialPressure"].IsDefined()){
+        auto expr = SymEngine::parse(node["flow"]["initialPressure"].as<std::string>());
+        lambdas[3].init({x, y, z, t, nu}, *expr);
+    } else {
+        auto expr = SymEngine::parse("0");
+        std::cout << *expr << std::endl;
+        lambdas[3].init({x, y, z, t, nu}, *expr);
     }
 
     PetscFunctionReturn(0);

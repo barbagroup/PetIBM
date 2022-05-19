@@ -16,3 +16,6 @@ doc/doxygen_sqlite3.db
 
 # Ignore VSCode configuration
 .vscode
+
+# Ignore any cache
+**/.cache

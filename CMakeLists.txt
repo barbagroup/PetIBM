@@ -38,7 +38,8 @@ option(PETIBM_BUILD_AMGXWRAPPER "Whether to download and build AmgXWrapper." OFF
 set(PETSC_DIR "$ENV{PETSC_DIR}" CACHE PATH "The path to PETSc.")
 set(PETSC_ARCH "$ENV{PETSC_ARCH}" CACHE STRING "The specific build of PETSc under PETSC_DIR.")
 set(AMGXWRAPPER_DIR "$ENV{AMGXWRAPPER_DIR}" CACHE PATH "The path to AmgXWrapper.")
-set(YAMLCPP_DIR "$ENV{YAMLCPPDIR}" CACHE PATH "The path to yaml-cpp.")
+set(YAMLCPP_DIR "$ENV{YAMLCPP_DIR}" CACHE PATH "The path to yaml-cpp.")
+set(SYMENGINE_DIR "$ENV{SYMENGINE_DIR}" CACHE PATH "The path to symengine.")
 
 # search-paths when PETIBM_BUILD_AMGXWRAPPER is ON/TRUE
 set(AMGX_DIR "$ENV{AMGX_DIR}" CACHE PATH "The path to AmgX.")
@@ -55,9 +56,11 @@ set(PETSC_DIR "${PETSC_DIR}/${PETSC_ARCH}")
 
 # configure extra paths to find cmake/pkg-config modules/configs
 set(CMAKE_PREFIX_PATH ${YAMLCPP_DIR} ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH ${SYMENGINE_DIR} ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH ${PETSC_DIR} ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH ${AMGXWRAPPER_DIR} ${CMAKE_PREFIX_PATH})
 set(CMAKE_MODULE_PATH ${YAMLCPP_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${SYMENGINE_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${PETSC_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${AMGXWRAPPER_DIR} ${CMAKE_MODULE_PATH})
 
@@ -108,6 +111,19 @@ else()  # use user-provided yaml-cpp; use imported target to unify later code
     )
     message(CHECK_PASS "found yaml-cpp ${YAMLCPP_VERSION}")
 endif()
+
+# ==============================================================================
+# finding symengine
+# ==============================================================================
+message(CHECK_START "Finding symengine")
+find_package(SymEngine 0.9 REQUIRED)
+message(CHECK_PASS "found symengine ${SymEngine_VERSION}")
+
+# the imported target from SymEngine is defective. Patching it.
+set_target_properties(symengine PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${SYMENGINE_INCLUDE_DIRS}"
+    INTERFACE_LINK_LIBRARIES "${SYMENGINE_LIBRARIES}"
+)
 
 # ==============================================================================
 # finding amgxwrapper (amgxwrapper should include cuda and amgx)
@@ -168,6 +184,9 @@ list(APPEND PETIBM_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
 # can't use imported target for PETSc because PkgConfig uses an interface
 # target rather than an imported target
 list(APPEND PETIBM_RPATH ${PETSC_LIBRARY_DIRS})
+
+# include symengine lib dir into rpath
+list(APPEND PETIBM_RPATH $<TARGET_LINKER_FILE_DIR:symengine>)
 
 # only add yaml-cpp to rpath if using a pre-built package
 # if using a downloaded package, TARGET_LINKER_FILE_DIR will be the build dir

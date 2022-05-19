@@ -10,6 +10,7 @@
 #include <string>
 
 #include <petscsys.h>
+#include <symengine/lambda_double.h>
 #include <yaml-cpp/yaml.h>
 
 #include <petibm/type.h>
@@ -152,14 +153,14 @@ PetscErrorCode parseBCs(const YAML::Node &node, type::IntVec2D &bcTypes,
  * \brief Parse initial conditions from a YAML node.
  *
  * \param node [in] YAML configuration node.
- * \param icValues [out] IC values of different fields.
+ * \param ics [out] Lambda functions for calculating IC values of different fields.
  *
  * \ingroup miscModule
  *
  * This function will look into the key `initialVelocity` under the key
  * `flow` in the provided YAML node.
  */
-PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues);
+PetscErrorCode parseICs(const YAML::Node &node, std::vector<SymEngine::LambdaRealDoubleVisitor> &ics);
 
 }  // end of namespace parser
 

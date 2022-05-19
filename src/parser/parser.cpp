@@ -8,6 +8,12 @@
 // STL
 #include <sys/stat.h>
 #include <string>
+#include <vector>
+
+// symengine
+#include <symengine/parser.h>
+#include <symengine/expression.h>
+#include <symengine/lambda_double.h>
 
 // here goes our own headers
 #include <petibm/misc.h>
@@ -387,7 +393,9 @@ PetscErrorCode parseBCs(const YAML::Node &node, type::IntVec2D &bcTypes,
 }  // parseBCs
 
 // get initial conditions
-PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues)
+PetscErrorCode parseICs(
+        const YAML::Node &node,
+        std::vector<SymEngine::LambdaRealDoubleVisitor> &lambdas)
 {
     PetscFunctionBeginUser;
 
@@ -403,10 +411,23 @@ PetscErrorCode parseICs(const YAML::Node &node, type::RealVec1D &icValues)
 
     const YAML::Node &temp = node["flow"]["initialVelocity"];
 
-    icValues = type::RealVec1D(3, 0.0);
+    lambdas = std::vector<SymEngine::LambdaRealDoubleVisitor>(3);
+
+    // symbols for independent variables
+    auto x = SymEngine::symbol("x");
+    auto y = SymEngine::symbol("y");
+    auto z = SymEngine::symbol("z");
+    auto t = SymEngine::symbol("t");
+    auto nu = SymEngine::symbol("nu");
 
     for (unsigned int i = 0; i < temp.size(); i++)
-        icValues[i] = temp[i].as<PetscReal>();
+    {
+        // get the pointer to the symbolic expression
+        auto expr = SymEngine::parse(temp[i].as<std::string>());
+
+        // assign the lambdified objects to the vector
+        lambdas[i].init({x, y, z, t, nu}, *expr);
+    }
 
     PetscFunctionReturn(0);
 }  // parseICs

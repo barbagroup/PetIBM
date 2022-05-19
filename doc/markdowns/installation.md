@@ -54,6 +54,7 @@ $ mamba create \
     "yaml-cpp>=0.7" \
     "cmake>=3.23" \
     "make" \
+    "pkg-config" \
     "git" \
     "gxx_linux-64>=11.2"
 ```

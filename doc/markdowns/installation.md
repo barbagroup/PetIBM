@@ -37,6 +37,16 @@ for the both to save you from compiling, buliding, and installing:
 * Docker: https://hub.docker.com/repository/docker/barbagroup/petibm
 * Singularity: https://github.com/barbagroup/petibm-recipes/tree/master/singularity
 
+### A.3. Optional dependencies for example cases' post-processing
+
+The above two installation methods only provide the solver.
+Some example cases in the `examples` folder have Python scripts for post-processing.
+To be able to execute these Python scripts, install the following Python packages (using `mamba`/`conda`, for example):
+
+```shell
+$ mamba install -c conda-forge pyyaml numpy h5py matplotlib
+```
+
 ## B. Building from the source
 
 ### B.1. Using pre-built dependencies
@@ -66,6 +76,9 @@ The package `amgxwrapper` pulls in most of the required dependencies (e.g., pets
 
 Once the process is done, jump into the environment through either `mamba activate <env name>` or
 `source <mamba installation prefix>/bin/activate <env name>`.
+
+The above command only installs required packages for the flow solvers.
+See section A.3 for dependencies for post-processing with example cases.
 
 To proceed, let's assume you would like to download PetIBM's source files to path
 `$HOME/sfw/petibm/PetIBM`, and to install PetIBM's final solvers and libraries to
@@ -168,6 +181,7 @@ If you would like to build everything from scratch, here's the list of dependenc
 * NumPy (1.12.1+)
 * h5py (2.7.0+)
 * Matplotlib (2.0.2+)
+* pyyaml (6.0+)
 
 **Note**:
 

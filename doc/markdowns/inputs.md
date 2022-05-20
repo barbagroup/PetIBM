@@ -147,6 +147,7 @@ We use [`SymEngine`](https://github.com/symengine/symengine) to parse symbolic e
 So only the math operations and math functions available in SymEngine are allowed here.
 SymEngine is the backend of the well-known python library `SymPy`, so `SymPy`'s documentation may be a good start point to know what operations and functions are available.
 For the independent variables, only `x`, `y`, `z`, `t`, and `nu` are allowed.
+The case at `examples/navierstokes/taylorgreenvortex` provides a example of using symbolic expression for initialization.
 
 `initialPressure` is an optional parameter and needs a single value if present in the configuration.
 Similar to `initialVelocity`, the value can be a floating point number or a symbolic expression string.

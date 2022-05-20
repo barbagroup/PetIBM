@@ -1,0 +1,28 @@
+# Poisson solver: prefix `-poisson_`
+-poisson_ksp_type cg
+-poisson_ksp_atol 1.0E-14
+-poisson_ksp_rtol 0.0
+-poisson_ksp_max_it 20000
+
+-poisson_pc_type hypre
+-poisson_pc_hypre_type boomeramg
+-poisson_pc_hypre_boomeramg_cycle_type V
+-poisson_pc_hypre_boomeramg_max_levels 100
+-poisson_pc_hypre_boomeramg_max_iter 1
+-poisson_pc_hypre_boomeramg_tol 0.0
+-poisson_pc_hypre_boomeramg_truncfactor 0.0
+-poisson_pc_hypre_boomeramg_P_max 0
+-poisson_pc_hypre_boomeramg_agg_nl 0
+-poisson_pc_hypre_boomeramg_agg_num_paths 1
+-poisson_pc_hypre_boomeramg_strong_threshold 0.25
+-poisson_pc_hypre_boomeramg_max_row_sum 1.0
+-poisson_pc_hypre_boomeramg_grid_sweeps_down 1
+-poisson_pc_hypre_boomeramg_grid_sweeps_up 1
+-poisson_pc_hypre_boomeramg_grid_sweeps_coarse 1
+-poisson_pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi
+-poisson_pc_hypre_boomeramg_relax_type_coarse symmetric-SOR/Jacobi
+-poisson_pc_hypre_boomeramg_relax_weight_all 1.0
+-poisson_pc_hypre_boomeramg_outer_relax_weight_all 1.0
+-poisson_pc_hypre_boomeramg_measure_type local
+-poisson_pc_hypre_boomeramg_coarsen_type HMIS
+-poisson_pc_hypre_boomeramg_interp_type ext+i-cc

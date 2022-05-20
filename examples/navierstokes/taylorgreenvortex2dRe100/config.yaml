@@ -1,14 +1,14 @@
 mesh:
   - direction: x
-    start: 0.0
+    start: -3.141592653589793
     subDomains:
-      - end: 6.283185307179586
+      - end: 3.141592653589793
         cells: 256
         stretchRatio: 1.0
   - direction: y
-    start: 0.0
+    start: -3.141592653589793
     subDomains:
-      - end: 6.283185307179586
+      - end: 3.141592653589793
         cells: 256
         stretchRatio: 1.0
 
@@ -37,7 +37,7 @@ parameters:
     startStep: 0
     nt: 10000
     nsave: 1000
-    nrestart: 2500
+    nrestart: 10000
     convection: ADAMS_BASHFORTH_2
     diffusion: CRANK_NICOLSON
     velocitySolver:

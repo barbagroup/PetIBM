@@ -223,6 +223,7 @@ endif()
 install(
     DIRECTORY examples
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/petibm
+    PATTERN output EXCLUDE
 )
 
 # =============================================================================

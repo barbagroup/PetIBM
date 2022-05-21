@@ -436,7 +436,6 @@ PetscErrorCode parseICs(
         lambdas[3].init({x, y, z, t, nu}, *expr);
     } else {
         auto expr = SymEngine::parse("0");
-        std::cout << *expr << std::endl;
         lambdas[3].init({x, y, z, t, nu}, *expr);
     }
 

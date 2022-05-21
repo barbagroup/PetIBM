@@ -2,13 +2,16 @@
 
 PetIBM is a library (a toolbox to solve the Navier-Stokes equations with an immersed-boundary method) that comes with several application codes.
 Upon successful installation, the library (shared and/or static) and the application programs should be respectively located in the `lib` and `bin` folders of your installation directory.
+For example, if installing PetIBM from Anaconda channel `barbagroup`, then the installation directory is the root of the Conda environment, which is `$CONDA_PREFIX`.
 
 Once PetIBM is installed, the libraries (shared and/or static) are located in the `lib` folder of your installation directory.
 The present software package comes with 5 application codes that use the PetIBM library.
 Upon successful installation, the binary executables for these applications are located in the `bin` folder of your installation directory.
-For convenience, you can prepend your PATH environment variable with the `bin` directory to use the binary executables:
+If PetIBM is not installed using `conda` (or `mamba`), you can prepend the `PATH` environment variable with the `bin` directory to use the binary executables:
 
-    export PATH=<petibm-installation-directory>/bin:$PATH
+```shell
+$ export PATH=<petibm-installation-directory>/bin:$PATH
+```
 
 List of binary executables:
     * `petibm-navierstokes`
@@ -29,21 +32,23 @@ At each time step, the program solves a system for the velocity field and then a
 
 To run the program:
 
-    cd <simulation-directory>
-    petibm-navierstokes
+```shell
+$ cd <simulation-directory>
+$ petibm-navierstokes
+```
 
 In the current working directory differs from the simulation directory, provide the path of the simulation directory:
-
-    petibm-navierstokes -directory <simulation-directory>
-
-If the YAML configuration file in not located in the simulation directory:
-
-    petibm-navierstokes -config <config-path>
-
+```shell
+$ petibm-navierstokes -directory <simulation-directory>
+```
+If the YAML configuration file is not located in the simulation directory:
+```shell
+$ petibm-navierstokes -config <config-path>
+```
 To run on two CPU processes:
-
-    mpiexec -np 2 petibm-navierstokes
-
+```shell
+$ mpiexec -np 2 petibm-navierstokes
+```
 
 ## Program `petibm-ibpm`
 
@@ -54,10 +59,10 @@ At each time step, the program solves a system for the velocity field and then a
 Finally, the velocity field  is projected onto the space of divergence-free fields that satisfy the no-slip condition at the location of the Lagrangian boundary points.
 
 To run a simulation with the IBPM:
-
-    cd <simulation-directory>
-    mpiexec -np n petibm-ibpm
-
+```shell
+$ cd <simulation-directory>
+$ mpiexec -np n petibm-ibpm
+```
 You can also provide the path of the simulation directory with the command-line argument `-directory <path>` and/or the path of the YAML configuration file with `-config <path>`.
 
 
@@ -69,10 +74,10 @@ Three linear systems are solved every time step: a system for the velocity field
 The divergence-free and the no-slip constraints are imposed in a sequential fashion.
 
 To run a simulation with a decoupled version of the IBPM:
-
-    cd <simulation-directory>
-    mpiexec -np n petibm-decoupledibpm
-
+```shell
+$ cd <simulation-directory>
+$ mpiexec -np n petibm-decoupledibpm
+```
 You can also provide the path of the simulation directory with the command-line argument `-directory <path>` and/or the path of the YAML configuration file with `-config <path>`.
 
 ## Program `petibm-writemesh`
@@ -104,10 +109,10 @@ In 3D, `petibm-vorticity`:
     + writes the vorticity values in the HDF5 solution field (group names `wx`, `wy`, and `wz`).
 
 To compute the vorticity field:
-
-    cd <simulation-directory>
-    mpiexec -np n petibm-vorticity
-
+```shell
+$ cd <simulation-directory>
+$ mpiexec -np n petibm-vorticity
+```
 You can also provide the path of the simulation directory with the command-line argument `-directory <path>` and/or the path of the YAML configuration file with `-config <path>`.
 
 
@@ -117,9 +122,9 @@ This program is a post-processing utility which creates XDMF files for the solut
 The utility works for 2D and 3D configurations.
 
 To create XDMF files:
-
-    petibm-createxdmf
-
+```shell
+$ petibm-createxdmf
+```
 It will create XDMF files for the pressure (`p.xmf`), the velocity components (`u.xmf` and `v.xmf` for 2D configurations;`u.xmf`, `v.xmf`, and `w.xmf` for 3D configurations), and the vorticity components (`wz.xmf` for 2D configurations; `wx.xmf`, `wy.xmf`, and `wz.xmf` for 3D configurations).
 
 
@@ -129,13 +134,21 @@ To solve one or several linear systems on CUDA-capable GPU devices, PetIBM calls
 Solving on GPU devices is supported in the programs `petibm-navierstokes`, `petibm-ibpm`, `petibm-decoupledibpm`.
 
 For example to run a simulation using 2 MPI processes and 2 GPU devices, simply use:
-
-    mpiexec -np 2 <petibm-executable>
-
+```shell
+$ mpiexec -np 2 <petibm-executable>
+```
+Or, if the MPI was installed using `conda`/`mamba`, you may need to use
+```shell
+$ mpiexec --mca opal_cuda_support 1 -np 2 <petibm-executable>
+```
 If you choose to run on 4 MPI processes but only using 2 GPU devices:
 
-    export CUDA_VISIBLE_DEVICES=0,1
-    mpiexec -np 4 <petibm-executable>
+```shell
+$ export CUDA_VISIBLE_DEVICES=0,1
+$ mpiexec -np 4 <petibm-executable>
+```
+
+Again, `--mca opal_cuda_support 1` may be needed if using Anaconda's OpenMPI package.
 
 
 ## References

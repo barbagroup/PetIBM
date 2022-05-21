@@ -10,42 +10,46 @@ Thus, this example can focus on the following concepts:
 1. Reading and parsing a YAML text file that has simulation parameters in it.
 2. Creating basic objects: mesh, boundary conditions (ghost points), solution, linear solvers.
 3. Creating operators (matrices).
+4. Using CMake to build/compile an application with PetIBM.
 
 By following the comments in the `main.cpp`, readers should be able to understand the basic usage of PetIBM API.
 For more details about classes, functions, and namespaces in PetIBM, please refer to the [API documentation](https://barbagroup.github.io/PetIBM/modules.html).
 
 This example omits many elements that a feature-complete CFD solver should have, such as restarting, outputting transient solutions, flexible temporal integration schemes, etc.
-To see how to implement these elements, please refer to the source code of the Navier-Stokes solver in the `applications` folder under the PetIBM main directory.
+To see how to implement these elements, please refer to the source code of the Navier-Stokes solver in the `applications` folder under PetIBM's main directory.
 
 ## Build this example
 
-* Option 1: Makefile
+In the `CMakeLists.txt`, we assume this application does not know where PetIBM was installed, as if it is an application developed by users. Please check the comments in `CMakeLists.txt`.
 
-During the configuration stage, a Makefile is created in the example's folder (under the build directory).
-You can create the executable with `make cavity`:
+To configure:
 
 ```shell
-cd $petibm_builddir
-cd examples/api_examples/liddrivencavity2d
-make cavity
+$ mkdir build
+$ cd build
+$ cmake -DPETIBM_DIR=<path to PetIBM installation> ../
 ```
 
-* Option 2: `build.sh`
+`<path to PetIBM installation>` will simply be `${CONDA_PREFIX}` if PetIBM was installed using `conda`/`mamba`.
 
-Alternatively, we also provide a Shell script, `build.sh`, to build this example.
-In a nutshell, when using PetIBM as a library, we also need to link against PETSc library, AmgX library (if used), and other user-provided third-party libraries (for example, if users provide their own yaml-cpp, instead of using the one provided by PetIBM configuration system).
-In order to use `build.sh`, readers should first modify the variables in the first section of the script to reflect the paths of PETSc and PetIBM installation.
-The remaining sections of the script show how to grab the configurations from PETSc library and how to link PetIBM library.
-Then, simply run `sh ./build.sh` to build this example.
+Then build with:
+
+```shell
+$ make all -j <number of CPUs>
+```
+
+To keep `CMakeLists.txt` simple, we didn't write the installation procedure in it, so there is no `make install`.
+The build folder is itself where the solver `liddrivencavity2d` is installed.
+
+If PetIBM was installed through `conda`/`mamba`, and if you encounter errors regarding undefined reference to functions of newer `GLIBCXX`, that means your compilers are too old.
+See the `Compilers` section in the document `Use PetIBM API`.
 
 ## Run the example
 
-To run the example on CPU with 1 MPI process:
+Assuming we're still in the `build` folder, to run the example on CPU with 1 MPI process:
 
 ```shell
-cd $petibm_builddir
-cd examples/api_examples/liddrivencavity2d
-./cavity
+$ ./liddrivencavity2d
 ```
 
 The numerical solution will be saved in the sub-folder `output` of the simulation directory.

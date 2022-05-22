@@ -37,6 +37,16 @@ for the both to save you from compiling, buliding, and installing:
 * Docker: https://hub.docker.com/repository/docker/barbagroup/petibm
 * Singularity: https://github.com/barbagroup/petibm-recipes/tree/master/singularity
 
+### A.3. Optional dependencies for example cases' post-processing
+
+The above two installation methods only provide the solver.
+Some example cases in the `examples` folder have Python scripts for post-processing.
+To be able to execute these Python scripts, install the following Python packages (using `mamba`/`conda`, for example):
+
+```shell
+$ mamba install -c conda-forge pyyaml numpy h5py matplotlib
+```
+
 ## B. Building from the source
 
 ### B.1. Using pre-built dependencies
@@ -52,6 +62,7 @@ $ mamba create \
     -c conda-forge \
     "*amgxwrapper=*=cuda114*" \
     "yaml-cpp>=0.7" \
+    "symengine>=0.9" \
     "cmake>=3.23" \
     "make" \
     "pkg-config" \
@@ -59,12 +70,15 @@ $ mamba create \
     "gxx_linux-64>=11.2"
 ```
 
-The package `amgxwrapper` pulls in all required dependencies (e.g., petsc, cuda, etc.), and
-`yaml-cpp` is the only dependency not covered by `amgxwrapper`. `cmake`, `make`, `git`, and
+The package `amgxwrapper` pulls in most of the required dependencies (e.g., petsc, cuda, etc.).
+`yaml-cpp` and `symengine` are dependencies not covered by `amgxwrapper`. `cmake`, `make`, `git`, and
 `gxx_linux-64` are for building PetIBM in case your system does not have them or they are too old.
 
 Once the process is done, jump into the environment through either `mamba activate <env name>` or
 `source <mamba installation prefix>/bin/activate <env name>`.
+
+The above command only installs required packages for the flow solvers.
+See section A.3 for dependencies for post-processing with example cases.
 
 To proceed, let's assume you would like to download PetIBM's source files to path
 `$HOME/sfw/petibm/PetIBM`, and to install PetIBM's final solvers and libraries to
@@ -106,6 +120,7 @@ $ cmake \
     -DAMGX_DIR=$CONDA_PREFIX \
     -DAMGXWRAPPER_DIR=$CONDA_PREFIX \
     -DYAMLCPP_DIR=$CONDA_PREFIX \
+    -DSYMENGINE_DIR=$CONDA_PREFIX \
     -DPETIBM_ENABLE_TESTS=ON \
     -DPETIBM_USE_AMGX=ON \
     $HOME/sfw/petibm/PetIBM
@@ -153,6 +168,7 @@ If you would like to build everything from scratch, here's the list of dependenc
 * [PETSc](https://www.mcs.anl.gov/petsc/) (3.16+) with parallel HDF5 enabled
 * MPI: OpenMPI, MPICH, or Intel MPI
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) (0.7.0+)
+* [SymEngine](https://github.com/symengine/symengine) (0.9+)
 
 **Optional for GPU linear solvers**:
 
@@ -165,6 +181,7 @@ If you would like to build everything from scratch, here's the list of dependenc
 * NumPy (1.12.1+)
 * h5py (2.7.0+)
 * Matplotlib (2.0.2+)
+* pyyaml (6.0+)
 
 **Note**:
 
@@ -207,7 +224,19 @@ $ sudo sh ./cmake-3.23.1-linux-x86_64.sh --prefix=/usr --exclude-subdir --skip-l
 This will install the `cmake` v3.23 to `/usr` as if it's a package from the package manager.
 
 
-#### B.2.2. Building PETSc
+#### B.2.2. Building SymEngine
+
+SymEngine requires some other third-party dependencies.
+The building process is not trivial.
+Hence we are not covering how to build and install SymEngine.
+Some Linux distributions officially provide pre-built SymEngine.
+For example, in Arch Linux, the pre-built SymEngine can be installed with `sudo pacman -S symengine`.
+Check with your Linux distribution's package manager first.
+
+If building SymEngine from scratch is needed, please refer to SymEngine's documentation [here](https://github.com/symengine/symengine#building-from-source).
+
+
+#### B.2.3. Building PETSc
 
 Here, we provide the command-line instructions to install PETSc v3.16.6. PETSc is powerful and has a
 lot of options to configure and for different levels of optimizations. We only show the bare minimum
@@ -284,6 +313,7 @@ $ cmake \
     -DCMAKE_BUILD_TYPE=Debug \
     -DPETSC_DIR=$PETSC_DIR \
     -DPETSC_ARCH=$PETSC_ARCH \
+    -DSYMENGINE_DIR=<path to SymEngine> \
     -DPETIBM_ENABLE_TESTS=ON \
     -DPETIBM_USE_AMGX=OFF \
     -DPETIBM_BUILD_YAMLCPP=ON \

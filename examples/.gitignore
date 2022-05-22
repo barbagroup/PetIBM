@@ -10,3 +10,4 @@ figures
 .logamgx
 *.log
 view.log
+**/output

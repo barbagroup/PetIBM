@@ -61,6 +61,7 @@ target_link_libraries(petibm
     PRIVATE MPI::MPI_CXX
     PUBLIC PkgConfig::PETSC
     PUBLIC yaml-cpp
+    PUBLIC symengine
     PUBLIC $<$<BOOL:${PETIBM_USE_AMGX}>:amgxwrapper>
 )
 

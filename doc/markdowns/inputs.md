@@ -135,7 +135,23 @@ mesh:
 
 `nu` is the kinematic viscosity of the fluid.
 
-`initialVelocity` describes the initial uniform velocity vector field.
+`initialVelocity` describes the initial velocity vector field.
+It is a list of length equal to the flow's dimension.
+The first element in the list denotes the initial value/function for u-velocity, while the second element denotes the v-velocity.
+The third element, if it exists, is for the w-velocity.
+There are two types of legal values in the list:
+
+1. A floating point number. A velocity field will be initialized as an uniform field with the given value.
+2. A string of symbolic math expression, for example `"cos(2*pi*x) * sin(2*pi*y)"`.
+We use [`SymEngine`](https://github.com/symengine/symengine) to parse symbolic expressions.
+So only the math operations and math functions available in SymEngine are allowed here.
+SymEngine is the backend of the well-known python library `SymPy`, so `SymPy`'s documentation may be a good start point to know what operations and functions are available.
+For the independent variables, only `x`, `y`, `z`, `t`, and `nu` are allowed.
+The case at `examples/navierstokes/taylorgreenvortex` provides a example of using symbolic expression for initialization.
+
+`initialPressure` is an optional parameter and needs a single value if present in the configuration.
+Similar to `initialVelocity`, the value can be a floating point number or a symbolic expression string.
+If `initialPressure` is absent, the pressure filed will be initialized with zero.
 
 `boundaryConditions` lists the type and value of a velocity component (`u`, `v`, or `w`) for all boundaries.
 The boundary locations are: `xMinus` and `xPlus` for the left and right, `yMinus` and `yPlus` for the bottom and top, and `zMinus` and `zPlus` for the front and back boundaries.

@@ -8,8 +8,9 @@
 
 ### Added
 
-* Used CMake for compiling/building/installing.
+* CMake for compiling/building/installing.
 * Conda packages at the channel `barbagroups`.
+* A GitHub Action workflow
 
 ### Changed
 
@@ -18,6 +19,8 @@
 * Modified documentation for CMake-base and Anaconda-based installation procedures.
 
 ### Fixed
+
+* Wrong number of iterations for getting AmgX residual when using newer AmgX version
 
 ### Removed
 

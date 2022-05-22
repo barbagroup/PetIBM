@@ -91,11 +91,10 @@ if (PETIBM_BUILD_YAMLCPP)  # download and build if an user requested
     message(CHECK_START "Downloading yaml-cpp 420c98")
     set(YAML_CPP_INSTALL ON CACHE BOOL "" FORCE)
     set(YAML_CPP_BUILD_TEST OFF CACHE BOOL "" FORCE)
+    set(YAML_CPP_COMMIT 420c98231094b1cd2e5de3a714c4e3ee9b4f1118)
     FetchContent_Declare(
         _yamlcpp
-        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp
-        GIT_TAG 420c98231094b1cd2e5de3a714c4e3ee9b4f1118
-        GIT_SHALLOW ON
+        URL https://github.com/jbeder/yaml-cpp/tarball/${YAML_CPP_COMMIT}
     )
     message(CHECK_PASS "done")
     list(APPEND DOWNLOADED_DEPS "_yamlcpp")

@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -644,8 +644,8 @@ $(document).ready(function(){initNavTree('d3/d8c/probes_8cpp_source.html','../..
 <div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad57e5ef7d10055392f8a9022039525ed">count</a> != 0)  <span class="comment">// add number of time-steps accumulated as attribute</span></div>
 <div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>    {</div>
 <div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>        ierr = PetscViewerHDF5WriteAttribute(</div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>            <a class="code hl_variable" href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a8a036755fd230515724f589b8cc7ba1a">viewer</a>, (<span class="stringliteral">&quot;/&quot;</span> + field_str + <span class="stringliteral">&quot;/&quot;</span> + std::to_string(t)).c_str(), <span class="stringliteral">&quot;count&quot;</span>,</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>            PETSC_INT, &amp;<a class="code hl_variable" href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad57e5ef7d10055392f8a9022039525ed">count</a>); CHKERRQ(ierr);</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>            <a class="code hl_variable" href="../../df/d8d/classpetibm_1_1misc_1_1_probe_base.html#a8a036755fd230515724f589b8cc7ba1a">viewer</a>, std::to_string(t).c_str(), <span class="stringliteral">&quot;count&quot;</span>, PETSC_INT, &amp;<a class="code hl_variable" href="../../db/da9/classpetibm_1_1misc_1_1_probe_volume.html#ad57e5ef7d10055392f8a9022039525ed">count</a>);</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>        CHKERRQ(ierr);</div>
 <div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>    }</div>
 <div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span> </div>
 <div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>    PetscFunctionReturn(0);</div>
@@ -843,7 +843,7 @@ $(document).ready(function(){initNavTree('d3/d8c/probes_8cpp_source.html','../..
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="../../dir_88826aa2a10e1882b573f502bc7f4b55.html">misc</a></li><li class="navelem"><a class="el" href="../../d3/d8c/probes_8cpp.html">probes.cpp</a></li>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

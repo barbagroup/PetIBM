@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -189,7 +189,12 @@ $(document).ready(function(){initNavTree('d1/dee/md_doc_markdowns_inputs.html','
 <h1><a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node <code>flow</code></h1>
 <p ><code>flow</code> prescribed the characteristics of the fluid as well as the initial and boundary conditions of the flow velocity.</p>
 <p ><code>nu</code> is the kinematic viscosity of the fluid.</p>
-<p ><code>initialVelocity</code> describes the initial uniform velocity vector field.</p>
+<p ><code>initialVelocity</code> describes the initial velocity vector field. It is a list of length equal to the flow's dimension. The first element in the list denotes the initial value/function for u-velocity, while the second element denotes the v-velocity. The third element, if it exists, is for the w-velocity. There are two types of legal values in the list:</p>
+<ol type="1">
+<li>A floating point number. A velocity field will be initialized as an uniform field with the given value.</li>
+<li>A string of symbolic math expression, for example <code>"cos(2*pi*x) * sin(2*pi*y)"</code>. We use <a href="https://github.com/symengine/symengine"><code>SymEngine</code></a> to parse symbolic expressions. So only the math operations and math functions available in SymEngine are allowed here. SymEngine is the backend of the well-known python library <code>SymPy</code>, so <code>SymPy</code>'s documentation may be a good start point to know what operations and functions are available. For the independent variables, only <code>x</code>, <code>y</code>, <code>z</code>, <code>t</code>, and <code>nu</code> are allowed. The case at <code>examples/navierstokes/taylorgreenvortex</code> provides a example of using symbolic expression for initialization.</li>
+</ol>
+<p ><code>initialPressure</code> is an optional parameter and needs a single value if present in the configuration. Similar to <code>initialVelocity</code>, the value can be a floating point number or a symbolic expression string. If <code>initialPressure</code> is absent, the pressure filed will be initialized with zero.</p>
 <p ><code>boundaryConditions</code> lists the type and value of a velocity component (<code>u</code>, <code>v</code>, or <code>w</code>) for all boundaries. The boundary locations are: <code>xMinus</code> and <code>xPlus</code> for the left and right, <code>yMinus</code> and <code>yPlus</code> for the bottom and top, and <code>zMinus</code> and <code>zPlus</code> for the front and back boundaries. (<code>zMinus</code> and <code>zPLus</code> should be omitted for 2D runs.) PetIBM implements different type of boundary conditions:</p>
 <ul>
 <li>Dirichlet (<code>DIRICHLET</code>); the value corresponds the value of the velocity component at the boundary;</li>
@@ -321,7 +326,7 @@ $(document).ready(function(){initNavTree('d1/dee/md_doc_markdowns_inputs.html','
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

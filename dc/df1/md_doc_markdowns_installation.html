@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -86,97 +86,154 @@ $(document).ready(function(){initNavTree('dc/df1/md_doc_markdowns_installation.h
   <div class="headertitle"><div class="title">Installation </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p >For users familiar with Docker or Singularity Container, we provides images for the both systems to save you from compiling, buliding, and installing:</p>
+<div class="textblock"><p >PetIBM only officially supports Linux systems. MacOS and Windows may or may not work. We will not provide any assist to issues of using PetIBM on MacOS and Windows.</p>
+<h1>A. Installation guide for end-users</h1>
+<p >End-users can install PetIBM with Anaconda or use it with container technologies.</p>
+<h2>A.1. With <code>conda</code>/<code>mamba</code></h2>
+<p >We uploaded our pre-built packages to our Anaconda channels <code>barbagroup</code>. These packages were built with GPU support. Linux users can install them through</p>
+<div class="fragment"><div class="line">$ mamba install -c barbagroup -c nvidia -c conda-forge &quot;petibm=*=cuda114*&quot;</div>
+</div><!-- fragment --><p >We suggest using <code>mamba</code>. If <code>conda</code> is preferred, just replace <code>mamba</code> with <code>conda</code>. Replace <code>install</code> with <code>create -n &lt;env name&gt;</code> instead to create a new and fresh environment.</p>
+<p >If an older CUDA is desired (e.g., for old GPU models), we also have packages for CUDA 10.2, which supports old GPUs like K20/K40. To do so, use <code>"petibm=*=cuda102*"</code> instead.</p>
+<p ><b>Note</b>: The CUDA 10.2 variant may also work on newer GPUs and drivers. If you encounter issues using the CUDA 11.4 variant with newer GPUs/drivers, it should be fine to use the CUDA 10.2 variant. AmgX uses somehow different code w.r.t. whether it's CUDA 10 or CUDA 11, and sometimes there are issues in AmgX's CUDA 11 codebase.</p>
+<h2>A.2. Using container technology</h2>
+<p >For users familiar with Docker or Singularity Container (now renamed Apptainer), we provide images for the both to save you from compiling, buliding, and installing:</p>
 <ul>
 <li>Docker: <a href="https://hub.docker.com/repository/docker/barbagroup/petibm">https://hub.docker.com/repository/docker/barbagroup/petibm</a></li>
 <li>Singularity: <a href="https://github.com/barbagroup/petibm-recipes/tree/master/singularity">https://github.com/barbagroup/petibm-recipes/tree/master/singularity</a></li>
 </ul>
-<p >However, if you would like to build PetIBM from source, please continue on this document.</p>
-<h1>Dependencies (current PetIBM version)</h1>
+<h2>A.3. Optional dependencies for example cases' post-processing</h2>
+<p >The above two installation methods only provide the solver. Some example cases in the <code>examples</code> folder have Python scripts for post-processing. To be able to execute these Python scripts, install the following Python packages (using <code>mamba</code>/<code>conda</code>, for example):</p>
+<div class="fragment"><div class="line">$ mamba install -c conda-forge pyyaml numpy h5py matplotlib</div>
+</div><!-- fragment --><h1>B. Building from the source</h1>
+<h2>B.1. Using pre-built dependencies</h2>
+<p >If you just need to set up a development environment to extend/debug PetIBM, we suggest installing dependencies with <code>conda</code>/<code>mamba</code>:</p>
+<div class="fragment"><div class="line">$ mamba create \</div>
+<div class="line">    -n &lt;env name&gt; \</div>
+<div class="line">    -c barbagroup \</div>
+<div class="line">    -c nvidia \</div>
+<div class="line">    -c conda-forge \</div>
+<div class="line">    &quot;*amgxwrapper=*=cuda114*&quot; \</div>
+<div class="line">    &quot;yaml-cpp&gt;=0.7&quot; \</div>
+<div class="line">    &quot;symengine&gt;=0.9&quot; \</div>
+<div class="line">    &quot;cmake&gt;=3.23&quot; \</div>
+<div class="line">    &quot;make&quot; \</div>
+<div class="line">    &quot;pkg-config&quot; \</div>
+<div class="line">    &quot;git&quot; \</div>
+<div class="line">    &quot;gxx_linux-64&gt;=11.2&quot;</div>
+</div><!-- fragment --><p >The package <code>amgxwrapper</code> pulls in most of the required dependencies (e.g., petsc, cuda, etc.). <code>yaml-cpp</code> and <code>symengine</code> are dependencies not covered by <code>amgxwrapper</code>. <code>cmake</code>, <code>make</code>, <code>git</code>, and <code>gxx_linux-64</code> are for building PetIBM in case your system does not have them or they are too old.</p>
+<p >Once the process is done, jump into the environment through either <code>mamba activate &lt;env name&gt;</code> or <code>source &lt;mamba installation prefix&gt;/bin/activate &lt;env name&gt;</code>.</p>
+<p >The above command only installs required packages for the flow solvers. See section A.3 for dependencies for post-processing with example cases.</p>
+<p >To proceed, let's assume you would like to download PetIBM's source files to path <code>$HOME/sfw/petibm/PetIBM</code>, and to install PetIBM's final solvers and libraries to <code>$HOME/sfw/petibm/petibm-linux-dbg</code>.</p>
+<h3>B.1.1. Obtaining the source</h3>
+<p >Pull the latest development version of PetIBM from GitHub:</p>
+<div class="fragment"><div class="line">$ cd $HOME/sfw</div>
+<div class="line">$ mkdir petibm</div>
+<div class="line">$ cd petibm</div>
+<div class="line">$ git clone https://github.com/barbagroup/PetIBM.git</div>
+</div><!-- fragment --><p >PetIBM's source files are now at <code>$HOME/sfw/petibm/PetIBM</code>. Our current location is at <code>$HOME/sfw/petibm</code>.</p>
+<h3>B.1.2. Configuring</h3>
+<p >Create a folder to host temporary files from building and compilation:</p>
+<div class="fragment"><div class="line">$ mkdir build</div>
+<div class="line">$ cd build</div>
+</div><!-- fragment --><p >Configure the build:</p>
+<div class="fragment"><div class="line">$ cmake \</div>
+<div class="line">    -DCMAKE_INSTALL_PREFIX=$HOME/sfw/petibm/petibm-linux-dbg \</div>
+<div class="line">    -DCMAKE_CXX_COMPILER=${CXX} \</div>
+<div class="line">    -DCMAKE_BUILD_TYPE=Debug \</div>
+<div class="line">    -DPETSC_DIR=$CONDA_PREFIX \</div>
+<div class="line">    -DPETSC_ARCH=&quot;&quot; \</div>
+<div class="line">    -DCUDA_DIR=$CONDA_PREFIX \</div>
+<div class="line">    -DAMGX_DIR=$CONDA_PREFIX \</div>
+<div class="line">    -DAMGXWRAPPER_DIR=$CONDA_PREFIX \</div>
+<div class="line">    -DYAMLCPP_DIR=$CONDA_PREFIX \</div>
+<div class="line">    -DSYMENGINE_DIR=$CONDA_PREFIX \</div>
+<div class="line">    -DPETIBM_ENABLE_TESTS=ON \</div>
+<div class="line">    -DPETIBM_USE_AMGX=ON \</div>
+<div class="line">    $HOME/sfw/petibm/PetIBM</div>
+</div><!-- fragment --><ul>
+<li>PETSc, CUDA, AmgX, AmgXWrapper, and yaml-cpp were all installed through <code>mamba</code> (or <code>conda</code>), so their paths are <code>$CONDA_PREFIX</code>.</li>
+<li><code>-DPETIBM_ENABLE_TESTS</code> controls whether to build unit tests.</li>
+<li><code>-DPETIBM_USE_AMGX</code> notifies PetIBM to build against GPU-related code.</li>
+</ul>
+<p >Later on when you want to have a production build, just change <code>-DCMAKE_BUILD_TYPE</code> from <code>Debug</code> to <code>Release</code>. (And you may also want to change the installation path in <code>-DCMAKE_INSTALL_PREFIX</code>.)</p>
+<h3>B.1.3. Building and installing</h3>
+<p >Start to build:</p>
+<div class="fragment"><div class="line">$ make all -j &lt;number of CPUs&gt;</div>
+</div><!-- fragment --><p >Specifying the number of CPUs with <code>&lt;number of CPUS&gt;</code> to speed up the compilation procedure.</p>
+<p >We can do some unit tests:</p>
+<div class="fragment"><div class="line">$ make check</div>
+</div><!-- fragment --><p >Then install the final solvers and libraries:</p>
+<div class="fragment"><div class="line">$ make install</div>
+</div><!-- fragment --><p >The solvers are now available at <code>$HOME/sfw/petibm/petibm-linux-dbg/bin</code>.</p>
+<h2>B.2. Building dependencies from scratch</h2>
+<p >If you would like to build everything from scratch, here's the list of dependencies:</p>
 <p ><b>Required</b>:</p>
 <ul>
 <li>GNU C++ compiler g++ (9.4 and 11.2 have been test with the latest PetIBM release)</li>
-<li><a href="https://www.mcs.anl.gov/petsc/">PETSc</a> (3.16+) with HDF5 enabled</li>
+<li><a href="https://www.mcs.anl.gov/petsc/">PETSc</a> (3.16+) with parallel HDF5 enabled</li>
 <li>MPI: OpenMPI, MPICH, or Intel MPI</li>
-<li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> (0.6.2)</li>
-<li><a href="https://github.com/google/googletest">gtest</a> (1.7.0)</li>
+<li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> (0.7.0+)</li>
+<li><a href="https://github.com/symengine/symengine">SymEngine</a> (0.9+)</li>
 </ul>
 <p ><b>Optional for GPU linear solvers</b>:</p>
 <ul>
-<li><a href="https://github.com/NVIDIA/AMGX">AmgX</a> (v2.1.0, v2.2.0)</li>
-<li><a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> (1.4 or 1.5)</li>
+<li><a href="https://github.com/NVIDIA/AMGX">AmgX</a> (v2.2.0)</li>
+<li><a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> (1.6.1+)</li>
 </ul>
 <p ><b>Optional for pre- and post-processing Python scripts</b>:</p>
 <ul>
 <li>Python (3.6+)</li>
-<li>NumPy (1.12.1)</li>
-<li>h5py (2.7.0)</li>
-<li>Matplotlib (2.0.2)</li>
+<li>NumPy (1.12.1+)</li>
+<li>h5py (2.7.0+)</li>
+<li>Matplotlib (2.0.2+)</li>
+<li>pyyaml (6.0+)</li>
 </ul>
 <p ><b>Note</b>:</p>
 <ul>
-<li>MPI can be either installed during PETSc configuration or installed explicitly by users.</li>
-<li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a>, <a href="https://github.com/google/googletest">gtest</a>, and <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> can be automatically installed during PetIBM configuration or explicitly installed by users in advance.</li>
-<li>The latest release of PetIBM (0.5.3) has been tested with:<ul>
-<li>Arch Linux with g++-11.2.0 and PETSc 3.16.5</li>
-<li>Ubuntu 20.04 with g++-9.4 and PETSc 3.16.5</li>
+<li><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> and <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a> can be automatically installed during PetIBM configuration.</li>
+<li>MPI can be either installed during PETSc configuration or installed explicitly by users. If you are using HPC clusters, it's better to use the shipped MPI packages on the clusters because they usually have specific optimizations for the clusters' hardware. NVIDIA's HPC-X is another alternative, which includes OpenMPI optimized for NVIDIA's HPC infrastructure.</li>
+<li>The latest release of PetIBM (0.5.4) has been tested with:<ul>
+<li>Arch Linux with g++-11.2.0 and PETSc v3.16.6</li>
+<li>Ubuntu 20.04 with g++-9.4 and PETSc v3.16.6</li>
 </ul>
 </li>
-<li>Previous releases of PetIBM (&lt;=0.5.2) have at some point been tested with:<ul>
-<li>Ubuntu 16.04 with g++-5.4, and PETSc-3.11.2</li>
-<li>MacOS Sierra with g++-6.0, and PETSc-3.8.2</li>
-<li>Arch Linux with g++-7.2, and PETSc-3.8.2</li>
-</ul>
-</li>
-<li>In the past, we have also been able to run previous versions of PetIBM on the following HPC systems:<ul>
-<li><a href="https://colonialone.gwu.edu/">GW ColonialOne</a></li>
-<li><a href="https://www.olcf.ornl.gov/titan/">Titan</a> at ORNL</li>
+<li>Though not suggested, if using older compilers are desired, previous releases of PetIBM (before v0.5.2) have at some point been tested with the following combinations. However, we will not provide any support for using older versions of PetIBM.<ul>
+<li>Ubuntu 16.04 with g++ v5.4, and PETSc v3.11.2</li>
+<li>MacOS Sierra with g++ v6.0, and PETSc v3.8.2</li>
+<li>Arch Linux with g++ v7.2, and PETSc v3.8.2</li>
 </ul>
 </li>
 </ul>
-<hr  />
-<h1>GNU C++ Compiler (<code>g++</code>)</h1>
-<p >On Ubuntu, install <code>g++</code> using the following command: </p><pre class="fragment">sudo apt-get install g++
-</pre><p> Check the version of G++ installed: </p><pre class="fragment">g++ --version
-</pre><p> On Mac OS X, <code>g++</code> can be installed on Mac OS X via XCode or <a href="../../brew.sh">Homebrew</a>.</p>
-<hr  />
-<h1>PETSc</h1>
-<p >PetIBM relies on the data structures and parallel routines of the PETSc library.</p>
-<p >Here, we provide the command-line instructions to install PETSc-3.11.3 in debugging mode and/or optimized mode. The debug mode is recommended during development, while the optimized mode should be used for production runs.</p>
+<h3>B.2.1. Compilers and configuration tools</h3>
+<p >Different linux distributions use different package management systems. Here we use Ubuntu 20.04 as an example. Assuming you have permission to use <code>sudo</code>, to install compilers and tools:</p>
+<div class="fragment"><div class="line">$ sudo apt-get install build-essential pkg-config make git curl</div>
+</div><!-- fragment --><p >You can check the version of G++ installed with <code>g++ --version</code>.</p>
+<p >Now we also need <code>cmake</code>. Unfortunately, <code>cmake</code> from Ubuntu 20.04 is too old. We need to install it from upstream directly:</p>
+<div class="fragment"><div class="line">$ curl -LO https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-linux-x86_64.sh</div>
+<div class="line">$ sudo sh ./cmake-3.23.1-linux-x86_64.sh --prefix=/usr --exclude-subdir --skip-license</div>
+</div><!-- fragment --><p >This will install the <code>cmake</code> v3.23 to <code>/usr</code> as if it's a package from the package manager.</p>
+<h3>B.2.2. Building SymEngine</h3>
+<p >SymEngine requires some other third-party dependencies. The building process is not trivial. Hence we are not covering how to build and install SymEngine. Some Linux distributions officially provide pre-built SymEngine. For example, in Arch Linux, the pre-built SymEngine can be installed with <code>sudo pacman -S symengine</code>. Check with your Linux distribution's package manager first.</p>
+<p >If building SymEngine from scratch is needed, please refer to SymEngine's documentation <a href="https://github.com/symengine/symengine#building-from-source">here</a>.</p>
+<h3>B.2.3. Building PETSc</h3>
+<p >Here, we provide the command-line instructions to install PETSc v3.16.6. PETSc is powerful and has a lot of options to configure and for different levels of optimizations. We only show the bare minimum configuration that at least work for PetIBM.</p>
 <p >Get and unpack PETSc:</p>
-<div class="fragment"><div class="line">cd $HOME/sfw</div>
-<div class="line">mkdir -p petsc/3.11.3</div>
-<div class="line">wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.11.3.tar.gz</div>
-<div class="line">tar -xvf petsc-lite-3.11.3.tar.gz -C petsc/3.11.3 --strip-components=1</div>
-<div class="line">cd petsc/3.11.3</div>
-</div><!-- fragment --><p >Configure and build an debugging version of PETSc:</p>
-<div class="fragment"><div class="line">export PETSC_DIR=$HOME/sfw/petsc/3.11.3</div>
-<div class="line">export PETSC_ARCH=linux-dbg</div>
-<div class="line">./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \</div>
+<div class="fragment"><div class="line">$ cd $HOME/sfw</div>
+<div class="line">$ mkdir -p petsc/3.16.6</div>
+<div class="line">$ curl -LO http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.16.6.tar.gz</div>
+<div class="line">$ tar -xvf petsc-lite-3.16.6.tar.gz -C petsc/3.16.6 --strip-components=1</div>
+<div class="line">$ cd petsc/3.16.6</div>
+</div><!-- fragment --><p >Configure and build PETSc in debugging mode:</p>
+<div class="fragment"><div class="line">$ export PETSC_DIR=$HOME/sfw/petsc/3.16.6</div>
+<div class="line">$ export PETSC_ARCH=linux-dbg</div>
+<div class="line">$ ./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \</div>
 <div class="line">    --with-cc=gcc \</div>
 <div class="line">    --with-cxx=g++ \</div>
-<div class="line">    --with-fc=gfortran \</div>
-<div class="line">    --COPTFLAGS=&quot;-O0&quot; \</div>
-<div class="line">    --CXXOPTFLAGS=&quot;-O0&quot; \</div>
-<div class="line">    --FOPTFLAGS=&quot;-O0&quot; \</div>
+<div class="line">    --with-fc=0 \</div>
+<div class="line">    --with-pic=1 \</div>
+<div class="line">    --with-shared-libraries=1 \</div>
 <div class="line">    --with-debugging=1 \</div>
-<div class="line">    --download-fblaslapack \</div>
-<div class="line">    --download-openmpi \</div>
-<div class="line">    --download-hdf5 \</div>
-<div class="line">    --download-hypre \</div>
-<div class="line">    --download-ptscotch \</div>
-<div class="line">    --download-metis \</div>
-<div class="line">    --download-parmetis \</div>
-<div class="line">    --download-superlu_dist</div>
-<div class="line">make all</div>
-<div class="line">make test</div>
-</div><!-- fragment --><p >If you do not have a Fortran compiler ready, you use the following configuration:</p>
-<div class="fragment"><div class="line">./configure --PETSC_ARCH=$PETSC_ARCH \</div>
-<div class="line">    --with-cc=gcc \</div>
-<div class="line">    --with-cxx=g++ \</div>
-<div class="line">    --COPTFLAGS=&quot;-O0&quot; \</div>
-<div class="line">    --CXXOPTFLAGS=&quot;-O0&quot; \</div>
-<div class="line">    --with-debugging=1 \</div>
+<div class="line">    --with-fortran-bindings=0 \</div>
 <div class="line">    --download-f2cblaslapack \</div>
 <div class="line">    --download-openmpi \</div>
 <div class="line">    --download-hdf5 \</div>
@@ -185,126 +242,68 @@ $(document).ready(function(){initNavTree('dc/df1/md_doc_markdowns_installation.h
 <div class="line">    --download-metis \</div>
 <div class="line">    --download-parmetis \</div>
 <div class="line">    --download-superlu_dist</div>
-</div><!-- fragment --><p >Configure and build an optimized version of PETSc:</p>
-<div class="fragment"><div class="line">export PETSC_DIR=$HOME/sfw/petsc/3.11.3</div>
-<div class="line">export PETSC_ARCH=linux-opt</div>
-<div class="line">./configure --PETSC_DIR=$PETSC_DIR --PETSC_ARCH=$PETSC_ARCH \</div>
-<div class="line">    --with-cc=gcc \</div>
-<div class="line">    --with-cxx=g++ \</div>
-<div class="line">    --with-fc=gfortran \</div>
-<div class="line">    --COPTFLAGS=&quot;-O3&quot; \</div>
-<div class="line">    --CXXOPTFLAGS=&quot;-O3&quot; \</div>
-<div class="line">    --FOPTFLAGS=&quot;-O3&quot; \</div>
-<div class="line">    --with-debugging=0 \</div>
-<div class="line">    --download-fblaslapack \</div>
-<div class="line">    --download-openmpi \</div>
-<div class="line">    --download-hdf5 \</div>
-<div class="line">    --download-hypre \</div>
-<div class="line">    --download-ptscotch \</div>
-<div class="line">    --download-metis \</div>
-<div class="line">    --download-parmetis \</div>
-<div class="line">    --download-superlu_dist</div>
-<div class="line">make all</div>
-<div class="line">make test</div>
-</div><!-- fragment --><p >When running the code on an external cluster, make sure that you compile PETSc with the MPI that has been configured to work with the cluster. Hence, <b>do not use the <code>--download-openmpi</code> flag</b>, but instead point to the folder with the MPI compilers and executables using the <code>--with-mpi-dir</code> flag. If BLAS and LAPACK are already installed in the system, you can point to the libraries using the <code>--with-blas-lib</code> and <code>--with-lapack-lib</code> flags.</p>
-<p ><a href="http://www.mcs.anl.gov/petsc/documentation/installation.html">Detailed instructions</a> with more options to customize your installation can be found on the PETSc website. Run <code>./configure --help</code> in the PETSc root directory to list all the available configure flags.</p>
-<p >The PETSc Users Manual and the Manual Pages can be found on their <a href="http://www.mcs.anl.gov/petsc/documentation/index.html">documentation page</a>.</p>
-<hr  />
-<h1>yaml-cpp</h1>
-<p ><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a> is a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> parser in C++, used in PetIBM to parse the input configuration file.</p>
-<p >The PetIBM configuration script gives the possibility to use a previously installed version of yaml-cpp (with the configuration argument <code>--with-yamlcpp-dir=&lt;path&gt;</code>, or <code>--with-yamlcpp-include=&lt;path&gt;</code> and <code>--with-yamlcpp-lib=&lt;path&gt;</code>) or to download and install yaml-cpp-0.6.2 (with <code>--enable-yamlcpp</code>).</p>
-<hr  />
-<h1>gtest</h1>
-<p >We use Google's C++ test framework <a href="https://github.com/google/googletest">gtest</a> to run unit-tests after compiling PetIBM. When configuring PetIBM, you can either use a previously installed version of gtest and provide the path of the directory of the gtest installation with <code>--with-gtest-dir=&lt;path&gt;</code> (or using <code>--with-gtest-include=&lt;path&gt;</code> and <code>--with-gtest-lib=&lt;path&gt;</code>) or request to download and install gtest-1.7.0 with <code>--enable-gtest</code>.</p>
-<hr  />
-<h1>PetIBM</h1>
-<p >Create a local copy of the PetIBM repository:</p>
-<div class="fragment"><div class="line">cd $HOME/sfw</div>
-<div class="line">mkdir petibm &amp;&amp; cd petibm</div>
-<div class="line">git clone https://github.com/barbagroup/PetIBM.git</div>
-<div class="line">export PETIBM_DIR=$HOME/sfw/petibm/PetIBM</div>
-</div><!-- fragment --><p >You can set the environment variable <code>PETIBM_DIR</code> to your <code>$HOME/.bashrc</code> or <code>$HOME/.bash_profile</code> files by adding the line:</p>
-<div class="fragment"><div class="line">export PETIBM_DIR=$HOME/sfw/petibm/PetIBM</div>
-</div><!-- fragment --><p >and restart you terminal or source the file:</p>
-<div class="fragment"><div class="line">source $HOME/.bashrc</div>
-</div><!-- fragment --><p >Note: if you are using C shell, use the <code>setenv</code> command instead of <code>export</code>.</p>
-<p >Configure and build PetIBM with PETSc in debugging mode:</p>
-<div class="fragment"><div class="line">PETSC_DIR=$HOME/sfw/petsc/3.11.3</div>
-<div class="line">PETSC_ARCH=linux-dbg</div>
-<div class="line">mkdir petibm-linux-dbg &amp;&amp; cd petibm-linux-dbg</div>
-<div class="line">$PETIBM_DIR/configure \</div>
-<div class="line">    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \</div>
-<div class="line">    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div>
-<div class="line">    CXXFLAGS=&quot;-g -O0 -Wall -Wno-deprecated -std=c++14&quot; \</div>
-<div class="line">    --with-petsc-dir=$PETSC_DIR \</div>
-<div class="line">    --with-petsc-arch=$PETSC_ARCH \</div>
-<div class="line">    --with-yamlcpp-dir=&lt;path&gt; \</div>
-<div class="line">    --with-gtest-dir=&lt;path&gt;</div>
-<div class="line">make all</div>
-<div class="line">make check</div>
-<div class="line">make install</div>
-</div><!-- fragment --><p >If yaml-cpp and/or gtest are not available, you can request installation at configuration time using:</p>
-<div class="fragment"><div class="line">$PETIBM_DIR/configure \</div>
-<div class="line">    --prefix=$HOME/sfw/petibm/petibm-linux-dbg \</div>
-<div class="line">    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div>
-<div class="line">    CXXFLAGS=&quot;-g -O0 -Wall -Wno-deprecated -std=c++14&quot; \</div>
-<div class="line">    --enable-yamlcpp \</div>
-<div class="line">    --enable-gtest</div>
-</div><!-- fragment --><p >For production runs, you may want to use the optimized build of PETSc:</p>
-<div class="fragment"><div class="line">PETSC_DIR=$HOME/sfw/petsc/3.11.3</div>
-<div class="line">PETSC_ARCH=linux-opt</div>
-<div class="line">mkdir petibm-linux-opt &amp;&amp; cd petibm-linux-opt</div>
-<div class="line">$PETIBM_DIR/configure \</div>
-<div class="line">    --prefix=$HOME/sfw/petibm/petibm-linux-opt \</div>
-<div class="line">    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div>
-<div class="line">    CXXFLAGS=&quot;-O3 -Wall -Wno-deprecated -std=c++14&quot; \</div>
-<div class="line">    --with-petsc-dir=$PETSC_DIR \</div>
-<div class="line">    --with-petsc-arch=$PETSC_ARCH \</div>
-<div class="line">    --with-yamlcpp-dir=&lt;path&gt; \</div>
-<div class="line">    --with-gtest-dir=&lt;path&gt;</div>
-<div class="line">make all</div>
-<div class="line">make check</div>
-<div class="line">make install</div>
-</div><!-- fragment --><p >Et voila! You can now add the <code>bin</code> directory (that contains the executables) to you PATH environment variable:</p>
-<div class="fragment"><div class="line">export PATH=$HOME/sfw/petibm/petibm-linux-opt/bin:$PATH</div>
-</div><!-- fragment --><hr  />
-<h1>PetIBM examples</h1>
-<p >We provide some examples! Input files are located in <code>$PETIBM_DIR</code>, but can be copied to another directory with</p>
-<div class="fragment"><div class="line">make copy-examples EXAMPLES_DIR=&lt;directory&gt;</div>
-</div><!-- fragment --><p ><code>EXAMPLES_DIR</code> is optional and the default directory is the folder <code>examples</code> in the top build directory.</p>
-<hr  />
-<h1>Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs</h1>
-<p >PetIBM implements the possibility to solve linear systems on CUDA-capable GPU devices using the NVIDIA <a href="https://github.com/NVIDIA/AMGX">AmgX</a> library.</p>
-<p >To solve linear systems on multiple GPU devices with PetIBM, the user must install CUDA and AmgX before building PetIBM and use the configuration arguments <code>--with-cuda-dir=&lt;path&gt;</code> for CUDA and <code>--with-amgx-dir=&lt;path&gt;</code> (or <code>--with-amgx-include=&lt;path&gt;</code> and <code>--with-amgx-lib=&lt;path&gt;</code>) for AmgX.</p>
-<p >To handle the data conversion between PETSc and AmgX, we use our in-house wrapper, called <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a>. When configuring PetIBM, you can either use a previously installed version of AmgXWrapper and provide the path of the directory of the AmgXWrapper installation with <code>--with-amgxwrapper-dir=&lt;path&gt;</code> (or using <code>--with-amgxwrapper-include=&lt;path&gt;</code> and <code>--with-amgxwrapper-lib=&lt;path&gt;</code>) or request to download and install AmgXWrapper-1.4 with <code>--enable-amgxwrapper</code>.</p>
-<p >For example, to build an optimized version of PetIBM with CUDA, AmgX, and AmgXWrapper:</p>
-<div class="fragment"><div class="line">PETSC_DIR=$HOME/sfw/petsc/3.11.3</div>
-<div class="line">PETSC_ARCH=linux-opt</div>
-<div class="line">mkdir petibm-linux-opt &amp;&amp; cd petibm-linux-opt</div>
-<div class="line">$PETIBM_DIR/configure \</div>
-<div class="line">    --prefix=$HOME/sfw/petibm/petibm-linux-opt \</div>
-<div class="line">    CXX=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div>
-<div class="line">    CXXFLAGS=&quot;-O3 -Wall -Wno-deprecated -std=c++14&quot; \</div>
-<div class="line">    --with-petsc-dir=$PETSC_DIR \</div>
-<div class="line">    --with-petsc-arch=$PETSC_ARCH \</div>
-<div class="line">    --with-yamlcpp-dir=&lt;path&gt; \</div>
-<div class="line">    --with-gtest-dir=&lt;path&gt; \</div>
-<div class="line">    --with-cuda-dir=&lt;path&gt; \</div>
-<div class="line">    --with-amgx-dir=&lt;path&gt; \</div>
-<div class="line">    --with-amgxwrapper-dir=&lt;path&gt;</div>
-<div class="line">make all</div>
-<div class="line">make check</div>
-<div class="line">make install</div>
-</div><!-- fragment --><hr  />
-<h1>Contributing and reporting bugs</h1>
-<p >To report bugs, please use the GitHub issue tracking system. We are also open to pull-requests. </p>
+<div class="line">$ make all</div>
+<div class="line">$ make test</div>
+</div><!-- fragment --><p >To configure and build PETSc for production runs, change the value of <code>--with-debugging</code> form <code>1</code> to <code>0</code>, and add <code>--COPTFLAGS="-O3" --CXXOPTFLAGS="-O3"</code> to the list of flags. You may also want to change the name in <code>PETSC_ARCH</code>.</p>
+<p >The above configuration also downloads and installs OpenMPI. However, it is not optimized. When running the code on an external cluster, we suggest configure and build PETSc with a proper MPI package for performance.</p>
+<p >To understand and use a more advanced configuration of PETSc, please refer to <a href="http://www.mcs.anl.gov/petsc/documentation/installation.html">PETSc's instructions</a>. Also, you can run <code>./configure --help</code> to list all available configure flags.</p>
+<h3>B.2.3. Building PetIBM</h3>
+<p >Here we will build a CPU-only PetIBM with <code>yaml-cpp</code> being installed automatically.</p>
+<p >Pull the latest development version of PetIBM from GitHub:</p>
+<div class="fragment"><div class="line">$ cd $HOME/sfw</div>
+<div class="line">$ mkdir petibm</div>
+<div class="line">$ cd petibm</div>
+<div class="line">$ git clone https://github.com/barbagroup/PetIBM.git</div>
+</div><!-- fragment --><p >Configure and build PetIBM:</p>
+<div class="fragment"><div class="line">$ export PETSC_DIR=$HOME/sfw/petsc/3.16.6</div>
+<div class="line">$ export PETSC_ARCH=linux-dbg</div>
+<div class="line">$ cmake \</div>
+<div class="line">    -DCMAKE_INSTALL_PREFIX=$HOME/sfw/petibm/petibm-linux-dbg \</div>
+<div class="line">    -DCMAKE_CXX_COMPILER=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div>
+<div class="line">    -DCMAKE_BUILD_TYPE=Debug \</div>
+<div class="line">    -DPETSC_DIR=$PETSC_DIR \</div>
+<div class="line">    -DPETSC_ARCH=$PETSC_ARCH \</div>
+<div class="line">    -DSYMENGINE_DIR=&lt;path to SymEngine&gt; \</div>
+<div class="line">    -DPETIBM_ENABLE_TESTS=ON \</div>
+<div class="line">    -DPETIBM_USE_AMGX=OFF \</div>
+<div class="line">    -DPETIBM_BUILD_YAMLCPP=ON \</div>
+<div class="line">    $HOME/sfw/petibm/PetIBM</div>
+<div class="line">$ make all</div>
+<div class="line">$ make check -j &lt;num CPUs&gt;</div>
+<div class="line">$ make install</div>
+</div><!-- fragment --><p >For production runs, change the value of <code>-DCMAKE_BUILD_TYPE</code> to <code>Release</code> and refer to the corresponding PETSc builds in <code>-DPETSC_DIR</code> and <code>-DPETSC_ARCH</code>.</p>
+<p >Et voila! Now PetIBM is installed to <code>$HOME/sfw/petibm/petibm-linux-dbg</code>.</p>
+<h3>B.2.4. Optional: using NVIDIA AmgX to solve linear systems on multiple GPUs</h3>
+<p >PetIBM's GPU support comes from NVIDIA's <a href="https://github.com/NVIDIA/AMGX">AmgX</a>. And the interface between PETSc and AmgX is provided by <a href="https://github.com/barbagroup/AmgXWrapper">AmgXWrapper</a>.</p>
+<p >Building AmgX is an expensive job. Without a powerful machine, building AmgX may take hours. Hence we would like to refer interested readers to AmgX's manual for how to build and install it.</p>
+<p >Once AmgX is available on your machine, AmgXWrapper can be automatically downloaded and installed during installing PetBM:</p>
+<div class="fragment"><div class="line">$ export PETSC_DIR=$HOME/sfw/petsc/3.16.6</div>
+<div class="line">$ export PETSC_ARCH=linux-dbg</div>
+<div class="line">$ cmake \</div>
+<div class="line">    -DCMAKE_INSTALL_PREFIX=$HOME/sfw/petibm/petibm-linux-dbg \</div>
+<div class="line">    -DCMAKE_CXX_COMPILER=$PETSC_DIR/$PETSC_ARCH/bin/mpicxx \</div>
+<div class="line">    -DCMAKE_BUILD_TYPE=Debug \</div>
+<div class="line">    -DPETSC_DIR=$PETSC_DIR \</div>
+<div class="line">    -DPETSC_ARCH=$PETSC_ARCH \</div>
+<div class="line">    -DCUDA_DIR=&lt;path to cuda&gt; \</div>
+<div class="line">    -DAMGX_DIR=&lt;path to amgx&gt; \</div>
+<div class="line">    -DPETIBM_ENABLE_TESTS=ON \</div>
+<div class="line">    -DPETIBM_USE_AMGX=ON \</div>
+<div class="line">    -DPETIBM_BUILD_YAMLCPP=ON \</div>
+<div class="line">    -DPETIBM_BUILD_AMGXWRAPPER=ON \</div>
+<div class="line">    $HOME/sfw/petibm/PetIBM</div>
+<div class="line">$ make all</div>
+<div class="line">$ make check -j &lt;num CPUs&gt;</div>
+<div class="line">$ make install</div>
+</div><!-- fragment --><h1>C. PetIBM examples</h1>
+<p >Examples files are installed at <code>&lt;PetIBM installation&gt;/share/petibm/examples</code>. For example, for installation with <code>conda</code>/<code>mamba</code>, the <code>&lt;PetIBM installation&gt;</code> is <code>$CONDA_PREFIX</code>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Mar 18 2022 14:48:19 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

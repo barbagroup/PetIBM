@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -202,7 +202,7 @@ $(document).ready(function(){initNavTree('d6/d9c/linsolveramgx_8cpp_source.html'
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    PetscInt iter;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    ierr = <a class="code hl_variable" href="../../df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#ab438c4271e00da377583d8d84071161a">amgx</a>.getIters(iter); CHKERRQ(ierr);</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    ierr = <a class="code hl_variable" href="../../df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#ab438c4271e00da377583d8d84071161a">amgx</a>.getResidual(iter - 1, res); CHKERRQ(ierr);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    ierr = <a class="code hl_variable" href="../../df/d3a/classpetibm_1_1linsolver_1_1_lin_solver_amg_x.html#ab438c4271e00da377583d8d84071161a">amgx</a>.getResidual(iter, res); CHKERRQ(ierr);</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    PetscFunctionReturn(0);</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}  <span class="comment">// getResidual</span></div>
@@ -231,7 +231,7 @@ $(document).ready(function(){initNavTree('d6/d9c/linsolveramgx_8cpp_source.html'
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="../../dir_d4bb18432c0036d821398b3b49668d45.html">linsolver</a></li><li class="navelem"><a class="el" href="../../d6/d9c/linsolveramgx_8cpp.html">linsolveramgx.cpp</a></li>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

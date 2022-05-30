@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -88,7 +88,7 @@ $(document).ready(function(){initNavTree('d5/dfb/md_doc_markdowns_examples2d.htm
 <div class="contents">
 <div class="textblock"><h1>2D lid-driven cavity flow at Re=100</h1>
 <p >Input files are located in the folder <code>examples/navierstokes/liddrivencavity2dRe100</code> of the PetIBM directory.</p>
-<p >Make sure that the PetIBM executables are available in your PATH environment variable. To add the PetIBM installation directory to you PATH: </p><pre class="fragment">export PATH=&lt;petibm-installation-directory&gt;:$PATH
+<p >If PetIBM is not installed using <code>conda</code>/<code>mamba</code>, make sure that the PetIBM executables are available in your PATH environment variable. To add the PetIBM installation directory to you PATH: </p><pre class="fragment">export PATH=&lt;petibm-installation-directory&gt;:$PATH
 </pre><p> We are going to solve the flow in a 2D square cavity of unit length with the top wall moving in the positive x direction at speed 1. The Reynolds number (based on the kinematic viscosity, the length of the cavity, and the speed of the moving wall) is 100. The fluid is initially at rest and the top wall impulsively starts moving.</p>
 <p >The computational domain [0, 1]x[0, 1] is uniformly discretized with 32 cells in each direction.</p>
 <p >We will run 1000 time steps with a time increment of 0.01 and save the numerical solution at the end.</p>
@@ -109,7 +109,7 @@ liddrivencavity2dRe100_velocitycenterlines</div></div>
 </pre><p> It will create XDMF files for the pressure (<code>p.xmf</code>), the velocity components (<code>u.xmf</code> and <code>v.xmf</code>), and the vorticity (<code>wz.xmf</code>). These files can be open with VisIt to read, visualize, and process the field solutions.</p>
 <h1>2D flow over a circular cylinder at Re=40</h1>
 <p >Input files are located in the folder <code>examples/ibpm/cylinder2dRe40</code> of the PetIBM directory.</p>
-<p >Make sure that the PetIBM executables are available in your PATH environment variable. To add the PetIBM installation directory to you PATH: </p><pre class="fragment">export PATH=&lt;petibm-installation-directory&gt;:$PATH
+<p >If PetIBM is not installed using <code>conda</code>/<code>mamba</code>, make sure that the PetIBM executables are available in your PATH environment variable. To add the PetIBM installation directory to you PATH: </p><pre class="fragment">export PATH=&lt;petibm-installation-directory&gt;:$PATH
 </pre><p> A circular cylinder of diameter 1.0 is placed at the center of a two-dimensional domain spanning [-15,15]x[-15,15]. The initial velocity of the fluid in the domain is (1, 0). Dirichlet conditions for the velocity are set on all boundaries (velocity set to (1, 0)), except at the outlet where the fluid is convected outside the domain in the x-direction at speed 1.0. The Reynolds number (based on the freestream speed, the diameter of the circular cylinder, and the kinematic viscosity) is 40.</p>
 <p >The computational domain is discretized using an stretched Cartesian grid with 186x186 cells. The mesh is kept uniform in the sub-domain [-0.6, 0.6]x[-0.6, 0.6] and stretched to the external boundaries with a constant ratio of 1.05.</p>
 <p >For this example, we will run the simulation with the immersed-boundary projection method (Taira and Colonius, 2007) for 2000 time steps with a time increment of 0.01 and save the numerical solution at the end.</p>
@@ -126,14 +126,14 @@ mpiexec -np 2 petibm-ibpm
 </pre><p> It will create XDMF files for the pressure (<code>p.xmf</code>), the velocity components (<code>u.xmf</code> and <code>v.xmf</code>), and the vorticity (<code>wz.xmf</code>). These files can be open with VisIt to read, visualize, and process the field solutions.</p>
 <h1>2D flow over a circular cylinder at Re=550 (using AmgX)</h1>
 <p >Input files are located in the folder <code>examples/ibpm/cylinder2dRe550_GPU</code> of the PetIBM directory.</p>
-<p >Make sure that the PetIBM executables are available in your PATH environment variable. To add the PetIBM installation directory to you PATH: </p><pre class="fragment">export PATH=&lt;petibm-installation-directory&gt;:$PATH
+<p >If PetIBM is not installed using <code>conda</code>/<code>mamba</code>, make sure that the PetIBM executables are available in your PATH environment variable. To add the PetIBM installation directory to you PATH: </p><pre class="fragment">export PATH=&lt;petibm-installation-directory&gt;:$PATH
 </pre><p> A circular cylinder of diameter 1.0 is placed at the center of a two-dimensional domain spanning [-15,15]x[-15,15]. The initial velocity of the fluid in the domain is (1, 0). Dirichlet conditions for the velocity are set on all boundaries (velocity set to (1, 0)), except at the outlet where the fluid is convected outside the domain in the x-direction at speed 1.0. The Reynolds number (based on the freestream speed, the diameter of the circular cylinder, and the kinematic viscosity) is 550.</p>
 <p >The computational domain is discretized using an stretched Cartesian grid with 450x450 cells. The mesh is kept uniform in the sub-domain [-0.54, 0.54]x[-0.54, 0.54] and stretched to the external boundaries with a constant ratio of 1.02.</p>
 <p >For this example, we will run the simulation with the immersed-boundary projection method (Taira and Colonius, 2007) for 1200 time steps with a time increment of 0.0025 and save the numerical solution at the end.</p>
 <p >To run the example using 2 MPI processes and 1 CUDA-capable GPU device: </p><pre class="fragment">cd &lt;simulation-directory&gt;
 export CUDA_VISIBLE_DEVICES=0
 mpiexec -np 2 petibm-ibpm
-</pre><p> The run should complete in less than 5 minutes (with a NVIDIA K40 GPU device) and the numerical solution is saved in the folder <code>solution</code>.</p>
+</pre><p> The run should complete in less than 5 minutes (with a NVIDIA K40 GPU device) and the numerical solution is saved in the folder <code>solution</code>. The MPI flag <code>--mca opal_cuda_support 1</code> may be needed if using Anaconda's OpenMPI package.</p>
 <p >We provide a Python script (located under the folder <code>scripts</code> in the simulation directory) to plot the instantaneous drag coefficient and compare it with the numerical results from Koumoutsakos and Leonard (1995). To run the script: </p><pre class="fragment">python scripts/plotDragCoefficient.py
 </pre><p> You can also run the utility <code>petibm-vorticity</code> to compute and write the 2D vorticity field at saved time steps: </p><pre class="fragment">petibm-vorticity
 </pre><p> The field <code>wz</code> will be written in the time-step HDF5 files; the grid for the vorticity is also written in the file <code>grid.h5</code> under the group <code>wz</code>.</p>
@@ -154,7 +154,7 @@ mpiexec -np 2 petibm-ibpm
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

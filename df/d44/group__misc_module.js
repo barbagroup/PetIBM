@@ -155,7 +155,7 @@ var group__misc_module =
     [ "petibm::misc::getPerpendAxes", "df/d44/group__misc_module.html#ga37603d55dcb07a958f03f3b61f24f8cd", null ],
     [ "petibm::parser::getSettings", "df/d44/group__misc_module.html#ga3099e1e7c848b6b16e5f59d83f781f97", null ],
     [ "petibm::parser::parseBCs", "df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339", null ],
-    [ "petibm::parser::parseICs", "df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e", null ],
+    [ "petibm::parser::parseICs", "df/d44/group__misc_module.html#gafe1ffe95afd4c9044a83a060c676b63f", null ],
     [ "petibm::parser::parseMesh", "df/d44/group__misc_module.html#ga434ba3d6f208b9370b4a2024254ee4ee", null ],
     [ "petibm::parser::parseOneAxis", "df/d44/group__misc_module.html#ga2e6d3015fdebb6013160ecd7ae01592f", null ],
     [ "petibm::parser::parseOneSubDomain", "df/d44/group__misc_module.html#gafafb413cef72933548a11fe8ead9672c", null ],

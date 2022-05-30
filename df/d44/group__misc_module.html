@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -97,7 +97,8 @@ $(document).ready(function(){initNavTree('df/d44/group__misc_module.html','../..
 <div class="dynheader">
 Collaboration diagram for Miscellaneous functions:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../df/d44/group__misc_module.svg" width="378" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../df/d44/group__misc_module.svg" width="378" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -228,9 +229,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gabe0999ce05abd1244c0c0385c4b25339"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339">petibm::parser::parseBCs</a> (const YAML::Node &amp;node, <a class="el" href="../../dd/d8f/group__type.html#ga0173f75594de88ef6cdb6d4b6838928d">type::IntVec2D</a> &amp;bcTypes, <a class="el" href="../../dd/d8f/group__type.html#gaa2b37c9d287c89d27950b8f5cf17fc13">type::RealVec2D</a> &amp;bcValues)</td></tr>
 <tr class="memdesc:gabe0999ce05abd1244c0c0385c4b25339"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse boundary conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339">More...</a><br /></td></tr>
 <tr class="separator:gabe0999ce05abd1244c0c0385c4b25339"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga22ecf1119deb16634210c7ea5861d90e"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e">petibm::parser::parseICs</a> (const YAML::Node &amp;node, <a class="el" href="../../dd/d8f/group__type.html#gad19e550a4119623bdfdd2f9b02ce1678">type::RealVec1D</a> &amp;icValues)</td></tr>
-<tr class="memdesc:ga22ecf1119deb16634210c7ea5861d90e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse initial conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e">More...</a><br /></td></tr>
-<tr class="separator:ga22ecf1119deb16634210c7ea5861d90e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe1ffe95afd4c9044a83a060c676b63f"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gafe1ffe95afd4c9044a83a060c676b63f">petibm::parser::parseICs</a> (const YAML::Node &amp;node, std::vector&lt; SymEngine::LambdaRealDoubleVisitor &gt; &amp;ics)</td></tr>
+<tr class="memdesc:gafe1ffe95afd4c9044a83a060c676b63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse initial conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#gafe1ffe95afd4c9044a83a060c676b63f">More...</a><br /></td></tr>
+<tr class="separator:gafe1ffe95afd4c9044a83a060c676b63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadbc7387003ade845958d20d2ebefe22b"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">petibm::misc::createProbe</a> (const MPI_Comm &amp;comm, const YAML::Node &amp;node, const <a class="el" href="../../d7/d24/group__mesh_module.html#ga50d3a91e4c3aec2b2b0444187d1cf309">type::Mesh</a> &amp;mesh, <a class="el" href="../../df/d44/group__misc_module.html#ga875e585a052dd34aed02b7711ff76e70">type::Probe</a> &amp;probe)</td></tr>
 <tr class="memdesc:gadbc7387003ade845958d20d2ebefe22b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a probe to monitor the solution.  <a href="../../df/d44/group__misc_module.html#gadbc7387003ade845958d20d2ebefe22b">More...</a><br /></td></tr>
 <tr class="separator:gadbc7387003ade845958d20d2ebefe22b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -807,7 +808,7 @@ Functions</h2></td></tr>
 <li><code>-bodies</code>: <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> file path with settings for the immersed bodies (default: None, i.e., does nothing). </li>
 </ol>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00169">169</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00175">175</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -854,12 +855,12 @@ Functions</h2></td></tr>
 </dl>
 <p>This function will look into the key <code>boundaryConditions</code> under the key <code>flow</code> in the provided <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00353">353</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00359">359</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ga22ecf1119deb16634210c7ea5861d90e" name="ga22ecf1119deb16634210c7ea5861d90e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga22ecf1119deb16634210c7ea5861d90e">&#9670;&nbsp;</a></span>parseICs()</h2>
+<a id="gafe1ffe95afd4c9044a83a060c676b63f" name="gafe1ffe95afd4c9044a83a060c676b63f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafe1ffe95afd4c9044a83a060c676b63f">&#9670;&nbsp;</a></span>parseICs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -873,8 +874,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../dd/d8f/group__type.html#gad19e550a4119623bdfdd2f9b02ce1678">type::RealVec1D</a> &amp;&#160;</td>
-          <td class="paramname"><em>icValues</em>&#160;</td>
+          <td class="paramtype">std::vector&lt; SymEngine::LambdaRealDoubleVisitor &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ics</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -888,13 +889,13 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">node</td><td>[in] <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> configuration node. </td></tr>
-    <tr><td class="paramname">icValues</td><td>[out] IC values of different fields.</td></tr>
+    <tr><td class="paramname">ics</td><td>[out] Lambda functions for calculating IC values of different fields.</td></tr>
   </table>
   </dd>
 </dl>
 <p>This function will look into the key <code>initialVelocity</code> under the key <code>flow</code> in the provided <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00390">390</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00396">396</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -962,7 +963,7 @@ Functions</h2></td></tr>
 </dl>
 <p>This function will retrieve information from and do necessary calculations based on the data provided under the key <code>mesh</code> in the <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00233">233</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00239">239</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -1030,7 +1031,7 @@ Functions</h2></td></tr>
 </dl>
 <p>This function only parse information and do calculation for only one axis. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00269">269</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00275">275</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -1090,7 +1091,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00328">328</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00334">334</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -1151,7 +1152,7 @@ Functions</h2></td></tr>
 </dl>
 <p>This function parse the <code>subDomains</code> section of a direction. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00292">292</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00298">298</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -1366,7 +1367,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00146">146</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/ddd/parser_8cpp_source.html#l00152">152</a> of file <a class="el" href="../../dc/ddd/parser_8cpp_source.html">parser.cpp</a>.</p>
 
 </div>
 </div>
@@ -1794,7 +1795,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

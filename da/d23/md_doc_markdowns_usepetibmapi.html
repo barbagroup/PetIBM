@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -110,22 +110,29 @@ $(document).ready(function(){initNavTree('da/d23/md_doc_markdowns_usepetibmapi.h
 <p >To compile with PetIBM headers, remember to have <code>-I$PETIBM_INSTALL/include</code> in the compilation flags. Also, the path to PETSc headers is necessary, e.g., <code>-I$PETSC_DIR/PETSC_ARCH/include</code>.</p>
 <p >If users provide their own installations of third-party dependencies to build PetIBM, remember to also include those paths. For example, if users provide <code>--with-yamlcpp-dir=$YAMLCPP_DIR</code> during configuration, then they will have to add <code>-I$YAMLCPP_DIR/include</code> to the compilation flags.</p>
 <h2>Library</h2>
-<p >PetIBM provides a single library, either <code>libpetibm.a</code> (static library) or <code>libpetibm.so</code> (shared library) to link against. The library is located in <code>$PETIBM_INSTALL/lib</code>; use <code>-L$PETIBM_INSTALL/lib -lpetibm</code> to link.</p>
-<p >There may be other libraries in <code>$PETIBM_INSTALL/lib</code>, depending on how the users configure PetIBM. For example, if the users use the configuration flag <code>--enable-yamlcpp</code>, then, the yaml-cpp library will be installed along with the PetIBM library in <code>$PETIBM_INSTALL/lib</code>. (Note: on some systems or OS, third-party libraries may be installed in <code>$PETIBM_INSTALL/lib64</code>.)</p>
-<p >Also, linking against PETSc library is necessary. Flags for linking against PETSc can be found in the file <code>$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables</code>. (Look for the line starting with <code>PETSC_WITH_EXTERNAL_LIB =</code>.)</p>
-<p >Alternatively, users can let the PetIBM library automatically handle dependencies with the <code>libtool</code> program. PetIBM is build using <code>libtool</code>, which records dependencies information in an abstract layer <code>$PETIBM_INSTALL/lib/libpetibm.la</code>. Although users can directly look into the <code>.la</code> file, the proper way to use <code>libtool</code> is:</p>
-<div class="fragment"><div class="line">libtool --tag=CXX --mode=link $CXX -o &lt;executable name&gt; &lt;object files&gt; \</div>
-<div class="line">    $LINKER_FLAGS $PETIBM_INSTALL/lib/libpetibm.la</div>
-</div><!-- fragment --><p >or ,if compiling and linking at once,</p>
-<div class="fragment"><div class="line">libtool --tag=CXX --mode=link $CXX -o &lt;executable name&gt; &lt;source files&gt;  \</div>
-<div class="line">    $CXX_FLAGS $LINKER_FLAGS $PATH_TO_HEADERS $PETIBM_INSTALL/lib/libpetibm.la</div>
+<p >PetIBM provides two libraries, <code>libpetibm.so</code> and <code>libpetibmapps.so</code> (or their corresponding static libraries). <code>libpetibm.so</code> provides basic components for writing a solver without inheriting from any existing solvers. The mentioned <code>liddrivencavity2d</code> is an example of only using <code>libpetibm.so</code>. On the other hand, <code>libpetibmapps.so</code> provides basic flow solvers for derived classes. For example, the <code>oscillatingcylinder</code> case in <code>api_examples</code> uses <code>libpetibmapps.so</code>. Both libraries are located in <code>$PETIBM_INSTALL/lib</code>; use <code>-L$PETIBM_INSTALL/lib -lpetibm -lpetibmapps</code> to link.</p>
+<p >There may be other libraries in <code>$PETIBM_INSTALL/lib</code>, depending on how users configure PetIBM. For example, if a user lets PetIBM installs yaml-cpp automatically, then the yaml-cpp library will be installed along with the PetIBM library in <code>$PETIBM_INSTALL/lib</code>. (Note: on some systems or OS, third-party libraries may be installed in <code>$PETIBM_INSTALL/lib64</code>.)</p>
+<p >If users use CMake to build applications, using PetIBM libraries should be easy. PetIBM ships its own CMake config file. It means in CMake, just use <code>find_package</code> to find PetIBM and all dependencies (AmgX, PETSc, etc., **_except for MPI_**). For example (a snippet from the <code>liddrivencavity2d</code> API example): </p><div class="fragment"><div class="line">set(CMAKE_PREFIX_PATH ${PETIBM_DIR} ${CMAKE_PREFIX_PATH})</div>
+<div class="line">find_package(MPI REQUIRED)</div>
+<div class="line">find_package(petibm 0.5.4 REQUIRED)</div>
+<div class="line">add_executable(liddrivencavity2d main.cpp)</div>
+<div class="line">target_link_libraries(liddrivencavity2d PRIVATE MPI::MPI_CXX petibm::petibm)</div>
+</div><!-- fragment --><p> With the imported targets (e.g., <code>MPI::MPI_CXX</code> and <code>petibm::petibm</code>) in modern CMake, users usually don't have to specify include directories, link directories, and secondary dependencies as long as the upstream (i.e., the developers of MPI and PetIBM in this example) configures libraries correctly.</p>
+<p >If manually linking PETSc library is desired, it can be found using <code>pkg-config</code>. For example, if, in a <code>CMakeLists.txt</code>, assuming <code>PETSC_DIR</code> refers to the PETSc installation, then do </p><div class="fragment"><div class="line">set(CMAKE_PREFIX_PATH ${PETSC_DIR} ${CMAKE_PREFIX_PATH})</div>
+<div class="line">find_package(PkgConfig REQUIRED)</div>
+<div class="line">pkg_search_module(PETSC REQUIRED QUIET IMPORTED_TARGET petsc&gt;=3.16)</div>
+</div><!-- fragment --><p> Once <code>pkg-config</code> found PETSc, legacy CMake variables prefixed with <code>PETSC_</code> will be available. Or, for modern CMake, an imported target <code>PkgConfig::PETSC</code> is available, too.</p>
+<p >Alternatively, flags for linking against PETSc can be found in the file <code>$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables</code>. (Look for the line starting with <code>PETSC_WITH_EXTERNAL_LIB =</code>.)</p>
+<p >See the <code>api_examples</code> folder for more demo <code>CMakeLists.txt</code> files.</p>
+<h2>Compilers</h2>
+<p >If PetIBM was installed through <code>conda</code>/<code>mamba</code>, newer compilers may be needed to compile your own applications. For example, the Anaconda package of <code>petibm=0.5.4=cuda114_&lt;other tags&gt;</code> was built using <code>gxx_linux-64=11.2</code> from <code>conda-forge</code> channel. That means when you build/compile your code against this specific PetIBM version, you may need to use <code>g++</code> greater or equal to 11.2 to use newer <code>glibc</code> and <code>glibcxx</code>. The easiest way is to also use the latest tools from Anaconda, i,e., you may do (replace <code>mamba</code> with <code>conda</code> if you use the former one) </p><div class="fragment"><div class="line">$ mamba install -c conda-forge &quot;gxx_linux-64&gt;=11.2&quot; cmake make</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

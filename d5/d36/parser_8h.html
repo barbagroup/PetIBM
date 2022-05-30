@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.3</span>
+   <div id="projectname">PetIBM<span id="projectnumber">&#160;0.5.4</span>
    </div>
    <div id="projectbrief">Toolbox and applications of the immersed-boundary method for distributed-memory architectures</div>
   </td>
@@ -94,6 +94,7 @@ $(document).ready(function(){initNavTree('d5/d36/parser_8h.html','../../'); init
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;string&gt;</code><br />
 <code>#include &lt;petscsys.h&gt;</code><br />
+<code>#include &lt;symengine/lambda_double.h&gt;</code><br />
 <code>#include &lt;yaml-cpp/yaml.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../df/def/type_8h_source.html">petibm/type.h</a>&gt;</code><br />
 </div>
@@ -131,9 +132,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gabe0999ce05abd1244c0c0385c4b25339"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339">petibm::parser::parseBCs</a> (const YAML::Node &amp;node, type::IntVec2D &amp;bcTypes, type::RealVec2D &amp;bcValues)</td></tr>
 <tr class="memdesc:gabe0999ce05abd1244c0c0385c4b25339"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse boundary conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#gabe0999ce05abd1244c0c0385c4b25339">More...</a><br /></td></tr>
 <tr class="separator:gabe0999ce05abd1244c0c0385c4b25339"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga22ecf1119deb16634210c7ea5861d90e"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e">petibm::parser::parseICs</a> (const YAML::Node &amp;node, type::RealVec1D &amp;icValues)</td></tr>
-<tr class="memdesc:ga22ecf1119deb16634210c7ea5861d90e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse initial conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#ga22ecf1119deb16634210c7ea5861d90e">More...</a><br /></td></tr>
-<tr class="separator:ga22ecf1119deb16634210c7ea5861d90e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe1ffe95afd4c9044a83a060c676b63f"><td class="memItemLeft" align="right" valign="top">PetscErrorCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/group__misc_module.html#gafe1ffe95afd4c9044a83a060c676b63f">petibm::parser::parseICs</a> (const YAML::Node &amp;node, std::vector&lt; SymEngine::LambdaRealDoubleVisitor &gt; &amp;ics)</td></tr>
+<tr class="memdesc:gafe1ffe95afd4c9044a83a060c676b63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse initial conditions from a <a class="el" href="../../d7/d1e/namespace_y_a_m_l.html">YAML</a> node.  <a href="../../df/d44/group__misc_module.html#gafe1ffe95afd4c9044a83a060c676b63f">More...</a><br /></td></tr>
+<tr class="separator:gafe1ffe95afd4c9044a83a060c676b63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Prototypes of parser functions. </p>
@@ -147,7 +148,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="../../dir_b00d6d3965a1c6f2dc1b5bbb5126d3e8.html">petibm</a></li><li class="navelem"><a class="el" href="../../d5/d36/parser_8h.html">parser.h</a></li>
-    <li class="footer">Generated on Thu Mar 17 2022 18:28:00 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+    <li class="footer">Generated on Mon May 30 2022 16:28:11 for PetIBM by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
 </body>

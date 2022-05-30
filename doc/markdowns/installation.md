@@ -192,9 +192,9 @@ If you would like to build everything from scratch, here's the list of dependenc
   If you are using HPC clusters, it's better to use the shipped MPI packages on the clusters because
   they usually have specific optimizations for the clusters' hardware. NVIDIA's HPC-X is another
   alternative, which includes OpenMPI optimized for NVIDIA's HPC infrastructure.
-* The latest release of PetIBM (0.5.3) has been tested with:
-    * Arch Linux with g++\-11.2.0 and PETSc v3.16.5
-    * Ubuntu 20.04 with g++\-9.4 and PETSc v3.16.5
+* The latest release of PetIBM (0.5.4) has been tested with:
+    * Arch Linux with g++\-11.2.0 and PETSc v3.16.6
+    * Ubuntu 20.04 with g++\-9.4 and PETSc v3.16.6
 * Though not suggested, if using older compilers are desired, previous releases of PetIBM (before
   v0.5.2) have at some point been tested with the following combinations. However, we will not
   provide any support for using older versions of PetIBM.

@@ -49,30 +49,50 @@ For example, if users provide `--with-yamlcpp-dir=$YAMLCPP_DIR` during configura
 
 ### Library
 
-PetIBM provides a single library, either `libpetibm.a` (static library) or `libpetibm.so` (shared library) to link against.
-The library is located in `$PETIBM_INSTALL/lib`; use `-L$PETIBM_INSTALL/lib -lpetibm` to link.
+PetIBM provides two libraries, `libpetibm.so` and `libpetibmapps.so` (or their corresponding static libraries).
+`libpetibm.so` provides basic components for writing a solver without inheriting from any existing solvers.
+The mentioned `liddrivencavity2d` is an example of only using `libpetibm.so`.
+On the other hand, `libpetibmapps.so` provides basic flow solvers for derived classes.
+For example, the `oscillatingcylinder` case in `api_examples` uses `libpetibmapps.so`.
+Both libraries are located in `$PETIBM_INSTALL/lib`; use `-L$PETIBM_INSTALL/lib -lpetibm -lpetibmapps` to link.
 
-There may be other libraries in `$PETIBM_INSTALL/lib`, depending on how the users configure PetIBM.
-For example, if the users use the configuration flag `--enable-yamlcpp`, then, the yaml-cpp library will be installed along with the PetIBM library in `$PETIBM_INSTALL/lib`.
+There may be other libraries in `$PETIBM_INSTALL/lib`, depending on how users configure PetIBM.
+For example, if a user lets PetIBM installs yaml-cpp automatically, then the yaml-cpp library will be installed along with the PetIBM library in `$PETIBM_INSTALL/lib`.
 (Note: on some systems or OS, third-party libraries may be installed in `$PETIBM_INSTALL/lib64`.)
 
-Also, linking against PETSc library is necessary.
-Flags for linking against PETSc can be found in the file `$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables`.
+If users use CMake to build applications, using PetIBM libraries should be easy.
+PetIBM ships its own CMake config file.
+It means in CMake, just use `find_package` to find PetIBM and all dependencies (AmgX, PETSc, etc., **_except for MPI_**). For example (a snippet from the `liddrivencavity2d` API example):
+```cmake
+set(CMAKE_PREFIX_PATH ${PETIBM_DIR} ${CMAKE_PREFIX_PATH})
+find_package(MPI REQUIRED)
+find_package(petibm 0.5.4 REQUIRED)
+add_executable(liddrivencavity2d main.cpp)
+target_link_libraries(liddrivencavity2d PRIVATE MPI::MPI_CXX petibm::petibm)
+```
+With the imported targets (e.g., `MPI::MPI_CXX` and `petibm::petibm`) in modern CMake, users usually don't have to specify include directories, link directories, and secondary dependencies as long as the upstream (i.e., the developers of MPI and PetIBM in this example) configures libraries correctly.
+
+If manually linking PETSc library is desired, it can be found using `pkg-config`.
+For example, if, in a `CMakeLists.txt`, assuming `PETSC_DIR` refers to the PETSc installation, then do
+```cmake
+set(CMAKE_PREFIX_PATH ${PETSC_DIR} ${CMAKE_PREFIX_PATH})
+find_package(PkgConfig REQUIRED)
+pkg_search_module(PETSC REQUIRED QUIET IMPORTED_TARGET petsc>=3.16)
+```
+Once `pkg-config` found PETSc, legacy CMake variables prefixed with `PETSC_` will be available.
+Or, for modern CMake, an imported target `PkgConfig::PETSC` is available, too.
+
+Alternatively, flags for linking against PETSc can be found in the file `$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables`.
 (Look for the line starting with `PETSC_WITH_EXTERNAL_LIB = `.)
 
-Alternatively, users can let the PetIBM library automatically handle dependencies with the `libtool` program.
-PetIBM is build using `libtool`, which records dependencies information in an abstract layer `$PETIBM_INSTALL/lib/libpetibm.la`.
-Although users can directly look into the `.la` file, the proper way to use `libtool` is:
+See the `api_examples` folder for more demo `CMakeLists.txt` files.
 
-```
-libtool --tag=CXX --mode=link $CXX -o <executable name> <object files> \
-    $LINKER_FLAGS $PETIBM_INSTALL/lib/libpetibm.la
-```
+### Compilers
 
-or ,if compiling and linking at once,
-
+If PetIBM was installed through `conda`/`mamba`, newer compilers may be needed to compile your own applications.
+For example, the Anaconda package of `petibm=0.5.4=cuda114_<other tags>` was built using `gxx_linux-64=11.2` from `conda-forge` channel.
+That means when you build/compile your code against this specific PetIBM version, you may need to use `g++` greater or equal to 11.2 to use newer `glibc` and `glibcxx`.
+The easiest way is to also use the latest tools from Anaconda, i,e., you may do (replace `mamba` with `conda` if you use the former one)
+```shell
+$ mamba install -c conda-forge "gxx_linux-64>=11.2" cmake make
 ```
-libtool --tag=CXX --mode=link $CXX -o <executable name> <source files>  \
-    $CXX_FLAGS $LINKER_FLAGS $PATH_TO_HEADERS $PETIBM_INSTALL/lib/libpetibm.la
-```
-

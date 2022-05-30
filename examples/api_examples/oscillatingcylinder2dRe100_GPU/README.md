@@ -2,11 +2,20 @@
 
 ## Build the example
 
-If a `Makefile` is present in this folder, you can compile the example and create the executable `oscillatingcylinder` with
+Build procedure is the same to the basic API example, `liddrivencavity2d`. Here we just give the commands:
 
 ```shell
-make oscillatingcylinder
+$ mkdir build
+$ cd build
+$ cmake -DPETIBM_DIR=<petibm installation path> ../
+$ make all -j <number of CPUs>
 ```
+
+The executable `oscillatingcylinder` will be available in the `build` folder (i.e., the current folder).
+
+If you're interested, in the `CMakeLists.txt`, we also link against `libpetibmapps.so` using the imported target `petibm::petibmapps`.
+We do so because `oscillatingcylinder` is a solver derived from the `RigidKinematicsSolver` solver class.
+It is the major difference between `oscillatingcylinder` and the `liddrivencavity2d` example.
 
 ## Run the example
 
@@ -16,11 +25,20 @@ You can run the example (for example, using 4 MPI processes and 1 GPU device) wi
 export CUDA_VISIBLE_DEVICES=<idx1>
 mpiexec -np 4 oscillatingcylinder -options_left -log_view ascii:view.log
 ```
+`<idx1>` denotes the IDs of the GPU to be used (if there are more than one GPU on your systems).
 
 The simulation should complete in less than 40 minutes when using:
 
 * 2 CPU processes (Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz),
 * 2 NVIDIA K20 GPU devices.
+
+And it should complete in around 16 minutes when using
+
+* 6 CPU cores (Intel(R) Xeon(R) Platinum 8174 CPU @ 3.10GHz)
+* 1 NVIDIA V100 (32GB variant)
+
+Note, if MPI was installed using `conda`/`mamba`, then you may need to add the flag `--mca opal_cuda_support 1`, i.e., `mpiexec -np 4 --mca opal_cuda_support 1 ...`.
+This is due to that the Anaconda's OpenMPI package disables the CUDA support by default.
 
 ## Post-processing
 

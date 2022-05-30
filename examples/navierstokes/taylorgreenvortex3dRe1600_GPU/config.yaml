@@ -1,0 +1,67 @@
+mesh:
+  - direction: x
+    start: -3.141592653589793
+    subDomains:
+      - end: 3.141592653589793
+        cells: 256
+        stretchRatio: 1.0
+  - direction: y
+    start: -3.141592653589793
+    subDomains:
+      - end: 3.141592653589793
+        cells: 256
+        stretchRatio: 1.0
+  - direction: z
+    start: -3.141592653589793
+    subDomains:
+      - end: 3.141592653589793
+        cells: 256
+        stretchRatio: 1.0
+
+flow:
+    nu: 0.000625
+    initialVelocity:
+      - "sin(x) * cos(y) * cos(z)"
+      - "- cos(x) * sin(y) * cos(z)"
+      - "0"
+    initialPressure: "(cos(2*x) + cos(2*y)) * (cos(2*z) + 2) / 16"
+    boundaryConditions:
+      - location: xMinus
+        u: [PERIODIC, 0.0]
+        v: [PERIODIC, 0.0]
+        w: [PERIODIC, 0.0]
+      - location: xPlus
+        u: [PERIODIC, 0.0]
+        v: [PERIODIC, 0.0]
+        w: [PERIODIC, 0.0]
+      - location: yMinus
+        u: [PERIODIC, 0.0]
+        v: [PERIODIC, 0.0]
+        w: [PERIODIC, 0.0]
+      - location: yPlus
+        u: [PERIODIC, 1.0]
+        v: [PERIODIC, 0.0]
+        w: [PERIODIC, 0.0]
+      - location: zMinus
+        u: [PERIODIC, 0.0]
+        v: [PERIODIC, 0.0]
+        w: [PERIODIC, 0.0]
+      - location: zPlus
+        u: [PERIODIC, 1.0]
+        v: [PERIODIC, 0.0]
+        w: [PERIODIC, 0.0]
+
+parameters:
+    dt: 0.01
+    startStep: 0
+    nt: 2000
+    nsave: 100
+    nrestart: 500
+    convection: ADAMS_BASHFORTH_2
+    diffusion: CRANK_NICOLSON
+    velocitySolver:
+      type: GPU
+      config: config/velocity_solver.info
+    poissonSolver:
+      type: GPU
+      config: config/poisson_solver.info

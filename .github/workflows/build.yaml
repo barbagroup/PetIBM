@@ -1,0 +1,56 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container: barbagroup/petibm:gh-action-base
+    steps:
+
+      - name: Activating conda environment
+        run: |
+          micromamba shell init --shell=bash --prefix=/root/micromamba
+          source ~/.bashrc
+          micromamba activate base
+          micromamba info
+
+      - name: Checking out PetIBM source code
+        uses: actions/checkout@v3
+
+      - name: Configuring PetIBM
+        run: |
+          source ~/.bashrc
+          micromamba activate base
+          mkdir -p $GITHUB_WORKSPACE/build && cd $GITHUB_WORKSPACE/build
+          cmake \
+              -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+              -DCMAKE_CXX_COMPILER=${CXX} \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DYAMLCPP_DIR=${PREFIX} \
+              -DSYMENGINE_DIR=${PREFIX} \
+              -DPETSC_DIR=${PREFIX} \
+              -DPETSC_ARCH="" \
+              -DPETIBM_ENABLE_TESTS=ON \
+              -DPETIBM_USE_AMGX=OFF \
+              $GITHUB_WORKSPACE
+
+      - name: Building PetIBM
+        run: |
+          source ~/.bashrc
+          micromamba activate base
+          cd $GITHUB_WORKSPACE/build
+          make all -j $(nproc)
+
+      - name: Running tests
+        run: |
+          source ~/.bashrc
+          micromamba activate base
+          cd $GITHUB_WORKSPACE/build
+          make check

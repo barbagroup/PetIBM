@@ -382,6 +382,7 @@ PetscErrorCode ProbeVolume::writeGrid_HDF5(const std::string &filePath)
             ierr = VecView(tmp, viewer2); CHKERRQ(ierr);
             ierr = VecDestroy(&tmp); CHKERRQ(ierr);
         }
+        ierr = PetscViewerHDF5PopGroup(viewer2); CHKERRQ(ierr);
         ierr = PetscViewerDestroy(&viewer2); CHKERRQ(ierr);
     }
 
@@ -463,6 +464,7 @@ PetscErrorCode ProbeVolume::writeIS_HDF5(const std::string &filePath)
     ierr = PetscViewerHDF5PushGroup(viewer, "mesh"); CHKERRQ(ierr);
     ierr = PetscObjectSetName((PetscObject) isNatural, "IS"); CHKERRQ(ierr);
     ierr = ISView(isNatural, viewer); CHKERRQ(ierr);
+    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::writeIS_HDF5
@@ -565,6 +567,7 @@ PetscErrorCode ProbeVolume::writeVec_HDF5(const Vec &vec, const PetscReal &t)
             viewer, std::to_string(t).c_str(), "count", PETSC_INT, &count);
         CHKERRQ(ierr);
     }
+    ierr = PetscViewerHDF5PopGroup(viewer); CHKERRQ(ierr);
 
     PetscFunctionReturn(0);
 }  // ProbeVolume::writeVec_HDF5
